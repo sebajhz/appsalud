@@ -1,0 +1,34 @@
+# Mapazapp — Handoff Manifest V1.2
+
+Generated: 2026-05-03T00:28:11.236442+00:00
+
+## Files
+
+- `00_START_HERE/CURSOR_NAVIGATION_NOTE.md`
+- `00_START_HERE/MANIFEST_MAPAZAPP_REPLIT_HANDOFF_V1.md`
+- `00_START_HERE/MANIFEST_MAPAZAPP_REPLIT_HANDOFF_V1_1.md`
+- `00_START_HERE/Mapazapp_Replit_Documentation_Requirements_V1.md`
+- `00_START_HERE/Mapazapp_Replit_Prompt_Addendum_Documentation_V1.md`
+- `00_START_HERE/Mapazapp_System_Architecture_And_Replit_Scope_V1.md`
+- `00_START_HERE/README_MAPAZAPP_REPLIT_HANDOFF_V1.md`
+- `Mapazapp_Replit_Handoff_V1/00_START_HERE/MANIFEST.md`
+- `Mapazapp_Replit_Handoff_V1/00_START_HERE/README_REPLIT_HANDOFF_V1.md`
+- `Mapazapp_Replit_Handoff_V1/01_PRODUCT_CONTEXT/Mapazapp_Audit_And_Research_Pack_README.md`
+- `Mapazapp_Replit_Handoff_V1/01_PRODUCT_CONTEXT/Mapazapp_Auditoria_V1.md`
+- `Mapazapp_Replit_Handoff_V1/01_PRODUCT_CONTEXT/Mapazapp_Document_Map_V1.md`
+- `Mapazapp_Replit_Handoff_V1/01_PRODUCT_CONTEXT/Mapazapp_Product_Audit_V1.md`
+- `Mapazapp_Replit_Handoff_V1/01_PRODUCT_CONTEXT/Mapazapp_Research_Findings_V1.md`
+- `Mapazapp_Replit_Handoff_V1/01_PRODUCT_CONTEXT/Mapazapp_V1.md`
+- `Mapazapp_Replit_Handoff_V1/02_REPLIT_MOCK_SCOPE/Mapazapp_Replit_Dashboard_Mock_Spec_V1.md`
+- `Mapazapp_Replit_Handoff_V1/02_REPLIT_MOCK_SCOPE/Mapazapp_Replit_Starter_Spec_V1.md`
+- `Mapazapp_Replit_Handoff_V1/03_MT5_BRIDGE_AND_DATA_CONTRACT/Mapazapp_BridgeEA_Build_Spec_V1.md`
+- `Mapazapp_Replit_Handoff_V1/03_MT5_BRIDGE_AND_DATA_CONTRACT/Mapazapp_MT5_Bridge_Connectivity_Contract_V1.md`
+- `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Backtest_Optimization_Clarification_V1.md`
+- `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_IFVG_Numerical_Detection_MT5_Backtest_Spec_V1.md`
+- `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_IFVG_Strategy_Blueprint_Research_V1.md`
+- `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_MT5_EA_Optimization_Input_Map_V1.md`
+- `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_MT5_TestEA_Build_Spec_V1.md`
+- `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Optimization_Matrix_Symbol_Parameter_Selection_V1.md`
+- `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Strategy_Blueprint_Skeleton_V1.md`
+- `Mapazapp_Replit_Handoff_V1/05_RESEARCH_REFERENCE/Mapazapp_FedeEsses_IFVG_Research_D1_V1.md`
+- `Mapazapp_Replit_Handoff_V1/05_RESEARCH_REFERENCE/Mapazapp_Trader_Research_Integration_Plan_V1.md`

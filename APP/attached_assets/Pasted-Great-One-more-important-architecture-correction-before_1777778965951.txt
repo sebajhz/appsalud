@@ -1,0 +1,317 @@
+Great. One more important architecture correction before closing the Replit mock:
+
+Mapazapp must be designed as multi-account and multi-broker from the beginning.
+
+This is not just an account selector. Multi-account affects balance, equity, daily drawdown, max drawdown, prop firm rules, journal, alerts, backtest parameter sets, bridge status and risk.
+
+Real use cases:
+- one PropXP account and one The5ers account at the same time;
+- two The5ers accounts;
+- one demo account and one funded/challenge account;
+- one personal account and one challenge account;
+- one Phase 1 account and another Phase 2 account;
+- multiple MT5 terminals, each connected to a different account.
+
+Please update the mock UI/data model to support this conceptually.
+
+Important:
+This is still mock-only.
+Do not implement real backend logic.
+Do not connect to MT5.
+Do not implement real risk calculations.
+Do not implement real account persistence.
+Do not implement real trading logic.
+Do not implement execution.
+
+1. Add multi-account configuration
+
+In src/mock/config.ts or equivalent, add:
+
+- accounts array;
+- activeAccountId;
+- broker/rules/profile references where useful.
+
+Example:
+
+accounts: [
+  {
+    accountId: "ACC_THE5ERS_100K_PHASE1_A",
+    displayName: "The5ers 100k — Phase 1 A",
+    firmName: "The5ers",
+    brokerName: "The5ers MT5",
+    accountLogin: "123456",
+    accountServer: "The5ers-Server",
+    accountSize: 100000,
+    currency: "USD",
+    challengePhase: "Phase 1",
+    status: "active",
+    mode: "challenge",
+    riskProfileId: "RISK_CONSERVATIVE_05",
+    rulesProfileId: "RULES_THE5ERS_HIGH_STAKES"
+  },
+  {
+    accountId: "ACC_PROPXP_50K_PHASE1",
+    displayName: "PropXP 50k — Phase 1",
+    firmName: "PropXP",
+    brokerName: "PropXP MT5",
+    accountLogin: "789012",
+    accountServer: "PropXP-Server",
+    accountSize: 50000,
+    currency: "USD",
+    challengePhase: "Phase 1",
+    status: "watch_only",
+    mode: "challenge",
+    riskProfileId: "RISK_CONSERVATIVE_025",
+    rulesProfileId: "RULES_PROPXP_TWO_PHASE"
+  }
+]
+
+activeAccountId: "ACC_THE5ERS_100K_PHASE1_A"
+
+2. Add account context to the UI
+
+Add a visible account selector or account context card.
+
+Example label:
+“The5ers 100k — Phase 1 A — MT5 123456”
+
+The UI should make it clear which account is currently selected.
+
+This can be mock-only. No real persistence is required.
+
+3. Make Risk Guard account-specific
+
+Risk Guard must show the selected account context.
+
+Mock fields should include:
+
+- accountId;
+- balance;
+- equity;
+- dailyStartBalance;
+- dailyStartEquity;
+- dailyLossLimitAmount;
+- dailyLossLimitPercent;
+- dailyLossUsedAmount;
+- dailyLossUsedPercent;
+- dailyLossRemainingAmount;
+- dailyLossRemainingPercent;
+- maxLossLimitAmount;
+- maxLossLimitPercent;
+- maxLossUsedAmount;
+- maxLossRemainingAmount;
+- riskPerTradePercent;
+- tradesTakenToday;
+- maxTradesPerDay;
+- operationalStatus.
+
+Important:
+Risk is account-specific. Do not show risk as global only.
+
+4. Make drawdown account-specific
+
+Daily drawdown and max drawdown must belong to the selected account.
+
+The mock should visually show:
+
+- daily drawdown used;
+- daily drawdown remaining;
+- max drawdown used;
+- max drawdown remaining;
+- daily reset time/timezone if you have room;
+- operational status.
+
+Possible operational statuses:
+
+- TRADING_ALLOWED
+- WATCH_ONLY
+- BLOCKED_DAILY_DRAWDOWN
+- BLOCKED_MAX_DRAWDOWN
+- BLOCKED_NEWS
+- BLOCKED_MAX_TRADES
+- BLOCKED_CONSISTENCY
+- BLOCKED_PSYCHOLOGY
+- BRIDGE_DISCONNECTED
+- NO_APPROVED_PARAMETER_SET
+
+5. Make Prop Firm Guard account-specific
+
+Prop Firm Guard must show the selected account’s firm/program/rules.
+
+Mock fields should include:
+
+- accountId;
+- firmName;
+- programName;
+- challengePhase;
+- accountSize;
+- profitTargetAmount;
+- profitTargetPercent;
+- profitAchievedAmount;
+- profitAchievedPercent;
+- dailyDrawdownRule;
+- maxDrawdownRule;
+- consistencyEnabled;
+- bestDayProfit;
+- totalProfitForPhase;
+- consistencyStatus;
+- minimumTradingDaysRequired;
+- currentTradingDays;
+- profitableDaysRequired;
+- currentProfitableDays;
+- newsTradingAllowed;
+- blackoutBeforeMinutes;
+- blackoutAfterMinutes.
+
+6. Make Journal multi-account
+
+Each journal trade must include:
+
+- accountId;
+- accountDisplayName;
+- brokerId if available;
+- propFirmId if available;
+- strategyId;
+- parameterSetId;
+- symbol;
+- resultR;
+- resultMoney;
+- emotion;
+- ruleCompliance;
+- impulseTrade.
+
+Journal page should show account column and/or account filter.
+
+7. Make Alerts multi-account
+
+Alerts should include account context when applicable.
+
+Examples:
+- “The5ers 100k: daily drawdown is near internal limit.”
+- “PropXP 50k: bridge disconnected.”
+- “The5ers 100k: IFVG XAUUSD zone is trade-ready.”
+
+Allow global alerts too, but mark them as global.
+
+8. Make Backtests / parameter sets account-aware
+
+Backtests are strategy/symbol-based, but their usage must be allowed per account.
+
+Add mock fields like:
+
+allowedAccountIds: ["ACC_THE5ERS_100K_PHASE1_A", "ACC_PROPXP_50K_PHASE1"]
+
+or visually show:
+“Allowed for selected account: yes/no”
+
+This matters because a parameter set can be valid for XAUUSD but blocked for a specific account due to prop firm/risk rules.
+
+9. Make MT5 Bridge multi-account/multi-terminal aware
+
+MT5 Bridge page should show mock rows like:
+
+- terminalId;
+- accountId;
+- accountLogin;
+- accountServer;
+- brokerName;
+- bridgeStatus;
+- lastUpdate;
+- symbolsEnabled.
+
+Example:
+Terminal A → The5ers 100k
+Terminal B → PropXP 50k
+
+No real MT5 connection. Just mock UI/data model.
+
+10. Add symbol mapping concept
+
+Multi-broker means symbols can differ by broker.
+
+Examples:
+- XAUUSD
+- XAUUSDm
+- GOLD
+- GOLD.pro
+
+Add mock configuration or documentation for:
+
+- canonicalSymbol;
+- brokerSymbol;
+- accountId or brokerId;
+- digits;
+- point;
+- tickSize;
+- tickValue;
+- lotStep.
+
+This can be read-only/mock.
+
+11. Update Configuration page
+
+Add mock/read-only sections for:
+
+- Accounts;
+- Brokers;
+- Prop Firms;
+- Risk Profiles;
+- Rules Profiles;
+- Symbol Mapping.
+
+12. Update documentation
+
+Update:
+
+- README.md
+- docs/CURSOR_HANDOFF.md
+- docs/MOCK_DATA_CONTRACT.md
+- docs/DECISIONS.md
+
+Document clearly:
+
+- Mapazapp is multi-account and multi-broker by design.
+- This Replit phase only mocks multi-account behavior.
+- accountId is a key field across the system.
+- Risk, drawdown, prop firm state, journal, alerts and bridge must be account-scoped.
+- There is no real account switching backend yet.
+- There is no real multi-terminal MT5 bridge yet.
+- Cursor must later implement account registry and account-aware API endpoints.
+
+13. Future API endpoints should be account-aware
+
+Document future API shapes like:
+
+- GET /api/accounts
+- GET /api/accounts/:accountId/summary
+- GET /api/accounts/:accountId/risk
+- GET /api/accounts/:accountId/prop-firm
+- GET /api/accounts/:accountId/journal
+- GET /api/accounts/:accountId/alerts
+- GET /api/accounts/:accountId/bridge
+- GET /api/accounts/:accountId/positions
+- GET /api/backtests
+- GET /api/backtests/:parameterSetId/account-compatibility
+
+14. Acceptance criteria
+
+This update is done when:
+
+- There is an account selector or account context card.
+- Mock config has at least two accounts.
+- activeAccountId exists.
+- Risk Guard shows selected account context.
+- Daily drawdown and max drawdown are clearly account-specific.
+- Prop Firm Guard shows selected account context.
+- Journal shows account column/filter.
+- Alerts show account context when relevant.
+- Backtests show allowed accounts or account compatibility.
+- MT5 Bridge shows terminal/account mapping.
+- Config page shows account/broker/rules/symbol mapping concept.
+- Docs explain multi-account clearly.
+- Everything remains mock-only.
+
+Final rule:
+From now on, Mapazapp must never assume a single account.
+
+Every trade, risk state, journal record, bridge status, alert, account snapshot and future execution command must be associated with an accountId.

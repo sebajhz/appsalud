@@ -1,0 +1,69 @@
+Good first version. The dashboard mock is going in the right direction.
+
+Before we close this Replit phase, please make these final cleanup changes:
+
+1. Replace the hardcoded “FTMO 100k” mock label.
+
+Use a configurable mock value from mock/config.ts instead of hardcoding it in the component.
+
+For now, use one of these examples:
+- The5ers High Stakes 100k
+- PropXP 100k
+
+Important:
+The prop firm label must come from mock/config.ts or an equivalent mock config file, not directly from the UI component.
+
+2. Confirm no real trading logic was implemented.
+
+Please verify and document that:
+- no real MT5 connection exists;
+- no real backend exists;
+- no real trading strategy was implemented;
+- no real score calculation was implemented;
+- no real zone calculation was implemented;
+- no real backtesting logic was implemented;
+- no order execution exists;
+- all zones, scores, P&L, alerts, account data and backtest results come from mock data only.
+
+3. Confirm the mock data is separated from components.
+
+Please make sure mock data lives in files like:
+- src/mock/bridgeStatus.ts
+- src/mock/account.ts
+- src/mock/zones.ts
+- src/mock/backtests.ts
+- src/mock/journal.ts
+- src/mock/alerts.ts
+- src/mock/config.ts
+
+Components should only render the mock data. They should not hide fake trading calculations.
+
+4. Complete the Cursor handoff documentation.
+
+Please make sure these files exist and are complete:
+
+- README.md
+- docs/CURSOR_HANDOFF.md
+- docs/MOCK_DATA_CONTRACT.md
+- docs/DECISIONS.md
+
+The documentation must clearly explain:
+- what was built;
+- what is mock data;
+- what is not implemented;
+- what files/components were created;
+- what future APIs should replace the mocks;
+- how Cursor should continue;
+- that no real MT5 connection, backend, trading logic, backtesting, optimization, or order execution is implemented in this Replit phase.
+
+5. Prepare the project for download/handoff.
+
+After these fixes, please provide the downloadable project ZIP or tell me the exact steps to export/download the full project.
+
+Do not add new features beyond these cleanup/documentation tasks.
+Do not implement real trading logic.
+Do not connect to MT5.
+Do not add a real backend.
+Do not add order execution.
+
+This Replit phase should end as a clean visual dashboard mock ready for Cursor.

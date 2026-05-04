@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Mapazapp Dashboard"
+version = "1.0.0"
+id = "artifacts/mapazapp"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19085
+
+[services.development]
+run = "pnpm --filter @workspace/mapazapp run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mapazapp", "run", "build" ]
+publicDir = "artifacts/mapazapp/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19085"
+BASE_PATH = "/"

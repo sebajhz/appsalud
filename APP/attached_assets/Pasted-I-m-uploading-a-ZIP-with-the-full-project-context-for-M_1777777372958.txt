@@ -1,0 +1,166 @@
+I’m uploading a ZIP with the full project context for Mapazapp.
+
+Please read the files in this order first:
+
+1. 00_START_HERE/README_MAPAZAPP_REPLIT_HANDOFF_V1.md
+2. 00_START_HERE/Mapazapp_System_Architecture_And_Replit_Scope_V1.md
+3. 00_START_HERE/Mapazapp_Replit_Documentation_Requirements_V1.md
+4. 00_START_HERE/Mapazapp_Replit_Prompt_Addendum_Documentation_V1.md
+5. 02_REPLIT_MOCK_SCOPE/Mapazapp_Replit_Dashboard_Mock_Spec_V1.md
+6. 02_REPLIT_MOCK_SCOPE/Mapazapp_Replit_Starter_Spec_V1.md
+7. 03_MT5_BRIDGE_AND_DATA_CONTRACT/Mapazapp_MT5_Bridge_Connectivity_Contract_V1.md
+
+Project name: Mapazapp.
+Previous working name: QuerlyTrader Guard. Use Mapazapp everywhere in the UI, code, README and docs.
+
+Important architecture:
+Mapazapp is one system with three parts:
+
+1. MT5 Expert Advisors:
+   - Mapazapp_BridgeEA: exports real MT5 data in the future.
+   - Mapazapp_IFVG_TestEA: used later for MT5 Strategy Tester backtesting.
+
+2. Local external app:
+   - future Python/backend + SQLite.
+   - imports BridgeEA data.
+   - imports backtest results.
+   - handles Risk Guard, Prop Firm Guard, Journal and live scanner.
+
+3. Dashboard:
+   - React/web UI.
+   - This is the only part you must build now as a mock.
+
+Your task now:
+Build only the visual dashboard mock for Mapazapp.
+
+Do not implement:
+- real MT5 connection;
+- real backend;
+- real trading strategy;
+- real backtesting;
+- real order execution;
+- real signal calculation;
+- real optimization;
+- grid/martingale/trading automation;
+- hidden fake trading logic inside components.
+
+Use mock data only, based on the provided contracts.
+
+Recommended stack:
+React + TypeScript + Tailwind.
+
+Create a clean, professional dashboard with these sections:
+
+- Home / Daily State
+- Market / Zones
+- Zone Detail
+- Risk Guard
+- Prop Firm Guard
+- Backtests
+- Backtest Detail
+- Journal
+- Psychology / Control
+- Alerts
+- Configuration
+- MT5 Bridge Health
+
+The UI must have two levels:
+1. Simple view:
+   - plain language, easy to understand.
+   - examples: “Gold is near a possible buy zone”, “Wait for confirmation”, “Do not trade: news nearby”.
+
+2. Technical view:
+   - strategy_id, zone_id, IFVG, score, invalidation, R:R, parameter_set_id, bridge status, etc.
+
+Use these zone states:
+- CREATED
+- WATCHING
+- RETESTING
+- CONFIRMED
+- TRADE_READY
+- INVALIDATED
+- EXPIRED
+- USED
+
+Use these risk states:
+- OK
+- WARNING
+- BLOCKED
+
+Use these bridge states:
+- BRIDGE_OK
+- BRIDGE_STALE
+- BRIDGE_DOWN
+- MT5_DISCONNECTED
+
+Mock data must be separated from components, for example:
+
+- src/mock/bridgeStatus.ts
+- src/mock/account.ts
+- src/mock/zones.ts
+- src/mock/backtests.ts
+- src/mock/journal.ts
+- src/mock/alerts.ts
+- src/mock/config.ts
+
+Use TypeScript types/interfaces for the mock entities, for example:
+
+- BridgeStatus
+- AccountSnapshot
+- Zone
+- BacktestParameterSet
+- JournalTrade
+- Alert
+- RiskState
+
+Important:
+Do not add fields that are not in the provided specs unless they are clearly marked as UI-only mock fields.
+Do not calculate real scores or real trading signals. Mock values should come from mock data files.
+
+Documentation requirement:
+Besides building the visual dashboard mock, document everything so Cursor can continue later.
+
+Create or update:
+
+- README.md
+- docs/CURSOR_HANDOFF.md
+- docs/MOCK_DATA_CONTRACT.md
+- docs/DECISIONS.md if you make relevant implementation decisions
+
+The documentation must clearly explain:
+
+- what was built;
+- what is mock data;
+- what is not implemented;
+- what files/components were created;
+- what future APIs should replace the mocks;
+- how Cursor should continue;
+- that no real MT5 connection, backend, trading logic, backtesting, or order execution is implemented in this Replit phase.
+
+Future API shape should be easy to replace later, for example:
+
+- GET /api/bridge/status
+- GET /api/account
+- GET /api/zones
+- GET /api/backtests
+- GET /api/journal
+- GET /api/alerts
+- GET /api/config
+
+Acceptance criteria:
+
+- app runs without errors;
+- dashboard is visually clear and professional;
+- sidebar/navigation exists;
+- Home page summarizes bridge, risk, market state and active zones;
+- zones screen shows possible buy/sell zones and states;
+- risk screen shows whether trading is allowed or blocked;
+- backtests screen shows approved/rejected parameter sets;
+- journal screen exists with mock trades;
+- MT5 Bridge Health screen exists;
+- mock data is separated from components;
+- README and Cursor handoff docs are created;
+- no real trading logic, MT5 connection or execution is implemented.
+
+Final rule:
+This phase is only to validate the product experience and UI structure. The real engine, MT5 bridge, backtesting and strategy logic will be implemented later in Cursor/MT5 based on the provided specs.
