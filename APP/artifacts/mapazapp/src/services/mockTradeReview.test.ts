@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   createMockDashboardDataSource,
+  createDashboardAccountGuardSettings,
   isMockParameterSetApprovedForAccount,
 } from "./mockTradeReviewDataSource";
+import { mapMockRiskToTradePlanGuard } from "./mapMockRiskToTradePlanGuard";
+import { mockRiskByAccount } from "@/mock/risk";
+import { mockPropFirmByAccount } from "@/mock/propfirm";
 
 describe("Checkpoint 4 — mock trade review integration", () => {
   it("approves ps_alpha_01 only for XAUUSD on allowed accounts", () => {
@@ -23,6 +27,23 @@ describe("Checkpoint 4 — mock trade review integration", () => {
     const row = d.getTradeReviewPlanByZoneId("ACC_PROPXP_50K_PHASE1", "zone_001");
     expect(row?.evaluation.plan.status).toBe("NO_TRADE");
     expect(row?.evaluation.failedHardGates.length).toBeGreaterThan(0);
+  });
+
+  it("getAccountGuardEvaluation returns core result for active mock account", () => {
+    const d = createMockDashboardDataSource();
+    const g = d.getAccountGuardEvaluation("ACC_THE5ERS_100K_PHASE1_A");
+    expect(g.allowTradeReview).toBe(true);
+    expect(g.status).toBe("ACCOUNT_OK");
+  });
+
+  it("mapMockRiskToTradePlanGuard aligns trade plan guard with account guard result", () => {
+    const risk = mockRiskByAccount["ACC_THE5ERS_100K_PHASE1_A"];
+    const prop = mockPropFirmByAccount["ACC_THE5ERS_100K_PHASE1_A"];
+    const { tradePlanAccountGuard, accountGuardResult } = mapMockRiskToTradePlanGuard(risk, true, {
+      propFirm: prop,
+      accountGuardSettings: createDashboardAccountGuardSettings(),
+    });
+    expect(tradePlanAccountGuard.allowTradeReview).toBe(accountGuardResult.allowTradeReview);
   });
 
   it("RETESTING mock maps to WAIT_CONFIRMATION", () => {

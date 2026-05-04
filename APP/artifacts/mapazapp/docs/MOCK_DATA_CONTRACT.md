@@ -383,6 +383,8 @@ interface Zone {
 
 **Checkpoint 5:** the same **`TradePlanEvaluationResult`** is passed through **`buildTradeReviewExplanation`** (`src/services/tradeReviewExplanation.ts`) for **human-readable decision copy** (status titles, blockers, missing retest/confirmation, risk summary, technical reason list). Still **no** schema change to mock JSON; still **no** execution.
 
+**Checkpoint 6:** mock risk/prop rows are mapped through **`evaluateAccountGuard`** in `@workspace/mapazapp-core` before **`evaluateTradeReviewPlan`**. Dashboard **`getAccountGuardEvaluation(accountId)`** exposes a headline guard result (parameter set assumed **approved** for that snapshot). Mock JSON schema unchanged; values remain **fictional account-currency** figures until a real registry/bridge exists.
+
 ---
 
 ## PsychologyEntry (`psychology.ts`)

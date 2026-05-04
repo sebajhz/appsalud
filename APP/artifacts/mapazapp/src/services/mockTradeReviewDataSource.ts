@@ -1,5 +1,6 @@
-import type { AccountId, TradePlanEvaluationSettings } from "@workspace/mapazapp-core";
+import type { AccountGuardResult, AccountId, TradePlanEvaluationSettings } from "@workspace/mapazapp-core";
 import {
+  createDefaultAccountGuardSettingsForTests,
   createDefaultTradePlanEvaluationSettingsForTests,
   evaluateTradeReviewPlan,
 } from "@workspace/mapazapp-core";
@@ -15,13 +16,22 @@ import { getMockSymbolMarketSpec } from "./mockSymbolProfiles";
 import type { DashboardMockDataSource, TradeReviewPlanRow } from "./tradeReviewDataSource";
 import { createMockAccountDataSource } from "./mockAccountDataSource";
 
+/** Align trade-plan operational skips with `AccountGuardSettings` defaults used by the mock mapper. */
+export function createDashboardAccountGuardSettings() {
+  return createDefaultAccountGuardSettingsForTests();
+}
+
 export function createDashboardTradePlanSettings(): TradePlanEvaluationSettings {
   const base = createDefaultTradePlanEvaluationSettingsForTests();
+  const ag = createDashboardAccountGuardSettings();
   return {
     ...base,
     testOrDevMode: false,
     requireAccountIdForGuard: true,
     minScoreTrade: mockConfig.zoneScoring.minScoreForTradeReady,
+    allowWatchOnlyForTradeReview: ag.allowWatchOnlyReview,
+    allowNewsBlackoutForTradeReview: ag.allowNewsReview,
+    requireBridgeConnectedForTradeReview: ag.requireBridgeForReview,
   };
 }
 
@@ -44,13 +54,16 @@ function evaluateRow(accountId: AccountId, zone: (typeof mockZones)[0], settings
   const risk = mockRiskByAccount[accountId] ?? mockRiskByAccount[mockConfig.activeAccountId];
   const prop = mockPropFirmByAccount[accountId];
   const approved = isMockParameterSetApprovedForAccount(zone.parameter_set_id, zone.symbol, accountId);
-  const guard = mapMockRiskToTradePlanGuard(risk, approved, { propFirm: prop });
+  const { tradePlanAccountGuard } = mapMockRiskToTradePlanGuard(risk, approved, {
+    propFirm: prop,
+    accountGuardSettings: createDashboardAccountGuardSettings(),
+  });
   const input = buildTradePlanInputFromMockZone({
     zone,
     symbolProfile: spec,
     accountId,
     tradePlanSettings: settings,
-    accountGuard: guard,
+    accountGuard: tradePlanAccountGuard,
   });
   return { zone, evaluation: evaluateTradeReviewPlan(input) };
 }
@@ -85,6 +98,15 @@ export function createMockDashboardDataSource(): DashboardMockDataSource {
 
     getAlertsForAccount(accountId: AccountId) {
       return mockAlerts.filter((a) => a.accountId === accountId || a.accountId === null);
+    },
+
+    getAccountGuardEvaluation(accountId: AccountId): AccountGuardResult {
+      const risk = mockRiskByAccount[accountId] ?? mockRiskByAccount[mockConfig.activeAccountId];
+      const prop = mockPropFirmByAccount[accountId];
+      return mapMockRiskToTradePlanGuard(risk, true, {
+        propFirm: prop,
+        accountGuardSettings: createDashboardAccountGuardSettings(),
+      }).accountGuardResult;
     },
   };
 }

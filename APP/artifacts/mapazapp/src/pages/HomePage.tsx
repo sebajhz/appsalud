@@ -32,6 +32,7 @@ function HomeContent() {
   const risk     = mockRiskByAccount[activeAccountId]    ?? mockRiskByAccount['ACC_THE5ERS_100K_PHASE1_A'];
   const terminal = mockBridgeTerminals.find(t => t.accountId === activeAccountId) ?? mockBridgeTerminals[0];
 
+  const accountGuardEval = dashboard.getAccountGuardEvaluation(activeAccountId as AccountId);
   const reviewPlans = dashboard.getTradeReviewPlansForAccount(activeAccountId as AccountId);
   const activeZones    = mockZones.filter(z => ['WATCHING', 'RETESTING', 'CONFIRMED', 'TRADE_READY'].includes(z.state));
   const coreTradeReadyPlans = reviewPlans.filter((r) => r.evaluation.plan.status === 'TRADE_READY');
@@ -52,6 +53,16 @@ function HomeContent() {
             {risk.tradingAllowed ? 'Risk is OK — trading is allowed.' : 'Trading is currently blocked by Risk Guard.'}
             {' '}Bridge is {terminal.state === 'BRIDGE_OK' ? 'connected and receiving data' : 'in a degraded state — check MT5 Bridge page'}.
           </p>
+          {(!accountGuardEval.allowTradeReview || accountGuardEval.warningReasons.length > 0) && (
+            <p className={`text-xs mt-2 ${accountGuardEval.allowTradeReview ? 'text-amber-300/90' : 'text-rose-300/90'}`} data-testid="home-account-guard-hint">
+              Core account guard (review eligibility): {accountGuardEval.simpleSummary}
+              {accountGuardEval.warningReasons.length > 0 && accountGuardEval.allowTradeReview && (
+                <span className="block text-amber-400/80 mt-0.5">
+                  {accountGuardEval.warningReasons[0]?.messageSimple}
+                </span>
+              )}
+            </p>
+          )}
         </div>
       )}
 

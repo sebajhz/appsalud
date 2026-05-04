@@ -1,4 +1,4 @@
-import type { AccountId, TradePlanEvaluationResult } from "@workspace/mapazapp-core";
+import type { AccountGuardResult, AccountId, TradePlanEvaluationResult } from "@workspace/mapazapp-core";
 import type { AccountDataSource } from "./accountDataSource";
 import type { Alert, Zone } from "@/mock/types";
 
@@ -17,4 +17,6 @@ export interface DashboardMockDataSource extends AccountDataSource {
   getTradeReviewPlansForAccount(accountId: AccountId): TradeReviewPlanRow[];
   getTradeReviewPlanByZoneId(accountId: AccountId, zoneId: string): TradeReviewPlanRow | undefined;
   getAlertsForAccount(accountId: AccountId): Alert[];
+  /** Account-scoped guard with `approvedParameterSetForAccount: true` (headline snapshot, not zone-specific). */
+  getAccountGuardEvaluation(accountId: AccountId): AccountGuardResult;
 }

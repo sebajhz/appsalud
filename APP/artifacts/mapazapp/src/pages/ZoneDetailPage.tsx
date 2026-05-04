@@ -17,6 +17,7 @@ function ZoneDetailContent({ id }: { id: string }) {
   const reviewRow = dashboard.getTradeReviewPlanByZoneId(activeAccountId as AccountId, id);
   const plan = reviewRow?.evaluation.plan;
   const explanation = reviewRow ? buildTradeReviewExplanation(reviewRow.evaluation) : null;
+  const accountGuardEval = dashboard.getAccountGuardEvaluation(activeAccountId as AccountId);
 
   const zone = mockZones.find(z => z.id === id);
 
@@ -115,6 +116,19 @@ function ZoneDetailContent({ id }: { id: string }) {
       {isTechnical && explanation && (
         <div className="rounded-lg border border-slate-800 bg-card p-5 space-y-4" data-testid="zone-technical-explanation">
           <h3 className="text-sm font-semibold text-slate-300">Trade review — technical</h3>
+          <div className="font-mono text-[10px] text-slate-500 space-y-1 border-b border-slate-800 pb-3 mb-2">
+            <p className="text-slate-400 font-semibold">account_guard (headline, PS assumed approved)</p>
+            <p>
+              guard_status: <span className="text-slate-300">{accountGuardEval.status}</span> · allow_review:{" "}
+              <span className={accountGuardEval.allowTradeReview ? "text-emerald-400" : "text-red-400"}>
+                {String(accountGuardEval.allowTradeReview)}
+              </span>
+            </p>
+            <p>
+              block: {accountGuardEval.blockingReasons.map((b) => b.code).join(", ") || "—"} · warn:{" "}
+              {accountGuardEval.warningReasons.map((w) => w.code).join(", ") || "—"}
+            </p>
+          </div>
           <ReasonCodeList reasons={explanation.technicalReasons} title="Reason codes (audit)" />
         </div>
       )}

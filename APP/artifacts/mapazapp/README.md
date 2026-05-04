@@ -8,6 +8,8 @@
 
 **Checkpoint 5 — explanation layer:** `src/services/tradeReviewExplanation.ts` turns each evaluation into **`TradeReviewExplanation`** (plain-language “what / why / what’s missing”, mapped reason codes with severity/category, **`manualReviewOnly: true`**). Vitest: `src/services/tradeReviewExplanation.test.ts`. UI: `TradeReviewExplanationCard`, `ReasonCodeList`, updates on Home / Zones / Zone Detail only.
 
+**Checkpoint 6 — account guard core:** `@workspace/mapazapp-core` adds **`evaluateAccountGuard`** + types/reasons/settings; mock **`mapMockRiskToTradePlanGuard`** feeds **`evaluateTradeReviewPlan`**. Dashboard **`getAccountGuardEvaluation`**. Core tests: `lib/mapazapp-core/tests/account-guard.test.ts`. Minimal UI: Home (guard hint), Risk Guard technical block, Zone Detail technical snippet.
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.

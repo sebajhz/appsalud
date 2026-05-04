@@ -1,10 +1,21 @@
 /**
- * Maps mock `AccountRiskGuardState` (+ optional prop firm) into `TradePlanAccountGuardInput`.
- * Does not evaluate prop rules — consumes mock flags only (checkpoint 4).
+ * Maps mock `AccountRiskGuardState` (+ optional prop firm) through core `evaluateAccountGuard`,
+ * then into `TradePlanAccountGuardInput` for `evaluateTradeReviewPlan`.
+ * Mock-only — no network, no broker rule engine.
  */
-import type { TradePlanAccountGuardInput } from "@workspace/mapazapp-core";
+import type {
+  AccountGuardInput,
+  AccountGuardResult,
+  AccountGuardSettings,
+  TradePlanAccountGuardInput,
+} from "@workspace/mapazapp-core";
+import {
+  accountGuardResultToTradePlanAccountGuardInput,
+  createDefaultAccountGuardSettingsForTests,
+  evaluateAccountGuard,
+} from "@workspace/mapazapp-core";
 import type { AccountId } from "@workspace/mapazapp-core";
-import type { AccountPropFirmState, AccountRiskGuardState, OperationalStatus } from "@/mock/types";
+import type { AccountPropFirmState, AccountRiskGuardState } from "@/mock/types";
 
 export function mapMockRiskToTradePlanGuard(
   risk: AccountRiskGuardState,
@@ -12,20 +23,50 @@ export function mapMockRiskToTradePlanGuard(
   options?: {
     propFirm?: AccountPropFirmState;
     spreadAllowed?: boolean;
+    accountMode?: string;
+    bridgeConnected?: boolean;
+    accountGuardSettings?: AccountGuardSettings;
   },
-): TradePlanAccountGuardInput {
-  const op = risk.operationalStatus as OperationalStatus;
-  return {
+): { tradePlanAccountGuard: TradePlanAccountGuardInput; accountGuardResult: AccountGuardResult } {
+  const settings = options?.accountGuardSettings ?? createDefaultAccountGuardSettingsForTests();
+
+  const bridgeConnected =
+    options?.bridgeConnected ?? (risk.operationalStatus === "BRIDGE_DISCONNECTED" ? false : true);
+
+  const input: AccountGuardInput = {
     accountId: risk.accountId as AccountId,
-    operationalStatus: op,
-    dailyDrawdownBlocked: op === "BLOCKED_DAILY_DRAWDOWN",
-    maxDrawdownBlocked: op === "BLOCKED_MAX_DRAWDOWN",
-    maxTradesReached: op === "BLOCKED_MAX_TRADES",
-    newsBlackout: op === "BLOCKED_NEWS",
-    propFirmBlocked: options?.propFirm?.status === "BREACHED",
-    psychologicalLock: op === "BLOCKED_PSYCHOLOGY",
+    operationalStatus: risk.operationalStatus,
+    tradingAllowed: risk.tradingAllowed,
+    accountMode: options?.accountMode,
+    risk: {
+      balance: risk.balance,
+      equity: risk.equity,
+      dailyStartBalance: risk.dailyStartBalance,
+      dailyStartEquity: risk.dailyStartEquity,
+      dailyLossLimitAmount: risk.dailyLossLimitAmount,
+      dailyLossUsedAmount: risk.dailyLossUsedAmount,
+      dailyLossRemainingAmount: risk.dailyLossRemainingAmount,
+      maxLossLimitAmount: risk.maxLossLimitAmount,
+      maxLossUsedAmount: risk.maxLossUsedAmount,
+      maxLossRemainingAmount: risk.maxLossRemainingAmount,
+      riskPerTradePercent: risk.riskPerTradePercent,
+      tradesTakenToday: risk.tradesTakenToday,
+      maxTradesPerDay: risk.maxTradesPerDay,
+    },
+    prop: options?.propFirm
+      ? {
+          propFirmBlocked: options.propFirm.status === "BREACHED",
+          firmProgramLabel: options.propFirm.programName,
+        }
+      : { propFirmBlocked: false },
+    newsBlackout: risk.operationalStatus === "BLOCKED_NEWS",
+    psychologicalLock: risk.operationalStatus === "BLOCKED_PSYCHOLOGY",
+    bridgeConnected,
     approvedParameterSetForAccount,
     spreadAllowed: options?.spreadAllowed ?? true,
-    allowTradeReview: risk.tradingAllowed,
   };
+
+  const accountGuardResult = evaluateAccountGuard(input, settings);
+  const tradePlanAccountGuard = accountGuardResultToTradePlanAccountGuardInput(input, accountGuardResult);
+  return { tradePlanAccountGuard, accountGuardResult };
 }

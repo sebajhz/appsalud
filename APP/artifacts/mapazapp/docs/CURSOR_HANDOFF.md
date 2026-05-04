@@ -68,6 +68,19 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 **Contract:** a future backend may return **`TradeReviewPlan`** / evaluation DTOs unchanged; the frontend (or another client) can still run **`buildTradeReviewExplanation`** for consistent copy. **No** execution, MT5, WebSocket, or DB.
 
+### Account / risk guard core (checkpoint 6)
+
+| Module | Role |
+|--------|------|
+| `account-guard-types.ts` | **`AccountGuardInput`**, **`AccountGuardResult`**, **`AccountGuardStatus`**, **`AccountGuardReasonCode`**, **`AccountRiskSnapshot`**, **`PropFirmRuleSnapshot`**, **`AccountGuardSettings`**, **`AccountTradePermission`**, metrics. |
+| `account-guard-settings.ts` | **`createDefaultAccountGuardSettingsForTests()`** — dev defaults only. |
+| `account-guard-reasons.ts` | Stable **`AccountGuardReason`** text factory. |
+| `account-guard-evaluator.ts` | **`evaluateAccountGuard`**, **`accountGuardResultToTradePlanAccountGuardInput`**. |
+| `trade-plan-gates.ts` | Conditional operational hard gate: watch-only / news / bridge respect **`TradePlanEvaluationSettings`** alignment flags. |
+| Mock | **`mapMockRiskToTradePlanGuard`** → core guard → **`TradePlanAccountGuardInput`**; **`getAccountGuardEvaluation`** on dashboard data source. |
+
+**Separation:** account guard answers **whether the account may participate in trade review**; trade plan evaluator answers **whether a zone candidate passes lifecycle + score + R:R + spread gates** for **`TRADE_READY`**. Both must pass for **`TRADE_READY`** (account guard still flows through **`TradePlanAccountGuardInput`**).
+
 ## What remains mock-only (dashboard + integration)
 
 - **Live** IFVG scanner, MT5 bridge, WebSocket, DB, order execution, real Strategy Tester / backtest wiring — unchanged. Core now contains **offline** detection math only; the UI still uses `src/mock/` zones. See **What Is NOT Implemented** below.

@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
+import type { AccountId } from '@workspace/mapazapp-core';
 import { Layout, useViewMode, useActiveAccount } from '@/components/Layout';
 import { OperationalStatusBadge } from '@/components/StatusBadge';
 import { mockRiskByAccount } from '@/mock/risk';
+import { createMockDashboardDataSource } from '@/services/mockTradeReviewDataSource';
 import { CheckCircle, XCircle, AlertTriangle, TrendingDown, Activity } from 'lucide-react';
 
 function ProgressBar({ pct, testId }: { pct: number; testId?: string }) {
@@ -27,6 +30,8 @@ function MoneyRow({ label, amount, pct, color = 'text-slate-200' }: { label: str
 function RiskContent() {
   const { isTechnical } = useViewMode();
   const { activeAccountId, activeAccount } = useActiveAccount();
+  const dashboard = useMemo(() => createMockDashboardDataSource(), []);
+  const accountGuardEval = dashboard.getAccountGuardEvaluation(activeAccountId as AccountId);
   const risk = mockRiskByAccount[activeAccountId] ?? mockRiskByAccount['ACC_THE5ERS_100K_PHASE1_A'];
 
   const dailyUsedPct = (risk.dailyLossUsedPercent / risk.dailyLossLimitPercent) * 100;
@@ -71,6 +76,11 @@ function RiskContent() {
             <div className="flex gap-3"><span className="text-slate-500 w-36">account_id:</span><span className="text-slate-300">{risk.accountId}</span></div>
             <div className="flex gap-3"><span className="text-slate-500 w-36">operational_status:</span><span className="text-slate-300">{risk.operationalStatus}</span></div>
             <div className="flex gap-3"><span className="text-slate-500 w-36">trading_allowed:</span><span className={risk.tradingAllowed ? 'text-emerald-400' : 'text-red-400'}>{String(risk.tradingAllowed)}</span></div>
+            <div className="pt-2 text-slate-500">account_guard_eval (core, headline)</div>
+            <div className="flex gap-3"><span className="text-slate-500 w-44">guard_status:</span><span className="text-slate-300">{accountGuardEval.status}</span></div>
+            <div className="flex gap-3"><span className="text-slate-500 w-44">allow_trade_review:</span><span className={accountGuardEval.allowTradeReview ? 'text-emerald-400' : 'text-red-400'}>{String(accountGuardEval.allowTradeReview)}</span></div>
+            <div className="flex gap-3"><span className="text-slate-500 w-44">blocking_codes:</span><span className="text-slate-300">{accountGuardEval.blockingReasons.map((b) => b.code).join(', ') || '—'}</span></div>
+            <div className="flex gap-3"><span className="text-slate-500 w-44">warning_codes:</span><span className="text-slate-300">{accountGuardEval.warningReasons.map((w) => w.code).join(', ') || '—'}</span></div>
           </div>
         )}
       </div>

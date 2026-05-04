@@ -30,6 +30,15 @@ export interface TradePlanEvaluationSettings {
   requireAccountIdForGuard: boolean;
   /** Optional absolute spread ceiling in price units (in addition to `spreadAllowed` on guard). */
   maxSpreadPrice?: number;
+  /**
+   * When true, `operationalStatus === "WATCH_ONLY"` does not add `OPERATIONAL_STATUS_BLOCKS`
+   * (align with `AccountGuardSettings.allowWatchOnlyReview`).
+   */
+  allowWatchOnlyForTradeReview?: boolean;
+  /** When true, `BLOCKED_NEWS` / news blackout operational path is skipped for operational hard gate. */
+  allowNewsBlackoutForTradeReview?: boolean;
+  /** When true, `BRIDGE_DISCONNECTED` operational status blocks trade review. */
+  requireBridgeConnectedForTradeReview?: boolean;
 }
 
 /**
@@ -54,5 +63,8 @@ export function createDefaultTradePlanEvaluationSettingsForTests(): TradePlanEva
     testOrDevMode: true,
     requireAccountIdForGuard: false,
     maxSpreadPrice: undefined,
+    allowWatchOnlyForTradeReview: false,
+    allowNewsBlackoutForTradeReview: false,
+    requireBridgeConnectedForTradeReview: false,
   };
 }

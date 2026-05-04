@@ -55,7 +55,15 @@ export function collectTradePlanHardGateFailures(ctx: TradePlanGateContext): Tra
     if (guard.spreadAllowed === false) failed.push("SPREAD_NOT_ALLOWED");
     const op = guard.operationalStatus;
     if (op && BLOCKING_OPERATIONAL.has(op)) {
-      failed.push("OPERATIONAL_STATUS_BLOCKS");
+      if (op === "WATCH_ONLY" && settings.allowWatchOnlyForTradeReview) {
+        // skip — account guard + settings allow review under watch-only
+      } else if (op === "BLOCKED_NEWS" && settings.allowNewsBlackoutForTradeReview) {
+        // skip
+      } else if (op === "BRIDGE_DISCONNECTED" && !settings.requireBridgeConnectedForTradeReview) {
+        // skip — bridge not required for review in this profile
+      } else {
+        failed.push("OPERATIONAL_STATUS_BLOCKS");
+      }
     }
   }
 
