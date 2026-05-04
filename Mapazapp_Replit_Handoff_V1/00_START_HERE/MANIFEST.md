@@ -6,6 +6,8 @@ Las entradas de cada sección son **nombres de archivo** relativos a la subcarpe
 
 **Before implementing the strategy engine, TestEA, scanner or risk-aware trade-ready logic, read Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md:** `04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`.
 
+**Before starting a new implementation checkpoint, read** `04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Implementation_Checkpoint_Roadmap_V1.md`.
+
 ## 00_START_HERE
 
 - `README_REPLIT_HANDOFF_V1.md`
@@ -31,6 +33,7 @@ Las entradas de cada sección son **nombres de archivo** relativos a la subcarpe
 
 ## 04_STRATEGY_AND_BACKTEST_REFERENCE
 
+- `Mapazapp_Implementation_Checkpoint_Roadmap_V1.md`
 - `Mapazapp_Backtest_Optimization_Clarification_V1.md`
 - `Mapazapp_IFVG_Numerical_Detection_MT5_Backtest_Spec_V1.md`
 - `Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`

@@ -8,6 +8,8 @@ Este archivo es el punto de entrada rápido para sesiones futuras en Cursor. **N
 
 **Before implementing the strategy engine, TestEA, scanner or risk-aware trade-ready logic, read Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md:** `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`.
 
+**Before starting a new implementation checkpoint, read** `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Implementation_Checkpoint_Roadmap_V1.md`.
+
 ---
 
 ## Qué es fuente de verdad hoy
