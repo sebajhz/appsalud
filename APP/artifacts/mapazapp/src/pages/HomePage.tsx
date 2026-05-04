@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import type { AccountId } from '@workspace/mapazapp-core';
 import { Layout, useViewMode, useActiveAccount } from '@/components/Layout';
 import { BridgeStateBadge, OperationalStatusBadge, ZoneStateBadge, DirectionBadge } from '@/components/StatusBadge';
 import { mockBridgeTerminals } from '@/mock/bridgeStatus';
@@ -7,12 +9,17 @@ import { mockRiskByAccount } from '@/mock/risk';
 import { mockAlerts } from '@/mock/alerts';
 import { Link } from 'wouter';
 import { AlertTriangle, CheckCircle, Activity, DollarSign } from 'lucide-react';
+import { createMockAccountDataSource } from '@/services/mockAccountDataSource';
 
 function HomeContent() {
   const { isTechnical } = useViewMode();
   const { activeAccountId } = useActiveAccount();
+  const accountDataSource = useMemo(() => createMockAccountDataSource(), []);
 
-  const account  = mockAccountSnapshots[activeAccountId] ?? mockAccountSnapshots['ACC_THE5ERS_100K_PHASE1_A'];
+  const account =
+    accountDataSource.getAccountSnapshot(activeAccountId as AccountId) ??
+    mockAccountSnapshots[activeAccountId] ??
+    mockAccountSnapshots['ACC_THE5ERS_100K_PHASE1_A'];
   const risk     = mockRiskByAccount[activeAccountId]    ?? mockRiskByAccount['ACC_THE5ERS_100K_PHASE1_A'];
   const terminal = mockBridgeTerminals.find(t => t.accountId === activeAccountId) ?? mockBridgeTerminals[0];
 

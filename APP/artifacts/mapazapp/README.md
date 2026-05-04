@@ -2,6 +2,8 @@
 
 **Workspace context:** this folder is `APP/artifacts/mapazapp` inside the Mapazapp repo. The **pnpm workspace root** is `APP/`. Product planning lives in the repo’s `00_START_HERE/` and `Mapazapp_Replit_Handoff_V1/`; quick navigation for Cursor: `00_START_HERE/CURSOR_NAVIGATION_NOTE.md`. `APP/artifacts/mockup-sandbox` is not this product; `APP/artifacts/api-server` is Replit scaffold only (ignore for mock work).
 
+**Shared core (V1 checkpoint):** `@workspace/mapazapp-core` lives under `APP/lib/mapazapp-core/` — symbol normalization, zone/risk primitives, IFVG state skeleton. Run tests from `APP/`: `pnpm --filter @workspace/mapazapp-core test`. Implementation/test assumptions: `docs/IMPLEMENTATION_ASSUMPTIONS.md`. The dashboard consumes an in-process **mock** `AccountDataSource` (`src/services/`) for the account snapshot on Home; everything else is still mock data in `src/mock/`.
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.
@@ -43,7 +45,8 @@ All numbers, states, zone scores, drawdown percentages, risk values, and account
 | Styling     | Tailwind CSS v4                     |
 | Routing     | Wouter                              |
 | Components  | Shadcn/ui + Lucide React icons      |
-| Data        | Hardcoded mock files in `src/mock/` |
+| Core lib    | `@workspace/mapazapp-core` (pure TS, workspace) |
+| Data        | Hardcoded mock files in `src/mock/` + in-process `src/services/` (checkpoint 1) |
 
 ---
 
@@ -167,5 +170,6 @@ zip -r mapazapp-export.zip artifacts/mapazapp/ --exclude "*/node_modules/*"
 | File | Contents |
 |------|----------|
 | `docs/CURSOR_HANDOFF.md` | Full file map, NOT-implemented list, continuation plan |
+| `docs/IMPLEMENTATION_ASSUMPTIONS.md` | Test fixtures & implementation assumptions (not broker truth) |
 | `docs/MOCK_DATA_CONTRACT.md` | Every mock field documented with future API source |
 | `docs/DECISIONS.md` | 13 architecture decisions |

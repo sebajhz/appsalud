@@ -10,6 +10,24 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 ---
 
+## Shared core package (`@workspace/mapazapp-core`)
+
+- **Location:** `APP/lib/mapazapp-core/`
+- **Purpose:** Pure TypeScript types and utilities (symbol normalization, zone/risk primitives, IFVG lifecycle skeleton). **No** React, HTTP, MT5, or persistence.
+- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`.
+- **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
+
+## In-process service layer (`src/services/`)
+
+- **Checkpoint 1:** `AccountDataSource` + `createMockAccountDataSource()` — reads existing `src/mock/` data, requires `accountId`, **no** `fetch`, no Express.
+- **Integration:** `HomePage` uses the mock data source for the **account snapshot** only; other widgets still use mock imports directly. Expand page-by-page later.
+
+## What remains mock-only
+
+- IFVG candle detection, live scanner, backtest engine, MT5 bridge, WebSocket, DB, order execution — unchanged vs prior phase. See **What Is NOT Implemented** below.
+
+---
+
 ## What This Is
 
 Mapazapp is a **trading intelligence and risk management dashboard** for disciplined prop firm traders. It is built as a visual mock: 12 pages, realistic UI, complete data model — but **zero real logic**.
