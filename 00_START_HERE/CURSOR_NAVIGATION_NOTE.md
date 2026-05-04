@@ -4,6 +4,8 @@
 
 Este archivo es el punto de entrada rápido para sesiones futuras en Cursor. **No sustituye** los documentos de handoff; solo indica dónde mirar primero.
 
+**Before implementing strategy, MT5 bridge, scanner, backtesting or risk calculations, read the Symbol Precision / Tick / Pip Normalization addendum:** `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`.
+
 ---
 
 ## Qué es fuente de verdad hoy

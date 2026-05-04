@@ -2,6 +2,8 @@
 
 Las entradas de cada sección son **nombres de archivo** relativos a la subcarpeta indicada (p. ej. `01_PRODUCT_CONTEXT/Mapazapp_V1.md` en disco).
 
+**Before implementing strategy, MT5 bridge, scanner, backtesting or risk calculations, read the Symbol Precision / Tick / Pip Normalization addendum:** `04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`.
+
 ## 00_START_HERE
 
 - `README_REPLIT_HANDOFF_V1.md`
@@ -34,6 +36,7 @@ Las entradas de cada sección son **nombres de archivo** relativos a la subcarpe
 - `Mapazapp_MT5_TestEA_Build_Spec_V1.md`
 - `Mapazapp_Optimization_Matrix_Symbol_Parameter_Selection_V1.md`
 - `Mapazapp_Strategy_Blueprint_Skeleton_V1.md`
+- `Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`
 
 ## 05_RESEARCH_REFERENCE
 
