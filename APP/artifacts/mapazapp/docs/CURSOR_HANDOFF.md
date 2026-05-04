@@ -13,18 +13,37 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## Shared core package (`@workspace/mapazapp-core`)
 
 - **Location:** `APP/lib/mapazapp-core/`
-- **Purpose:** Pure TypeScript types and utilities (symbol normalization, zone/risk primitives, IFVG lifecycle skeleton). **No** React, HTTP, MT5, or persistence.
-- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`.
+- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, and **checkpoint 2** pure **strategy detection** building blocks (swing, sweep/near-sweep, displacement, FVG, IFVG, zone candidate, retest, confirmation, score skeleton, `detectIfvgZoneCandidates`). **No** React, HTTP, MT5, DB, WebSocket, order execution, or live scanner.
+- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage lives in `tests/checkpoint2-strategy.test.ts` (synthetic candles only).
 - **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
+
+### Strategy detection modules (checkpoint 2)
+
+| Module | Role |
+|--------|------|
+| `src/candle.ts` | Normalized `Candle` (OHLC + optional volume/spread/isClosed). |
+| `src/atr.ts` | True range + Wilder ATR series / last ATR. |
+| `src/swing-detector.ts` | Swing high/low with configurable left/right bars + confirmation index. |
+| `src/liquidity-sweep.ts` | Lower-pool / upper-pool sweep with dynamic tolerances (`normalize` helpers). |
+| `src/displacement.ts` | Bullish/bearish displacement vs ATR + close position. |
+| `src/fvg-detector.ts` | 3-candle FVG + ATR size filter. |
+| `src/ifvg-converter.ts` | FVG → IFVG with dynamic break buffer + close/wick mode. |
+| `src/zone-candidate.ts` | Padded zone from IFVG + tick rounding; initial state `WAIT_RETEST` / `OBSERVE` only. |
+| `src/retest-detector.ts` | `full_zone` / `midpoint` / `edge` retest. |
+| `src/confirmation-detector.ts` | Post-retest confirmation + optional wick rule. |
+| `src/strategy-settings.ts` | Grouped `IfvgStrategySettings` + `createDefaultIfvgStrategySettingsForTests()`. |
+| `src/strategy-score.ts` | Blueprint §17 weighted score + hard-gate cap. |
+| `src/strategy-detection.ts` | `detectIfvgZoneCandidates` pipeline (single-series assumption; see assumptions doc). |
+| `src/no-trade-reason.ts` | Pipeline warning string union (complements hard-gate codes in `risk-primitives`). |
 
 ## In-process service layer (`src/services/`)
 
 - **Checkpoint 1:** `AccountDataSource` + `createMockAccountDataSource()` — reads existing `src/mock/` data, requires `accountId`, **no** `fetch`, no Express.
 - **Integration:** `HomePage` uses the mock data source for the **account snapshot** only; other widgets still use mock imports directly. Expand page-by-page later.
 
-## What remains mock-only
+## What remains mock-only (dashboard + integration)
 
-- IFVG candle detection, live scanner, backtest engine, MT5 bridge, WebSocket, DB, order execution — unchanged vs prior phase. See **What Is NOT Implemented** below.
+- **Live** IFVG scanner, MT5 bridge, WebSocket, DB, order execution, real Strategy Tester / backtest wiring — unchanged. Core now contains **offline** detection math only; the UI still uses `src/mock/` zones. See **What Is NOT Implemented** below.
 
 ---
 
@@ -43,8 +62,8 @@ Mapazapp is a **trading intelligence and risk management dashboard** for discipl
 | MT5 terminal connection | NOT IMPLEMENTED | No MQL5, no terminal API |
 | BridgeEA (Expert Advisor) | NOT IMPLEMENTED | No MQL5, no DLL |
 | Real tick data | NOT IMPLEMENTED | All timestamps are `Date.now()` offsets |
-| IFVG zone detection algorithm | NOT IMPLEMENTED | Zone states are hardcoded |
-| Zone score calculation | NOT IMPLEMENTED | Scores are static mock integers |
+| IFVG zone detection in **UI / API** | NOT IMPLEMENTED | Dashboard zones still mock; core has **offline** `detectIfvgZoneCandidates` for tests/future wiring |
+| Zone score in **UI** | NOT IMPLEMENTED | Page scores remain mock integers; core has `computeStrategyScore` for future integration |
 | Risk Guard rule evaluation | NOT IMPLEMENTED | Risk states are static mock objects |
 | Prop Firm Guard enforcement | NOT IMPLEMENTED | Prop firm state is static mock |
 | Multi-account backend | NOT IMPLEMENTED | Account switching is React useState only |

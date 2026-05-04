@@ -44,13 +44,52 @@ These numbers are **for unit tests only** until real **MT5 BridgeEA** symbol sna
 
 ---
 
-## 5. What is still mock-only (checkpoint 1)
+## 5. What is still mock-only (dashboard)
 
 - All **UI** figures except the path through `AccountDataSource` for account snapshot on Home still come from existing `src/mock/` data.
-- No **MT5**, no **order execution**, no **WebSocket**, no **database**, no **real IFVG candle detection**, no **real backtest**.
+- No **MT5 bridge**, no **order execution**, no **WebSocket**, no **database**, no **live scanner**, no **real backtest engine** wired to production data.
 
 ---
 
 ## 6. When BridgeEA data exists
 
 Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 fields per `Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md` and bridge contracts; keep this file updated if rounding or spread semantics change.
+
+---
+
+## 7. ATR in `@workspace/mapazapp-core` (checkpoint 2)
+
+- **`calculateAtrSeries` / `calculateATR`:** Wilder / smoothed ATR on true range (first bar TR = high−low only; from bar 1 onward classic TR vs previous close). Seeding: first ATR at index `period` is the simple mean of `TR[1]…TR[period]`; subsequent bars use Wilder recurrence. This matches the common **MT5 `iATR`-style** behaviour closely enough for V1 **offline** parity; confirm against exported TestEA logs when the exporter exists.
+- **Insufficient history:** indices before the first seeded ATR return `null`; callers must not treat `null` ATR as zero.
+
+---
+
+## 8. Strategy detection skeleton (checkpoint 2) — scope
+
+- **Implemented:** pure detectors (swing, sweep / near-sweep / break-risk, displacement, FVG, IFVG conversion, zone candidate build, retest, confirmation, score skeleton, `detectIfvgZoneCandidates` orchestration) over **`Candle[]` in price units**, using `SymbolMarketSpec` for spread/tick and documented `max(ATR·k, spread·k, tick·n)` tolerances where specified in the blueprint.
+- **Not implemented:** HTF context engine (BUY_ONLY / SELL_ONLY / middle-zone veto), multi-timeframe wiring (single series is reused for all logical TFs in the pipeline with an explicit warning), SL/TP/R:R execution, trade simulator, live scanner, persistence, UI wiring of scores.
+- **`createDefaultIfvgStrategySettingsForTests()`:** values are **development / unit-test defaults only**, not optimized parameter sets; production must use **approved** parameter sets per symbol/account.
+
+---
+
+## 9. Synthetic candles in tests
+
+- Arrays in `tests/checkpoint2-strategy.test.ts` are **hand-built fixtures** to exercise detectors and the pipeline smoke path. They are **not** broker ticks, not replay of real sessions, and **must not** be interpreted as performance or calibration truth.
+
+---
+
+## 10. Near-sweep behaviour
+
+- **Near sweep** uses the documented dynamic `near_sweep_tolerance_price` band: for a **lower-pool** setup, a bar whose `low` has **not** crossed `swing_low - sweep_tolerance_price` but lies within `near_tolerance` **above** that line is classified `NEAR_SWEEP` (lower score in `computeStrategyScore`). Until forward/backtest evidence is recorded for Mapazapp, treat near-sweep–driven states as **test/dev only** for promotion to live alerts.
+
+---
+
+## 11. Zone candidate `invalidationPrice` (skeleton)
+
+- For V1 core tests, **`invalidationPrice`** is set to `zoneLow - padding` (BUY) or `zoneHigh + padding` (SELL) with the **same** dynamic padding formula as zone edges, then rounded to tick — a **structural placeholder** until SL/invalidation rules from the blueprint §14 are fully wired with sweep references.
+
+---
+
+## 12. Score model
+
+- **`computeStrategyScore`** implements blueprint §17 weights on **caller-supplied 0–1 sub-scores** plus `SweepStatus` liquidity mapping. It does **not** execute trades. **Hard gates** (`evaluateTradeHardGates`) cap the total when provided; they mirror documented gate precedence, not full Risk Guard logic.

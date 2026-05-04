@@ -131,6 +131,24 @@ export function slBufferPrice(i: SlBufferInput): number {
   return Math.max(i.atr * i.slAtrFactor, i.spreadPrice * i.slSpreadFactor, i.tickSize * i.minSlTicks);
 }
 
+/** Blueprint §10.3 + dynamic buffer pattern (ATR / spread / tick). */
+export interface IfvgBreakBufferInput {
+  atr: number;
+  ifvgBreakBufferAtr: number;
+  spreadPrice: number;
+  ifvgBreakSpreadFactor: number;
+  tickSize: number;
+  minIfvgBreakTicks: number;
+}
+
+export function ifvgBreakBufferPrice(i: IfvgBreakBufferInput): number {
+  return Math.max(
+    i.atr * i.ifvgBreakBufferAtr,
+    i.spreadPrice * i.ifvgBreakSpreadFactor,
+    i.tickSize * i.minIfvgBreakTicks,
+  );
+}
+
 /** Format price for display using `digits` (does not round to tick — use roundToTickSize first if needed). */
 export function formatPriceDisplay(price: number, digits: number): string {
   return price.toFixed(digits);
