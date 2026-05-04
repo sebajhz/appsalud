@@ -4,6 +4,8 @@ Las entradas de cada sección son **nombres de archivo** relativos a la subcarpe
 
 **Before implementing strategy, MT5 bridge, scanner, backtesting or risk calculations, read the Symbol Precision / Tick / Pip Normalization addendum:** `04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`.
 
+**Before implementing the strategy engine, TestEA, scanner or risk-aware trade-ready logic, read Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md:** `04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`.
+
 ## 00_START_HERE
 
 - `README_REPLIT_HANDOFF_V1.md`
@@ -31,6 +33,7 @@ Las entradas de cada sección son **nombres de archivo** relativos a la subcarpe
 
 - `Mapazapp_Backtest_Optimization_Clarification_V1.md`
 - `Mapazapp_IFVG_Numerical_Detection_MT5_Backtest_Spec_V1.md`
+- `Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`
 - `Mapazapp_IFVG_Strategy_Blueprint_Research_V1.md`
 - `Mapazapp_MT5_EA_Optimization_Input_Map_V1.md`
 - `Mapazapp_MT5_TestEA_Build_Spec_V1.md`
