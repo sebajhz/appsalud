@@ -6,7 +6,9 @@ import { mockZones } from '@/mock/zones';
 import { Link, useParams } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 import { createMockDashboardDataSource } from '@/services/mockTradeReviewDataSource';
-import { primaryReviewMessage, simpleLanguageForReviewStatus } from '@/services/tradeReviewUi';
+import { buildTradeReviewExplanation } from '@/services/tradeReviewExplanation';
+import { TradeReviewExplanationCard } from '@/components/TradeReviewExplanationCard';
+import { ReasonCodeList } from '@/components/ReasonCodeList';
 
 function ZoneDetailContent({ id }: { id: string }) {
   const { isTechnical } = useViewMode();
@@ -14,6 +16,7 @@ function ZoneDetailContent({ id }: { id: string }) {
   const dashboard = useMemo(() => createMockDashboardDataSource(), []);
   const reviewRow = dashboard.getTradeReviewPlanByZoneId(activeAccountId as AccountId, id);
   const plan = reviewRow?.evaluation.plan;
+  const explanation = reviewRow ? buildTradeReviewExplanation(reviewRow.evaluation) : null;
 
   const zone = mockZones.find(z => z.id === id);
 
@@ -41,12 +44,11 @@ function ZoneDetailContent({ id }: { id: string }) {
           {plan && <TradeReviewStatusBadge status={plan.status} />}
         </div>
         <p className="text-sm text-slate-400">{zone.simpleDescription}</p>
-        {plan && !isTechnical && (
-          <p className="text-xs text-slate-500 mt-2 border-t border-slate-800 pt-2">
-            {simpleLanguageForReviewStatus(plan.status)} {reviewRow ? primaryReviewMessage(reviewRow) : ''}
-          </p>
-        )}
       </div>
+
+      {explanation && !isTechnical && (
+        <TradeReviewExplanationCard explanation={explanation} variant="full" />
+      )}
 
       {/* Simple view */}
       {!isTechnical && (
@@ -93,7 +95,7 @@ function ZoneDetailContent({ id }: { id: string }) {
           </div>
           {plan && (
             <div className="pt-4 border-t border-slate-800 space-y-2">
-              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Core review (no execution)</h4>
+              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Levels (review model — no execution)</h4>
               <p className="text-xs text-slate-500">
                 Reference entry: <span className="text-slate-200">{plan.referenceEntryPrice}</span> · Band:{" "}
                 {plan.entryAreaLow} – {plan.entryAreaHigh}
@@ -110,6 +112,13 @@ function ZoneDetailContent({ id }: { id: string }) {
       )}
 
       {/* Technical view */}
+      {isTechnical && explanation && (
+        <div className="rounded-lg border border-slate-800 bg-card p-5 space-y-4" data-testid="zone-technical-explanation">
+          <h3 className="text-sm font-semibold text-slate-300">Trade review — technical</h3>
+          <ReasonCodeList reasons={explanation.technicalReasons} title="Reason codes (audit)" />
+        </div>
+      )}
+
       {isTechnical && (
         <div className="rounded-lg border border-slate-800 bg-card p-5" data-testid="zone-technical-view">
           <h3 className="text-sm font-semibold text-slate-300 mb-4">Technical Data</h3>
@@ -147,6 +156,9 @@ function ZoneDetailContent({ id }: { id: string }) {
                 <div className="pt-3 border-t border-slate-800 text-slate-400 font-semibold">core_trade_review</div>
                 {[
                   ['account_id', plan.accountId ?? '—'],
+                  ['symbol', plan.canonicalSymbol],
+                  ['strategy_id', plan.strategyId ?? zone.strategy_id],
+                  ['parameter_set_id', plan.parameterSetId ?? zone.parameter_set_id],
                   ['core_status', plan.status],
                   ['reference_entry', String(plan.referenceEntryPrice)],
                   ['entry_area_low', String(plan.entryAreaLow)],

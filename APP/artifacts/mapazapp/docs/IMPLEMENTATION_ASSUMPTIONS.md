@@ -123,3 +123,12 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Trade plan settings in UI:** `createDashboardTradePlanSettings()` clones core test defaults then sets **`testOrDevMode: false`**, **`requireAccountIdForGuard: true`**, and **`minScoreTrade`** from **`mockConfig.zoneScoring.minScoreForTradeReady`**.
 - **Risk guard mapping:** `mapMockRiskToTradePlanGuard` sets **`allowTradeReview: risk.tradingAllowed`**, maps **`operationalStatus`** to drawdown/news/trade blocks, **`approvedParameterSetForAccount`** per zone evaluation, and **`propFirmBlocked`** only when mock prop status is **`BREACHED`** (no other prop rule math).
 - **Future path:** replace **`createMockDashboardDataSource`** with HTTP client implementations of the same interface → backend API → BridgeEA / scanner; keep **`evaluateTradeReviewPlan`** on the server or client from the same DTOs.
+
+---
+
+## 15. Trade review explanation UX (checkpoint 5)
+
+- **`buildTradeReviewExplanation`** in `artifacts/mapazapp/src/services/tradeReviewExplanation.ts` is **pure**: input **`TradePlanEvaluationResult`** from core (or the same shape from a future API), output **`TradeReviewExplanation`**. It does **not** call **`evaluateTradeReviewPlan`** or network.
+- **Reason codes:** every documented **`TradePlanReasonCode`** in `@workspace/mapazapp-core` plus **`TradePlanHardGate`** aliases used in UI risk lines map to **simple** (trader-facing), **technical** (audit), **severity** (`info` / `warning` / `danger` / `success`), and **category** (`zone` / `risk` / `account` / `score` / `spread` / `confirmation` / `system`). Unknown `code` strings fall back to simple **“Review required.”** and technical **= code**.
+- **Manual review only:** **`manualReviewOnly`** is always **`true`** on the explanation object; **`TRADE_READY`** UI copy explicitly states **no automatic execution** (Mapazapp remains a decision assistant).
+- **Tests:** `src/services/tradeReviewExplanation.test.ts` (Vitest, node env) covers trade-ready, wait-retest/confirmation, drawdown block, unknown code fallback, and technical preservation.

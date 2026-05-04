@@ -15,7 +15,10 @@ import { mockRiskByAccount } from '@/mock/risk';
 import { Link } from 'wouter';
 import { AlertTriangle, CheckCircle, Activity, DollarSign } from 'lucide-react';
 import { createMockDashboardDataSource } from '@/services/mockTradeReviewDataSource';
-import { primaryReviewMessage, simpleLanguageForReviewStatus } from '@/services/tradeReviewUi';
+import {
+  buildTradeReviewExplanation,
+  explanationMainReasonLines,
+} from '@/services/tradeReviewExplanation';
 
 function HomeContent() {
   const { isTechnical } = useViewMode();
@@ -157,7 +160,10 @@ function HomeContent() {
             <p className="text-sm text-slate-500 py-4 text-center">No setups pass core review gates for this account right now</p>
           ) : (
             <div className="space-y-3">
-              {coreTradeReadyPlans.map((row) => (
+              {coreTradeReadyPlans.map((row) => {
+                const explanation = buildTradeReviewExplanation(row.evaluation);
+                const reasonLines = explanationMainReasonLines(explanation, 2);
+                return (
                 <Link
                   key={row.zone.id}
                   href={`/zones/${row.zone.id}`}
@@ -174,9 +180,19 @@ function HomeContent() {
                     </span>
                   </div>
                   {!isTechnical ? (
-                    <p className="text-xs text-slate-400 line-clamp-2">
-                      {simpleLanguageForReviewStatus(row.evaluation.plan.status)} {primaryReviewMessage(row)}
-                    </p>
+                    <div className="space-y-1">
+                      <p className="text-xs text-slate-300 line-clamp-2">{explanation.simpleSummary}</p>
+                      {explanation.status === "TRADE_READY" && (
+                        <p className="text-[10px] text-amber-400/90 font-medium">Manual review only — no auto execution.</p>
+                      )}
+                      {reasonLines.length > 0 && (
+                        <ul className="text-[10px] text-slate-500 list-disc list-inside space-y-0.5">
+                          {reasonLines.map((line, i) => (
+                            <li key={i}>{line}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   ) : (
                     <p className="text-xs font-mono text-slate-500">
                       zone_id: {row.zone.id} · core_status: {row.evaluation.plan.status} · rr:{" "}
@@ -185,7 +201,8 @@ function HomeContent() {
                     </p>
                   )}
                 </Link>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

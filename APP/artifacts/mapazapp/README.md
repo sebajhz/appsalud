@@ -6,6 +6,8 @@
 
 **Dashboard services (checkpoint 4):** `src/services/mockTradeReviewDataSource.ts` exposes **`createMockDashboardDataSource()`** — account snapshot, zones, alerts, and **core-generated `TradeReviewPlan`** rows per `accountId` (mock-only, no network). Home, Market/Zones, and Zone Detail consume it; see `docs/CURSOR_HANDOFF.md`.
 
+**Checkpoint 5 — explanation layer:** `src/services/tradeReviewExplanation.ts` turns each evaluation into **`TradeReviewExplanation`** (plain-language “what / why / what’s missing”, mapped reason codes with severity/category, **`manualReviewOnly: true`**). Vitest: `src/services/tradeReviewExplanation.test.ts`. UI: `TradeReviewExplanationCard`, `ReasonCodeList`, updates on Home / Zones / Zone Detail only.
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.

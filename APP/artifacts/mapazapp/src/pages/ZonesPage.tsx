@@ -6,7 +6,7 @@ import { mockZones } from '@/mock/zones';
 import { Link } from 'wouter';
 import type { ZoneState, ZoneDirection } from '@/mock/types';
 import { createMockDashboardDataSource } from '@/services/mockTradeReviewDataSource';
-import { primaryReviewMessage } from '@/services/tradeReviewUi';
+import { buildTradeReviewExplanation } from '@/services/tradeReviewExplanation';
 
 function ZonesContent() {
   const { isTechnical } = useViewMode();
@@ -81,6 +81,7 @@ function ZonesContent() {
         {filtered.map((zone) => {
           const row = reviewByZoneId.get(zone.id);
           const planStatus = row?.evaluation.plan.status;
+          const explanation = row ? buildTradeReviewExplanation(row.evaluation) : null;
           return (
           <Link
             key={zone.id}
@@ -109,10 +110,33 @@ function ZonesContent() {
               {!isTechnical ? (
                 <div className="space-y-1">
                   <p className="text-sm text-slate-400">{zone.simpleDescription}</p>
-                  {row && (
-                    <p className="text-xs text-slate-500 border-t border-slate-800/80 pt-2 mt-2">
-                      Core review: <span className="text-slate-300">{primaryReviewMessage(row)}</span>
-                    </p>
+                  {explanation && (
+                    <div className="text-xs text-slate-500 border-t border-slate-800/80 pt-2 mt-2 space-y-1">
+                      <p className="text-slate-400">
+                        <span className="text-slate-500">Review:</span>{" "}
+                        <span className="text-slate-300">{explanation.simpleTitle}</span>
+                        {" — "}
+                        <span className="text-slate-400 line-clamp-2">{explanation.simpleSummary}</span>
+                      </p>
+                      {explanation.missingRequirements.length > 0 && (
+                        <p className="text-amber-200/80">
+                          Missing: {explanation.missingRequirements.join(" · ")}
+                        </p>
+                      )}
+                      {explanation.blockingReasons.length > 0 && (
+                        <p className="text-rose-200/80">
+                          Blocked: {explanation.blockingReasons[0]?.simple}
+                          {explanation.blockingReasons.length > 1
+                            ? ` (+${explanation.blockingReasons.length - 1})`
+                            : ""}
+                        </p>
+                      )}
+                      {explanation.status === "OBSERVE" &&
+                        explanation.blockingReasons.length === 0 &&
+                        explanation.missingRequirements.length === 0 && (
+                          <p className="text-slate-500">Below trade-ready score or context filters.</p>
+                        )}
+                    </div>
                   )}
                 </div>
               ) : (

@@ -56,6 +56,18 @@ This document gives Cursor (or any future developer) everything needed to contin
 - **UI wiring:** `HomePage` (review-ready strip + banner counts), `ZonesPage` (core status badge + reason line), and `ZoneDetailPage` (core review block + technical fields) consume the dashboard data source. Other pages still use mock imports directly where unchanged.
 - **Copy / UX:** “Review-ready”, “manual review only”, and **`TradeReviewStatusBadge`** reinforce that **`TRADE_READY`** is **not** an order signal.
 
+### Trade review explanation layer (checkpoint 5)
+
+| Module / component | Role |
+|--------------------|------|
+| `src/services/tradeReviewExplanation.ts` | Pure **`buildTradeReviewExplanation(evaluation)`** — maps `TradePlanEvaluationResult` → **`TradeReviewExplanation`** (titles, “what it means”, missing items, blocking/positive reasons, **`technicalReasons`** for audit, **`manualReviewOnly: true`**). **`mapReasonCode`** maps stable **`TradePlanReasonCode`** / hard-gate strings → user + technical copy, severity, category; unknown codes → simple “Review required.”, technical = raw code. |
+| `src/services/tradeReviewUi.ts` | Thin helpers: **`primaryReviewMessage`** / **`simpleLanguageForReviewStatus`** delegate to the explanation layer where useful. |
+| `src/components/TradeReviewExplanationCard.tsx` | Simple-mode decision panel (no reason-code table — that stays in Technical). |
+| `src/components/ReasonCodeList.tsx` | Technical list: code, category, technical line. |
+| **Pages** | **`HomePage`**: review-ready strip uses explanation summary + “Manual review only” + up to two reason lines. **`ZonesPage`**: short review line + missing/blocked hints. **`ZoneDetailPage`**: full explanation card (Simple) + **`ReasonCodeList`** + enriched **`core_trade_review`** rows (plan `strategyId` / `parameterSetId` / `canonicalSymbol` / `accountId`, SL/TP/R:R, hard gates). |
+
+**Contract:** a future backend may return **`TradeReviewPlan`** / evaluation DTOs unchanged; the frontend (or another client) can still run **`buildTradeReviewExplanation`** for consistent copy. **No** execution, MT5, WebSocket, or DB.
+
 ## What remains mock-only (dashboard + integration)
 
 - **Live** IFVG scanner, MT5 bridge, WebSocket, DB, order execution, real Strategy Tester / backtest wiring — unchanged. Core now contains **offline** detection math only; the UI still uses `src/mock/` zones. See **What Is NOT Implemented** below.
