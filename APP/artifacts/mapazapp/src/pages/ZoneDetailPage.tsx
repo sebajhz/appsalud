@@ -1,11 +1,20 @@
-import { Layout, useViewMode } from '@/components/Layout';
-import { ZoneStateBadge, DirectionBadge } from '@/components/StatusBadge';
+import { useMemo } from 'react';
+import type { AccountId } from '@workspace/mapazapp-core';
+import { Layout, useActiveAccount, useViewMode } from '@/components/Layout';
+import { ZoneStateBadge, DirectionBadge, TradeReviewStatusBadge } from '@/components/StatusBadge';
 import { mockZones } from '@/mock/zones';
 import { Link, useParams } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
+import { createMockDashboardDataSource } from '@/services/mockTradeReviewDataSource';
+import { primaryReviewMessage, simpleLanguageForReviewStatus } from '@/services/tradeReviewUi';
 
 function ZoneDetailContent({ id }: { id: string }) {
   const { isTechnical } = useViewMode();
+  const { activeAccountId } = useActiveAccount();
+  const dashboard = useMemo(() => createMockDashboardDataSource(), []);
+  const reviewRow = dashboard.getTradeReviewPlanByZoneId(activeAccountId as AccountId, id);
+  const plan = reviewRow?.evaluation.plan;
+
   const zone = mockZones.find(z => z.id === id);
 
   if (!zone) {
@@ -29,8 +38,14 @@ function ZoneDetailContent({ id }: { id: string }) {
           <h2 className="text-xl font-bold text-white">{zone.symbol}</h2>
           <DirectionBadge direction={zone.direction} />
           <ZoneStateBadge state={zone.state} />
+          {plan && <TradeReviewStatusBadge status={plan.status} />}
         </div>
         <p className="text-sm text-slate-400">{zone.simpleDescription}</p>
+        {plan && !isTechnical && (
+          <p className="text-xs text-slate-500 mt-2 border-t border-slate-800 pt-2">
+            {simpleLanguageForReviewStatus(plan.status)} {reviewRow ? primaryReviewMessage(reviewRow) : ''}
+          </p>
+        )}
       </div>
 
       {/* Simple view */}
@@ -43,7 +58,7 @@ function ZoneDetailContent({ id }: { id: string }) {
               <p className="text-base font-bold text-white mt-0.5">{zone.entryPrice}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500">Stop Loss Level</p>
+              <p className="text-xs text-slate-500">Invalidation (mock)</p>
               <p className="text-base font-bold text-red-400 mt-0.5">{zone.invalidationPrice}</p>
             </div>
             <div>
@@ -76,6 +91,21 @@ function ZoneDetailContent({ id }: { id: string }) {
             <p>Updated: {new Date(zone.updatedAt).toLocaleString()}</p>
             {zone.expiresAt && <p>Expires: {new Date(zone.expiresAt).toLocaleString()}</p>}
           </div>
+          {plan && (
+            <div className="pt-4 border-t border-slate-800 space-y-2">
+              <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Core review (no execution)</h4>
+              <p className="text-xs text-slate-500">
+                Reference entry: <span className="text-slate-200">{plan.referenceEntryPrice}</span> · Band:{" "}
+                {plan.entryAreaLow} – {plan.entryAreaHigh}
+              </p>
+              <p className="text-xs text-slate-500">
+                SL / TP (review model):{" "}
+                <span className="text-red-300">{plan.stopLoss ?? "—"}</span> /{" "}
+                <span className="text-emerald-300">{plan.takeProfit ?? "—"}</span> · R:R{" "}
+                {plan.metrics ? plan.metrics.rr.toFixed(2) : "—"}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -111,6 +141,32 @@ function ZoneDetailContent({ id }: { id: string }) {
                 <span className="text-slate-500 w-40 shrink-0">notes:</span>
                 <span className="text-slate-200">{zone.notes}</span>
               </div>
+            )}
+            {plan && (
+              <>
+                <div className="pt-3 border-t border-slate-800 text-slate-400 font-semibold">core_trade_review</div>
+                {[
+                  ['account_id', plan.accountId ?? '—'],
+                  ['core_status', plan.status],
+                  ['reference_entry', String(plan.referenceEntryPrice)],
+                  ['entry_area_low', String(plan.entryAreaLow)],
+                  ['entry_area_high', String(plan.entryAreaHigh)],
+                  ['stop_loss_review', plan.stopLoss != null ? String(plan.stopLoss) : 'null'],
+                  ['take_profit_review', plan.takeProfit != null ? String(plan.takeProfit) : 'null'],
+                  ['rr_calc', plan.metrics ? String(plan.metrics.rr) : 'null'],
+                  ['risk_price', plan.metrics ? String(plan.metrics.riskPrice) : 'null'],
+                  ['reward_price', plan.metrics ? String(plan.metrics.rewardPrice) : 'null'],
+                  ['failed_hard_gates', plan.failedHardGates.join(', ') || 'none'],
+                  ['reason_codes', plan.reasons.map((r) => r.code).join(', ')],
+                  ['no_trade_codes', plan.noTradeReasons.map((r) => r.code).join(', ') || 'none'],
+                  ['review_ready', String(plan.reviewReady)],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex gap-3">
+                    <span className="text-slate-500 w-44 shrink-0">{k}:</span>
+                    <span className="text-slate-200">{v}</span>
+                  </div>
+                ))}
+              </>
             )}
           </div>
         </div>

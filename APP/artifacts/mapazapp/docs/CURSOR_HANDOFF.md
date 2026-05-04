@@ -52,7 +52,9 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## In-process service layer (`src/services/`)
 
 - **Checkpoint 1:** `AccountDataSource` + `createMockAccountDataSource()` — reads existing `src/mock/` data, requires `accountId`, **no** `fetch`, no Express.
-- **Integration:** `HomePage` uses the mock data source for the **account snapshot** only; other widgets still use mock imports directly. Expand page-by-page later.
+- **Checkpoint 4:** `DashboardMockDataSource` (`tradeReviewDataSource.ts` + `mockTradeReviewDataSource.ts`) — **`createMockDashboardDataSource()`** exposes **`getZonesForAccount`**, **`getTradeReviewPlansForAccount`**, **`getTradeReviewPlanByZoneId`**, **`getAlertsForAccount`**, and **`getAccountSnapshot`** (delegates to checkpoint 1). Mock zones are mapped through **`mapMockZoneToCore.ts`**, risk through **`mapMockRiskToTradePlanGuard.ts`**, symbols through **`mockSymbolProfiles.ts`**, then **`evaluateTradeReviewPlan`** from `@workspace/mapazapp-core`. **No** backend, MT5, execution, WebSocket, or DB.
+- **UI wiring:** `HomePage` (review-ready strip + banner counts), `ZonesPage` (core status badge + reason line), and `ZoneDetailPage` (core review block + technical fields) consume the dashboard data source. Other pages still use mock imports directly where unchanged.
+- **Copy / UX:** “Review-ready”, “manual review only”, and **`TradeReviewStatusBadge`** reinforce that **`TRADE_READY`** is **not** an order signal.
 
 ## What remains mock-only (dashboard + integration)
 

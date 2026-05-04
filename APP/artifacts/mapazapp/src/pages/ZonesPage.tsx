@@ -1,12 +1,24 @@
-import { useState } from 'react';
-import { Layout, useViewMode } from '@/components/Layout';
-import { ZoneStateBadge, DirectionBadge } from '@/components/StatusBadge';
+import { useMemo, useState } from 'react';
+import type { AccountId } from '@workspace/mapazapp-core';
+import { Layout, useActiveAccount, useViewMode } from '@/components/Layout';
+import { ZoneStateBadge, DirectionBadge, TradeReviewStatusBadge } from '@/components/StatusBadge';
 import { mockZones } from '@/mock/zones';
 import { Link } from 'wouter';
 import type { ZoneState, ZoneDirection } from '@/mock/types';
+import { createMockDashboardDataSource } from '@/services/mockTradeReviewDataSource';
+import { primaryReviewMessage } from '@/services/tradeReviewUi';
 
 function ZonesContent() {
   const { isTechnical } = useViewMode();
+  const { activeAccountId } = useActiveAccount();
+  const dashboard = useMemo(() => createMockDashboardDataSource(), []);
+  const reviewByZoneId = useMemo(() => {
+    const m = new Map<string, ReturnType<typeof dashboard.getTradeReviewPlansForAccount>[0]>();
+    for (const row of dashboard.getTradeReviewPlansForAccount(activeAccountId as AccountId)) {
+      m.set(row.zone.id, row);
+    }
+    return m;
+  }, [dashboard, activeAccountId]);
   const [filterSymbol, setFilterSymbol] = useState('ALL');
   const [filterState, setFilterState] = useState<ZoneState | 'ALL'>('ALL');
   const [filterDirection, setFilterDirection] = useState<ZoneDirection | 'ALL'>('ALL');
@@ -66,7 +78,10 @@ function ZonesContent() {
 
       {/* Zone grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filtered.map(zone => (
+        {filtered.map((zone) => {
+          const row = reviewByZoneId.get(zone.id);
+          const planStatus = row?.evaluation.plan.status;
+          return (
           <Link
             key={zone.id}
             href={`/zones/${zone.id}`}
@@ -83,6 +98,7 @@ function ZonesContent() {
                   <span className="text-base font-bold text-white">{zone.symbol}</span>
                   <DirectionBadge direction={zone.direction} />
                   <ZoneStateBadge state={zone.state} />
+                  {planStatus && <TradeReviewStatusBadge status={planStatus} />}
                 </div>
                 <div className="text-right shrink-0 ml-2">
                   <span className="text-lg font-bold text-white">{zone.score}</span>
@@ -91,7 +107,14 @@ function ZonesContent() {
               </div>
 
               {!isTechnical ? (
-                <p className="text-sm text-slate-400">{zone.simpleDescription}</p>
+                <div className="space-y-1">
+                  <p className="text-sm text-slate-400">{zone.simpleDescription}</p>
+                  {row && (
+                    <p className="text-xs text-slate-500 border-t border-slate-800/80 pt-2 mt-2">
+                      Core review: <span className="text-slate-300">{primaryReviewMessage(row)}</span>
+                    </p>
+                  )}
+                </div>
               ) : (
                 <div className="text-xs font-mono space-y-1 text-slate-500">
                   <p>zone_id: <span className="text-slate-300">{zone.id}</span></p>
@@ -99,6 +122,20 @@ function ZonesContent() {
                   <p>ifvg_type: <span className="text-slate-300">{zone.ifvgType}</span></p>
                   <p>entry: <span className="text-slate-300">{zone.entryPrice}</span> · invalidation: <span className="text-red-400">{zone.invalidationPrice}</span> · tp: <span className="text-emerald-400">{zone.takeProfitPrice}</span></p>
                   <p>R:R: <span className="text-slate-300">{zone.riskRewardRatio}</span></p>
+                  {row && (
+                    <>
+                      <p>
+                        core_plan_status: <span className="text-slate-300">{row.evaluation.plan.status}</span> · rr_calc:{" "}
+                        <span className="text-slate-300">{row.evaluation.plan.metrics?.rr?.toFixed(3) ?? "—"}</span>
+                      </p>
+                      <p>
+                        reasons:{" "}
+                        <span className="text-slate-300">
+                          {row.evaluation.plan.reasons.map((r) => r.code).join(", ") || "—"}
+                        </span>
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -109,7 +146,8 @@ function ZonesContent() {
                 </div>
               )}
           </Link>
-        ))}
+          );
+        })}
       </div>
 
       {filtered.length === 0 && (

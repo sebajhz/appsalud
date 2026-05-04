@@ -1,31 +1,38 @@
 import { useMemo } from 'react';
 import type { AccountId } from '@workspace/mapazapp-core';
 import { Layout, useViewMode, useActiveAccount } from '@/components/Layout';
-import { BridgeStateBadge, OperationalStatusBadge, ZoneStateBadge, DirectionBadge } from '@/components/StatusBadge';
+import {
+  BridgeStateBadge,
+  OperationalStatusBadge,
+  ZoneStateBadge,
+  DirectionBadge,
+  TradeReviewStatusBadge,
+} from '@/components/StatusBadge';
 import { mockBridgeTerminals } from '@/mock/bridgeStatus';
 import { mockAccountSnapshots } from '@/mock/account';
 import { mockZones } from '@/mock/zones';
 import { mockRiskByAccount } from '@/mock/risk';
-import { mockAlerts } from '@/mock/alerts';
 import { Link } from 'wouter';
 import { AlertTriangle, CheckCircle, Activity, DollarSign } from 'lucide-react';
-import { createMockAccountDataSource } from '@/services/mockAccountDataSource';
+import { createMockDashboardDataSource } from '@/services/mockTradeReviewDataSource';
+import { primaryReviewMessage, simpleLanguageForReviewStatus } from '@/services/tradeReviewUi';
 
 function HomeContent() {
   const { isTechnical } = useViewMode();
   const { activeAccountId } = useActiveAccount();
-  const accountDataSource = useMemo(() => createMockAccountDataSource(), []);
+  const dashboard = useMemo(() => createMockDashboardDataSource(), []);
 
   const account =
-    accountDataSource.getAccountSnapshot(activeAccountId as AccountId) ??
+    dashboard.getAccountSnapshot(activeAccountId as AccountId) ??
     mockAccountSnapshots[activeAccountId] ??
     mockAccountSnapshots['ACC_THE5ERS_100K_PHASE1_A'];
   const risk     = mockRiskByAccount[activeAccountId]    ?? mockRiskByAccount['ACC_THE5ERS_100K_PHASE1_A'];
   const terminal = mockBridgeTerminals.find(t => t.accountId === activeAccountId) ?? mockBridgeTerminals[0];
 
+  const reviewPlans = dashboard.getTradeReviewPlansForAccount(activeAccountId as AccountId);
   const activeZones    = mockZones.filter(z => ['WATCHING', 'RETESTING', 'CONFIRMED', 'TRADE_READY'].includes(z.state));
-  const tradeReadyZones = mockZones.filter(z => z.state === 'TRADE_READY');
-  const recentAlerts   = mockAlerts.filter(a => a.accountId === activeAccountId || a.accountId === null).slice(0, 4);
+  const coreTradeReadyPlans = reviewPlans.filter((r) => r.evaluation.plan.status === 'TRADE_READY');
+  const recentAlerts   = dashboard.getAlertsForAccount(activeAccountId as AccountId).slice(0, 4);
   const dailyPnLPositive = account.dailyPnL >= 0;
 
   return (
@@ -34,9 +41,9 @@ function HomeContent() {
       {!isTechnical && (
         <div className="rounded-lg border border-blue-800 bg-blue-950/40 px-5 py-4" data-testid="simple-summary-banner">
           <p className="text-sm font-medium text-blue-100">
-            {tradeReadyZones.length > 0
-              ? `${tradeReadyZones.map(z => z.symbol).join(', ')} — ${tradeReadyZones.length === 1 ? 'a zone is' : 'zones are'} ready for a potential trade. Review before acting.`
-              : 'No zones are ready to trade right now. Keep watching.'}
+            {coreTradeReadyPlans.length > 0
+              ? `${coreTradeReadyPlans.map((r) => r.zone.symbol).join(', ')} — ${coreTradeReadyPlans.length === 1 ? 'one setup passes' : 'several setups pass'} core review checks for manual review (not execution).`
+              : 'No setups are core review-ready right now. Keep watching.'}
           </p>
           <p className="text-xs text-blue-400 mt-1">
             {risk.tradingAllowed ? 'Risk is OK — trading is allowed.' : 'Trading is currently blocked by Risk Guard.'}
@@ -83,7 +90,7 @@ function HomeContent() {
             <span className="text-xs text-slate-500 uppercase tracking-wider">Active Zones</span>
           </div>
           <p className="text-2xl font-bold text-white">{activeZones.length}</p>
-          <p className="text-xs text-emerald-400 mt-1">{tradeReadyZones.length} trade ready</p>
+          <p className="text-xs text-emerald-400 mt-1">{coreTradeReadyPlans.length} review-ready (core)</p>
           {isTechnical && (
             <p className="text-xs text-slate-500 mt-1 font-mono">total_zones: {mockZones.length}</p>
           )}
@@ -140,31 +147,41 @@ function HomeContent() {
         {/* Trade-Ready Zones */}
         <div className="rounded-lg border border-slate-800 bg-card p-5" data-testid="card-trade-ready-zones">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-300">Trade-Ready Zones</h2>
+            <div>
+              <h2 className="text-sm font-semibold text-slate-300">Review-ready (core)</h2>
+              <p className="text-[10px] text-slate-500 mt-0.5">Manual review only — no orders in this version.</p>
+            </div>
             <Link href="/zones" className="text-xs text-blue-400 hover:text-blue-300" data-testid="link-view-all-zones">View all</Link>
           </div>
-          {tradeReadyZones.length === 0 ? (
-            <p className="text-sm text-slate-500 py-4 text-center">No zones are trade-ready right now</p>
+          {coreTradeReadyPlans.length === 0 ? (
+            <p className="text-sm text-slate-500 py-4 text-center">No setups pass core review gates for this account right now</p>
           ) : (
             <div className="space-y-3">
-              {tradeReadyZones.map(zone => (
+              {coreTradeReadyPlans.map((row) => (
                 <Link
-                  key={zone.id}
-                  href={`/zones/${zone.id}`}
+                  key={row.zone.id}
+                  href={`/zones/${row.zone.id}`}
                   className="block rounded-md border border-slate-700 bg-slate-800/50 p-3 hover:border-slate-600 transition-colors"
-                  data-testid={`trade-ready-zone-${zone.id}`}
+                  data-testid={`trade-ready-zone-${row.zone.id}`}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-semibold text-white">{zone.symbol}</span>
-                    <DirectionBadge direction={zone.direction} />
-                    <ZoneStateBadge state={zone.state} />
-                    <span className="ml-auto text-xs text-slate-400">Score: <span className="text-emerald-400 font-bold">{zone.score}</span></span>
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="text-sm font-semibold text-white">{row.zone.symbol}</span>
+                    <DirectionBadge direction={row.zone.direction} />
+                    <ZoneStateBadge state={row.zone.state} />
+                    <TradeReviewStatusBadge status={row.evaluation.plan.status} />
+                    <span className="ml-auto text-xs text-slate-400">
+                      Score: <span className="text-emerald-400 font-bold">{row.zone.score}</span>
+                    </span>
                   </div>
                   {!isTechnical ? (
-                    <p className="text-xs text-slate-400 line-clamp-2">{zone.simpleDescription}</p>
+                    <p className="text-xs text-slate-400 line-clamp-2">
+                      {simpleLanguageForReviewStatus(row.evaluation.plan.status)} {primaryReviewMessage(row)}
+                    </p>
                   ) : (
                     <p className="text-xs font-mono text-slate-500">
-                      zone_id: {zone.id} · ifvg: {zone.ifvgType} · R:R {zone.riskRewardRatio} · ps_id: {zone.parameter_set_id}
+                      zone_id: {row.zone.id} · core_status: {row.evaluation.plan.status} · rr:{" "}
+                      {row.evaluation.plan.metrics?.rr?.toFixed(2) ?? "—"} · gates:{" "}
+                      {row.evaluation.failedHardGates.length ? row.evaluation.failedHardGates.join(",") : "none"}
                     </p>
                   )}
                 </Link>

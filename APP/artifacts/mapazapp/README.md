@@ -2,7 +2,9 @@
 
 **Workspace context:** this folder is `APP/artifacts/mapazapp` inside the Mapazapp repo. The **pnpm workspace root** is `APP/`. Product planning lives in the repo’s `00_START_HERE/` and `Mapazapp_Replit_Handoff_V1/`; quick navigation for Cursor: `00_START_HERE/CURSOR_NAVIGATION_NOTE.md`. `APP/artifacts/mockup-sandbox` is not this product; `APP/artifacts/api-server` is Replit scaffold only (ignore for mock work).
 
-**Shared core (V1 checkpoint):** `@workspace/mapazapp-core` lives under `APP/lib/mapazapp-core/` — symbol normalization, zone/risk primitives, IFVG state skeleton. Run tests from `APP/`: `pnpm --filter @workspace/mapazapp-core test`. Implementation/test assumptions: `docs/IMPLEMENTATION_ASSUMPTIONS.md`. The dashboard consumes an in-process **mock** `AccountDataSource` (`src/services/`) for the account snapshot on Home; everything else is still mock data in `src/mock/`.
+**Shared core:** `@workspace/mapazapp-core` under `APP/lib/mapazapp-core/` — checkpoints 1–3 (normalization, IFVG detection skeleton, **`evaluateTradeReviewPlan`**). From `APP/`: `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp test` (checkpoint 4 mock integration tests). Assumptions: `docs/IMPLEMENTATION_ASSUMPTIONS.md`.
+
+**Dashboard services (checkpoint 4):** `src/services/mockTradeReviewDataSource.ts` exposes **`createMockDashboardDataSource()`** — account snapshot, zones, alerts, and **core-generated `TradeReviewPlan`** rows per `accountId` (mock-only, no network). Home, Market/Zones, and Zone Detail consume it; see `docs/CURSOR_HANDOFF.md`.
 
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
@@ -46,7 +48,7 @@ All numbers, states, zone scores, drawdown percentages, risk values, and account
 | Routing     | Wouter                              |
 | Components  | Shadcn/ui + Lucide React icons      |
 | Core lib    | `@workspace/mapazapp-core` (pure TS, workspace) |
-| Data        | Hardcoded mock files in `src/mock/` + in-process `src/services/` (checkpoint 1) |
+| Data        | Hardcoded mock files in `src/mock/` + in-process `src/services/` (checkpoints 1 + 4) |
 
 ---
 

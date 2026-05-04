@@ -1,3 +1,4 @@
+import type { TradePlanStatus } from '@workspace/mapazapp-core';
 import type { ZoneState, RiskState, BridgeState, AlertSeverity, BacktestStatus, OperationalStatus } from '@/mock/types';
 
 const zoneStateConfig: Record<ZoneState, { label: string; className: string }> = {
@@ -79,6 +80,30 @@ export function BacktestStatusBadge({ status }: { status: BacktestStatus }) {
 export function OperationalStatusBadge({ status }: { status: OperationalStatus }) {
   const c = operationalStatusConfig[status];
   return <span className={`${baseClass} ${c.className}`} data-testid={`badge-op-status-${status}`}>{c.label}</span>;
+}
+
+const tradePlanStatusConfig: Record<
+  TradePlanStatus,
+  { label: string; className: string }
+> = {
+  NO_TRADE: { label: 'No review', className: 'bg-slate-800 text-slate-400' },
+  OBSERVE: { label: 'Observe', className: 'bg-blue-950 text-blue-300' },
+  WAIT_RETEST: { label: 'Wait retest', className: 'bg-violet-950 text-violet-300' },
+  WAIT_CONFIRMATION: { label: 'Wait confirm', className: 'bg-amber-950 text-amber-300' },
+  TRADE_READY: { label: 'Review ready', className: 'bg-emerald-950 text-emerald-300 ring-1 ring-emerald-600' },
+  INVALIDATED: { label: 'Invalidated', className: 'bg-red-950/60 text-red-400' },
+  EXPIRED: { label: 'Expired', className: 'bg-slate-800 text-slate-500' },
+  USED: { label: 'Used', className: 'bg-amber-950/60 text-amber-400' },
+};
+
+/** Core `evaluateTradeReviewPlan` status — review-only, not execution. */
+export function TradeReviewStatusBadge({ status }: { status: TradePlanStatus }) {
+  const c = tradePlanStatusConfig[status];
+  return (
+    <span className={`${baseClass} ${c.className}`} data-testid={`badge-trade-plan-${status}`}>
+      {c.label}
+    </span>
+  );
 }
 
 export function DirectionBadge({ direction }: { direction: 'BUY' | 'SELL' }) {

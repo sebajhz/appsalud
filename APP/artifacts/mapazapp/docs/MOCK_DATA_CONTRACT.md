@@ -379,6 +379,8 @@ interface Zone {
 
 **Future source:** `GET /api/zones?symbol=…` — detected by the Python IFVG scanner, scored in real time.
 
+**Checkpoint 4 (dashboard only):** the same static `Zone` rows are **adapted in-process** (see `src/services/mapMockZoneToCore.ts` + `docs/IMPLEMENTATION_ASSUMPTIONS.md` §14) into **`TradePlanInput`** and passed to **`evaluateTradeReviewPlan`** so Home / Zones / Zone Detail can show **core-derived review status** (`TRADE_READY`, `WAIT_RETEST`, etc.) alongside mock fields. This does **not** change the mock schema, does **not** add real detection, and is **not** execution.
+
 ---
 
 ## PsychologyEntry (`psychology.ts`)
