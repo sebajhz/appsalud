@@ -93,3 +93,16 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 ## 12. Score model
 
 - **`computeStrategyScore`** implements blueprint §17 weights on **caller-supplied 0–1 sub-scores** plus `SweepStatus` liquidity mapping. It does **not** execute trades. **Hard gates** (`evaluateTradeHardGates`) cap the total when provided; they mirror documented gate precedence, not full Risk Guard logic.
+
+---
+
+## 13. Trade review plan (checkpoint 3)
+
+- **`evaluateTradeReviewPlan`** builds a **`TradeReviewPlan`** from a **`ZoneCandidate`** plus pure inputs (symbol profile, retest/confirmation, score, ATR, spread, optional sweep highs/lows, account guard booleans, settings). **No** MT5, HTTP, orders, persistence, or scanner.
+- **Target model V1:** only **`fixed_R`** is implemented (`tp` from `rrTarget` × risk in price units, both SL/TP rounded to `tickSize`). **`liquidity_target`** and **`hybrid`** exist as **enum placeholders** for future parameter-set work — no TP path is computed for them yet.
+- **`referenceEntryPrice`:** defaults to **confirmation close** when `referenceEntryMode: CONFIRMATION_CLOSE` and a finite `confirmationClose` is supplied; otherwise the evaluator **falls back to zone midpoint** and emits reason code `REFERENCE_ENTRY_FALLBACK_MIDPOINT`.
+- **Sweep for SL:** blueprint `min(zone_low, sweep_low)` / `max(zone_high, sweep_high)` — if `sweepLow` / `sweepHigh` are **omitted**, the structural level equals the zone boundary (min/max degenerates to the zone edge).
+- **Near sweep:** **`allowNearSweepTradeReady`** defaults to **`false`**. With **`NEAR_SWEEP`** liquidity class, the plan may reach **`OBSERVE`** even when numeric R:R and account gates pass; it does **not** promote to **`TRADE_READY`** unless that flag is enabled.
+- **Account / risk guard:** the evaluator **consumes** `TradePlanAccountGuardInput` flags and `operationalStatus` strings aligned with the mock contract — it does **not** compute prop-firm or drawdown math; a future backend supplies the snapshot.
+- **Review-only:** **`TRADE_READY`** means “passes documented hard checks + score threshold for human review,” **not** auto-execution. Reason code **`TRADE_READY_REVIEW_ONLY`** is always attached when status is `TRADE_READY`.
+- **`createDefaultTradePlanEvaluationSettingsForTests()`:** development defaults only (including **`maxSlAtr: 10`** so synthetic XAUUSD-style fixtures do not spuriously hit `SL_DISTANCE_ABOVE_MAX_ATR`). Tighten per approved parameter set in production.

@@ -13,8 +13,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## Shared core package (`@workspace/mapazapp-core`)
 
 - **Location:** `APP/lib/mapazapp-core/`
-- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, and **checkpoint 2** pure **strategy detection** building blocks (swing, sweep/near-sweep, displacement, FVG, IFVG, zone candidate, retest, confirmation, score skeleton, `detectIfvgZoneCandidates`). **No** React, HTTP, MT5, DB, WebSocket, order execution, or live scanner.
-- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage lives in `tests/checkpoint2-strategy.test.ts` (synthetic candles only).
+- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, and **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`). **No** React, HTTP, MT5, DB, WebSocket, order execution, or live scanner.
+- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only).
 - **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
 
 ### Strategy detection modules (checkpoint 2)
@@ -35,6 +35,19 @@ This document gives Cursor (or any future developer) everything needed to contin
 | `src/strategy-score.ts` | Blueprint §17 weighted score + hard-gate cap. |
 | `src/strategy-detection.ts` | `detectIfvgZoneCandidates` pipeline (single-series assumption; see assumptions doc). |
 | `src/no-trade-reason.ts` | Pipeline warning string union (complements hard-gate codes in `risk-primitives`). |
+
+### Trade review plan (checkpoint 3)
+
+| Module | Role |
+|--------|------|
+| `src/trade-plan-types.ts` | `TradeReviewPlan`, `TradePlanInput`, `TradePlanStatus` / `TradePlanAction`, guard + evaluation result types. |
+| `src/trade-plan-settings.ts` | `TradePlanEvaluationSettings` + **`createDefaultTradePlanEvaluationSettingsForTests()`** (non-optimized defaults). |
+| `src/trade-plan-reasons.ts` | Stable **`TradePlanReasonCode`** values + `tradePlanReason()` helper text. |
+| `src/trade-plan-targets.ts` | SL buffer (`slBufferPrice`), **`fixed_R`** TP, entry band, **`computeTradePlanRiskMetrics`** (risk/reward/R:R, distances in price / point / ticks). |
+| `src/trade-plan-gates.ts` | `collectTradePlanHardGateFailures` + `scoreBlocksTradeReady` — account/spread/parameter-set/R:R/SL-width gates (subset of blueprint H1–H8 style). |
+| `src/trade-plan-evaluator.ts` | **`evaluateTradeReviewPlan`** — lifecycle precedence (USED / EXPIRED / INVALIDATED → retest → confirmation → gates → score → near-sweep rule → `TRADE_READY`). |
+
+**Consumption:** future UI or backend calls **`evaluateTradeReviewPlan`** with a **`ZoneCandidate`** from `detectIfvgZoneCandidates` (or persisted mirror), merges **account/risk snapshot** into `accountGuard`, passes **score** from `computeStrategyScore`, and surfaces **`plan.simpleSummary`**, **`plan.status`**, and **`plan.reasons`** / **`plan.noTradeReasons`** — still **no order placement**, no BridgeEA, no WebSocket.
 
 ## In-process service layer (`src/services/`)
 
