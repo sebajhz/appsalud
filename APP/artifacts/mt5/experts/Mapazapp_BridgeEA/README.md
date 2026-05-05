@@ -4,6 +4,10 @@
 
 **Manual MT5 / MetaEditor handoff:** step-by-step compile, demo setup, inputs, smoke checks, forbidden-API verification, and “what to send back” — **[MANUAL_TEST_CHECKLIST.md](./MANUAL_TEST_CHECKLIST.md)**.
 
+**Verified manually in MT5:** MetaEditor compile **OK** (0 errors, 0 warnings) and an **export-only** smoke run **OK** — correct nested folder `MQL5/Files/Mapazapp/bridge/TERMINAL_A/`, expected contract files present, market and candles exported for configured symbols, no trading side effects. Details (without sensitive fields) are in the checklist section **“First real smoke test result.”**
+
+**Repository / privacy:** do **not** commit raw exports from a real account (they can embed account id, server name, balances, and live quotes). Prefer **[`samples/`](./samples/)** or **sanitized** excerpts for issues, docs, and tests.
+
 ## What this EA does
 
 - Exports **account**, **market**, **candles**, **open positions**, **pending orders**, **deal history**, **bridge errors**, and **`bridge_status.json`** on a timer.

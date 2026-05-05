@@ -87,6 +87,34 @@ MQL5\Files\Mapazapp\bridge\TERMINAL_A\
 
 ---
 
+## First real smoke test result
+
+Sanitized record of one successful **live MT5** export-only run (no account numbers, servers, balances, or prices).
+
+- **MetaEditor:** compile completed with **0 errors, 0 warnings**.
+- **Chart:** EA attached on **XAUUSD, H4** (any chart is fine; this was the configuration used).
+- **Inputs:** `InpExportRoot` = `Mapazapp\bridge`; symbols list included **XAUUSD** and **EURUSD** (exact broker suffixes omitted here).
+- **Output path:** folder present as expected: `MQL5\Files\Mapazapp\bridge\TERMINAL_A\`.
+- **Files created:** `bridge_status.json`, `latest_market_snapshot.csv`, `account_snapshot.csv`, `candles.csv`, `positions_open.csv`, `orders_pending.csv`, `deals_history.csv`, `bridge_errors.csv`.
+- **`latest_market_snapshot.csv`:** at least one data row each for **XAUUSD** and **EURUSD** (row counts and numeric fields not recorded here).
+- **`candles.csv`:** non-empty **XAUUSD** rows on **M15** (other timeframes may also appear depending on inputs).
+- **`positions_open.csv` / `orders_pending.csv` / `deals_history.csv`:** headers present and structurally valid (data row counts depend on the account).
+- **`bridge_errors.csv`:** only a startup **INFO** line (`BRIDGE_EA_START` / EA initialized message); no repeating **ERROR** spam observed.
+- **Trading:** no new orders or positions attributable to the EA; no command reader, **WebRequest**, DLL imports, **Trade.mqh**, or **CTrade** in the shipped source (unchanged design).
+
+**Follow-up (documentation / product polish, not a smoke blocker):** `bridge_status.json` reported `errors_count` = **1** while the only `bridge_errors.csv` row was **INFO**. Today the counter reflects “rows in the error buffer,” not strictly ERROR-severity events. **Future refinement (TODO, no implementation in this checkpoint):** either exclude **INFO** from `errors_count`, expose a separate diagnostics count, or rename/clarify the field so operators are not misled.
+
+**Repository hygiene:** do **not** commit raw files from a real terminal into git (they can contain logins, servers, balances, and prices). Use **[`samples/`](./samples/)** or hand-redacted snippets for tickets and CI fixtures.
+
+### Safe follow-up validation path
+
+1. **Repeat smoke on a demo terminal** using sections **2–7** of this checklist (compile, attach, confirm folder + file names, confirm Toolbox order count unchanged).
+2. **Optional parser check:** copy file **text** locally (not into the repo) and run **`@workspace/mapazapp-core`** parsers (`parseBridgeStatusJson`, `parseBridgeMarketSnapshotCsv`, …) from a scratch script or REPL — same contract as **`EXPORT_CONTRACT.md`** and **`checkpoint10-bridge-contract.test.ts`**.
+3. **Regressions:** after EA source edits, re-run **§8** forbidden-symbol search on `Mapazapp_BridgeEA.mq5` and MetaEditor compile.
+4. **Product backlog:** track the **`errors_count` vs INFO-severity** refinement (see note above); no backend watcher or live ingest is required for that item.
+
+---
+
 ## 6. Expected files (after one or two timer cycles)
 
 | File |
