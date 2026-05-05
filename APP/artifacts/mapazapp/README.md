@@ -24,6 +24,8 @@
 
 **Checkpoint 13 — MT5 BridgeEA export-only:** MQL5 source **`APP/artifacts/mt5/experts/Mapazapp_BridgeEA/Mapazapp_BridgeEA.mq5`** (plus `README.md`, `EXPORT_CONTRACT.md`, **`samples/`**). Operators compile in **MetaEditor** and attach to a chart; the EA writes **`MZP_BRIDGE_V1`** CSV/JSON aligned with **checkpoint 10** core parsers. **Export-only** (no command ingest, no `WebRequest`, no DLLs, no `CTrade`). The **dashboard remains mock/in-process** until a future checkpoint wires file or API ingest.
 
+**Checkpoint 14 — MT5 TestEA / Strategy Tester export:** separate MQL5 artifact **`APP/artifacts/mt5/experts/Mapazapp_TestEA/`** (`MZP_TESTEA_V1`). Runs **only** in **Strategy Tester** (`MQL_TESTER` guard); writes **virtual** **`backtest_trades.csv`** + **`backtest_summary.json`** under **`MQL5/Files/Mapazapp/testea/<run_id>/`** for **`importBacktestTradesFromCsv`** (checkpoint 8). **Not** live trading, **not** IFVG production logic, **not** registry auto-approval. See artifact **`README.md`** / **`MANUAL_TEST_CHECKLIST.md`**.
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.
@@ -43,7 +45,7 @@ This Replit phase is a visual mock **only**. There is:
 - **No real Prop Firm Guard enforcement**
 - **No real multi-account switching backend**
 - **No real multi-terminal MT5 bridge**
-- **No real backtesting or Strategy Tester integration**
+- **No in-app Strategy Tester integration or file ingest** — checkpoint 14 TestEA produces **optional** CSV on disk for manual import into core; dashboard backtests remain mock
 - **No real journal import from MT5 history**
 - **No real alert engine**
 - **No order execution or trade automation of any kind**

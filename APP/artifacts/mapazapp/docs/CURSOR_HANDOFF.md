@@ -15,8 +15,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## Shared core package (`@workspace/mapazapp-core`)
 
 - **Location:** `APP/lib/mapazapp-core/`
-- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**, plus **checkpoint 10** BridgeEA **file contract parsers** (JSON + CSV on in-memory strings only — **no** disk path, **no** MT5 socket), plus **checkpoint 12** **offline scanner simulation** (`runScannerSimulation`, `runScannerSimulationFromBridgeCandlesCsv`, `bridgeCandleRowToCandle`, `scanner-fixtures`, `runCheckpoint12ScannerFixture` — **not** a live scanner daemon, **not** execution). **Checkpoint 13** adds a separate **MQL5 export-only EA** under `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` (not compiled by this repo); core parsers remain the validation target for wire format. **No** React, HTTP, live MT5 from TypeScript, DB, WebSocket, or order execution in core.
-- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval in `tests/checkpoint8-backtest.test.ts`; bridge contract parsers in **`tests/checkpoint10-bridge-contract.test.ts`**; scanner simulation in **`tests/checkpoint12-scanner-simulation.test.ts`**.
+- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**, plus **checkpoint 10** BridgeEA **file contract parsers** (JSON + CSV on in-memory strings only — **no** disk path, **no** MT5 socket), plus **checkpoint 12** **offline scanner simulation** (`runScannerSimulation`, `runScannerSimulationFromBridgeCandlesCsv`, `bridgeCandleRowToCandle`, `scanner-fixtures`, `runCheckpoint12ScannerFixture` — **not** a live scanner daemon, **not** execution). **Checkpoint 13** adds a separate **MQL5 export-only EA** under `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` (not compiled by this repo); core parsers remain the validation target for wire format. **Checkpoint 14** adds **`Mapazapp_TestEA`** under `APP/artifacts/mt5/experts/Mapazapp_TestEA/` — **Strategy Tester only**, **virtual** CSV/JSON export (`MZP_TESTEA_V1`) aligned with **`importBacktestTradesFromCsv`**; **not** BridgeEA, **not** live orders. **No** React, HTTP, live MT5 from TypeScript, DB, WebSocket, or order execution in core.
+- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval / TestEA-shaped CSV sample in `tests/checkpoint8-backtest.test.ts`; bridge contract parsers in **`tests/checkpoint10-bridge-contract.test.ts`**; scanner simulation in **`tests/checkpoint12-scanner-simulation.test.ts`**.
 - **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
 
 ### Strategy detection modules (checkpoint 2)
@@ -110,7 +110,7 @@ This document gives Cursor (or any future developer) everything needed to contin
 | `backtest-approval.ts` | **`evaluateBacktestApproval`** (advisory statuses; does **not** mutate registry), **`deriveRecommendedParameterSetStatusFromBacktest`**. |
 | `backtest-fixtures.ts` | Fictional runs + **`getCheckpoint8MockApprovalForParameterSet`** for dashboard/tests. |
 
-**Not implemented:** real MT5 Strategy Tester / TestEA file ingest, persistence, registry auto-update from imports, or optimization loops.
+**Not implemented:** backend/dashboard **file ingest** of TestEA CSV from disk, persistence, registry auto-update from imports, or optimization loops. **Checkpoint 14** adds the **Mapazapp_TestEA** MQL5 exporter + fictional **`samples/`**; operators still copy CSV text manually into tooling using **`importBacktestTradesFromCsv`** until a watcher ships.
 
 ### Strategy / parameter set read-only UI (checkpoint 9 — dashboard)
 
@@ -138,9 +138,11 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 **Not implemented:** TypeScript **folder reads** / file watchers / backend ingest of live files, WebSocket tick stream, DB dedupe, inbound **command JSON**, live health polling from disk.
 
-**Checkpoint 13 — MT5 BridgeEA (export-only MQL5):** source **`APP/artifacts/mt5/experts/Mapazapp_BridgeEA/Mapazapp_BridgeEA.mq5`** writes `bridge_status.json`, `latest_market_snapshot.csv` (includes **`last`** + **`session_status`** per CP10 parsers), `account_snapshot.csv`, `candles.csv`, `positions_open.csv`, `orders_pending.csv`, `deals_history.csv`, `bridge_errors.csv` under **`MQL5/Files/<InpExportRoot>/<InpTerminalId>/`** (default `Mapazapp\bridge\TERMINAL_A\`). **No** `OrderSend` / position close / `CTrade` / `WebRequest` / DLLs / inbound command files. **Checkpoint 14** (TestEA / Strategy Tester) remains separate.
+**Checkpoint 13 — MT5 BridgeEA (export-only MQL5):** source **`APP/artifacts/mt5/experts/Mapazapp_BridgeEA/Mapazapp_BridgeEA.mq5`** writes `bridge_status.json`, `latest_market_snapshot.csv` (includes **`last`** + **`session_status`** per CP10 parsers), `account_snapshot.csv`, `candles.csv`, `positions_open.csv`, `orders_pending.csv`, `deals_history.csv`, `bridge_errors.csv` under **`MQL5/Files/<InpExportRoot>/<InpTerminalId>/`** (default `Mapazapp\bridge\TERMINAL_A\`). **No** `OrderSend` / position close / `CTrade` / `WebRequest` / DLLs / inbound command files.
 
-**Future flow:** BridgeEA writes exports → backend (or desktop agent) reads file **text** → core parsers validate → normalized models feed account/symbol/candle stores and UI.
+**Checkpoint 14 — MT5 TestEA (Strategy Tester export only):** source **`APP/artifacts/mt5/experts/Mapazapp_TestEA/Mapazapp_TestEA.mq5`** (`MZP_TESTEA_V1`) writes **`backtest_trades.csv`** + **`backtest_summary.json`** under **`MQL5/Files/<InpExportRoot>/<run_id>/`** (default `Mapazapp\testea\<run_id>\`). **`OnInit` fails on live charts** (`MQL_TESTER` guard). **Virtual export only** — **no** `OrderSend` / `CTrade`; placeholder trade row is **not** the IFVG engine and implies **no** profitability or registry promotion.
+
+**Future flow:** BridgeEA writes exports → backend (or desktop agent) reads file **text** → core parsers validate → normalized models feed account/symbol/candle stores and UI. TestEA CSV → **`importBacktestTradesFromCsv`** → advisory **`evaluateBacktestApproval`** (still **no** registry mutation).
 
 ### Local mock HTTP API (checkpoint 11 — `@workspace/api-server`)
 
@@ -169,7 +171,7 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 ## What remains mock-only (dashboard + integration)
 
-- **Live** IFVG scanner, MT5 bridge, WebSocket, DB, order execution, real Strategy Tester / backtest wiring — unchanged. Core now contains **offline** detection math only; the UI still uses `src/mock/` zones. See **What Is NOT Implemented** below.
+- **Live** IFVG scanner, MT5 bridge ingest, WebSocket, DB, order execution — unchanged. Core contains **offline** detection math; the UI still uses `src/mock/` zones. **Checkpoint 14** ships an MQL5 **TestEA** artifact for Strategy Tester **file** export only — **no** dashboard/API file watcher yet. See **What Is NOT Implemented** below.
 
 ---
 
@@ -187,6 +189,7 @@ Mapazapp is a **trading intelligence and risk management dashboard** for discipl
 |------|--------|-------|
 | MT5 terminal connection | NOT IMPLEMENTED | Dashboard / API have **no** socket to MT5 |
 | BridgeEA (Expert Advisor) | **PARTIAL (CP13)** | **MQL5 artifact** in `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` — **export-only** EA for operators to compile in MetaEditor; **no** dashboard ingest, **no** command channel, **no** execution from Mapazapp |
+| TestEA (Strategy Tester export) | **PARTIAL (CP14)** | **MQL5 artifact** in `APP/artifacts/mt5/experts/Mapazapp_TestEA/` — **virtual** `backtest_trades.csv` / summary JSON for **`importBacktestTradesFromCsv`**; **no** live-chart use, **no** orders, **no** automatic registry approval |
 | Real tick data | NOT IMPLEMENTED | All timestamps are `Date.now()` offsets |
 | IFVG zone detection in **UI / API** | PARTIAL (CP12) | Dashboard **`/scanner`** + API scanner routes run **offline simulation** on fictional/fixture candles only — **not** live scanner; static **Market/Zones** mock list unchanged |
 | Zone score in **UI** | NOT IMPLEMENTED | Page scores remain mock integers; core has `computeStrategyScore` for future integration |
@@ -194,7 +197,7 @@ Mapazapp is a **trading intelligence and risk management dashboard** for discipl
 | Prop Firm Guard enforcement | NOT IMPLEMENTED | Prop firm state is static mock |
 | Multi-account backend | NOT IMPLEMENTED | Account switching is React useState only |
 | Multi-terminal MT5 bridge | NOT IMPLEMENTED | Bridge terminals are mock arrays |
-| Backtest / Strategy Tester | NOT IMPLEMENTED | Stats are hardcoded |
+| Backtest / Strategy Tester UI wiring | NOT IMPLEMENTED | Dashboard backtest stats remain mock; **CP14 TestEA** produces **optional** CSV for core importer — **no** app-side folder ingest |
 | Journal import from MT5 | NOT IMPLEMENTED | Journal entries are hardcoded |
 | Real alert engine | NOT IMPLEMENTED | Alerts are hardcoded arrays |
 | Alert persistence | NOT IMPLEMENTED | Acknowledge state is React useState only |

@@ -120,6 +120,44 @@ describe("Checkpoint 8 — CSV importer", () => {
   });
 });
 
+describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
+  const testeaOpts = {
+    strategyId: "MZP_IFVG_ZONE_REACTION_V1",
+    parameterSetId: "MZP_IFVG_XAUUSD_V1_SET_003",
+    canonicalSymbol: "XAUUSD",
+    brokerSymbol: "XAUUSD_FICTIVE",
+    accountId: "TESTER_ACCOUNT",
+    datasetSplit: "validation" as const,
+    sourceType: "mapazapp_testea_csv" as const,
+    runId: "TESTEA_SAMPLE_RUN",
+  };
+
+  const MAPAZAPP_TESTEA_SAMPLE_CSV = [
+    "run_id,trade_id,strategy_id,parameter_set_id,symbol,broker_symbol,account_id,direction,entry_time,exit_time,entry_price,exit_price,sl,tp,result_money,result_r,commission,swap,spread_at_entry,score_total,zone_id,exit_reason",
+    "TESTEA_SAMPLE_RUN,t_sample_001,MZP_IFVG_ZONE_REACTION_V1,MZP_IFVG_XAUUSD_V1_SET_003,XAUUSD,XAUUSD_FICTIVE,TESTER_ACCOUNT,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000.00,2005.00,1995.00,2010.00,0.0,1.25,0.0,0.0,0.15,0.72,SAMPLE_ZONE,PLACEHOLDER_SAMPLE",
+  ].join("\n");
+
+  it("imports fictional TestEA-shaped row including optional numeric columns", () => {
+    const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, testeaOpts);
+    expect(r.ok).toBe(true);
+    expect(r.trades).toHaveLength(1);
+    const t = r.trades[0]!;
+    expect(t.runId).toBe("TESTEA_SAMPLE_RUN");
+    expect(t.commission).toBe(0);
+    expect(t.swap).toBe(0);
+    expect(t.spreadAtEntry).toBe(0.15);
+    expect(t.scoreTotal).toBe(0.72);
+    expect(t.zoneId).toBe("SAMPLE_ZONE");
+  });
+
+  it("warns when CSV run_id overrides options run_id", () => {
+    const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
+    expect(r.ok).toBe(true);
+    expect(r.trades[0]!.runId).toBe("TESTEA_SAMPLE_RUN");
+    expect(r.warnings.some((w) => w.code === "CSV_RUN_ID_OVERRIDE")).toBe(true);
+  });
+});
+
 describe("Checkpoint 8 — approval evaluator", () => {
   const th = createDefaultBacktestMetricThresholdsForTests();
 

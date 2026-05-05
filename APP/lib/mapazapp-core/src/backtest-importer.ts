@@ -244,9 +244,55 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     const zoneId = pick(cells, col, "zone_id")?.trim();
     const exitReason = pick(cells, col, "exit_reason")?.trim();
 
+    const csvRunId = pick(cells, col, "run_id")?.trim();
+    const tradeRunId = (csvRunId || runId) as BacktestRunId;
+    if (
+      csvRunId &&
+      options.runId?.trim() &&
+      csvRunId !== options.runId.trim()
+    ) {
+      warnings.push({
+        code: "CSV_RUN_ID_OVERRIDE",
+        message: `Row ${rowNum}: run_id in CSV differs from import options (using CSV value).`,
+        row: rowNum,
+      });
+    }
+
+    const commissionRaw = pick(cells, col, "commission");
+    let commission: number | undefined;
+    if (commissionRaw !== undefined && commissionRaw.trim() !== "") {
+      const p = parseNumber(commissionRaw, "commission", rowNum);
+      if (p.ok) commission = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+
+    const swapRaw = pick(cells, col, "swap");
+    let swap: number | undefined;
+    if (swapRaw !== undefined && swapRaw.trim() !== "") {
+      const p = parseNumber(swapRaw, "swap", rowNum);
+      if (p.ok) swap = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+
+    const spreadRaw = pick(cells, col, "spread_at_entry");
+    let spreadAtEntry: number | undefined;
+    if (spreadRaw !== undefined && spreadRaw.trim() !== "") {
+      const p = parseNumber(spreadRaw, "spread_at_entry", rowNum);
+      if (p.ok) spreadAtEntry = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+
+    const scoreRaw = pick(cells, col, "score_total");
+    let scoreTotal: number | undefined;
+    if (scoreRaw !== undefined && scoreRaw.trim() !== "") {
+      const p = parseNumber(scoreRaw, "score_total", rowNum);
+      if (p.ok) scoreTotal = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+
     const trade: BacktestTrade = {
       tradeId: tradeIdRaw.trim() as BacktestTradeId,
-      runId: runId as BacktestRunId,
+      runId: tradeRunId,
       strategyId: rowStrategy,
       parameterSetId: rowPs,
       canonicalSymbol: rowSym,
@@ -264,6 +310,10 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       exitReason,
     };
     if (zoneId) trade.zoneId = zoneId;
+    if (commission !== undefined) trade.commission = commission;
+    if (swap !== undefined) trade.swap = swap;
+    if (spreadAtEntry !== undefined) trade.spreadAtEntry = spreadAtEntry;
+    if (scoreTotal !== undefined) trade.scoreTotal = scoreTotal;
     trades.push(trade);
   }
 
@@ -306,7 +356,7 @@ export function assembleBacktestRunFromImportedTrades(
     summary,
     trades: importResult.trades,
     warnings: importResult.warnings,
-    notes: "Assembled from in-memory CSV import — fictional until real TestEA export is wired.",
+    notes: "Assembled from in-memory CSV import — use Mapazapp_TestEA (CP14) for optional Strategy Tester virtual export shape.",
   };
 }
 

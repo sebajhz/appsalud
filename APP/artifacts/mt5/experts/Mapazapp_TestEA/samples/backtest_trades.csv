@@ -1,0 +1,2 @@
+run_id,trade_id,strategy_id,parameter_set_id,symbol,broker_symbol,account_id,direction,entry_time,exit_time,entry_price,exit_price,sl,tp,result_money,result_r,commission,swap,spread_at_entry,score_total,zone_id,exit_reason
+TESTEA_SAMPLE_RUN,t_sample_001,MZP_IFVG_ZONE_REACTION_V1,MZP_IFVG_XAUUSD_V1_SET_003,XAUUSD,XAUUSD_FICTIVE,TESTER_ACCOUNT,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000.00,2005.00,1995.00,2010.00,0.0,1.25,0.0,0.0,0.15,0.72,SAMPLE_ZONE,PLACEHOLDER_SAMPLE

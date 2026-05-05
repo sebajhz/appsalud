@@ -24,7 +24,7 @@
 - No **inbound command files**, no **WebRequest**, no **DLL imports**, no **socket** usage.
 - Mapazapp does **not** send anything **to** MT5 through this artifact; there is **no** control channel.
 
-**Checkpoint 14 (TestEA / Strategy Tester export)** is a separate future deliverable.
+**Checkpoint 14 — Mapazapp_TestEA** (Strategy Tester **virtual** export, `MZP_TESTEA_V1`) lives in **`../Mapazapp_TestEA/`** — separate EA, separate contract; **not** for live-chart attach.
 
 ## Install and compile (manual)
 
