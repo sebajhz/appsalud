@@ -20,6 +20,8 @@
 
 **Checkpoint 11 — local backend foundation:** `@workspace/api-server` serves read-only **`GET /api/mapazapp/*`** mock endpoints (accounts, trade reviews, registry, backtest advisory, bridge parser summary) using **`@workspace/mapazapp-core`** + duplicated in-server mock data (`APP/artifacts/api-server/src/mapazapp/`). The **dashboard still uses in-process** `createMockDashboardDataSource()` — no runtime dependency on the HTTP API in this checkpoint. See **`../api-server/README.md`** and `docs/CURSOR_HANDOFF.md`.
 
+**Checkpoint 12 — scanner simulation (offline only):** core **`runScannerSimulation`**, **`runScannerSimulationFromBridgeCandlesCsv`**, **`bridgeCandleRowToCandle`**, **`scanner-fixtures`**, **`runCheckpoint12ScannerFixture`**; Vitest **`lib/mapazapp-core/tests/checkpoint12-scanner-simulation.test.ts`**. Dashboard: **`/scanner`** (`ScannerSimulationPage`), **`scannerSimulationDataSource.ts`** + **`mockScannerSimulationDataSource.ts`** + **`scannerSimulationUi.ts`** — in-process replay of fictional candles / optional Bridge CSV text path. **Not** live MT5, **not** execution, **not** profitability. API adds read-only scanner snapshot routes (see api-server README).
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.

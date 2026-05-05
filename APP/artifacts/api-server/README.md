@@ -1,6 +1,6 @@
 # `@workspace/api-server`
 
-Express server for the Replit workspace. **Checkpoint 11** adds read-only **Mapazapp mock API** routes under `/api/mapazapp/*`.
+Express server for the Replit workspace. **Checkpoints 11–12** add read-only **Mapazapp mock API** routes under `/api/mapazapp/*` (checkpoint **12**: scanner simulation snapshots).
 
 ## Mapazapp API (mock / in-memory)
 
@@ -8,6 +8,7 @@ Express server for the Replit workspace. **Checkpoint 11** adds read-only **Mapa
 - **No** MT5, database persistence, WebSockets, order execution, file watchers, or live scanner.
 - **All** Mapazapp routes are `GET` only. Responses use `{ ok, data, warnings, errors, source: "mock", mockOnly: true }`.
 - **Trade review** payloads include envelope flags `reviewOnly: true`, `executionEnabled: false`.
+- **Scanner simulation (checkpoint 12):** `GET /api/mapazapp/scanner/simulations`, `GET /api/mapazapp/scanner/simulations/latest`, `GET /api/mapazapp/accounts/:accountId/scanner/simulations/latest` — in-memory **`runCheckpoint12ScannerFixture`** output; same flags as trade review (`reviewOnly`, `executionEnabled: false`). **Not** a live scanner, **not** POST/run, **not** WebSocket.
 
 ### Run locally
 

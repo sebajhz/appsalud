@@ -7,6 +7,7 @@ import * as backtests from "./adapters/backtests";
 import * as bridge from "./adapters/bridge";
 import * as registry from "./adapters/strategyRegistry";
 import * as tradeReview from "./adapters/tradeReview";
+import * as scannerSimulation from "./adapters/scannerSimulation";
 
 const router: IRouter = Router();
 
@@ -14,11 +15,36 @@ router.get("/health", (_req, res) => {
   res.json(
     okResponse({
       service: "mapazapp-api",
-      checkpoint: 11,
+      checkpoint: 12,
       readOnly: true,
       mockData: "in-memory",
     }),
   );
+});
+
+router.get("/scanner/simulations", (_req, res) => {
+  res.json(
+    okResponse(
+      { simulations: scannerSimulation.listScannerSimulations() },
+      { reviewOnly: true, executionEnabled: false },
+    ),
+  );
+});
+
+router.get("/scanner/simulations/latest", (_req, res) => {
+  res.json(
+    okResponse(scannerSimulation.latestScannerSimulation(), { reviewOnly: true, executionEnabled: false }),
+  );
+});
+
+router.get("/accounts/:accountId/scanner/simulations/latest", (req, res) => {
+  const { accountId } = req.params;
+  if (!accounts.findAccount(accountId)) {
+    res.status(404).json(errResponse([{ ...MAPAZAPP_ERROR_ACCOUNT_NOT_FOUND, detail: accountId }]));
+    return;
+  }
+  const sim = scannerSimulation.latestScannerSimulationForAccount(accountId as AccountId);
+  res.json(okResponse(sim, { reviewOnly: true, executionEnabled: false }));
 });
 
 router.get("/accounts", (_req, res) => {

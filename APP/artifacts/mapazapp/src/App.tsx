@@ -17,6 +17,7 @@ import ConfigPage from "@/pages/ConfigPage";
 import ParameterSetsPage from "@/pages/ParameterSetsPage";
 import ParameterSetDetailPage from "@/pages/ParameterSetDetailPage";
 import BridgePage from "@/pages/BridgePage";
+import ScannerSimulationPage from "@/pages/ScannerSimulationPage";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ function Router() {
       <Route path="/parameter-sets/:parameterSetId" component={ParameterSetDetailPage} />
       <Route path="/parameter-sets" component={ParameterSetsPage} />
       <Route path="/bridge" component={BridgePage} />
+      <Route path="/scanner" component={ScannerSimulationPage} />
       <Route component={NotFound} />
     </Switch>
   );

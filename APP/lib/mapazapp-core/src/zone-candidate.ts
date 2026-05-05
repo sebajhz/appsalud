@@ -28,6 +28,8 @@ export interface ZoneCandidate {
   reasonSimple: string;
   reasonTechnical: string;
   initialState: ZoneCandidateInitialState;
+  /** Liquidity sweep class from IFVG detection (checkpoint 12+). */
+  sweepStatus?: SweepStatus;
 }
 
 export interface ZoneCandidateBuildInput {
@@ -97,5 +99,6 @@ export function buildZoneCandidateFromIfvg(input: ZoneCandidateBuildInput): Zone
         : "Inverted bullish gap — watch for short reaction in zone.",
     reasonTechnical: `IFVG ${ifvg.direction} from FVG ${ifvg.sourceFvgId}; padding=${pad.toFixed(6)}`,
     initialState: initialStateFromSweep(input.sweepStatus),
+    sweepStatus: input.sweepStatus,
   };
 }

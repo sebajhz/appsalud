@@ -15,8 +15,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## Shared core package (`@workspace/mapazapp-core`)
 
 - **Location:** `APP/lib/mapazapp-core/`
-- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**, plus **checkpoint 10** BridgeEA **file contract parsers** (JSON + CSV on in-memory strings only — **no** disk path, **no** MT5 socket). **No** React, HTTP, live MT5, DB, WebSocket, order execution, or live scanner.
-- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval in `tests/checkpoint8-backtest.test.ts`; bridge contract parsers in **`tests/checkpoint10-bridge-contract.test.ts`**.
+- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**, plus **checkpoint 10** BridgeEA **file contract parsers** (JSON + CSV on in-memory strings only — **no** disk path, **no** MT5 socket), plus **checkpoint 12** **offline scanner simulation** (`runScannerSimulation`, `runScannerSimulationFromBridgeCandlesCsv`, `bridgeCandleRowToCandle`, `scanner-fixtures`, `runCheckpoint12ScannerFixture` — **not** a live scanner daemon, **not** execution). **No** React, HTTP, live MT5, DB, WebSocket, or order execution.
+- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval in `tests/checkpoint8-backtest.test.ts`; bridge contract parsers in **`tests/checkpoint10-bridge-contract.test.ts`**; scanner simulation in **`tests/checkpoint12-scanner-simulation.test.ts`**.
 - **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
 
 ### Strategy detection modules (checkpoint 2)
@@ -144,14 +144,26 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 | Area | Role |
 |------|------|
-| `src/mapazapp/routes.ts` | Read-only **`GET /api/mapazapp/*`** — health, accounts, summaries, account guard, trade reviews, strategies, parameter sets, compatibility, backtests list + CP8 advisory, bridge mock import summary. |
+| `src/mapazapp/routes.ts` | Read-only **`GET /api/mapazapp/*`** — health, accounts, summaries, account guard, trade reviews, strategies, parameter sets, compatibility, backtests list + CP8 advisory, bridge mock import summary, **checkpoint 12** scanner simulation list/latest + per-account latest. |
 | `src/mapazapp/response.ts` | Stable JSON envelope (`ok`, `data`, `warnings`, `errors`, `source: "mock"`, `mockOnly: true`). |
 | `src/mapazapp/mockData.ts` | In-memory duplicates of dashboard mock fixtures (no React / Vite `@/` imports). |
 | `src/mapazapp/lib/tradeReviewLogic.ts` | Same core evaluation path as `createMockDashboardDataSource` (registry + trade plan). |
 
 **Product rule:** responses are **review-only**; **`executionEnabled`** is always **false** in trade-review envelopes. **No** MT5, DB, WebSocket, execution routes, or file watchers.
 
-**Dashboard:** unchanged default — still **`createMockDashboardDataSource()`** in-process. Future: optional `fetch` to `/api/mapazapp/...` behind a feature flag or env.
+### Scanner simulation (checkpoint 12 — core + dashboard + API)
+
+| Area | Role |
+|------|------|
+| `scanner-simulation.ts` | **`runScannerSimulation`** — validates input, runs **`detectIfvgZoneCandidates`**, registry + account guard, per-candidate **`evaluateTradeReviewPlan`**; flags **`reviewOnly`**, **`executionEnabled: false`**, **`simulatedScanner: true`**. |
+| `scanner-bridge-candles.ts` | **`bridgeCandleRowToCandle`**, **`runScannerSimulationFromBridgeCandlesCsv`** — Bridge CSV text → candles → simulation; attaches parser diagnostics. |
+| `scanner-fixtures.ts` | Fictional candle paths + **`runCheckpoint12ScannerFixture`** shared by **api-server** adapter and **dashboard** mock data source. |
+| **API** | `GET /api/mapazapp/scanner/simulations`, `/scanner/simulations/latest`, `/accounts/:accountId/scanner/simulations/latest` — same envelope + review flags. |
+| **Dashboard** | Route **`/scanner`** — `ScannerSimulationPage` + **`createMockScannerSimulationDataSource()`** (in-process; no `fetch` required). Sidebar **Scanner (sim)**. |
+
+**Not implemented:** POST scan/run, job queue, live candle feed, real BridgeEA folder watcher, or treating simulation as live trading advice.
+
+**Dashboard:** unchanged default for zones — still **`createMockDashboardDataSource()`** in-process. Scanner page uses **`createMockScannerSimulationDataSource()`** in-process. Future: optional `fetch` to `/api/mapazapp/...` behind a feature flag or env.
 
 ## What remains mock-only (dashboard + integration)
 
@@ -174,7 +186,7 @@ Mapazapp is a **trading intelligence and risk management dashboard** for discipl
 | MT5 terminal connection | NOT IMPLEMENTED | No MQL5, no terminal API |
 | BridgeEA (Expert Advisor) | NOT IMPLEMENTED | No MQL5, no DLL |
 | Real tick data | NOT IMPLEMENTED | All timestamps are `Date.now()` offsets |
-| IFVG zone detection in **UI / API** | NOT IMPLEMENTED | Dashboard zones still mock; core has **offline** `detectIfvgZoneCandidates` for tests/future wiring |
+| IFVG zone detection in **UI / API** | PARTIAL (CP12) | Dashboard **`/scanner`** + API scanner routes run **offline simulation** on fictional/fixture candles only — **not** live scanner; static **Market/Zones** mock list unchanged |
 | Zone score in **UI** | NOT IMPLEMENTED | Page scores remain mock integers; core has `computeStrategyScore` for future integration |
 | Risk Guard rule evaluation | NOT IMPLEMENTED | Risk states are static mock objects |
 | Prop Firm Guard enforcement | NOT IMPLEMENTED | Prop firm state is static mock |
@@ -268,6 +280,7 @@ const risk = mockRiskByAccount[activeAccountId];
 | `AlertsPage.tsx` | `/alerts` | Account-tagged + global alerts, filter, acknowledge |
 | `ConfigPage.tsx` | `/config` | Accounts, risk profiles, rules profiles, symbol mapping, notifications, zone scoring |
 | `BridgePage.tsx` | `/bridge` | Multi-terminal grid + detail per terminal (ticks, log) |
+| `ScannerSimulationPage.tsx` | `/scanner` | Mock scanner simulation summary (fixture replay; review-only flags) |
 
 ---
 

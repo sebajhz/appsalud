@@ -196,3 +196,15 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Not implemented:** `POST` / commands, SQLite, real BridgeEA folder ingest, frontend `fetch` wiring to this API (future checkpoint).
 - **TypeScript:** `api-server/tsconfig.json` dropped **`references`** to composite libs to avoid `TS6305` when declaration outputs are not pre-built; workspace `pnpm` links still resolve `@workspace/api-zod` / `@workspace/mapazapp-core`.
 - **Tests:** `artifacts/api-server/src/mapazapp/mapazapp.routes.test.ts` (Vitest + supertest).
+
+---
+
+## 22. Scanner simulation pipeline (checkpoint 12 — `@workspace/mapazapp-core`)
+
+- **Modules:** `scanner-types.ts`, `scanner-reasons.ts`, `scanner-settings.ts`, `scanner-simulation.ts` (**`runScannerSimulation`**), `scanner-bridge-candles.ts` (**`bridgeCandleRowToCandle`**, **`runScannerSimulationFromBridgeCandlesCsv`**), `scanner-fixtures.ts` (fictional candles + **`runCheckpoint12ScannerFixture`** for dashboard/API alignment).
+- **Flow:** in-memory `Candle[]` → **`detectIfvgZoneCandidates`** → **`evaluateParameterSetCompatibility`** (merged into guard input `approvedParameterSetForAccount`) → **`evaluateAccountGuard`** (or caller-supplied result) → per-candidate retest/confirmation on **last series bars** → **`computeStrategyScore`** → **`evaluateTradeReviewPlan`**. **No** disk, **no** `fetch`, **no** scheduler, **no** WebSocket, **no** DB, **no** order placement, **no** live ticks.
+- **Outputs:** every **`ScannerSimulationResult`** sets **`reviewOnly: true`**, **`executionEnabled: false`**, **`mockOnly: true`**, **`simulatedScanner: true`**. Diagnostics may include pipeline/registry/account warnings; **`failed`** / **`no_candidates`** statuses are explicit.
+- **Bridge CSV path:** **`parseBridgeCandlesCsv`** on string text only; optional **`deriveSymbolMarketSpecFromBridgeMarketSnapshot`** when a market row is supplied. Malformed CSV → **`BridgeScannerSimulationResult`** with **`bridgeImportOk: false`** and parser errors — still **no** filesystem reads.
+- **`ZoneCandidate.sweepStatus`:** optional field set in **`buildZoneCandidateFromIfvg`** so downstream score/trade-plan inputs can reuse detection sweep class without re-deriving geometry.
+- **Tests:** `APP/lib/mapazapp-core/tests/checkpoint12-scanner-simulation.test.ts`; API: scanner routes in `mapazapp.routes.test.ts`; dashboard: `src/services/mockScannerSimulationDataSource.test.ts`.
+- **Not implemented:** POST `/scan` or job runner, real BridgeEA folder ingest, MT5 socket, historical DB candle store, live scanner daemon, or treating simulation output as live signals.

@@ -35,7 +35,7 @@ Este archivo es el punto de entrada rápido para sesiones futuras en Cursor. **N
 
 ## Ignorar por ahora (no borrar)
 
-- `APP/artifacts/api-server/` — Express del workspace; **checkpoint 11** añade API HTTP **mock read-only** en `/api/mapazapp/*` (sin MT5/DB/WebSocket). El dashboard sigue usando mocks in-process salvo integración explícita futura.
+- `APP/artifacts/api-server/` — Express del workspace; **checkpoint 11–12** añade API HTTP **mock read-only** en `/api/mapazapp/*` (incluye **simulación de scanner** en memoria; sin MT5/DB/WebSocket/scanner en vivo). El dashboard sigue usando mocks in-process salvo integración explícita futura.
 - `APP/artifacts/mockup-sandbox/` — artefacto sandbox / UI genérica; **no** es el producto Mapazapp.
 - `APP/lib/`, `APP/scripts/`, `APP/attached_assets/` — estructura del workspace Replit; el mock del dashboard **no** depende de ello para ejecutarse.
 - `old/` — backup; no alinear ni implementar desde ahí por defecto.

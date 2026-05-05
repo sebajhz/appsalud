@@ -2,7 +2,7 @@ import request from "supertest";
 import { describe, expect, it } from "vitest";
 import app from "../app";
 
-describe("Mapazapp API (checkpoint 11)", () => {
+describe("Mapazapp API (checkpoint 12)", () => {
   it("GET /api/mapazapp/health returns ok envelope", async () => {
     const res = await request(app).get("/api/mapazapp/health");
     expect(res.status).toBe(200);
@@ -11,6 +11,7 @@ describe("Mapazapp API (checkpoint 11)", () => {
     expect(res.body.source).toBe("mock");
     expect(res.body.data?.service).toBe("mapazapp-api");
     expect(res.body.data?.readOnly).toBe(true);
+    expect(res.body.data?.checkpoint).toBe(12);
   });
 
   it("GET /api/mapazapp/accounts lists mock accounts", async () => {
@@ -69,5 +70,36 @@ describe("Mapazapp API (checkpoint 11)", () => {
     expect(res.status).toBe(200);
     expect(res.body.data.status.ok).toBe(true);
     expect(res.body.data.market.parsedRowCount).toBeGreaterThanOrEqual(1);
+  });
+
+  it("GET /api/mapazapp/scanner/simulations/latest returns ok and review flags", async () => {
+    const res = await request(app).get("/api/mapazapp/scanner/simulations/latest");
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    expect(res.body.reviewOnly).toBe(true);
+    expect(res.body.executionEnabled).toBe(false);
+    expect(res.body.data?.simulatedScanner).toBe(true);
+    expect(res.body.data?.run?.accountId).toBe("ACC_THE5ERS_100K_PHASE1_A");
+  });
+
+  it("GET /api/mapazapp/scanner/simulations returns list", async () => {
+    const res = await request(app).get("/api/mapazapp/scanner/simulations");
+    expect(res.status).toBe(200);
+    expect(res.body.data?.simulations?.length).toBe(2);
+  });
+
+  it("GET account scanner latest returns scoped accountId", async () => {
+    const res = await request(app).get(
+      "/api/mapazapp/accounts/ACC_PROPXP_50K_PHASE1/scanner/simulations/latest",
+    );
+    expect(res.status).toBe(200);
+    expect(res.body.data?.run?.accountId).toBe("ACC_PROPXP_50K_PHASE1");
+    expect(res.body.data?.run?.canonicalSymbol).toBe("EURUSD");
+  });
+
+  it("GET account scanner latest for unknown account returns 404", async () => {
+    const res = await request(app).get("/api/mapazapp/accounts/UNKNOWN_X/scanner/simulations/latest");
+    expect(res.status).toBe(404);
+    expect(res.body.errors[0]?.code).toBe("ACCOUNT_NOT_FOUND");
   });
 });
