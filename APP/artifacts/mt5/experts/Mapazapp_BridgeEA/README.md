@@ -2,6 +2,8 @@
 
 **Mapazapp Checkpoint 13 — MT5 BridgeEA export-only.** This Expert Advisor runs inside MetaTrader 5 and writes **read-only** bridge export files that align with `MZP_BRIDGE_V1` / legacy `QTG_BRIDGE_V1` and the TypeScript parsers in `@workspace/mapazapp-core` (`parseBridgeStatusJson`, `parseBridge*Csv`).
 
+**Manual MT5 / MetaEditor handoff:** step-by-step compile, demo setup, inputs, smoke checks, forbidden-API verification, and “what to send back” — **[MANUAL_TEST_CHECKLIST.md](./MANUAL_TEST_CHECKLIST.md)**.
+
 ## What this EA does
 
 - Exports **account**, **market**, **candles**, **open positions**, **pending orders**, **deal history**, **bridge errors**, and **`bridge_status.json`** on a timer.
@@ -17,6 +19,8 @@
 **Checkpoint 14 (TestEA / Strategy Tester export)** is a separate future deliverable.
 
 ## Install and compile (manual)
+
+Prefer the folder layout and checklist in **[MANUAL_TEST_CHECKLIST.md](./MANUAL_TEST_CHECKLIST.md)** (e.g. `MQL5\Experts\Mapazapp\Mapazapp_BridgeEA.mq5`).
 
 1. Copy `Mapazapp_BridgeEA.mq5` to your terminal’s  
    `MetaTrader 5/MQL5/Experts/` (or a subfolder you prefer).
