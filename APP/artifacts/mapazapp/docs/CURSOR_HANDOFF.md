@@ -15,8 +15,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## Shared core package (`@workspace/mapazapp-core`)
 
 - **Location:** `APP/lib/mapazapp-core/`
-- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**. **No** React, HTTP, MT5, DB, WebSocket, order execution, or live scanner.
-- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval in `tests/checkpoint8-backtest.test.ts`.
+- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**, plus **checkpoint 10** BridgeEA **file contract parsers** (JSON + CSV on in-memory strings only — **no** disk path, **no** MT5 socket). **No** React, HTTP, live MT5, DB, WebSocket, order execution, or live scanner.
+- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval in `tests/checkpoint8-backtest.test.ts`; bridge contract parsers in **`tests/checkpoint10-bridge-contract.test.ts`**.
 - **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
 
 ### Strategy detection modules (checkpoint 2)
@@ -56,6 +56,7 @@ This document gives Cursor (or any future developer) everything needed to contin
 - **Checkpoint 1:** `AccountDataSource` + `createMockAccountDataSource()` — reads existing `src/mock/` data, requires `accountId`, **no** `fetch`, no Express.
 - **Checkpoint 4 / 7:** `DashboardMockDataSource` (`tradeReviewDataSource.ts` + `mockTradeReviewDataSource.ts`) — **`createMockDashboardDataSource()`** exposes **`getZonesForAccount`**, **`getTradeReviewPlansForAccount`** (includes **`registryCompatibility`** per row), **`getTradeReviewPlanByZoneId`**, **`getAlertsForAccount`**, and **`getAccountSnapshot`** (delegates to checkpoint 1). Mock zones are mapped through **`mapMockZoneToCore.ts`**, risk through **`mapMockRiskToTradePlanGuard.ts`** with registry-derived **`approvedParameterSetForAccount`**, symbols through **`mockSymbolProfiles.ts`**, then **`evaluateTradeReviewPlan`** from `@workspace/mapazapp-core`. **No** backend, MT5, execution, WebSocket, or DB.
 - **Checkpoint 9:** **`StrategyRegistryReadModelDataSource`** (`strategyRegistryDataSource.ts` + **`mockStrategyRegistryDataSource.ts`**) — read-only registry + compatibility + CP8 advisory for inspector pages; **`strategyRegistryUi.ts`** for badges and summaries. **No** `fetch`, **no** editing.
+- **Checkpoint 10:** **`loadMockBridgeExportBundle()`** in **`bridgeMockExportDataSource.ts`** — parses **`bridge-fixtures.ts`** from core (fictional **`MZP_BRIDGE_V1`** / legacy **`QTG_BRIDGE_V1`** alias) via **`parseBridgeStatusJson`** + CSV parsers; **`bridgeImportUi.ts`** formats diagnostics. **`BridgePage.tsx`** surfaces schema, terminal, login, symbols, market row tick times, and aggregate import warnings/errors — **mock inspection only** (no file picker, no watcher, no backend).
 - **UI wiring:** `HomePage` (review-ready strip + banner counts), `ZonesPage` (core status badge + reason line), and `ZoneDetailPage` (core review block + technical fields + link to **`/parameter-sets/:id`**) consume the dashboard data source. **`ParameterSetsPage`** / **`ParameterSetDetailPage`** use the checkpoint 9 read-only registry source. Other pages still use mock imports directly where unchanged.
 - **Copy / UX:** “Review-ready”, “manual review only”, and **`TradeReviewStatusBadge`** reinforce that **`TRADE_READY`** is **not** an order signal.
 
@@ -122,6 +123,22 @@ This document gives Cursor (or any future developer) everything needed to contin
 | **`ParameterSetDetailPage.tsx`** | **`/parameter-sets/:parameterSetId`** — TRADE_READY gate explanation, compatibility codes, CP8 advisory, read-only settings. |
 
 **Not implemented:** settings editing, optimization UI, registry persistence, server-backed registry.
+
+### BridgeEA export contract parsers (checkpoint 10 — `@workspace/mapazapp-core` + minimal UI)
+
+| Module / export | Role |
+|-----------------|------|
+| `bridge-types.ts` | Wire-aligned row/snapshot types (`BridgeStatusSnapshot`, `BridgeMarketSnapshotRow`, …). |
+| `bridge-import-result.ts` | **`BridgeImportResult`**, stable **`BridgeDiagnosticCode`** list. |
+| `bridge-parse-json.ts` | **`parseBridgeStatusJson`** — required fields per **`Mapazapp_MT5_Bridge_Connectivity_Contract_V1`** §9.1. |
+| `bridge-parse-csv.ts` | **`parseBridgeMarketSnapshotCsv`**, account/candles/positions/orders/deals/errors — headers **exact** snake_case from contract + Build Spec. |
+| `bridge-symbol-profile.ts` | **`deriveSymbolMarketSpecFromBridgeMarketSnapshot`** — builds **`SymbolMarketSpec`**; caller supplies **`canonicalSymbol`** + **`accountId`** (broker symbol ≠ canonical in production). |
+| `bridge-account-key.ts` | **`makeBridgeAccountKey`** — composite string `terminal_id` + `account_login` + `account_server`; **no** persistence, **no** inferred app `accountId`. |
+| `bridge-fixtures.ts` | Fictional export strings for tests + dashboard bundle. |
+
+**Not implemented:** real folder reads, BridgeEA MQL5, file watchers, backend ingest, WebSocket tick stream, DB dedupe, command JSON, live health from `exported_at_utc`.
+
+**Future flow:** BridgeEA writes exports → backend (or desktop agent) reads file **text** → core parsers validate → normalized models feed account/symbol/candle stores and UI.
 
 ## What remains mock-only (dashboard + integration)
 

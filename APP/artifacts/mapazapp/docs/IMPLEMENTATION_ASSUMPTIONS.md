@@ -173,3 +173,14 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Links:** Zone Detail registry panel → inspector; Backtests → inspector; Configuration → short registry summary + link.
 - **Product rule surfaced in UI:** copy states that a **detected setup alone is insufficient**; **`allowTradeReview`** must be true for the active account/symbol for core to permit **`TRADE_READY`** (other gates unchanged). Unapproved sets never imply live profitability.
 - **Tests:** **`src/services/mockStrategyRegistryDataSource.test.ts`** (service + UI helper assertions).
+
+---
+
+## 20. BridgeEA file contract reader skeleton (checkpoint 10 — `@workspace/mapazapp-core` + dashboard)
+
+- **Modules:** `bridge-types.ts`, `bridge-import-result.ts`, `bridge-validators.ts` (`MZP_BRIDGE_V1` + legacy **`QTG_BRIDGE_V1`** alias — compatibility only), `bridge-csv-table.ts`, `bridge-parse-json.ts`, `bridge-parse-csv.ts`, `bridge-symbol-profile.ts`, `bridge-account-key.ts`, `bridge-fixtures.ts` — all **pure**, **no `fs`**, **no HTTP**, **no WebSocket**.
+- **Contract source of truth:** `Mapazapp_Replit_Handoff_V1/03_MT5_BRIDGE_AND_DATA_CONTRACT/Mapazapp_MT5_Bridge_Connectivity_Contract_V1.md` + **`Mapazapp_BridgeEA_Build_Spec_V1.md`**. CSV parsers require the **full** documented header sets — including **`last`** and **`session_status`** on `latest_market_snapshot.csv` (§9.3), even if some UI briefs list only a subset; omitting columns is a **fatal** `BRIDGE_CSV_MISSING_COLUMN` result.
+- **`deriveSymbolMarketSpecFromBridgeMarketSnapshot`:** uses exported `spread_price` when finite and ≥ 0; otherwise derives **`spread_points * point`** via **`spreadPointsToPrice`** and emits **`BRIDGE_SYMBOL_PROFILE_INCOMPLETE`** (still returns a spec if other fields valid).
+- **Positions / orders / deals / errors CSV:** header-valid + **zero data rows** is **`ok: true`** (empty positions/orders files are valid BridgeEA outputs). Market, account, and candles imports require **≥ 1** valid parsed row or they return **`ok: false`** with **`BRIDGE_CSV_EMPTY`**.
+- **Dashboard:** `bridgeMockExportDataSource.ts` + `bridgeImportUi.ts` + `BridgePage` mock panel — parses core fixtures in memory only.
+- **Tests:** `lib/mapazapp-core/tests/checkpoint10-bridge-contract.test.ts`; `src/services/bridgeMockExportDataSource.test.ts`.

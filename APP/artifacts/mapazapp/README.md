@@ -2,7 +2,7 @@
 
 **Workspace context:** this folder is `APP/artifacts/mapazapp` inside the Mapazapp repo. The **pnpm workspace root** is `APP/`. Product planning lives in the repo’s `00_START_HERE/` and `Mapazapp_Replit_Handoff_V1/`; quick navigation for Cursor: `00_START_HERE/CURSOR_NAVIGATION_NOTE.md`. `APP/artifacts/mockup-sandbox` is not this product; `APP/artifacts/api-server` is Replit scaffold only (ignore for mock work).
 
-**Shared core:** `@workspace/mapazapp-core` under `APP/lib/mapazapp-core/` — checkpoints 1–8 (normalization, IFVG detection skeleton, **`evaluateTradeReviewPlan`**, account guard, **strategy / parameter-set registry**, **backtest run/trade types + CSV import skeleton + advisory `evaluateBacktestApproval`**). Dashboard checkpoint 9 adds **read-only registry inspector** pages (no new core checkpoint). From `APP/`: `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp test`. Assumptions: `docs/IMPLEMENTATION_ASSUMPTIONS.md`.
+**Shared core:** `@workspace/mapazapp-core` under `APP/lib/mapazapp-core/` — checkpoints 1–8 (normalization, IFVG detection skeleton, **`evaluateTradeReviewPlan`**, account guard, **strategy / parameter-set registry**, **backtest run/trade types + CSV import skeleton + advisory `evaluateBacktestApproval`**), plus **checkpoint 10** (**BridgeEA JSON/CSV contract parsers** — in-memory text only, no MT5). Dashboard checkpoint 9 adds **read-only registry inspector** pages. From `APP/`: `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp test`. Assumptions: `docs/IMPLEMENTATION_ASSUMPTIONS.md`.
 
 **Dashboard services (checkpoint 4):** `src/services/mockTradeReviewDataSource.ts` exposes **`createMockDashboardDataSource()`** — account snapshot, zones, alerts, and **core-generated `TradeReviewPlan`** rows per `accountId` (mock-only, no network). Home, Market/Zones, and Zone Detail consume it; see `docs/CURSOR_HANDOFF.md`.
 
@@ -16,6 +16,8 @@
 
 **Checkpoint 9 — strategy / parameter set read-only UI:** **`strategyRegistryDataSource.ts`** + **`mockStrategyRegistryDataSource.ts`** + **`strategyRegistryUi.ts`**; routes **`/parameter-sets`** and **`/parameter-sets/:id`** (sidebar **Strategy & sets**). Inspector shows registry compatibility, TRADE_READY gate copy, CP8 advisory, and IFVG settings summaries — **read-only** (no editing, no backend). Tests: **`src/services/mockStrategyRegistryDataSource.test.ts`**.
 
+**Checkpoint 10 — Bridge file contract reader skeleton:** `@workspace/mapazapp-core` exposes **`parseBridgeStatusJson`**, CSV parsers for market/account/candles/positions/orders/deals/errors, **`deriveSymbolMarketSpecFromBridgeMarketSnapshot`**, **`makeBridgeAccountKey`**, **`bridge-fixtures.ts`** (fictional exports), and Vitest **`lib/mapazapp-core/tests/checkpoint10-bridge-contract.test.ts`**. Dashboard: **`bridgeMockExportDataSource.ts`** + **`bridgeImportUi.ts`**; **MT5 Bridge** page shows **mock parsed** contract summary (no disk, no EA). **No** WebSocket, backend, or live bridge.
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.
@@ -27,7 +29,7 @@ Mapazapp is **multi-account and multi-broker by design**. Every entity in the sy
 This Replit phase is a visual mock **only**. There is:
 
 - **No real MT5 terminal connection**
-- **No BridgeEA (Expert Advisor) integration**
+- **No BridgeEA (Expert Advisor) deployed or connected** — checkpoint 10 only **parses fictional in-memory** export text aligned with the connectivity contract
 - **No real tick data or price feeds**
 - **No real IFVG zone detection algorithm**
 - **No real zone score calculation**

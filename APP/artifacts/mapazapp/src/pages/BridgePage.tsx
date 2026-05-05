@@ -1,7 +1,10 @@
 import { Layout, useActiveAccount } from '@/components/Layout';
 import { BridgeStateBadge } from '@/components/StatusBadge';
 import { mockBridgeTerminals } from '@/mock/bridgeStatus';
-import { CheckCircle, AlertTriangle, XCircle, Wifi, Monitor } from 'lucide-react';
+import { formatBridgeDiagnostics } from '@/services/bridgeImportUi';
+import { loadMockBridgeExportBundle } from '@/services/bridgeMockExportDataSource';
+import { CheckCircle, AlertTriangle, XCircle, Wifi, Monitor, FileJson } from 'lucide-react';
+import { useMemo } from 'react';
 
 const freshnessConfig = {
   FRESH:   { label: 'Fresh',   className: 'text-emerald-400', icon: CheckCircle },
@@ -17,10 +20,75 @@ const logLevelConfig = {
 
 export default function BridgePage() {
   const { activeAccountId } = useActiveAccount();
+  const mockExports = useMemo(() => loadMockBridgeExportBundle(), []);
+
+  const mockDiag = useMemo(() => {
+    const parts = [
+      mockExports.status,
+      mockExports.market,
+      mockExports.account,
+      mockExports.candles,
+      mockExports.positions,
+      mockExports.orders,
+      mockExports.deals,
+      mockExports.errors,
+    ];
+    const err = parts.flatMap((p) => p.errors);
+    const warn = parts.flatMap((p) => p.warnings);
+    return { err, warn, format: formatBridgeDiagnostics(err, warn) };
+  }, [mockExports]);
 
   return (
     <Layout title="MT5 Bridge Health">
       <div className="space-y-6">
+        <div
+          className="rounded-lg border border-slate-700 bg-slate-900/40 p-4"
+          data-testid="bridge-contract-parser-mock"
+        >
+          <div className="flex items-start gap-3">
+            <FileJson className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+            <div className="space-y-2 text-sm min-w-0">
+              <p className="font-semibold text-slate-200">BridgeEA file contract — parser skeleton (mock)</p>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                In-memory parse of fictional <span className="font-mono text-slate-300">MZP_BRIDGE_V1</span> fixtures
+                from <span className="font-mono">@workspace/mapazapp-core</span> — no disk read, no EA, no WebSocket,
+                no backend. Validates expected CSV/JSON shapes for future BridgeEA exports.
+              </p>
+              {mockExports.status.ok && mockExports.status.value ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-slate-300">
+                  <div>
+                    <span className="text-slate-500">schema_version</span>{' '}
+                    {mockExports.status.value.schemaVersion}
+                  </div>
+                  <div>
+                    <span className="text-slate-500">terminal_id</span> {mockExports.status.value.terminalId}
+                  </div>
+                  <div>
+                    <span className="text-slate-500">account_login</span> {mockExports.status.value.accountLogin}
+                  </div>
+                  <div>
+                    <span className="text-slate-500">exported_at_utc</span>{' '}
+                    {mockExports.status.value.exportedAtUtc}
+                  </div>
+                  <div className="sm:col-span-2">
+                    <span className="text-slate-500">symbols_enabled</span>{' '}
+                    {mockExports.status.value.symbolsEnabled.join(', ')}
+                  </div>
+                </div>
+              ) : null}
+              {mockExports.market.rows && mockExports.market.rows.length > 0 ? (
+                <div className="text-xs text-slate-400">
+                  <span className="text-slate-500">Market snapshot rows:</span>{' '}
+                  {mockExports.market.rows.length} —{' '}
+                  {mockExports.market.rows.map((r) => `${r.symbol} (last tick ${r.lastTickTimeUtc})`).join(' · ')}
+                </div>
+              ) : null}
+              <p className="text-xs text-amber-200/90" data-testid="bridge-mock-import-diagnostics">
+                Import diagnostics: {mockDiag.format}
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* Terminal overview grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4" data-testid="bridge-terminals-grid">
