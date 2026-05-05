@@ -1,12 +1,16 @@
 import { Layout } from '@/components/Layout';
 import { BacktestStatusBadge, DirectionBadge } from '@/components/StatusBadge';
 import { mockBacktests } from '@/mock/backtests';
+import { getCheckpoint8MockApprovalForParameterSet, getCheckpoint8MockRunForParameterSet } from '@workspace/mapazapp-core';
 import { Link, useParams } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 
 export default function BacktestDetailPage() {
   const params = useParams<{ id: string }>();
-  const bt = mockBacktests.find(b => b.id === params.id);
+  const id = params.id ?? '';
+  const bt = mockBacktests.find((b) => b.id === id);
+  const cp8Approval = getCheckpoint8MockApprovalForParameterSet(id);
+  const cp8Run = getCheckpoint8MockRunForParameterSet(id);
 
   if (!bt) {
     return (
@@ -44,6 +48,35 @@ export default function BacktestDetailPage() {
             <p className="text-xs text-emerald-500 mt-2">Approved: {new Date(bt.approvedAt).toLocaleString()}</p>
           )}
         </div>
+
+        {cp8Approval && cp8Run && (
+          <div
+            className="rounded-lg border border-slate-700 bg-slate-900/40 p-4 text-sm space-y-2"
+            data-testid="backtest-cp8-advisory"
+          >
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Checkpoint 8 — import eval (mock)</p>
+            <p className="text-slate-300">
+              Dataset split: <span className="font-mono text-slate-400">{cp8Run.datasetSplit}</span> · Advisory status:{' '}
+              <span className="font-mono text-slate-400">{cp8Approval.status}</span> · Approved for:{' '}
+              <span className="font-mono text-slate-400">{cp8Approval.approvedFor}</span>
+            </p>
+            {cp8Approval.blockingReasons.length > 0 && (
+              <p className="text-xs text-amber-300/90">
+                Blocking: {cp8Approval.blockingReasons.join(', ')}
+              </p>
+            )}
+            {cp8Approval.warningReasons.filter((c) => c.startsWith('BACKTEST_APPROVED_')).length > 0 && (
+              <p className="text-xs text-slate-500">
+                Advisory codes: {cp8Approval.warningReasons.filter((c) => c.startsWith('BACKTEST_APPROVED_')).join(', ')}
+              </p>
+            )}
+            <p className="text-xs text-slate-500 font-mono">
+              Core metric snapshot (from fictional fixture trades): PF {cp8Approval.metricSnapshot.profitFactor === Number.POSITIVE_INFINITY ? '∞' : cp8Approval.metricSnapshot.profitFactor.toFixed(2)} · expectancyR{' '}
+              {cp8Approval.metricSnapshot.expectancyR.toFixed(3)} · maxDDR {cp8Approval.metricSnapshot.maxDrawdownR.toFixed(2)} · trades{' '}
+              {cp8Approval.metricSnapshot.tradeCount}
+            </p>
+          </div>
+        )}
 
         {bt.status !== 'PENDING' && (
           <>

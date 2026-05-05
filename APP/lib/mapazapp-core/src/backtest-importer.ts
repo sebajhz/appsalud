@@ -1,0 +1,321 @@
+import type { AccountId, BacktestRunId, BacktestTradeId } from "./ids";
+import { calculateBacktestSummary } from "./backtest-metrics";
+import type {
+  BacktestDatasetSplit,
+  BacktestImportError,
+  BacktestImportResult,
+  BacktestImportWarning,
+  BacktestRun,
+  BacktestSourceType,
+  BacktestTrade,
+  BacktestTradeDirection,
+  ImportBacktestCsvOptions,
+  IsoDateTimeString,
+} from "./backtest-types";
+
+const REQUIRED_HEADERS = [
+  "trade_id",
+  "direction",
+  "entry_time",
+  "exit_time",
+  "entry_price",
+  "exit_price",
+  "result_r",
+] as const;
+
+/** Maps alternative header names → canonical (post-normalization). */
+const HEADER_ALIASES: Record<string, string> = {
+  id: "trade_id",
+  tradeid: "trade_id",
+  result_rr: "result_r",
+  resultr: "result_r",
+  r: "result_r",
+  pnl_r: "result_r",
+};
+
+function normalizeHeader(h: string): string {
+  return h
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/-/g, "_");
+}
+
+function parseCsvLine(line: string): string[] {
+  const out: string[] = [];
+  let cur = "";
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      inQuote = !inQuote;
+    } else if (c === "," && !inQuote) {
+      out.push(cur.trim());
+      cur = "";
+    } else {
+      cur += c;
+    }
+  }
+  out.push(cur.trim());
+  return out.map((s) => s.replace(/^"|"$/g, ""));
+}
+
+function splitCsvRows(text: string): string[] {
+  return text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+}
+
+function parseDirection(raw: string, row: number): BacktestTradeDirection | null {
+  const u = raw.trim().toUpperCase();
+  if (u === "BUY" || u === "LONG") return "BUY";
+  if (u === "SELL" || u === "SHORT") return "SELL";
+  return null;
+}
+
+function parseNumber(raw: string, field: string, row: number): { ok: true; value: number } | { ok: false; message: string } {
+  const t = raw.trim();
+  if (t === "") return { ok: false, message: `${field} is empty (row ${row})` };
+  const n = Number(t);
+  if (!Number.isFinite(n)) return { ok: false, message: `${field} is not a finite number: ${raw} (row ${row})` };
+  return { ok: true, value: n };
+}
+
+function resolveHeaderIndex(headerCells: string[]): Map<string, number> {
+  const map = new Map<string, number>();
+  headerCells.forEach((h, i) => {
+    let key = normalizeHeader(h);
+    key = HEADER_ALIASES[key] ?? key;
+    if (!map.has(key)) map.set(key, i);
+  });
+  return map;
+}
+
+function pick(
+  row: string[],
+  col: Map<string, number>,
+  name: string,
+): string | undefined {
+  const idx = col.get(name);
+  if (idx === undefined) return undefined;
+  return row[idx];
+}
+
+/**
+ * Pure CSV → trades. Does not read disk, call MT5, or persist.
+ * Header row required; snake_case columns as in TestEA-style export (flexible aliases).
+ */
+export function importBacktestTradesFromCsv(csvText: string, options: ImportBacktestCsvOptions): BacktestImportResult {
+  const errors: BacktestImportError[] = [];
+  const warnings: BacktestImportWarning[] = [];
+  const trades: BacktestTrade[] = [];
+
+  const rows = splitCsvRows(csvText);
+  if (rows.length < 2) {
+    errors.push({ code: "CSV_NO_DATA", message: "CSV must include a header row and at least one data row." });
+    return { ok: false, trades: [], errors, warnings };
+  }
+
+  const headerCells = parseCsvLine(rows[0]!);
+  const col = resolveHeaderIndex(headerCells);
+
+  for (const req of REQUIRED_HEADERS) {
+    if (!col.has(req)) {
+      errors.push({
+        code: "CSV_MISSING_COLUMN",
+        message: `Missing required column "${req}" (normalized header).`,
+      });
+    }
+  }
+  if (errors.length > 0) {
+    return { ok: false, trades: [], errors, warnings };
+  }
+
+  let runId = options.runId?.trim();
+  if (!runId) {
+    runId = `synthetic-run-${options.parameterSetId}-${rows.length - 1}`;
+    warnings.push({
+      code: "CSV_RUN_ID_SYNTHETIC",
+      message: "run_id not provided in options; synthesized run id for import assembly.",
+    });
+  }
+
+  const importedAt = options.importedAt ?? "1970-01-01T00:00:00.000Z";
+
+  for (let r = 1; r < rows.length; r++) {
+    const rowNum = r + 1;
+    const cells = parseCsvLine(rows[r]!);
+    if (cells.length === 1 && cells[0] === "") continue;
+
+    const tradeIdRaw = pick(cells, col, "trade_id");
+    if (!tradeIdRaw?.trim()) {
+      errors.push({ code: "CSV_ROW_TRADE_ID", message: "Missing trade_id", row: rowNum });
+      continue;
+    }
+
+    const dirRaw = pick(cells, col, "direction") ?? "";
+    const direction = parseDirection(dirRaw, rowNum);
+    if (!direction) {
+      errors.push({ code: "CSV_ROW_DIRECTION", message: `Invalid direction: ${dirRaw}`, row: rowNum });
+      continue;
+    }
+
+    const entryTime = pick(cells, col, "entry_time")?.trim();
+    const exitTime = pick(cells, col, "exit_time")?.trim();
+    if (!entryTime) {
+      errors.push({ code: "CSV_ROW_ENTRY_TIME", message: "Missing entry_time", row: rowNum });
+      continue;
+    }
+    if (!exitTime) {
+      errors.push({ code: "CSV_ROW_EXIT_TIME", message: "Missing exit_time", row: rowNum });
+      continue;
+    }
+
+    const ep = parseNumber(pick(cells, col, "entry_price") ?? "", "entry_price", rowNum);
+    const xp = parseNumber(pick(cells, col, "exit_price") ?? "", "exit_price", rowNum);
+    const rr = parseNumber(pick(cells, col, "result_r") ?? "", "result_r", rowNum);
+    if (!ep.ok) {
+      errors.push({ code: "CSV_ROW_NUMERIC", message: ep.message, row: rowNum });
+      continue;
+    }
+    if (!xp.ok) {
+      errors.push({ code: "CSV_ROW_NUMERIC", message: xp.message, row: rowNum });
+      continue;
+    }
+    if (!rr.ok) {
+      errors.push({ code: "CSV_ROW_NUMERIC", message: rr.message, row: rowNum });
+      continue;
+    }
+
+    const rowStrategy = pick(cells, col, "strategy_id")?.trim() || options.strategyId;
+    const rowPs = pick(cells, col, "parameter_set_id")?.trim() || options.parameterSetId;
+    const rowSym = pick(cells, col, "symbol")?.trim() || options.canonicalSymbol;
+
+    if (pick(cells, col, "strategy_id")?.trim() && pick(cells, col, "strategy_id")!.trim() !== options.strategyId) {
+      warnings.push({
+        code: "CSV_STRATEGY_OVERRIDE",
+        message: `Row ${rowNum}: strategy_id in CSV differs from import options (using CSV value).`,
+        row: rowNum,
+      });
+    }
+    if (pick(cells, col, "parameter_set_id")?.trim() && pick(cells, col, "parameter_set_id")!.trim() !== options.parameterSetId) {
+      warnings.push({
+        code: "CSV_PARAMETER_SET_OVERRIDE",
+        message: `Row ${rowNum}: parameter_set_id in CSV differs from import options (using CSV value).`,
+        row: rowNum,
+      });
+    }
+
+    let resultMoney = 0;
+    const moneyRaw = pick(cells, col, "result_money");
+    if (moneyRaw !== undefined && moneyRaw.trim() !== "") {
+      const m = parseNumber(moneyRaw, "result_money", rowNum);
+      if (!m.ok) {
+        warnings.push({ code: "CSV_RESULT_MONEY_INVALID", message: m.message, row: rowNum });
+      } else {
+        resultMoney = m.value;
+      }
+    } else {
+      warnings.push({
+        code: "CSV_RESULT_MONEY_MISSING",
+        message: `Row ${rowNum}: result_money missing — defaulted to 0 (R remains source of truth for metrics).`,
+        row: rowNum,
+      });
+    }
+
+    const brokerSymbol = pick(cells, col, "broker_symbol")?.trim() || options.brokerSymbol;
+    const accountCell = pick(cells, col, "account_id")?.trim();
+    const accountId = (accountCell || options.accountId) as AccountId | undefined;
+
+    const slRaw = pick(cells, col, "sl");
+    let sl: number | undefined;
+    if (slRaw !== undefined && slRaw.trim() !== "") {
+      const p = parseNumber(slRaw, "sl", rowNum);
+      if (p.ok) sl = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+
+    const tpRaw = pick(cells, col, "tp");
+    let tp: number | undefined;
+    if (tpRaw !== undefined && tpRaw.trim() !== "") {
+      const p = parseNumber(tpRaw, "tp", rowNum);
+      if (p.ok) tp = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+
+    const zoneId = pick(cells, col, "zone_id")?.trim();
+    const exitReason = pick(cells, col, "exit_reason")?.trim();
+
+    const trade: BacktestTrade = {
+      tradeId: tradeIdRaw.trim() as BacktestTradeId,
+      runId: runId as BacktestRunId,
+      strategyId: rowStrategy,
+      parameterSetId: rowPs,
+      canonicalSymbol: rowSym,
+      brokerSymbol,
+      accountId,
+      direction,
+      entryTime,
+      exitTime,
+      entryPrice: ep.value,
+      exitPrice: xp.value,
+      sl,
+      tp,
+      resultMoney,
+      resultR: rr.value,
+      exitReason,
+    };
+    if (zoneId) trade.zoneId = zoneId;
+    trades.push(trade);
+  }
+
+  const ok = errors.length === 0;
+  return { ok, trades: ok ? trades : [], errors, warnings };
+}
+
+
+/** Build a `BacktestRun` envelope from successful CSV import + options (still pure / in-memory). */
+export function assembleBacktestRunFromImportedTrades(
+  importResult: BacktestImportResult,
+  options: ImportBacktestCsvOptions,
+): BacktestRun | null {
+  if (!importResult.ok || importResult.trades.length === 0) return null;
+
+  const runId = importResult.trades[0]!.runId;
+  const importedAt = options.importedAt ?? "1970-01-01T00:00:00.000Z";
+  const dateFrom =
+    options.dateFrom ??
+    importResult.trades.reduce((a, t) => (t.entryTime < a ? t.entryTime : a), importResult.trades[0]!.entryTime);
+  const dateTo =
+    options.dateTo ??
+    importResult.trades.reduce((a, t) => (t.exitTime > a ? t.exitTime : a), importResult.trades[0]!.exitTime);
+
+  const summary = calculateBacktestSummary(importResult.trades);
+
+  return {
+    runId,
+    strategyId: options.strategyId,
+    parameterSetId: options.parameterSetId,
+    canonicalSymbol: options.canonicalSymbol,
+    brokerSymbol: options.brokerSymbol,
+    accountId: options.accountId,
+    sourceType: options.sourceType,
+    datasetSplit: options.datasetSplit,
+    dateFrom,
+    dateTo,
+    importedAt,
+    rawFileName: options.rawFileName,
+    summary,
+    trades: importResult.trades,
+    warnings: importResult.warnings,
+    notes: "Assembled from in-memory CSV import — fictional until real TestEA export is wired.",
+  };
+}
+
+/** Convenience: parse CSV and assemble run when `ok`. */
+export function importBacktestRunFromCsvText(
+  csvText: string,
+  options: ImportBacktestCsvOptions,
+): { importResult: BacktestImportResult; run: BacktestRun | null } {
+  const importResult = importBacktestTradesFromCsv(csvText, options);
+  const run = importResult.ok ? assembleBacktestRunFromImportedTrades(importResult, options) : null;
+  return { importResult, run };
+}

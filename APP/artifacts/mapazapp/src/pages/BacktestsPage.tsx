@@ -4,10 +4,18 @@ import { mockBacktests } from '@/mock/backtests';
 import { Link } from 'wouter';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { MOCK_CHECKPOINT7_STRATEGY_REGISTRY } from '@/services/mockTradeReviewDataSource';
+import { getCheckpoint8MockApprovalForParameterSet } from '@workspace/mapazapp-core';
 
 function registryParameterSetStatus(parameterSetId: string): string {
   const ps = MOCK_CHECKPOINT7_STRATEGY_REGISTRY.parameterSets.find((p) => p.parameterSetId === parameterSetId);
   return ps?.status ?? '—';
+}
+
+/** Checkpoint 8 advisory label from core fixtures (fictional); not live import. */
+function checkpoint8AdvisoryLabel(parameterSetId: string): string {
+  const a = getCheckpoint8MockApprovalForParameterSet(parameterSetId);
+  if (!a) return '—';
+  return `${a.status} · ${a.approvedFor}`;
 }
 
 export default function BacktestsPage() {
@@ -19,7 +27,8 @@ export default function BacktestsPage() {
         <p className="text-sm text-slate-400">
           Parameter sets shown here are mock backtest rows. Formal lifecycle status for trade review vs alerts comes from
           the checkpoint 7 strategy registry (<span className="font-mono text-slate-500">Registry status</span> column).
-          There is no live scanner in this build.
+          <span className="font-mono text-slate-500"> CP8 import eval</span> shows a fictional advisory outcome from core
+          checkpoint-8 fixtures (CSV/backtest model skeleton — not MT5). There is no live scanner in this build.
         </p>
 
         <div className="rounded-lg border border-slate-800 overflow-x-auto" data-testid="backtests-table">
@@ -29,6 +38,7 @@ export default function BacktestsPage() {
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Name</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Registry status</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">CP8 import eval</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Symbol</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">TF</th>
                 <th className="text-right px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Win %</th>
@@ -56,6 +66,13 @@ export default function BacktestsPage() {
                     <td className="px-4 py-3"><BacktestStatusBadge status={bt.status} /></td>
                     <td className="px-4 py-3 font-mono text-xs text-slate-400" title="From checkpoint 7 mock registry">
                       {registryParameterSetStatus(bt.id)}
+                    </td>
+                    <td
+                      className="px-4 py-3 font-mono text-xs text-slate-500 max-w-[14rem] truncate"
+                      title="Checkpoint 8 fictional import + advisory evaluation (core fixtures)"
+                      data-testid={`backtest-cp8-${bt.id}`}
+                    >
+                      {checkpoint8AdvisoryLabel(bt.id)}
                     </td>
                     <td className="px-4 py-3 text-slate-300">{bt.symbol}</td>
                     <td className="px-4 py-3 text-slate-400 font-mono text-xs">{bt.timeframe}</td>

@@ -352,6 +352,8 @@ interface BacktestParameterSet {
 
 **Future source:** `GET /api/backtests` + `GET /api/backtests/:id/account-compatibility` — stored in DB, run against MT5 Strategy Tester results.
 
+**Checkpoint 8 (core + UI copy):** `@workspace/mapazapp-core` defines a **separate** canonical backtest run/trade model and a **pure CSV text** importer skeleton for future TestEA-style rows. The dashboard may show an **advisory** “CP8 import eval” line from **fictional core fixtures** (`getCheckpoint8MockApprovalForParameterSet`) when the mock row’s `id` matches a fixture parameter set — this does **not** replace `mockBacktests` numbers, does **not** read uploaded files, and is **not** MT5 output.
+
 ---
 
 ## Zone (`zones.ts`)

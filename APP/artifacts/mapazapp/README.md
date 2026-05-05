@@ -2,7 +2,7 @@
 
 **Workspace context:** this folder is `APP/artifacts/mapazapp` inside the Mapazapp repo. The **pnpm workspace root** is `APP/`. Product planning lives in the repo’s `00_START_HERE/` and `Mapazapp_Replit_Handoff_V1/`; quick navigation for Cursor: `00_START_HERE/CURSOR_NAVIGATION_NOTE.md`. `APP/artifacts/mockup-sandbox` is not this product; `APP/artifacts/api-server` is Replit scaffold only (ignore for mock work).
 
-**Shared core:** `@workspace/mapazapp-core` under `APP/lib/mapazapp-core/` — checkpoints 1–7 (normalization, IFVG detection skeleton, **`evaluateTradeReviewPlan`**, account guard, **strategy / parameter-set registry**). From `APP/`: `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp test`. Assumptions: `docs/IMPLEMENTATION_ASSUMPTIONS.md`.
+**Shared core:** `@workspace/mapazapp-core` under `APP/lib/mapazapp-core/` — checkpoints 1–8 (normalization, IFVG detection skeleton, **`evaluateTradeReviewPlan`**, account guard, **strategy / parameter-set registry**, **backtest run/trade types + CSV import skeleton + advisory `evaluateBacktestApproval`**). From `APP/`: `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp test`. Assumptions: `docs/IMPLEMENTATION_ASSUMPTIONS.md`.
 
 **Dashboard services (checkpoint 4):** `src/services/mockTradeReviewDataSource.ts` exposes **`createMockDashboardDataSource()`** — account snapshot, zones, alerts, and **core-generated `TradeReviewPlan`** rows per `accountId` (mock-only, no network). Home, Market/Zones, and Zone Detail consume it; see `docs/CURSOR_HANDOFF.md`.
 
@@ -11,6 +11,8 @@
 **Checkpoint 6 — account guard core:** `@workspace/mapazapp-core` adds **`evaluateAccountGuard`** + types/reasons/settings; mock **`mapMockRiskToTradePlanGuard`** feeds **`evaluateTradeReviewPlan`**. Dashboard **`getAccountGuardEvaluation`**. Core tests: `lib/mapazapp-core/tests/account-guard.test.ts`. Minimal UI: Home (guard hint), Risk Guard technical block, Zone Detail technical snippet.
 
 **Checkpoint 7 — parameter-set registry:** core **`evaluateParameterSetCompatibility`**, **`createCheckpoint7MockParameterSetRegistry`**, dashboard **`MOCK_CHECKPOINT7_STRATEGY_REGISTRY`** + per-zone **`registryCompatibility`** on trade review rows. **`TRADE_READY`** requires **`approved_for_trade_review`** for that symbol/account — alerts-only / draft / validated sets do not. Core tests: `lib/mapazapp-core/tests/checkpoint7-strategy-registry.test.ts`. UI: Home (registry block banner), Zones (registry hint), Zone Detail (registry panel), Backtests (“Registry status” column).
+
+**Checkpoint 8 — backtest model & importer skeleton:** core **`importBacktestTradesFromCsv`**, **`evaluateBacktestApproval`**, metrics + fictional **`backtest-fixtures`** (not MT5). Registry is **not** auto-updated from imports. UI: Backtests table “CP8 import eval” column; backtest detail shows advisory block when a fixture id matches. Core tests: `lib/mapazapp-core/tests/checkpoint8-backtest.test.ts`; display smoke: `src/services/backtestCheckpoint8Display.test.ts`.
 
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 

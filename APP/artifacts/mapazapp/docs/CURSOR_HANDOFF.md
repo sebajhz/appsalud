@@ -15,8 +15,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## Shared core package (`@workspace/mapazapp-core`)
 
 - **Location:** `APP/lib/mapazapp-core/`
-- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`). **No** React, HTTP, MT5, DB, WebSocket, order execution, or live scanner.
-- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only).
+- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**. **No** React, HTTP, MT5, DB, WebSocket, order execution, or live scanner.
+- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval in `tests/checkpoint8-backtest.test.ts`.
 - **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
 
 ### Strategy detection modules (checkpoint 2)
@@ -97,6 +97,18 @@ This document gives Cursor (or any future developer) everything needed to contin
 | Mock / dashboard | **`MOCK_CHECKPOINT7_STRATEGY_REGISTRY`** in **`mockTradeReviewDataSource.ts`**; per-row **`registryCompatibility`** on **`TradeReviewPlanRow`**; mock **`zones.ts`** / **`backtests.ts`** ids aligned with registry; Home / Zones / Zone Detail / Backtests minimal UI. |
 
 **Rule:** **`TRADE_READY`** in core requires **`parameterSetStatus === approved_for_trade_review`** for that symbol and account (plus existing gates). **`approved_for_alerts`** and draft/validated rows must **not** produce trade-ready review — they surface as **`PARAMETER_SET_ALERTS_ONLY`** / **`PARAMETER_SET_DRAFT`** / **`PARAMETER_SET_NOT_VALIDATED`** in reasons when the parameter-set gate blocks.
+
+### Backtest result model (checkpoint 8)
+
+| Module / export | Role |
+|-----------------|------|
+| `backtest-types.ts` | `BacktestRun`, `BacktestTrade`, `BacktestSummary`, import/approval DTOs, `BacktestDatasetSplit`, `BacktestSourceType`. |
+| `backtest-metrics.ts` | Pure **`calculateBacktestSummary`** (+ granular metric helpers) from trade arrays — empty-safe. |
+| `backtest-importer.ts` | **`importBacktestTradesFromCsv`**, **`assembleBacktestRunFromImportedTrades`** — string CSV only; validates required columns. |
+| `backtest-approval.ts` | **`evaluateBacktestApproval`** (advisory statuses; does **not** mutate registry), **`deriveRecommendedParameterSetStatusFromBacktest`**. |
+| `backtest-fixtures.ts` | Fictional runs + **`getCheckpoint8MockApprovalForParameterSet`** for dashboard/tests. |
+
+**Not implemented:** real MT5 Strategy Tester / TestEA file ingest, persistence, registry auto-update from imports, or optimization loops.
 
 ## What remains mock-only (dashboard + integration)
 

@@ -6,3 +6,5 @@ export type BrokerSymbol = string;
 export type StrategyId = string;
 export type ParameterSetId = string;
 export type ZoneId = string;
+export type BacktestRunId = string;
+export type BacktestTradeId = string;

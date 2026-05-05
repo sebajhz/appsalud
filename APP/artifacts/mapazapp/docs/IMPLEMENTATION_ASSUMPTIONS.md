@@ -151,3 +151,14 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Mock fixture:** `strategy-registry-fixtures.ts` exports **`createCheckpoint7MockParameterSetRegistry()`** — **not** optimized, **not** profitable, **not** MT5-validated; real approval must come from future backtest import + governance.
 - **Trade plan wiring:** optional **`TradePlanInput.registryCompatibility`** enriches **`APPROVED_PARAMETER_SET_REQUIRED`** → **`tradePlanReasonsForParameterSetHardGate`** in **`trade-plan-reasons.ts`**.
 - **Product rule:** a detected mock zone must **not** become **`TRADE_READY`** unless strategy exists, parameter set exists, symbol/account/registry status, score, and account guard all align — see dashboard Vitest **`mockTradeReview.test.ts`** and core **`checkpoint7-strategy-registry.test.ts`**.
+
+---
+
+## 18. Backtest result model & CSV importer skeleton (checkpoint 8 — `@workspace/mapazapp-core`)
+
+- **Domain modules:** `backtest-types.ts` (runs, trades, import/approval DTOs), `backtest-metrics.ts` (pure R/money summaries from trade arrays), `backtest-importer.ts` (**`importBacktestTradesFromCsv`** on in-memory CSV text only — **no disk, no MT5, no HTTP**), `backtest-approval.ts` (**`evaluateBacktestApproval`** — advisory only), `backtest-settings.ts` (**`createDefaultBacktestMetricThresholdsForTests`** — dev defaults), `backtest-reasons.ts`, `backtest-fixtures.ts` (fictional runs + pre-evaluated rows).
+- **Product rule alignment:** real parameter-set promotion remains **explicit** in a future checkpoint; **`deriveRecommendedParameterSetStatusFromBacktest`** maps advisory tiers to suggested registry statuses **without** writing the registry.
+- **CSV:** TestEA-style snake_case headers (`trade_id`, `result_r`, …); missing **`result_money`** → import continues with **warnings**; row-level parse failures → **`ok: false`** and **no trades** returned.
+- **Metrics:** profit factor uses gross win R / gross loss R; **no losing trades** but wins → **`Infinity`** sentinel (approval treats as passing PF floor).
+- **Dashboard:** Backtests list adds **CP8 import eval** from **`getCheckpoint8MockApprovalForParameterSet`**; detail page shows fixture split + advisory block when a fixture exists for that `parameter_set_id`. All values remain **mock fiction** — not Strategy Tester output.
+- **Tests:** `lib/mapazapp-core/tests/checkpoint8-backtest.test.ts`; dashboard **`src/services/backtestCheckpoint8Display.test.ts`**.
