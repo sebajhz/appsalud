@@ -209,6 +209,78 @@ const PRESENTATION: Record<string, ReasonPresentation> = {
     severity: "info",
     category: "system",
   },
+  STRATEGY_NOT_FOUND: {
+    simple: "Strategy is not registered for this zone.",
+    technical: "Registry: strategy not found.",
+    severity: "warning",
+    category: "account",
+  },
+  STRATEGY_NOT_ACTIVE: {
+    simple: "Strategy is paused, retired, or draft.",
+    technical: "Registry: strategy not active.",
+    severity: "warning",
+    category: "account",
+  },
+  PARAMETER_SET_NOT_FOUND: {
+    simple: "Parameter set is not in the registry.",
+    technical: "Registry: parameter set not found.",
+    severity: "warning",
+    category: "account",
+  },
+  PARAMETER_SET_DRAFT: {
+    simple: "Parameter set is still draft — not cleared for trade-ready review.",
+    technical: "Registry: draft parameter set.",
+    severity: "warning",
+    category: "account",
+  },
+  PARAMETER_SET_NOT_VALIDATED: {
+    simple: "Parameter set is not approved for trade-ready review (lab / demo only).",
+    technical: "Registry: not validated for trade review.",
+    severity: "warning",
+    category: "account",
+  },
+  PARAMETER_SET_ALERTS_ONLY: {
+    simple: "Parameter set is alerts-only — not for trade-ready review.",
+    technical: "Registry: approved_for_alerts only.",
+    severity: "info",
+    category: "account",
+  },
+  PARAMETER_SET_REJECTED: {
+    simple: "Parameter set was rejected in the registry.",
+    technical: "Registry: rejected.",
+    severity: "danger",
+    category: "account",
+  },
+  PARAMETER_SET_RETIRED: {
+    simple: "Parameter set is retired.",
+    technical: "Registry: retired.",
+    severity: "warning",
+    category: "account",
+  },
+  PARAMETER_SET_SYMBOL_MISMATCH: {
+    simple: "Parameter set symbol does not match this zone.",
+    technical: "Registry: symbol mismatch.",
+    severity: "warning",
+    category: "account",
+  },
+  PARAMETER_SET_BROKER_SYMBOL_MISMATCH: {
+    simple: "Broker symbol does not match the registered parameter set.",
+    technical: "Registry: broker symbol mismatch.",
+    severity: "warning",
+    category: "account",
+  },
+  PARAMETER_SET_ACCOUNT_NOT_ALLOWED: {
+    simple: "This account is not allowed to use this parameter set.",
+    technical: "Registry: account not in allowedAccountIds.",
+    severity: "warning",
+    category: "account",
+  },
+  PARAMETER_SET_ACCOUNT_BLOCKED: {
+    simple: "This account is blocked for this parameter set.",
+    technical: "Registry: blockedAccountIds.",
+    severity: "danger",
+    category: "account",
+  },
 };
 
 /** Hard-gate codes may appear as synthetic reason `code` from core edge paths. */

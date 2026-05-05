@@ -9,7 +9,7 @@ import type {
   TradePlanStatus,
 } from "./trade-plan-types";
 import { collectTradePlanHardGateFailures, scoreBlocksTradeReady } from "./trade-plan-gates";
-import { tradePlanReason } from "./trade-plan-reasons";
+import { tradePlanReason, tradePlanReasonsForParameterSetHardGate } from "./trade-plan-reasons";
 import { computeTradePlanPrices, computeTradePlanRiskMetrics } from "./trade-plan-targets";
 
 function resolvedScore(input: TradePlanInput): number | undefined {
@@ -275,7 +275,7 @@ export function evaluateTradeReviewPlan(input: TradePlanInput): TradePlanEvaluat
 
   if (gateFailures.length > 0) {
     for (const g of gateFailures) {
-      noTradeReasons.push(...hardGateToReasons(g));
+      noTradeReasons.push(...hardGateToReasons(g, input));
     }
     return assemble(
       zone,
@@ -353,7 +353,10 @@ export function evaluateTradeReviewPlan(input: TradePlanInput): TradePlanEvaluat
   );
 }
 
-function hardGateToReasons(g: import("./trade-plan-types").TradePlanHardGate): TradePlanReason[] {
+function hardGateToReasons(
+  g: import("./trade-plan-types").TradePlanHardGate,
+  input: TradePlanInput,
+): TradePlanReason[] {
   switch (g) {
     case "SYMBOL_PROFILE_MISSING":
       return [tradePlanReason("MISSING_SYMBOL_PROFILE")];
@@ -382,7 +385,7 @@ function hardGateToReasons(g: import("./trade-plan-types").TradePlanHardGate): T
     case "ACCOUNT_ID_REQUIRED":
       return [tradePlanReason("ACCOUNT_ID_REQUIRED")];
     case "APPROVED_PARAMETER_SET_REQUIRED":
-      return [tradePlanReason("PARAMETER_SET_NOT_APPROVED")];
+      return tradePlanReasonsForParameterSetHardGate(input.registryCompatibility);
     case "CONFIRMATION_ATR_MISSING":
       return [tradePlanReason("MISSING_ATR_FOR_PLAN")];
     case "SL_DISTANCE_ABOVE_MAX_ATR":

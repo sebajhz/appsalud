@@ -1,4 +1,5 @@
 import type { TradePlanReason } from "./trade-plan-types";
+import type { ParameterSetBlockReason } from "./strategy-registry-types";
 
 /** Stable machine-facing codes for UI / logs / future i18n. */
 export type TradePlanReasonCode =
@@ -28,7 +29,19 @@ export type TradePlanReasonCode =
   | "SCORE_BELOW_MINIMUM"
   | "NEAR_SWEEP_NOT_TRADE_READY"
   | "TRADE_READY_REVIEW_ONLY"
-  | "REFERENCE_ENTRY_FALLBACK_MIDPOINT";
+  | "REFERENCE_ENTRY_FALLBACK_MIDPOINT"
+  | "STRATEGY_NOT_FOUND"
+  | "STRATEGY_NOT_ACTIVE"
+  | "PARAMETER_SET_NOT_FOUND"
+  | "PARAMETER_SET_DRAFT"
+  | "PARAMETER_SET_NOT_VALIDATED"
+  | "PARAMETER_SET_ALERTS_ONLY"
+  | "PARAMETER_SET_REJECTED"
+  | "PARAMETER_SET_RETIRED"
+  | "PARAMETER_SET_SYMBOL_MISMATCH"
+  | "PARAMETER_SET_BROKER_SYMBOL_MISMATCH"
+  | "PARAMETER_SET_ACCOUNT_NOT_ALLOWED"
+  | "PARAMETER_SET_ACCOUNT_BLOCKED";
 
 const MESSAGES: Record<TradePlanReasonCode, string> = {
   ZONE_VALID: "Zone geometry is valid for review.",
@@ -58,6 +71,18 @@ const MESSAGES: Record<TradePlanReasonCode, string> = {
   NEAR_SWEEP_NOT_TRADE_READY: "Only a near sweep is present; trade-ready requires a confirmed sweep unless explicitly allowed.",
   TRADE_READY_REVIEW_ONLY: "Setup passes gates for human review only — not an order or execution signal.",
   REFERENCE_ENTRY_FALLBACK_MIDPOINT: "Confirmation close was unavailable; midpoint is used as reference entry.",
+  STRATEGY_NOT_FOUND: "Strategy is not registered for this zone.",
+  STRATEGY_NOT_ACTIVE: "Strategy is paused, retired, or draft — not active for trade review.",
+  PARAMETER_SET_NOT_FOUND: "Parameter set is not registered.",
+  PARAMETER_SET_DRAFT: "Parameter set is draft — not cleared for trade-ready review.",
+  PARAMETER_SET_NOT_VALIDATED: "Parameter set is not approved for trade review (tested/validated/demo only).",
+  PARAMETER_SET_ALERTS_ONLY: "Parameter set is approved for alerts only — not for trade-ready review.",
+  PARAMETER_SET_REJECTED: "Parameter set was rejected in the registry.",
+  PARAMETER_SET_RETIRED: "Parameter set is retired.",
+  PARAMETER_SET_SYMBOL_MISMATCH: "Parameter set symbol does not match this zone.",
+  PARAMETER_SET_BROKER_SYMBOL_MISMATCH: "Broker symbol does not match the registered parameter set.",
+  PARAMETER_SET_ACCOUNT_NOT_ALLOWED: "This account is not allowed to use this parameter set.",
+  PARAMETER_SET_ACCOUNT_BLOCKED: "This account is explicitly blocked for this parameter set.",
 };
 
 export function tradePlanReason(code: TradePlanReasonCode, overrideSimple?: string): TradePlanReason {
@@ -65,4 +90,19 @@ export function tradePlanReason(code: TradePlanReasonCode, overrideSimple?: stri
     code,
     messageSimple: overrideSimple ?? MESSAGES[code],
   };
+}
+
+export function tradePlanReasonFromRegistryBlock(block: ParameterSetBlockReason): TradePlanReason {
+  return tradePlanReason(block as TradePlanReasonCode);
+}
+
+/** When `APPROVED_PARAMETER_SET_REQUIRED` fires, surface registry block codes when present. */
+export function tradePlanReasonsForParameterSetHardGate(registryCompatibility?: {
+  blockingReasons: ParameterSetBlockReason[];
+}): TradePlanReason[] {
+  const br = registryCompatibility?.blockingReasons;
+  if (br && br.length > 0) {
+    return br.map((b) => tradePlanReasonFromRegistryBlock(b));
+  }
+  return [tradePlanReason("PARAMETER_SET_NOT_APPROVED")];
 }

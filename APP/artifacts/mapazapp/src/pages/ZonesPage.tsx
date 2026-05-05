@@ -136,6 +136,21 @@ function ZonesContent() {
                         explanation.missingRequirements.length === 0 && (
                           <p className="text-slate-500">Below trade-ready score or context filters.</p>
                         )}
+                      {row && (
+                        <p className="text-[10px] text-slate-600 pt-1" data-testid={`zone-registry-hint-${zone.id}`}>
+                          Registry (trade-review):{" "}
+                          {row.registryCompatibility.allowTradeReview ? (
+                            <span className="text-emerald-500/90">approved</span>
+                          ) : (
+                            <span className="text-amber-400/90">
+                              blocked
+                              {row.registryCompatibility.blockingReasons[0]
+                                ? ` — ${row.registryCompatibility.blockingReasons[0]}`
+                                : ""}
+                            </span>
+                          )}
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -151,6 +166,17 @@ function ZonesContent() {
                       <p>
                         core_plan_status: <span className="text-slate-300">{row.evaluation.plan.status}</span> · rr_calc:{" "}
                         <span className="text-slate-300">{row.evaluation.plan.metrics?.rr?.toFixed(3) ?? "—"}</span>
+                      </p>
+                      <p>
+                        registry_allow_trade_review:{" "}
+                        <span className="text-slate-300">{String(row.registryCompatibility.allowTradeReview)}</span> ·
+                        set_status: <span className="text-slate-300">{row.registryCompatibility.status}</span>
+                      </p>
+                      <p>
+                        registry_block:{" "}
+                        <span className="text-slate-300">
+                          {row.registryCompatibility.blockingReasons.join(", ") || "—"}
+                        </span>
                       </p>
                       <p>
                         reasons:{" "}

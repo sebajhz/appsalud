@@ -6,6 +6,7 @@ import type { SweepStatus } from "./liquidity-sweep";
 import type { SymbolMarketSpec } from "./symbol-profile";
 import type { TradePlanEvaluationSettings, TradePlanTargetModel } from "./trade-plan-settings";
 import type { ZoneCandidate } from "./zone-candidate";
+import type { ParameterSetCompatibilityResult } from "./strategy-registry-types";
 
 /**
  * Lifecycle / UI status for trade review (blueprint §6). Review-only — not execution.
@@ -106,6 +107,8 @@ export interface TradePlanInput {
   zoneMarkedUsed?: boolean;
   zoneMarkedExpired?: boolean;
   zoneMarkedInvalidated?: boolean;
+  /** Checkpoint 7 — optional registry evaluation snapshot for richer gate reasons. */
+  registryCompatibility?: ParameterSetCompatibilityResult;
 }
 
 export interface TradePlanRiskMetrics {

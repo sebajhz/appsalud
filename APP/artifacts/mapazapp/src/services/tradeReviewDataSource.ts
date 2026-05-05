@@ -1,4 +1,9 @@
-import type { AccountGuardResult, AccountId, TradePlanEvaluationResult } from "@workspace/mapazapp-core";
+import type {
+  AccountGuardResult,
+  AccountId,
+  ParameterSetCompatibilityResult,
+  TradePlanEvaluationResult,
+} from "@workspace/mapazapp-core";
 import type { AccountDataSource } from "./accountDataSource";
 import type { Alert, Zone } from "@/mock/types";
 
@@ -6,6 +11,8 @@ import type { Alert, Zone } from "@/mock/types";
 export interface TradeReviewPlanRow {
   zone: Zone;
   evaluation: TradePlanEvaluationResult;
+  /** Checkpoint 7 — parameter set / strategy registry compatibility for this zone + account. */
+  registryCompatibility: ParameterSetCompatibilityResult;
 }
 
 /**
@@ -17,6 +24,6 @@ export interface DashboardMockDataSource extends AccountDataSource {
   getTradeReviewPlansForAccount(accountId: AccountId): TradeReviewPlanRow[];
   getTradeReviewPlanByZoneId(accountId: AccountId, zoneId: string): TradeReviewPlanRow | undefined;
   getAlertsForAccount(accountId: AccountId): Alert[];
-  /** Account-scoped guard with `approvedParameterSetForAccount: true` (headline snapshot, not zone-specific). */
+  /** Account-scoped guard; `approvedParameterSetForAccount` reflects registry (any trade-review-approved set for account). */
   getAccountGuardEvaluation(accountId: AccountId): AccountGuardResult;
 }

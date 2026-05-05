@@ -15,7 +15,7 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## Shared core package (`@workspace/mapazapp-core`)
 
 - **Location:** `APP/lib/mapazapp-core/`
-- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, and **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`). **No** React, HTTP, MT5, DB, WebSocket, order execution, or live scanner.
+- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`). **No** React, HTTP, MT5, DB, WebSocket, order execution, or live scanner.
 - **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only).
 - **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
 
@@ -54,7 +54,7 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## In-process service layer (`src/services/`)
 
 - **Checkpoint 1:** `AccountDataSource` + `createMockAccountDataSource()` — reads existing `src/mock/` data, requires `accountId`, **no** `fetch`, no Express.
-- **Checkpoint 4:** `DashboardMockDataSource` (`tradeReviewDataSource.ts` + `mockTradeReviewDataSource.ts`) — **`createMockDashboardDataSource()`** exposes **`getZonesForAccount`**, **`getTradeReviewPlansForAccount`**, **`getTradeReviewPlanByZoneId`**, **`getAlertsForAccount`**, and **`getAccountSnapshot`** (delegates to checkpoint 1). Mock zones are mapped through **`mapMockZoneToCore.ts`**, risk through **`mapMockRiskToTradePlanGuard.ts`**, symbols through **`mockSymbolProfiles.ts`**, then **`evaluateTradeReviewPlan`** from `@workspace/mapazapp-core`. **No** backend, MT5, execution, WebSocket, or DB.
+- **Checkpoint 4 / 7:** `DashboardMockDataSource` (`tradeReviewDataSource.ts` + `mockTradeReviewDataSource.ts`) — **`createMockDashboardDataSource()`** exposes **`getZonesForAccount`**, **`getTradeReviewPlansForAccount`** (includes **`registryCompatibility`** per row), **`getTradeReviewPlanByZoneId`**, **`getAlertsForAccount`**, and **`getAccountSnapshot`** (delegates to checkpoint 1). Mock zones are mapped through **`mapMockZoneToCore.ts`**, risk through **`mapMockRiskToTradePlanGuard.ts`** with registry-derived **`approvedParameterSetForAccount`**, symbols through **`mockSymbolProfiles.ts`**, then **`evaluateTradeReviewPlan`** from `@workspace/mapazapp-core`. **No** backend, MT5, execution, WebSocket, or DB.
 - **UI wiring:** `HomePage` (review-ready strip + banner counts), `ZonesPage` (core status badge + reason line), and `ZoneDetailPage` (core review block + technical fields) consume the dashboard data source. Other pages still use mock imports directly where unchanged.
 - **Copy / UX:** “Review-ready”, “manual review only”, and **`TradeReviewStatusBadge`** reinforce that **`TRADE_READY`** is **not** an order signal.
 
@@ -82,6 +82,21 @@ This document gives Cursor (or any future developer) everything needed to contin
 | Mock | **`mapMockRiskToTradePlanGuard`** → core guard → **`TradePlanAccountGuardInput`**; **`getAccountGuardEvaluation`** on dashboard data source. |
 
 **Separation:** account guard answers **whether the account may participate in trade review**; trade plan evaluator answers **whether a zone candidate passes lifecycle + score + R:R + spread gates** for **`TRADE_READY`**. Both must pass for **`TRADE_READY`** (account guard still flows through **`TradePlanAccountGuardInput`**).
+
+### Strategy / parameter-set registry (checkpoint 7)
+
+| Module | Role |
+|--------|------|
+| `strategy-registry-types.ts` | **`StrategyDefinition`**, **`ParameterSetDefinition`**, **`ParameterSetRegistry`**, compatibility result types, **`ParameterSetRequestedUsage`**. |
+| `strategy-registry-settings.ts` | **`StrategyRegistryEvaluationSettings`** (broker mismatch vs warn-on-missing). |
+| `strategy-registry-reasons.ts` | Human-readable labels for block/warning codes. |
+| `strategy-registry-evaluator.ts` | **`evaluateParameterSetCompatibility`**, **`accountHasApprovedTradeReviewParameterSet`**. |
+| `strategy-registry-fixtures.ts` | **`createCheckpoint7MockParameterSetRegistry()`** — mock/test doubles only. |
+| `trade-plan-types.ts` | Optional **`TradePlanInput.registryCompatibility`**. |
+| `trade-plan-reasons.ts` | Registry block → **`TradePlanReason`** mapping for **`APPROVED_PARAMETER_SET_REQUIRED`**. |
+| Mock / dashboard | **`MOCK_CHECKPOINT7_STRATEGY_REGISTRY`** in **`mockTradeReviewDataSource.ts`**; per-row **`registryCompatibility`** on **`TradeReviewPlanRow`**; mock **`zones.ts`** / **`backtests.ts`** ids aligned with registry; Home / Zones / Zone Detail / Backtests minimal UI. |
+
+**Rule:** **`TRADE_READY`** in core requires **`parameterSetStatus === approved_for_trade_review`** for that symbol and account (plus existing gates). **`approved_for_alerts`** and draft/validated rows must **not** produce trade-ready review — they surface as **`PARAMETER_SET_ALERTS_ONLY`** / **`PARAMETER_SET_DRAFT`** / **`PARAMETER_SET_NOT_VALIDATED`** in reasons when the parameter-set gate blocks.
 
 ## What remains mock-only (dashboard + integration)
 

@@ -3,6 +3,12 @@ import { BacktestStatusBadge } from '@/components/StatusBadge';
 import { mockBacktests } from '@/mock/backtests';
 import { Link } from 'wouter';
 import { CheckCircle, XCircle } from 'lucide-react';
+import { MOCK_CHECKPOINT7_STRATEGY_REGISTRY } from '@/services/mockTradeReviewDataSource';
+
+function registryParameterSetStatus(parameterSetId: string): string {
+  const ps = MOCK_CHECKPOINT7_STRATEGY_REGISTRY.parameterSets.find((p) => p.parameterSetId === parameterSetId);
+  return ps?.status ?? '—';
+}
 
 export default function BacktestsPage() {
   const { activeAccountId, activeAccount } = useActiveAccount();
@@ -11,8 +17,9 @@ export default function BacktestsPage() {
     <Layout title="Backtests">
       <div className="space-y-5">
         <p className="text-sm text-slate-400">
-          Parameter sets tested against historical data. Only APPROVED sets are used by the live scanner.
-          The "Active Account" column shows whether the selected account (<span className="text-slate-300">{activeAccount.displayName}</span>) is allowed to use each set.
+          Parameter sets shown here are mock backtest rows. Formal lifecycle status for trade review vs alerts comes from
+          the checkpoint 7 strategy registry (<span className="font-mono text-slate-500">Registry status</span> column).
+          There is no live scanner in this build.
         </p>
 
         <div className="rounded-lg border border-slate-800 overflow-x-auto" data-testid="backtests-table">
@@ -21,6 +28,7 @@ export default function BacktestsPage() {
               <tr>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Name</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Registry status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Symbol</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">TF</th>
                 <th className="text-right px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Win %</th>
@@ -46,6 +54,9 @@ export default function BacktestsPage() {
                       <p className="text-xs text-slate-500 font-mono">{bt.id}</p>
                     </td>
                     <td className="px-4 py-3"><BacktestStatusBadge status={bt.status} /></td>
+                    <td className="px-4 py-3 font-mono text-xs text-slate-400" title="From checkpoint 7 mock registry">
+                      {registryParameterSetStatus(bt.id)}
+                    </td>
                     <td className="px-4 py-3 text-slate-300">{bt.symbol}</td>
                     <td className="px-4 py-3 text-slate-400 font-mono text-xs">{bt.timeframe}</td>
                     <td className="px-4 py-3 text-right">

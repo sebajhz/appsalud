@@ -5,6 +5,7 @@
 import type {
   AccountId,
   ConfirmationResult,
+  ParameterSetCompatibilityResult,
   RetestResult,
   SymbolMarketSpec,
   TradePlanInput,
@@ -142,8 +143,10 @@ export function buildTradePlanInputFromMockZone(params: {
   accountId: AccountId;
   tradePlanSettings: TradePlanEvaluationSettings;
   accountGuard: import("@workspace/mapazapp-core").TradePlanAccountGuardInput;
+  /** Checkpoint 7 — registry evaluation for parameter-set gate reasons. */
+  registryCompatibility?: ParameterSetCompatibilityResult;
 }): TradePlanInput {
-  const { zone, symbolProfile, accountId, tradePlanSettings, accountGuard } = params;
+  const { zone, symbolProfile, accountId, tradePlanSettings, accountGuard, registryCompatibility } = params;
   const zc = buildZoneCandidateFromMockZone(zone, symbolProfile, accountId);
   const { retestResult, confirmationResult } = mockRetestAndConfirmationFromZoneState(zone.state);
   const conf = fixConfirmationDirection(zone, confirmationResult);
@@ -177,6 +180,7 @@ export function buildTradePlanInputFromMockZone(params: {
     accountId,
     strategyId: zone.strategy_id,
     parameterSetId: zone.parameter_set_id,
+    registryCompatibility,
     ...zoneLifecycleFlags(zone.state),
   };
 }

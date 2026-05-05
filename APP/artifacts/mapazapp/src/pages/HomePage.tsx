@@ -36,6 +36,9 @@ function HomeContent() {
   const reviewPlans = dashboard.getTradeReviewPlansForAccount(activeAccountId as AccountId);
   const activeZones    = mockZones.filter(z => ['WATCHING', 'RETESTING', 'CONFIRMED', 'TRADE_READY'].includes(z.state));
   const coreTradeReadyPlans = reviewPlans.filter((r) => r.evaluation.plan.status === 'TRADE_READY');
+  const registryUiReadyButBlocked = reviewPlans.filter(
+    (r) => ["TRADE_READY", "CONFIRMED"].includes(r.zone.state) && !r.registryCompatibility.allowTradeReview,
+  );
   const recentAlerts   = dashboard.getAlertsForAccount(activeAccountId as AccountId).slice(0, 4);
   const dailyPnLPositive = account.dailyPnL >= 0;
 
@@ -63,6 +66,20 @@ function HomeContent() {
               )}
             </p>
           )}
+        </div>
+      )}
+
+      {!isTechnical && registryUiReadyButBlocked.length > 0 && (
+        <div
+          className="rounded-lg border border-amber-900/50 bg-amber-950/25 px-4 py-3 text-xs text-amber-100/95"
+          data-testid="home-registry-parameter-block"
+        >
+          <p className="font-medium text-amber-50/95">Parameter set registry</p>
+          <p className="text-amber-200/85 mt-1">
+            {registryUiReadyButBlocked.length === 1
+              ? `${registryUiReadyButBlocked[0].zone.symbol}: mock UI state looks advanced, but this parameter set is not approved for trade-ready review on this account (${registryUiReadyButBlocked[0].registryCompatibility.blockingReasons[0] ?? "registry"}).`
+              : `${registryUiReadyButBlocked.length} setups look advanced in the mock list but are blocked by the registry for trade-ready review — check Zones for details.`}
+          </p>
         </div>
       )}
 

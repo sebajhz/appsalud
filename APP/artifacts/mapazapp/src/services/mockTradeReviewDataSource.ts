@@ -1,11 +1,14 @@
 import type { AccountGuardResult, AccountId, TradePlanEvaluationSettings } from "@workspace/mapazapp-core";
 import {
+  accountHasApprovedTradeReviewParameterSet,
+  createCheckpoint7MockParameterSetRegistry,
   createDefaultAccountGuardSettingsForTests,
+  createDefaultStrategyRegistryEvaluationSettings,
   createDefaultTradePlanEvaluationSettingsForTests,
+  evaluateParameterSetCompatibility,
   evaluateTradeReviewPlan,
 } from "@workspace/mapazapp-core";
 import { mockAlerts } from "@/mock/alerts";
-import { mockBacktests } from "@/mock/backtests";
 import { mockConfig } from "@/mock/config";
 import { mockPropFirmByAccount } from "@/mock/propfirm";
 import { mockRiskByAccount } from "@/mock/risk";
@@ -15,6 +18,11 @@ import { mapMockRiskToTradePlanGuard } from "./mapMockRiskToTradePlanGuard";
 import { getMockSymbolMarketSpec } from "./mockSymbolProfiles";
 import type { DashboardMockDataSource, TradeReviewPlanRow } from "./tradeReviewDataSource";
 import { createMockAccountDataSource } from "./mockAccountDataSource";
+
+/** Shared mock registry (checkpoint 7) — not persisted, not MT5. */
+export const MOCK_CHECKPOINT7_STRATEGY_REGISTRY = createCheckpoint7MockParameterSetRegistry();
+
+const registryEvalSettings = createDefaultStrategyRegistryEvaluationSettings();
 
 /** Align trade-plan operational skips with `AccountGuardSettings` defaults used by the mock mapper. */
 export function createDashboardAccountGuardSettings() {
@@ -35,37 +43,50 @@ export function createDashboardTradePlanSettings(): TradePlanEvaluationSettings 
   };
 }
 
-/** Whether mock backtests approve this parameter set for symbol + account. */
-export function isMockParameterSetApprovedForAccount(
-  parameterSetId: string,
-  canonicalSymbol: string,
-  accountId: string,
-): boolean {
-  const bt = mockBacktests.find((b) => b.id === parameterSetId);
-  if (!bt || bt.status !== "APPROVED") return false;
-  const symbols = bt.symbol.split(",").map((s) => s.trim());
-  if (!symbols.includes(canonicalSymbol)) return false;
-  return bt.allowedAccountIds.includes(accountId);
-}
-
-function evaluateRow(accountId: AccountId, zone: (typeof mockZones)[0], settings: TradePlanEvaluationSettings): TradeReviewPlanRow | null {
+function evaluateRow(
+  accountId: AccountId,
+  zone: (typeof mockZones)[0],
+  settings: TradePlanEvaluationSettings,
+): TradeReviewPlanRow | null {
   const spec = getMockSymbolMarketSpec(accountId, zone.symbol);
   if (!spec) return null;
   const risk = mockRiskByAccount[accountId] ?? mockRiskByAccount[mockConfig.activeAccountId];
   const prop = mockPropFirmByAccount[accountId];
-  const approved = isMockParameterSetApprovedForAccount(zone.parameter_set_id, zone.symbol, accountId);
-  const { tradePlanAccountGuard } = mapMockRiskToTradePlanGuard(risk, approved, {
+
+  const registryCompatibility = evaluateParameterSetCompatibility(
+    {
+      strategyRegistry: MOCK_CHECKPOINT7_STRATEGY_REGISTRY,
+      strategyId: zone.strategy_id,
+      parameterSetId: zone.parameter_set_id,
+      canonicalSymbol: zone.symbol,
+      brokerSymbol: spec.brokerSymbol,
+      accountId,
+      requestedUsage: "trade_review",
+    },
+    registryEvalSettings,
+  );
+
+  const approvedParameterSetForAccount = registryCompatibility.allowTradeReview;
+
+  const { tradePlanAccountGuard } = mapMockRiskToTradePlanGuard(risk, approvedParameterSetForAccount, {
     propFirm: prop,
     accountGuardSettings: createDashboardAccountGuardSettings(),
   });
+
   const input = buildTradePlanInputFromMockZone({
     zone,
     symbolProfile: spec,
     accountId,
     tradePlanSettings: settings,
     accountGuard: tradePlanAccountGuard,
+    registryCompatibility,
   });
-  return { zone, evaluation: evaluateTradeReviewPlan(input) };
+
+  return {
+    zone,
+    evaluation: evaluateTradeReviewPlan(input),
+    registryCompatibility,
+  };
 }
 
 export function createMockDashboardDataSource(): DashboardMockDataSource {
@@ -103,7 +124,12 @@ export function createMockDashboardDataSource(): DashboardMockDataSource {
     getAccountGuardEvaluation(accountId: AccountId): AccountGuardResult {
       const risk = mockRiskByAccount[accountId] ?? mockRiskByAccount[mockConfig.activeAccountId];
       const prop = mockPropFirmByAccount[accountId];
-      return mapMockRiskToTradePlanGuard(risk, true, {
+      const approvedParameterSetForAccount = accountHasApprovedTradeReviewParameterSet(
+        MOCK_CHECKPOINT7_STRATEGY_REGISTRY,
+        accountId,
+        registryEvalSettings,
+      );
+      return mapMockRiskToTradePlanGuard(risk, approvedParameterSetForAccount, {
         propFirm: prop,
         accountGuardSettings: createDashboardAccountGuardSettings(),
       }).accountGuardResult;

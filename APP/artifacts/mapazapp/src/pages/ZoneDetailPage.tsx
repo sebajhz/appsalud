@@ -47,6 +47,48 @@ function ZoneDetailContent({ id }: { id: string }) {
         <p className="text-sm text-slate-400">{zone.simpleDescription}</p>
       </div>
 
+      {reviewRow && (
+        <div
+          className="rounded-lg border border-slate-800 bg-card p-5 space-y-2"
+          data-testid="zone-registry-panel"
+        >
+          <h3 className="text-sm font-semibold text-slate-300">Strategy &amp; parameter set (registry)</h3>
+          <p className="text-xs text-slate-500">
+            Mock checkpoint 7 registry — not MT5 approval. Detected setups still require an approved parameter set for
+            trade-ready review.
+          </p>
+          <div className={`text-sm ${reviewRow.registryCompatibility.allowTradeReview ? "text-emerald-400" : "text-amber-300"}`}>
+            Trade-review allowed for this account: {String(reviewRow.registryCompatibility.allowTradeReview)}
+          </div>
+          <div className="text-xs font-mono text-slate-400 space-y-1">
+            <p>
+              strategy_id: <span className="text-slate-200">{zone.strategy_id}</span> · parameter_set_id:{" "}
+              <span className="text-slate-200">{zone.parameter_set_id}</span>
+            </p>
+            <p>
+              set_status: <span className="text-slate-200">{reviewRow.registryCompatibility.status}</span> ·
+              approval_level: <span className="text-slate-200">{reviewRow.registryCompatibility.approvalLevel}</span>
+            </p>
+            <p>
+              allowed_accounts:{" "}
+              <span className="text-slate-200">
+                {reviewRow.registryCompatibility.parameterSet?.allowedAccountIds.join(", ") ?? "—"}
+              </span>
+            </p>
+            {reviewRow.registryCompatibility.blockingReasons.length > 0 && (
+              <p className="text-rose-300/90">
+                block: {reviewRow.registryCompatibility.blockingReasons.join(", ")}
+              </p>
+            )}
+            {reviewRow.registryCompatibility.warningReasons.length > 0 && (
+              <p className="text-amber-200/80">
+                warn: {reviewRow.registryCompatibility.warningReasons.join(", ")}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {explanation && !isTechnical && (
         <TradeReviewExplanationCard explanation={explanation} variant="full" />
       )}
@@ -117,7 +159,7 @@ function ZoneDetailContent({ id }: { id: string }) {
         <div className="rounded-lg border border-slate-800 bg-card p-5 space-y-4" data-testid="zone-technical-explanation">
           <h3 className="text-sm font-semibold text-slate-300">Trade review — technical</h3>
           <div className="font-mono text-[10px] text-slate-500 space-y-1 border-b border-slate-800 pb-3 mb-2">
-            <p className="text-slate-400 font-semibold">account_guard (headline, PS assumed approved)</p>
+            <p className="text-slate-400 font-semibold">account_guard (headline; PS from registry summary)</p>
             <p>
               guard_status: <span className="text-slate-300">{accountGuardEval.status}</span> · allow_review:{" "}
               <span className={accountGuardEval.allowTradeReview ? "text-emerald-400" : "text-red-400"}>

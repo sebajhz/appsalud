@@ -3,8 +3,8 @@ import type { Zone } from './types';
 export const mockZones: Zone[] = [
   {
     id: 'zone_001',
-    strategy_id: 'IFVG_v2',
-    parameter_set_id: 'ps_alpha_01',
+    strategy_id: 'MZP_IFVG_ZONE_REACTION_V1',
+    parameter_set_id: 'MZP_IFVG_XAUUSD_V1_SET_003',
     symbol: 'XAUUSD',
     direction: 'BUY',
     state: 'TRADE_READY',
@@ -22,8 +22,8 @@ export const mockZones: Zone[] = [
   },
   {
     id: 'zone_002',
-    strategy_id: 'IFVG_v2',
-    parameter_set_id: 'ps_alpha_01',
+    strategy_id: 'MZP_IFVG_ZONE_REACTION_V1',
+    parameter_set_id: 'MZP_IFVG_EURUSD_V1_SET_001',
     symbol: 'EURUSD',
     direction: 'SELL',
     state: 'TRADE_READY',
@@ -41,8 +41,8 @@ export const mockZones: Zone[] = [
   },
   {
     id: 'zone_003',
-    strategy_id: 'IFVG_v2',
-    parameter_set_id: 'ps_beta_02',
+    strategy_id: 'MZP_IFVG_ZONE_REACTION_V1',
+    parameter_set_id: 'MZP_IFVG_GBPUSD_V1_SET_DRAFT',
     symbol: 'GBPUSD',
     direction: 'BUY',
     state: 'WATCHING',
@@ -59,8 +59,8 @@ export const mockZones: Zone[] = [
   },
   {
     id: 'zone_004',
-    strategy_id: 'IFVG_v2',
-    parameter_set_id: 'ps_alpha_01',
+    strategy_id: 'MZP_IFVG_ZONE_REACTION_V1',
+    parameter_set_id: 'MZP_IFVG_NAS100_V1_SET_001',
     symbol: 'NAS100',
     direction: 'SELL',
     state: 'WATCHING',
@@ -76,8 +76,8 @@ export const mockZones: Zone[] = [
   },
   {
     id: 'zone_005',
-    strategy_id: 'IFVG_v2',
-    parameter_set_id: 'ps_alpha_01',
+    strategy_id: 'MZP_IFVG_ZONE_REACTION_V1',
+    parameter_set_id: 'MZP_IFVG_XAUUSD_V1_SET_003',
     symbol: 'XAUUSD',
     direction: 'SELL',
     state: 'CONFIRMED',
@@ -93,8 +93,8 @@ export const mockZones: Zone[] = [
   },
   {
     id: 'zone_006',
-    strategy_id: 'IFVG_v2',
-    parameter_set_id: 'ps_beta_02',
+    strategy_id: 'MZP_IFVG_ZONE_REACTION_V1',
+    parameter_set_id: 'MZP_IFVG_EURUSD_V1_SET_001',
     symbol: 'EURUSD',
     direction: 'BUY',
     state: 'RETESTING',
@@ -110,8 +110,8 @@ export const mockZones: Zone[] = [
   },
   {
     id: 'zone_007',
-    strategy_id: 'IFVG_v2',
-    parameter_set_id: 'ps_alpha_01',
+    strategy_id: 'MZP_IFVG_ZONE_REACTION_V1',
+    parameter_set_id: 'MZP_IFVG_GBPUSD_V1_SET_DRAFT',
     symbol: 'GBPUSD',
     direction: 'SELL',
     state: 'INVALIDATED',
@@ -127,8 +127,8 @@ export const mockZones: Zone[] = [
   },
   {
     id: 'zone_008',
-    strategy_id: 'IFVG_v2',
-    parameter_set_id: 'ps_beta_02',
+    strategy_id: 'MZP_IFVG_ZONE_REACTION_V1',
+    parameter_set_id: 'MZP_IFVG_NAS100_V1_SET_001',
     symbol: 'NAS100',
     direction: 'BUY',
     state: 'EXPIRED',

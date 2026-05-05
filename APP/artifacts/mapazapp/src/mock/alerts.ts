@@ -62,7 +62,7 @@ export const mockAlerts: Alert[] = [
     accountDisplayName: null,
     severity: 'INFO',
     source: 'SYSTEM',
-    message: 'Backtest parameter set ps_beta_02 (Beta v2 — Multi-Symbol H4) has been approved. Allowed for: ACC_THE5ERS_100K_PHASE1_A.',
+    message: 'Parameter set MZP_IFVG_EURUSD_V1_SET_001 is approved for alerts only in the checkpoint 7 registry (not trade-review).',
     simpleMessage: 'Global: A new set of trading rules has been approved and is now active for The5ers 100k.',
     timestamp: new Date(Date.now() - 172800000).toISOString(),
     acknowledged: true,

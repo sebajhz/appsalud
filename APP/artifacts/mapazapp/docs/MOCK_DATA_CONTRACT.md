@@ -18,7 +18,8 @@ mockPropFirmByAccount[accountId]← prop firm guard state per account
 mockBridgeTerminals[]           ← one terminal entry per account
 mockJournalTrades[]             ← trades tagged with accountId
 mockAlerts[]                    ← alerts tagged with accountId (null = global)
-mockBacktests[]                 ← parameter sets with allowedAccountIds[]
+mockBacktests[]                 ← parameter set *stories* for Backtests UI (ids aligned with registry where applicable)
+MOCK_CHECKPOINT7_STRATEGY_REGISTRY ← formal mock strategy + parameter-set definitions (from `@workspace/mapazapp-core` fixture; not MT5)
 mockZones[]                     ← symbol-scoped (shared across accounts in mock)
 mockPsychologyEntries[]         ← global (not account-scoped in mock)
 ```
@@ -383,7 +384,9 @@ interface Zone {
 
 **Checkpoint 5:** the same **`TradePlanEvaluationResult`** is passed through **`buildTradeReviewExplanation`** (`src/services/tradeReviewExplanation.ts`) for **human-readable decision copy** (status titles, blockers, missing retest/confirmation, risk summary, technical reason list). Still **no** schema change to mock JSON; still **no** execution.
 
-**Checkpoint 6:** mock risk/prop rows are mapped through **`evaluateAccountGuard`** in `@workspace/mapazapp-core` before **`evaluateTradeReviewPlan`**. Dashboard **`getAccountGuardEvaluation(accountId)`** exposes a headline guard result (parameter set assumed **approved** for that snapshot). Mock JSON schema unchanged; values remain **fictional account-currency** figures until a real registry/bridge exists.
+**Checkpoint 6:** mock risk/prop rows are mapped through **`evaluateAccountGuard`** in `@workspace/mapazapp-core` before **`evaluateTradeReviewPlan`**.
+
+**Checkpoint 7:** mock zones carry **`strategy_id`** (e.g. **`MZP_IFVG_ZONE_REACTION_V1`**) and **`parameter_set_id`** aligned with **`createCheckpoint7MockParameterSetRegistry()`** in core. The dashboard data source evaluates **`evaluateParameterSetCompatibility`** per zone + account and feeds **`approvedParameterSetForAccount`** from **`allowTradeReview`** (not from `mockBacktests.status` alone). **`getAccountGuardEvaluation`** uses **`accountHasApprovedTradeReviewParameterSet`** for the headline “any trade-review-approved set for this account?” flag. Mock JSON remains static fiction; registry rows are explicitly **non-optimized** test doubles.
 
 ---
 

@@ -29,3 +29,8 @@ export * from "./trade-plan-reasons";
 export * from "./trade-plan-targets";
 export * from "./trade-plan-gates";
 export * from "./trade-plan-evaluator";
+export * from "./strategy-registry-types";
+export * from "./strategy-registry-settings";
+export * from "./strategy-registry-reasons";
+export * from "./strategy-registry-evaluator";
+export * from "./strategy-registry-fixtures";
