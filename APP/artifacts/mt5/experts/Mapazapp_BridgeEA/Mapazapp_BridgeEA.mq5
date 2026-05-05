@@ -399,7 +399,8 @@ bool WriteTextAtomic(const string relativePath, const string body)
          PushError("BRIDGE_FILE_DELETE", "Cannot delete old file: " + relativePath, "WriteTextAtomic", "WARNING", relativePath);
         }
      }
-   if(!FileMove(tmp, relativePath, 0))
+   // MQL5: FileMove(source_name, source_common_flags, destination_name, destination_common_flags)
+   if(!FileMove(tmp, 0, relativePath, 0))
      {
       PushError("BRIDGE_FILE_MOVE", "FileMove failed to: " + relativePath, "WriteTextAtomic", "ERROR", relativePath);
       return false;
@@ -598,7 +599,8 @@ bool ExportPositionsOpenCsv(void)
       const double pc = PositionGetDouble(POSITION_PRICE_CURRENT);
       const double prof = PositionGetDouble(POSITION_PROFIT);
       const double sw = PositionGetDouble(POSITION_SWAP);
-      const double comm = PositionGetDouble(POSITION_COMMISSION);
+      // POSITION_COMMISSION deprecated in newer builds; per-deal commission lives in deals export.
+      const double comm = 0.0;
       const long magic = PositionGetInteger(POSITION_MAGIC);
       string cmt = SanitizeOneLine(PositionGetString(POSITION_COMMENT));
       if(StringLen(cmt) == 0)
@@ -673,24 +675,24 @@ bool ExportDealsHistoryCsv(void)
       const ulong dealTicket = HistoryDealGetTicket(i);
       if(dealTicket == 0 || !HistoryDealSelect(dealTicket))
          continue;
-      const long magic = HistoryDealGetInteger(DEAL_MAGIC);
-      string cmt = SanitizeOneLine(HistoryDealGetString(DEAL_COMMENT));
+      const long magic = HistoryDealGetInteger(dealTicket, DEAL_MAGIC);
+      string cmt = SanitizeOneLine(HistoryDealGetString(dealTicket, DEAL_COMMENT));
       if(StringLen(cmt) == 0)
          cmt = ".";
-      const string sym = HistoryDealGetString(DEAL_SYMBOL);
+      const string sym = HistoryDealGetString(dealTicket, DEAL_SYMBOL);
       const int d = (int)SymbolInfoInteger(sym, SYMBOL_DIGITS);
-      const long dtype = HistoryDealGetInteger(DEAL_TYPE);
-      const long entry = HistoryDealGetInteger(DEAL_ENTRY);
-      const double vol = HistoryDealGetDouble(DEAL_VOLUME);
-      const double price = HistoryDealGetDouble(DEAL_PRICE);
-      const double profit = HistoryDealGetDouble(DEAL_PROFIT);
-      const double commission = HistoryDealGetDouble(DEAL_COMMISSION);
-      const double swap = HistoryDealGetDouble(DEAL_SWAP);
-      double fee = HistoryDealGetDouble(DEAL_FEE);
-      const datetime tt = (datetime)HistoryDealGetInteger(DEAL_TIME);
-      const long reason = HistoryDealGetInteger(DEAL_REASON);
-      const ulong orderTk = HistoryDealGetInteger(DEAL_ORDER);
-      const ulong posId = HistoryDealGetInteger(DEAL_POSITION_ID);
+      const long dtype = HistoryDealGetInteger(dealTicket, DEAL_TYPE);
+      const long entry = HistoryDealGetInteger(dealTicket, DEAL_ENTRY);
+      const double vol = HistoryDealGetDouble(dealTicket, DEAL_VOLUME);
+      const double price = HistoryDealGetDouble(dealTicket, DEAL_PRICE);
+      const double profit = HistoryDealGetDouble(dealTicket, DEAL_PROFIT);
+      const double commission = HistoryDealGetDouble(dealTicket, DEAL_COMMISSION);
+      const double swap = HistoryDealGetDouble(dealTicket, DEAL_SWAP);
+      double fee = HistoryDealGetDouble(dealTicket, DEAL_FEE);
+      const datetime tt = (datetime)HistoryDealGetInteger(dealTicket, DEAL_TIME);
+      const long reason = HistoryDealGetInteger(dealTicket, DEAL_REASON);
+      const ulong orderTk = (ulong)HistoryDealGetInteger(dealTicket, DEAL_ORDER);
+      const ulong posId = (ulong)HistoryDealGetInteger(dealTicket, DEAL_POSITION_ID);
       csv += g_schema + "," + CsvEscape(exported) + "," + CsvEscape(InpTerminalId) + "," + loginStr + ",";
       csv += IntegerToString((long)dealTicket) + "," + IntegerToString((long)orderTk) + "," + IntegerToString((long)posId) + ",";
       csv += CsvEscape(sym) + "," + CsvEscape(DealTypeWire(dtype)) + "," + CsvEscape(DealEntryWire(entry)) + ",";

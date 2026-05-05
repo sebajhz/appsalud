@@ -56,7 +56,11 @@ Prefer the folder layout and checklist in **[MANUAL_TEST_CHECKLIST.md](./MANUAL_
 
 ## Atomic writes
 
-Each file is written as `*.tmp` under the same relative path, flushed and closed, then **`FileMove`** into the final name. If `FileDelete`/`FileMove` fails (e.g. another process holds the file), an error row is recorded in `bridge_errors.csv` and status JSON `errors_count` reflects it.
+Each file is written as `*.tmp` under the same relative path, flushed and closed, then **`FileMove`** (`source`, `source_flags`, `destination`, `destination_flags`, all under the terminal **`MQL5/Files`** sandbox with `common_flags` = `0`) into the final name. If `FileDelete`/`FileMove` fails (e.g. another process holds the file), an error row is recorded in `bridge_errors.csv` and status JSON `errors_count` reflects it.
+
+## Implementation notes
+
+- **`positions_open.csv` → `commission`:** written as **`0.0`**. `POSITION_COMMISSION` is deprecated in current MetaEditor builds; deal-level commission remains in **`deals_history.csv`** (`DEAL_COMMISSION`).
 
 ## Time / UTC
 
