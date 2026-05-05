@@ -140,6 +140,19 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 **Future flow:** BridgeEA writes exports → backend (or desktop agent) reads file **text** → core parsers validate → normalized models feed account/symbol/candle stores and UI.
 
+### Local mock HTTP API (checkpoint 11 — `@workspace/api-server`)
+
+| Area | Role |
+|------|------|
+| `src/mapazapp/routes.ts` | Read-only **`GET /api/mapazapp/*`** — health, accounts, summaries, account guard, trade reviews, strategies, parameter sets, compatibility, backtests list + CP8 advisory, bridge mock import summary. |
+| `src/mapazapp/response.ts` | Stable JSON envelope (`ok`, `data`, `warnings`, `errors`, `source: "mock"`, `mockOnly: true`). |
+| `src/mapazapp/mockData.ts` | In-memory duplicates of dashboard mock fixtures (no React / Vite `@/` imports). |
+| `src/mapazapp/lib/tradeReviewLogic.ts` | Same core evaluation path as `createMockDashboardDataSource` (registry + trade plan). |
+
+**Product rule:** responses are **review-only**; **`executionEnabled`** is always **false** in trade-review envelopes. **No** MT5, DB, WebSocket, execution routes, or file watchers.
+
+**Dashboard:** unchanged default — still **`createMockDashboardDataSource()`** in-process. Future: optional `fetch` to `/api/mapazapp/...` behind a feature flag or env.
+
 ## What remains mock-only (dashboard + integration)
 
 - **Live** IFVG scanner, MT5 bridge, WebSocket, DB, order execution, real Strategy Tester / backtest wiring — unchanged. Core now contains **offline** detection math only; the UI still uses `src/mock/` zones. See **What Is NOT Implemented** below.

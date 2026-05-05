@@ -184,3 +184,15 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Positions / orders / deals / errors CSV:** header-valid + **zero data rows** is **`ok: true`** (empty positions/orders files are valid BridgeEA outputs). Market, account, and candles imports require **≥ 1** valid parsed row or they return **`ok: false`** with **`BRIDGE_CSV_EMPTY`**.
 - **Dashboard:** `bridgeMockExportDataSource.ts` + `bridgeImportUi.ts` + `BridgePage` mock panel — parses core fixtures in memory only.
 - **Tests:** `lib/mapazapp-core/tests/checkpoint10-bridge-contract.test.ts`; `src/services/bridgeMockExportDataSource.test.ts`.
+
+---
+
+## 21. Local backend foundation (checkpoint 11 — `@workspace/api-server`)
+
+- **Routes:** `APP/artifacts/api-server/src/mapazapp/routes.ts` — all **`GET`**, mounted at **`/api/mapazapp/`** (see `../api-server/README.md` for paths).
+- **Envelope:** `{ ok, data, warnings, errors[], source: "mock", mockOnly: true }`; trade-review list/detail also set **`reviewOnly: true`**, **`executionEnabled: false`** on the envelope.
+- **Data:** `mockData.ts` duplicates account registry, snapshots, risk, prop firm, symbol mappings, zones, and backtest list rows from `artifacts/mapazapp/src/mock/*` with **stable ISO timestamps** for zones (dashboard still uses `Date.now()`-relative mocks). **`lib/tradeReviewLogic.ts`** mirrors `createMockDashboardDataSource` evaluation (registry + `evaluateTradeReviewPlan`).
+- **Duplication:** `lib/mapMockZoneToCore.ts`, `lib/mapMockRiskToTradePlanGuard.ts`, and `lib/mockSymbolProfiles.ts` are copies of dashboard service modules — keep aligned or extract a shared package later.
+- **Not implemented:** `POST` / commands, SQLite, real BridgeEA folder ingest, frontend `fetch` wiring to this API (future checkpoint).
+- **TypeScript:** `api-server/tsconfig.json` dropped **`references`** to composite libs to avoid `TS6305` when declaration outputs are not pre-built; workspace `pnpm` links still resolve `@workspace/api-zod` / `@workspace/mapazapp-core`.
+- **Tests:** `artifacts/api-server/src/mapazapp/mapazapp.routes.test.ts` (Vitest + supertest).

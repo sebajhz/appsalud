@@ -18,6 +18,8 @@
 
 **Checkpoint 10 — Bridge file contract reader skeleton:** `@workspace/mapazapp-core` exposes **`parseBridgeStatusJson`**, CSV parsers for market/account/candles/positions/orders/deals/errors, **`deriveSymbolMarketSpecFromBridgeMarketSnapshot`**, **`makeBridgeAccountKey`**, **`bridge-fixtures.ts`** (fictional exports), and Vitest **`lib/mapazapp-core/tests/checkpoint10-bridge-contract.test.ts`**. Dashboard: **`bridgeMockExportDataSource.ts`** + **`bridgeImportUi.ts`**; **MT5 Bridge** page shows **mock parsed** contract summary (no disk, no EA). **No** WebSocket, backend, or live bridge.
 
+**Checkpoint 11 — local backend foundation:** `@workspace/api-server` serves read-only **`GET /api/mapazapp/*`** mock endpoints (accounts, trade reviews, registry, backtest advisory, bridge parser summary) using **`@workspace/mapazapp-core`** + duplicated in-server mock data (`APP/artifacts/api-server/src/mapazapp/`). The **dashboard still uses in-process** `createMockDashboardDataSource()` — no runtime dependency on the HTTP API in this checkpoint. See **`../api-server/README.md`** and `docs/CURSOR_HANDOFF.md`.
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.

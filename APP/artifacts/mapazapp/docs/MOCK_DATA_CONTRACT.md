@@ -21,6 +21,7 @@ mockAlerts[]                    ← alerts tagged with accountId (null = global)
 mockBacktests[]                 ← parameter set *stories* for Backtests UI (ids aligned with registry where applicable)
 MOCK_CHECKPOINT7_STRATEGY_REGISTRY ← formal mock strategy + parameter-set definitions (from `@workspace/mapazapp-core` fixture; not MT5)
 bridge-fixtures (`@workspace/mapazapp-core`) ← **fictional** BridgeEA `MZP_BRIDGE_V1` JSON/CSV **text** for checkpoint 10 parser tests + `BridgePage` mock panel (not read from `MQL5_COMMON_FILES`, not live MT5)
+`@workspace/api-server` `src/mapazapp/mockData.ts` ← **duplicate** of the same logical account/zone/risk/registry inputs for **read-only HTTP** mock API (checkpoint 11); not wired into the Vite app by default
 mockZones[]                     ← symbol-scoped (shared across accounts in mock)
 mockPsychologyEntries[]         ← global (not account-scoped in mock)
 ```
