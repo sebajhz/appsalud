@@ -1,0 +1,2 @@
+schema_version,exported_at_utc,terminal_id,account_login,deal_ticket,order_ticket,position_id,symbol,deal_type,entry_type,volume,price,profit,commission,swap,fee,time_utc,magic,comment,reason,strategy_id,source_tag
+MZP_BRIDGE_V1,2026-05-04T12:00:00Z,MT5_TERMINAL_CP10,100200300,D9001,O8001,P7001,XAUUSD,BUY,IN,0.10,2319.50,0.00,-0.50,0.00,0.00,2026-05-04T09:00:00Z,260502,MZP|ENTRY,,MZP_IFVG_ZONE_REACTION_V1,MAPZAPP_MOCK

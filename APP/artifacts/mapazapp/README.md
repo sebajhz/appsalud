@@ -22,6 +22,8 @@
 
 **Checkpoint 12 — scanner simulation (offline only):** core **`runScannerSimulation`**, **`runScannerSimulationFromBridgeCandlesCsv`**, **`bridgeCandleRowToCandle`**, **`scanner-fixtures`**, **`runCheckpoint12ScannerFixture`**; Vitest **`lib/mapazapp-core/tests/checkpoint12-scanner-simulation.test.ts`**. Dashboard: **`/scanner`** (`ScannerSimulationPage`), **`scannerSimulationDataSource.ts`** + **`mockScannerSimulationDataSource.ts`** + **`scannerSimulationUi.ts`** — in-process replay of fictional candles / optional Bridge CSV text path. **Not** live MT5, **not** execution, **not** profitability. API adds read-only scanner snapshot routes (see api-server README).
 
+**Checkpoint 13 — MT5 BridgeEA export-only:** MQL5 source **`APP/artifacts/mt5/experts/Mapazapp_BridgeEA/Mapazapp_BridgeEA.mq5`** (plus `README.md`, `EXPORT_CONTRACT.md`, **`samples/`**). Operators compile in **MetaEditor** and attach to a chart; the EA writes **`MZP_BRIDGE_V1`** CSV/JSON aligned with **checkpoint 10** core parsers. **Export-only** (no command ingest, no `WebRequest`, no DLLs, no `CTrade`). The **dashboard remains mock/in-process** until a future checkpoint wires file or API ingest.
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.
@@ -33,7 +35,7 @@ Mapazapp is **multi-account and multi-broker by design**. Every entity in the sy
 This Replit phase is a visual mock **only**. There is:
 
 - **No real MT5 terminal connection**
-- **No BridgeEA (Expert Advisor) deployed or connected** — checkpoint 10 only **parses fictional in-memory** export text aligned with the connectivity contract
+- **No BridgeEA connected to this mock app** — checkpoint 10 **parses fictional in-memory** export text; checkpoint 13 adds a **real MQL5 export-only EA** artifact for operators to run in MT5 separately (still **no** ingest into this dashboard build)
 - **No real tick data or price feeds**
 - **No real IFVG zone detection algorithm**
 - **No real zone score calculation**

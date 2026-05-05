@@ -1,6 +1,6 @@
 # `@workspace/api-server`
 
-Express server for the Replit workspace. **Checkpoints 11–12** add read-only **Mapazapp mock API** routes under `/api/mapazapp/*` (checkpoint **12**: scanner simulation snapshots).
+Express server for the Replit workspace. **Checkpoints 11–12** add read-only **Mapazapp mock API** routes under `/api/mapazapp/*` (checkpoint **12**: scanner simulation snapshots). **Checkpoint 13** adds the **MT5 BridgeEA MQL5 artifact** under `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` (compile in MetaTrader); this server still has **no** live bridge ingest or file watcher.
 
 ## Mapazapp API (mock / in-memory)
 

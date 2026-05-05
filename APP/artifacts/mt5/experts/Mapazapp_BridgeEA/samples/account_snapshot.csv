@@ -1,0 +1,2 @@
+schema_version,exported_at_utc,terminal_id,account_login,account_server,currency,balance,equity,margin,free_margin,margin_level,profit_open,leverage,trade_allowed,trade_expert,company
+MZP_BRIDGE_V1,2026-05-04T12:00:00Z,MT5_TERMINAL_CP10,100200300,MockBroker-Demo,USD,100000.00,100050.25,1200.50,98800.00,8333.33,50.25,100,true,false,Mock Broker Ltd

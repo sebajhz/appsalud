@@ -1,0 +1,2 @@
+schema_version,exported_at_utc,terminal_id,account_login,error_code,error_message,module,severity,context
+MZP_BRIDGE_V1,2026-05-04T12:00:00Z,MT5_TERMINAL_CP10,100200300,E_CP10_001,SymbolInfoDouble failed on spread,BridgeEA,WARNING,symbol=XAUUSD

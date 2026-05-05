@@ -208,3 +208,13 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **`ZoneCandidate.sweepStatus`:** optional field set in **`buildZoneCandidateFromIfvg`** so downstream score/trade-plan inputs can reuse detection sweep class without re-deriving geometry.
 - **Tests:** `APP/lib/mapazapp-core/tests/checkpoint12-scanner-simulation.test.ts`; API: scanner routes in `mapazapp.routes.test.ts`; dashboard: `src/services/mockScannerSimulationDataSource.test.ts`.
 - **Not implemented:** POST `/scan` or job runner, real BridgeEA folder ingest, MT5 socket, historical DB candle store, live scanner daemon, or treating simulation output as live signals.
+
+---
+
+## 23. MT5 BridgeEA export-only (checkpoint 13 — MQL5 artifact)
+
+- **Location:** `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` — `Mapazapp_BridgeEA.mq5`, `README.md`, `EXPORT_CONTRACT.md`, optional **`samples/`** static files mirroring **`bridge-fixtures.ts`** column order (fictional).
+- **Behaviour:** `OnInit` → `EventSetTimer` → `OnTimer` writes bridge contract files under the terminal **`MQL5/Files/`** sandbox only (`<InpExportRoot>\<InpTerminalId>\`). Uses `AccountInfo*`, `SymbolInfo*`, `CopyRates`, positions/orders/deals **read** APIs only — **no** trade execution, **no** inbound command files, **no** `WebRequest`, **no** DLL imports, **no** `<Trade/Trade.mqh>`.
+- **Wire format:** must stay aligned with **`bridge-parse-json.ts`** / **`bridge-parse-csv.ts`** (including **`last`** and **`session_status`** on market CSV). Legacy schema string **`QTG_BRIDGE_V1`** is accepted by parsers but new EA defaults to **`MZP_BRIDGE_V1`**.
+- **Encoding / UTC:** EA writes **ANSI** text with ASCII-first sanitization; timestamps use **`TimeGMT()`** formatted as `…Z` (see EA README — not a leap-second lab clock).
+- **Checkpoint 14:** TestEA / Strategy Tester export path is **explicitly out of scope** for this artifact.
