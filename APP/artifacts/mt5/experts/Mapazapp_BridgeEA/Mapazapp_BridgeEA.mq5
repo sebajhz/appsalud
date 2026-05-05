@@ -87,7 +87,10 @@ bool SchemaIsSupported(const string v)
   }
 
 //+------------------------------------------------------------------+
-string SanitizePathSegment(const string s)
+//| One folder name under MQL5\Files — strips path chars and wildcards; |
+//| returns "" if nothing usable remains (caller may skip segment).    |
+//+------------------------------------------------------------------+
+string SanitizeFolderNameSegment(const string s)
   {
    string o = "";
    const int n = (int)StringLen(s);
@@ -100,9 +103,86 @@ string SanitizePathSegment(const string s)
          continue;
       o += CharToString((uchar)ch);
      }
+   return o;
+  }
+
+//+------------------------------------------------------------------+
+//| Single sandbox component with fallback (e.g. InpTerminalId).     |
+//+------------------------------------------------------------------+
+string SanitizePathSegment(const string s)
+  {
+   const string o = SanitizeFolderNameSegment(s);
    if(StringLen(o) == 0)
       return "TERMINAL";
    return o;
+  }
+
+//+------------------------------------------------------------------+
+//| Normalize InpExportRoot: trim, treat "/" like "\", split, sanitize |
+//| each non-empty segment, fill outSegments. Returns false if no      |
+//| usable segments.                                                   |
+//+------------------------------------------------------------------+
+bool ParseExportRootSegments(const string raw, string &outSegments[])
+  {
+   ArrayResize(outSegments, 0);
+   string t = Trim(raw);
+   if(StringLen(t) == 0)
+      return false;
+   StringReplace(t, "/", "\\");
+   string parts[];
+   const ushort sepBackslash = StringGetCharacter("\\", 0);
+   const int n = StringSplit(t, sepBackslash, parts);
+   for(int i = 0; i < n; i++)
+     {
+      const string piece = Trim(parts[i]);
+      if(StringLen(piece) == 0)
+         continue;
+      const string seg = SanitizeFolderNameSegment(piece);
+      if(StringLen(seg) == 0)
+         continue;
+      const int m = ArraySize(outSegments);
+      ArrayResize(outSegments, m + 1);
+      outSegments[m] = seg;
+     }
+   return (ArraySize(outSegments) > 0);
+  }
+
+//+------------------------------------------------------------------+
+//| Join segments with "\" (relative path under MQL5\Files).          |
+//+------------------------------------------------------------------+
+string JoinPathSegmentsBackslash(const string &segments[])
+  {
+   string acc = "";
+   const int k = ArraySize(segments);
+   for(int i = 0; i < k; i++)
+     {
+      if(StringLen(acc) == 0)
+         acc = segments[i];
+      else
+         acc = acc + "\\" + segments[i];
+     }
+   return acc;
+  }
+
+//+------------------------------------------------------------------+
+//| Create each path prefix: seg0, seg0\seg1, ... (FILE_COMMON = 0).  |
+//+------------------------------------------------------------------+
+bool EnsureFolderTreeFromSegments(const string &segments[])
+  {
+   string acc = "";
+   const int k = ArraySize(segments);
+   for(int i = 0; i < k; i++)
+     {
+      if(StringLen(acc) == 0)
+         acc = segments[i];
+      else
+         acc = acc + "\\" + segments[i];
+      if(!FolderCreate(acc))
+        {
+         // may already exist — acceptable
+        }
+     }
+   return (k > 0 && StringLen(acc) > 0);
   }
 
 //+------------------------------------------------------------------+
@@ -810,13 +890,16 @@ int OnInit(void)
       Print("Mapazapp_BridgeEA: InpDealsLookbackDays out of range");
       return INIT_PARAMETERS_INCORRECT;
      }
-   const string root = SanitizePathSegment(Trim(InpExportRoot));
-   const string term = SanitizePathSegment(Trim(InpTerminalId));
-   g_baseRelPath = root + "\\" + term;
-   if(!FolderCreate(root))
+   string exportSegs[];
+   if(!ParseExportRootSegments(InpExportRoot, exportSegs))
      {
-      // may already exist — ignore if exists
+      Print("Mapazapp_BridgeEA: InpExportRoot has no usable path segments after normalization");
+      return INIT_PARAMETERS_INCORRECT;
      }
+   const string exportRootRel = JoinPathSegmentsBackslash(exportSegs);
+   const string term = SanitizePathSegment(Trim(InpTerminalId));
+   EnsureFolderTreeFromSegments(exportSegs);
+   g_baseRelPath = exportRootRel + "\\" + term;
    if(!FolderCreate(g_baseRelPath))
      {
       // may already exist

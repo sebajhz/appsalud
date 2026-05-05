@@ -60,6 +60,7 @@ Each file is written as `*.tmp` under the same relative path, flushed and closed
 
 ## Implementation notes
 
+- **`InpExportRoot`:** may use `\` or `/` between folders (e.g. `Mapazapp\bridge` or `Mapazapp/bridge`). The EA splits on separators, sanitizes each folder segment, joins with `\`, and creates each level under `MQL5\Files\` so nested paths are preserved.
 - **`positions_open.csv` → `commission`:** written as **`0.0`**. `POSITION_COMMISSION` is deprecated in current MetaEditor builds; deal-level commission remains in **`deals_history.csv`** (`DEAL_COMMISSION`).
 
 ## Time / UTC

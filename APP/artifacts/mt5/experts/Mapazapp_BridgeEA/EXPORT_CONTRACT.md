@@ -17,7 +17,7 @@ Relative to terminal **`MQL5/Files/`**:
 
 Default: `Mapazapp\bridge\TERMINAL_A\`
 
-Sanitized segments: backslashes, slashes, reserved Windows characters are stripped from path components (see EA source).
+**Path handling:** `InpExportRoot` is trimmed, `/` is treated like `\`, then split on `\`. Each non-empty folder name is sanitized (reserved Windows / path characters removed **within** that name only); empty pieces are skipped. Nested folders are created under `MQL5\Files\` so e.g. `Mapazapp\bridge` and `Mapazapp/bridge` both resolve to `Mapazapp\bridge\` (not `Mapazappbridge`).
 
 ## Files
 

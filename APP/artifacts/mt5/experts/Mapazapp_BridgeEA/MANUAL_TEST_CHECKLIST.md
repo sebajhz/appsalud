@@ -83,7 +83,7 @@ From **File → Open Data Folder**:
 MQL5\Files\Mapazapp\bridge\TERMINAL_A\
 ```
 
-(That is `InpExportRoot` + `\` + `InpTerminalId` + `\`, relative to the terminal’s `MQL5\Files\` sandbox.)
+(That is `InpExportRoot` + `\` + `InpTerminalId` + `\`, relative to the terminal’s `MQL5\Files\` sandbox. You may type `Mapazapp/bridge` or `Mapazapp\bridge` in inputs; both must produce this folder tree, not a single collapsed folder name like `Mapazappbridge`.)
 
 ---
 
