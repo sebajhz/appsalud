@@ -8,6 +8,8 @@
 
 **`bridge_status.json` counters (Checkpoint 13.1):** **`bridge_errors.csv`** is the diagnostic export (all severities). Status JSON adds **`diagnostics_count`** (all rows including **INFO**) and **`warnings_count`** (**WARNING** only). **`errors_count`** counts **ERROR** and **FATAL** only — a lone startup **INFO** does **not** increment it. **`last_error`** is the last **WARNING** / **ERROR** / **FATAL** message, or empty when none apply.
 
+**CP13.1 real smoke (live MT5, sanitized):** **CP13.1 real smoke confirmed severity-aware counters: INFO diagnostics no longer inflate errors_count.** On one validation run, export path `MQL5/Files/Mapazapp/bridge/TERMINAL_A/` was correct; **`bridge_status.json`** showed `diagnostics_count` = 1, `warnings_count` = 0, `errors_count` = 0, `last_error` empty; **`bridge_errors.csv`** contained only **`BRIDGE_EA_START`** at **INFO**; no trading or command ingestion observed — still export-only.
+
 **Repository / privacy:** do **not** commit raw exports from a real account (they can embed account id, server name, balances, and live quotes). Prefer **[`samples/`](./samples/)** or **sanitized** excerpts for issues, docs, and tests.
 
 ## What this EA does

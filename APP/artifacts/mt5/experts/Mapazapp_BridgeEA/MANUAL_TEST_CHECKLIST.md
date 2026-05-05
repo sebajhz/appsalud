@@ -104,6 +104,18 @@ Sanitized record of one successful **live MT5** export-only run (no account numb
 
 **Checkpoint 13.1 (diagnostics counters):** `bridge_errors.csv` remains the full diagnostic log (all severities). In `bridge_status.json`, **`diagnostics_count`** = all buffered rows; **`warnings_count`** = **WARNING** only; **`errors_count`** = **ERROR** + **FATAL** only; **`last_error`** = message from the chronologically last **WARNING** / **ERROR** / **FATAL** (empty when only **INFO**, e.g. startup alone). **INFO** lines such as `BRIDGE_EA_START` no longer inflate **`errors_count`**.
 
+### CP13.1 real smoke validation — severity counters (sanitized)
+
+**CP13.1 real smoke confirmed severity-aware counters: INFO diagnostics no longer inflate errors_count.**
+
+Observed on a **live MT5** export-only run (no account login, broker server, balance, equity, or live prices recorded here):
+
+- **Compile / run:** BridgeEA compiled and ran in MT5.
+- **Export path:** `MQL5\Files\Mapazapp\bridge\TERMINAL_A\` (correct nested layout).
+- **`bridge_status.json`:** `diagnostics_count` = **1**, `warnings_count` = **0**, `errors_count` = **0**, `last_error` = **""** (empty string).
+- **`bridge_errors.csv`:** only **`BRIDGE_EA_START`** with severity **INFO** (no **WARNING** / **ERROR** rows in this run).
+- **Trading:** no trading action observed; **no command reader** in the EA; export-only behavior confirmed.
+
 **Repository hygiene:** do **not** commit raw files from a real terminal into git (they can contain logins, servers, balances, and prices). Use **[`samples/`](./samples/)** or hand-redacted snippets for tickets and CI fixtures.
 
 ### Safe follow-up validation path
