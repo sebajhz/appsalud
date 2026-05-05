@@ -14,6 +14,8 @@ import JournalPage from "@/pages/JournalPage";
 import PsychologyPage from "@/pages/PsychologyPage";
 import AlertsPage from "@/pages/AlertsPage";
 import ConfigPage from "@/pages/ConfigPage";
+import ParameterSetsPage from "@/pages/ParameterSetsPage";
+import ParameterSetDetailPage from "@/pages/ParameterSetDetailPage";
 import BridgePage from "@/pages/BridgePage";
 import NotFound from "@/pages/not-found";
 
@@ -33,6 +35,8 @@ function Router() {
       <Route path="/psychology" component={PsychologyPage} />
       <Route path="/alerts" component={AlertsPage} />
       <Route path="/config" component={ConfigPage} />
+      <Route path="/parameter-sets/:parameterSetId" component={ParameterSetDetailPage} />
+      <Route path="/parameter-sets" component={ParameterSetsPage} />
       <Route path="/bridge" component={BridgePage} />
       <Route component={NotFound} />
     </Switch>

@@ -390,6 +390,8 @@ interface Zone {
 
 **Checkpoint 7:** mock zones carry **`strategy_id`** (e.g. **`MZP_IFVG_ZONE_REACTION_V1`**) and **`parameter_set_id`** aligned with **`createCheckpoint7MockParameterSetRegistry()`** in core. The dashboard data source evaluates **`evaluateParameterSetCompatibility`** per zone + account and feeds **`approvedParameterSetForAccount`** from **`allowTradeReview`** (not from `mockBacktests.status` alone). **`getAccountGuardEvaluation`** uses **`accountHasApprovedTradeReviewParameterSet`** for the headline “any trade-review-approved set for this account?” flag. Mock JSON remains static fiction; registry rows are explicitly **non-optimized** test doubles.
 
+**Checkpoint 9:** routes **`/parameter-sets`** and **`/parameter-sets/:parameterSetId`** show the same **in-memory** registry rows (**read-only**): strategy metadata, parameter set status/approval, per-**`activeAccountId`** compatibility (**`allowTradeReview`** / block codes), compact **IFVG settings** from each set’s `settings` object, and checkpoint-8 **advisory** metrics when a fixture id exists. This is **UI inspection only** — no edits, no proof of live profitability, no MT5.
+
 ---
 
 ## PsychologyEntry (`psychology.ts`)

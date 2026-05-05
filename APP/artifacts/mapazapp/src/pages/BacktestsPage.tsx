@@ -30,6 +30,11 @@ export default function BacktestsPage() {
           <span className="font-mono text-slate-500"> CP8 import eval</span> shows a fictional advisory outcome from core
           checkpoint-8 fixtures (CSV/backtest model skeleton — not MT5). There is no live scanner in this build.
         </p>
+        <p className="text-xs">
+          <Link href="/parameter-sets" className="text-blue-400 hover:text-blue-300" data-testid="link-strategy-sets-from-backtests">
+            Strategy &amp; parameter sets inspector (read-only)
+          </Link>
+        </p>
 
         <div className="rounded-lg border border-slate-800 overflow-x-auto" data-testid="backtests-table">
           <table className="w-full text-sm">

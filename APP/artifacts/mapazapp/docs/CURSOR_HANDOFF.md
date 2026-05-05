@@ -55,7 +55,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 - **Checkpoint 1:** `AccountDataSource` + `createMockAccountDataSource()` — reads existing `src/mock/` data, requires `accountId`, **no** `fetch`, no Express.
 - **Checkpoint 4 / 7:** `DashboardMockDataSource` (`tradeReviewDataSource.ts` + `mockTradeReviewDataSource.ts`) — **`createMockDashboardDataSource()`** exposes **`getZonesForAccount`**, **`getTradeReviewPlansForAccount`** (includes **`registryCompatibility`** per row), **`getTradeReviewPlanByZoneId`**, **`getAlertsForAccount`**, and **`getAccountSnapshot`** (delegates to checkpoint 1). Mock zones are mapped through **`mapMockZoneToCore.ts`**, risk through **`mapMockRiskToTradePlanGuard.ts`** with registry-derived **`approvedParameterSetForAccount`**, symbols through **`mockSymbolProfiles.ts`**, then **`evaluateTradeReviewPlan`** from `@workspace/mapazapp-core`. **No** backend, MT5, execution, WebSocket, or DB.
-- **UI wiring:** `HomePage` (review-ready strip + banner counts), `ZonesPage` (core status badge + reason line), and `ZoneDetailPage` (core review block + technical fields) consume the dashboard data source. Other pages still use mock imports directly where unchanged.
+- **Checkpoint 9:** **`StrategyRegistryReadModelDataSource`** (`strategyRegistryDataSource.ts` + **`mockStrategyRegistryDataSource.ts`**) — read-only registry + compatibility + CP8 advisory for inspector pages; **`strategyRegistryUi.ts`** for badges and summaries. **No** `fetch`, **no** editing.
+- **UI wiring:** `HomePage` (review-ready strip + banner counts), `ZonesPage` (core status badge + reason line), and `ZoneDetailPage` (core review block + technical fields + link to **`/parameter-sets/:id`**) consume the dashboard data source. **`ParameterSetsPage`** / **`ParameterSetDetailPage`** use the checkpoint 9 read-only registry source. Other pages still use mock imports directly where unchanged.
 - **Copy / UX:** “Review-ready”, “manual review only”, and **`TradeReviewStatusBadge`** reinforce that **`TRADE_READY`** is **not** an order signal.
 
 ### Trade review explanation layer (checkpoint 5)
@@ -110,6 +111,18 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 **Not implemented:** real MT5 Strategy Tester / TestEA file ingest, persistence, registry auto-update from imports, or optimization loops.
 
+### Strategy / parameter set read-only UI (checkpoint 9 — dashboard)
+
+| File | Role |
+|------|------|
+| `strategyRegistryDataSource.ts` | **`StrategyRegistryReadModelDataSource`** interface (read-only registry API). |
+| `mockStrategyRegistryDataSource.ts` | **`createMockStrategyRegistryDataSource()`** — strategies + parameter sets from **`MOCK_CHECKPOINT7_STRATEGY_REGISTRY`**, **`evaluateParameterSetCompatibility`**, checkpoint-8 advisory lookup. |
+| `strategyRegistryUi.ts` | Badge classification + Simple/Technical copy + IFVG **`settings` summary** helpers. |
+| **`ParameterSetsPage.tsx`** | **`/parameter-sets`** — account-scoped table, **`supportsViewToggle`**. |
+| **`ParameterSetDetailPage.tsx`** | **`/parameter-sets/:parameterSetId`** — TRADE_READY gate explanation, compatibility codes, CP8 advisory, read-only settings. |
+
+**Not implemented:** settings editing, optimization UI, registry persistence, server-backed registry.
+
 ## What remains mock-only (dashboard + integration)
 
 - **Live** IFVG scanner, MT5 bridge, WebSocket, DB, order execution, real Strategy Tester / backtest wiring — unchanged. Core now contains **offline** detection math only; the UI still uses `src/mock/` zones. See **What Is NOT Implemented** below.
@@ -118,7 +131,7 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 ## What This Is
 
-Mapazapp is a **trading intelligence and risk management dashboard** for disciplined prop firm traders. It is built as a visual mock: 12 pages, realistic UI, complete data model — but **zero real logic**.
+Mapazapp is a **trading intelligence and risk management dashboard** for disciplined prop firm traders. It is built as a visual mock: multiple dashboard routes (including read-only **Strategy & sets** inspection), realistic UI, complete data model — but **zero real logic**.
 
 **Multi-account and multi-broker by design.** Every record in the system is scoped to an `accountId`. This was established from day one so the real backend can be account-aware from the start.
 
@@ -216,7 +229,9 @@ const risk = mockRiskByAccount[activeAccountId];
 | `ZoneDetailPage.tsx` | `/zones/:id` | Full zone detail |
 | `RiskPage.tsx` | `/risk` | Account-scoped: daily/max DD in $ and %, trades, violations, `operationalStatus` |
 | `PropFirmPage.tsx` | `/propfirm` | Account-scoped: profit target, drawdown rules, consistency, news trading |
-| `BacktestsPage.tsx` | `/backtests` | Parameter set list with active-account compatibility column |
+| `BacktestsPage.tsx` | `/backtests` | Parameter set list with active-account compatibility column; link to Strategy & sets inspector |
+| `ParameterSetsPage.tsx` | `/parameter-sets` | Read-only strategy + parameter set list (account-scoped compatibility, CP8 advisory hints) |
+| `ParameterSetDetailPage.tsx` | `/parameter-sets/:parameterSetId` | Read-only detail: TRADE_READY registry gate, compatibility codes, CP8 advisory, IFVG settings summary |
 | `BacktestDetailPage.tsx` | `/backtests/:id` | Stats, equity curve mock, sample trades |
 | `JournalPage.tsx` | `/journal` | Account filter, account column, resultR, ruleCompliance |
 | `PsychologyPage.tsx` | `/psychology` | Mood tracker, checklist, impulse trades |

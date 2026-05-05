@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'wouter';
 import {
   Home, Map, Shield, Building2, FlaskConical, BookOpen,
-  Brain, Bell, Settings, Activity, ChevronRight
+  Brain, Bell, Settings, Activity, ChevronRight, Layers,
 } from 'lucide-react';
 import { mockAlerts } from '@/mock/alerts';
 import { useActiveAccount } from './Layout';
@@ -12,6 +12,7 @@ const navItems = [
   { path: '/risk',      label: 'Risk Guard',     icon: Shield },
   { path: '/propfirm',  label: 'Prop Firm Guard',icon: Building2 },
   { path: '/backtests', label: 'Backtests',      icon: FlaskConical },
+  { path: '/parameter-sets', label: 'Strategy & sets', icon: Layers },
   { path: '/journal',   label: 'Journal',        icon: BookOpen },
   { path: '/psychology',label: 'Psychology',     icon: Brain },
   { path: '/alerts',    label: 'Alerts',         icon: Bell },

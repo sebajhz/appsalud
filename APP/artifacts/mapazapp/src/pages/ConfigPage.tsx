@@ -1,6 +1,8 @@
 import { Layout } from '@/components/Layout';
 import { mockConfig } from '@/mock/config';
-import { Info, User, Shield, BookOpen, Globe } from 'lucide-react';
+import { createMockStrategyRegistryDataSource } from '@/services/mockStrategyRegistryDataSource';
+import { Info, User, Shield, BookOpen, Globe, Layers } from 'lucide-react';
+import { Link } from 'wouter';
 
 function Section({ title, icon: Icon, children }: { title: string; icon?: React.ElementType; children: React.ReactNode }) {
   return (
@@ -51,6 +53,9 @@ const statusColors = {
 
 export default function ConfigPage() {
   const cfg = mockConfig;
+  const regDs = createMockStrategyRegistryDataSource();
+  const strategyCount = regDs.getStrategies().length;
+  const parameterSetCount = regDs.getParameterSets().length;
 
   return (
     <Layout title="Configuration">
@@ -124,6 +129,26 @@ export default function ConfigPage() {
               </div>
             </div>
           ))}
+        </Section>
+
+        {/* Strategy registry (read-only) */}
+        <Section title="Strategy registry (read-only)" icon={Layers}>
+          <p className="text-xs text-slate-500 -mt-2 mb-2">
+            In-memory mock registry (checkpoint 7). No editing. Compatibility and TRADE_READY rules are evaluated in core;
+            use the inspector for per-account detail.
+          </p>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-slate-300">
+            <span>
+              Strategies: <span className="font-mono text-slate-200">{strategyCount}</span>
+            </span>
+            <span className="text-slate-600">·</span>
+            <span>
+              Parameter sets: <span className="font-mono text-slate-200">{parameterSetCount}</span>
+            </span>
+            <Link href="/parameter-sets" className="text-blue-400 hover:text-blue-300 text-xs" data-testid="link-strategy-sets-from-config">
+              Open Strategy &amp; sets
+            </Link>
+          </div>
         </Section>
 
         {/* Symbol Mapping */}

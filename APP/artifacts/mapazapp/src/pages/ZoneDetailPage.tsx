@@ -86,6 +86,13 @@ function ZoneDetailContent({ id }: { id: string }) {
               </p>
             )}
           </div>
+          <Link
+            href={`/parameter-sets/${encodeURIComponent(zone.parameter_set_id)}`}
+            className="inline-block text-xs text-blue-400 hover:text-blue-300 mt-2"
+            data-testid="link-parameter-set-inspector"
+          >
+            Open in Strategy &amp; sets (read-only)
+          </Link>
         </div>
       )}
 

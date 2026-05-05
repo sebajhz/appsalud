@@ -162,3 +162,14 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Metrics:** profit factor uses gross win R / gross loss R; **no losing trades** but wins → **`Infinity`** sentinel (approval treats as passing PF floor).
 - **Dashboard:** Backtests list adds **CP8 import eval** from **`getCheckpoint8MockApprovalForParameterSet`**; detail page shows fixture split + advisory block when a fixture exists for that `parameter_set_id`. All values remain **mock fiction** — not Strategy Tester output.
 - **Tests:** `lib/mapazapp-core/tests/checkpoint8-backtest.test.ts`; dashboard **`src/services/backtestCheckpoint8Display.test.ts`**.
+
+---
+
+## 19. Strategy / parameter set read-only UI (checkpoint 9 — dashboard)
+
+- **Read-only data source:** **`strategyRegistryDataSource.ts`** defines **`StrategyRegistryReadModelDataSource`**; **`mockStrategyRegistryDataSource.ts`** implements it with **`MOCK_CHECKPOINT7_STRATEGY_REGISTRY`** + core **`evaluateParameterSetCompatibility`** + checkpoint-8 advisory (`getCheckpoint8MockApprovalForParameterSet`). **No** `fetch`, **no** edits, **no** persistence.
+- **UI helpers:** **`strategyRegistryUi.ts`** — badge classification, simple-language stories, compact IFVG settings summaries (Simple vs Technical density).
+- **Routes:** **`/parameter-sets`** (list + account-scoped compatibility table) and **`/parameter-sets/:parameterSetId`** (detail: registry gate for TRADE_READY, compatibility codes, CP8 advisory block, settings). **`Layout`** uses **`supportsViewToggle`** on these pages.
+- **Links:** Zone Detail registry panel → inspector; Backtests → inspector; Configuration → short registry summary + link.
+- **Product rule surfaced in UI:** copy states that a **detected setup alone is insufficient**; **`allowTradeReview`** must be true for the active account/symbol for core to permit **`TRADE_READY`** (other gates unchanged). Unapproved sets never imply live profitability.
+- **Tests:** **`src/services/mockStrategyRegistryDataSource.test.ts`** (service + UI helper assertions).
