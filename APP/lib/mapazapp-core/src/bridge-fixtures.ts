@@ -17,6 +17,8 @@ export const MOCK_BRIDGE_STATUS_JSON = `{
   "connected": true,
   "last_tick_time_utc": "2026-05-04T11:59:58Z",
   "symbols_enabled": ["XAUUSD", "EURUSD"],
+  "diagnostics_count": 1,
+  "warnings_count": 0,
   "errors_count": 0,
   "last_error": ""
 }`;

@@ -6,6 +6,8 @@
 
 **Verified manually in MT5:** MetaEditor compile **OK** (0 errors, 0 warnings) and an **export-only** smoke run **OK** — correct nested folder `MQL5/Files/Mapazapp/bridge/TERMINAL_A/`, expected contract files present, market and candles exported for configured symbols, no trading side effects. Details (without sensitive fields) are in the checklist section **“First real smoke test result.”**
 
+**`bridge_status.json` counters (Checkpoint 13.1):** **`bridge_errors.csv`** is the diagnostic export (all severities). Status JSON adds **`diagnostics_count`** (all rows including **INFO**) and **`warnings_count`** (**WARNING** only). **`errors_count`** counts **ERROR** and **FATAL** only — a lone startup **INFO** does **not** increment it. **`last_error`** is the last **WARNING** / **ERROR** / **FATAL** message, or empty when none apply.
+
 **Repository / privacy:** do **not** commit raw exports from a real account (they can embed account id, server name, balances, and live quotes). Prefer **[`samples/`](./samples/)** or **sanitized** excerpts for issues, docs, and tests.
 
 ## What this EA does
@@ -45,7 +47,7 @@ Prefer the folder layout and checklist in **[MANUAL_TEST_CHECKLIST.md](./MANUAL_
 
    | File | Role |
    |------|------|
-   | `bridge_status.json` | Schema, terminal, login, `ea_status`, `connected`, `symbols_enabled`, `errors_count`, … |
+   | `bridge_status.json` | Schema, terminal, login, `ea_status`, `connected`, `symbols_enabled`, `diagnostics_count`, `warnings_count`, `errors_count`, `last_error`, … |
    | `latest_market_snapshot.csv` | Bid/ask/**last**/spread/point/digits/tick/volume/trade_mode/**session_status**/last_tick |
    | `account_snapshot.csv` | Balance, equity, margin, flags |
    | `candles.csv` | OHLC bars per symbol × timeframe |
@@ -60,7 +62,7 @@ Prefer the folder layout and checklist in **[MANUAL_TEST_CHECKLIST.md](./MANUAL_
 
 ## Atomic writes
 
-Each file is written as `*.tmp` under the same relative path, flushed and closed, then **`FileMove`** (`source`, `source_flags`, `destination`, `destination_flags`, all under the terminal **`MQL5/Files`** sandbox with `common_flags` = `0`) into the final name. If `FileDelete`/`FileMove` fails (e.g. another process holds the file), an error row is recorded in `bridge_errors.csv` and status JSON `errors_count` reflects it.
+Each file is written as `*.tmp` under the same relative path, flushed and closed, then **`FileMove`** (`source`, `source_flags`, `destination`, `destination_flags`, all under the terminal **`MQL5/Files`** sandbox with `common_flags` = `0`) into the final name. If `FileDelete`/`FileMove` fails (e.g. another process holds the file), a row is recorded in `bridge_errors.csv` (typically **ERROR** / **WARNING**); status JSON **`errors_count`** counts **ERROR**/**FATAL** only (see **`EXPORT_CONTRACT.md`**).
 
 ## Implementation notes
 

@@ -150,6 +150,15 @@ export function parseBridgeStatusJson(jsonText: string): BridgeImportResult<Brid
     return out;
   }
 
+  const optNonNegInt = (k: string): number | undefined => {
+    if (!Object.prototype.hasOwnProperty.call(o, k)) return undefined;
+    const n = reqNum(k);
+    if (n === null || !Number.isFinite(n) || n < 0 || Math.floor(n) !== n) return undefined;
+    return n;
+  };
+  const diagnosticsCount = optNonNegInt("diagnostics_count");
+  const warningsCount = optNonNegInt("warnings_count");
+
   const accountCurrency = reqStr("account_currency") ?? undefined;
   const autoTradingEnabled =
     typeof o["auto_trading_enabled"] === "boolean" ? o["auto_trading_enabled"] : undefined;
@@ -169,6 +178,8 @@ export function parseBridgeStatusJson(jsonText: string): BridgeImportResult<Brid
     connected,
     lastTickTimeUtc,
     symbolsEnabled,
+    diagnosticsCount,
+    warningsCount,
     errorsCount,
     lastError,
   };

@@ -32,6 +32,16 @@ Default: `Mapazapp\bridge\TERMINAL_A\`
 | `deals_history.csv` | CSV | `parseBridgeDealsHistoryCsv` |
 | `bridge_errors.csv` | CSV | `parseBridgeErrorsCsv` |
 
+## `bridge_status.json` — diagnostic counters (Checkpoint 13.1+)
+
+- **`bridge_errors.csv`** is the **diagnostic log** (code, message, module, **severity**, context). Severities include at least **INFO**, **WARNING**, **ERROR** (and **FATAL** if used).
+- **`diagnostics_count`:** total diagnostic rows in the EA buffer (same ordering as written to **`bridge_errors.csv`** when export is enabled), including **INFO**.
+- **`warnings_count`:** rows whose severity is **WARNING**.
+- **`errors_count`:** rows whose severity is **ERROR** or **FATAL** only — **INFO** and **WARNING** do **not** increment this field.
+- **`last_error`:** text from the **last** row (by buffer order) with severity **WARNING**, **ERROR**, or **FATAL**; **empty string** when only **INFO** (or no rows), so a startup **INFO** alone does not surface as `last_error`.
+
+Older EA builds may omit **`diagnostics_count`** / **`warnings_count`**; TypeScript parsers treat them as optional.
+
 ## Market snapshot (required columns)
 
 The Checkpoint 10 parser **requires** all of the following headers (including **`last`** and **`session_status`**), not only the subset sometimes listed in prose specs:

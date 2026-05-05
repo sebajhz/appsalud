@@ -25,6 +25,11 @@ export interface BridgeStatusSnapshot {
   connected: boolean;
   lastTickTimeUtc?: string;
   symbolsEnabled: string[];
+  /** Total rows in `bridge_errors.csv` buffer (INFO + WARNING + ERROR + FATAL). Present when EA emits CP13.1+ `diagnostics_count`. */
+  diagnosticsCount?: number;
+  /** Rows with severity WARNING. Optional wire: `warnings_count`. */
+  warningsCount?: number;
+  /** Rows with severity ERROR or FATAL only (not INFO/WARNING). Wire: `errors_count`. */
   errorsCount: number;
   lastError?: string;
 }

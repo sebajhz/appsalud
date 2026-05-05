@@ -489,9 +489,40 @@ bool WriteTextAtomic(const string relativePath, const string body)
   }
 
 //+------------------------------------------------------------------+
-bool ExportBridgeStatusJson(const string eaStatus, const bool connected, const int errorsCount,
-                            const string lastErr, const string lastTickUtc)
+//| From g_errors: diagnostics=all rows; warnings=WARNING;          |
+//| errors_count=ERROR+FATAL only; last_error=last WARNING/ERROR/FATAL |
+//+------------------------------------------------------------------+
+void ComputeBridgeStatusDiagnostics(int &diagCount, int &warnCount, int &errCount, string &lastErrMsg)
   {
+   diagCount = ArraySize(g_errors);
+   warnCount = 0;
+   errCount = 0;
+   lastErrMsg = "";
+   for(int i = 0; i < diagCount; i++)
+     {
+      const string sev = g_errors[i].severity;
+      if(StringCompare(sev, "WARNING") == 0)
+         warnCount++;
+      else if(StringCompare(sev, "ERROR") == 0 || StringCompare(sev, "FATAL") == 0)
+         errCount++;
+     }
+   for(int j = diagCount - 1; j >= 0; j--)
+     {
+      const string sev = g_errors[j].severity;
+      if(StringCompare(sev, "WARNING") == 0 || StringCompare(sev, "ERROR") == 0 || StringCompare(sev, "FATAL") == 0)
+        {
+         lastErrMsg = g_errors[j].message;
+         break;
+        }
+     }
+  }
+
+//+------------------------------------------------------------------+
+bool ExportBridgeStatusJson(const string eaStatus, const bool connected, const string lastTickUtc)
+  {
+   int dCount = 0, wCount = 0, eCount = 0;
+   string lastErr = "";
+   ComputeBridgeStatusDiagnostics(dCount, wCount, eCount, lastErr);
    const string exported = NowUtcIso();
    const long login = AccountInfoInteger(ACCOUNT_LOGIN);
    const string server = SanitizeOneLine(AccountInfoString(ACCOUNT_SERVER));
@@ -519,7 +550,9 @@ bool ExportBridgeStatusJson(const string eaStatus, const bool connected, const i
    if(StringLen(lastTickUtc) > 0)
       json += "\"last_tick_time_utc\":\"" + lastTickUtc + "\",";
    json += "\"symbols_enabled\":" + symJson + ",";
-   json += StringFormat("\"errors_count\":%d,", errorsCount);
+   json += StringFormat("\"diagnostics_count\":%d,", dCount);
+   json += StringFormat("\"warnings_count\":%d,", wCount);
+   json += StringFormat("\"errors_count\":%d,", eCount);
    json += "\"last_error\":\"" + JsonStringEscape(SanitizeOneLine(lastErr)) + "\"";
    json += "}";
    return WriteTextAtomic(g_baseRelPath + "\\bridge_status.json", json);
@@ -849,11 +882,7 @@ void RunExportPass(void)
      {
       ExportBridgeErrorsCsv();
      }
-   const int errCount = ArraySize(g_errors);
-   string lastErr = "";
-   if(errCount > 0)
-      lastErr = g_errors[errCount - 1].message;
-   ExportBridgeStatusJson("RUNNING", connected, errCount, lastErr, lastTick);
+   ExportBridgeStatusJson("RUNNING", connected, lastTick);
   }
 
 //+------------------------------------------------------------------+
@@ -927,11 +956,7 @@ void OnDeinit(const int reason)
   {
    EventKillTimer();
    const bool connected = (TerminalInfoInteger(TERMINAL_CONNECTED) != 0);
-   const int errCount = ArraySize(g_errors);
-   string lastErr = "";
-   if(errCount > 0)
-      lastErr = g_errors[errCount - 1].message;
-   ExportBridgeStatusJson("STOPPED", connected, errCount, lastErr, "");
+   ExportBridgeStatusJson("STOPPED", connected, "");
    if(InpExportErrors)
       ExportBridgeErrorsCsv();
   }

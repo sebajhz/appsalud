@@ -34,7 +34,33 @@ describe("Checkpoint 10 — bridge_status.json", () => {
     expect(r.value?.schemaVersion).toBe("MZP_BRIDGE_V1");
     expect(r.value?.terminalId).toBe("MT5_TERMINAL_CP10");
     expect(r.value?.symbolsEnabled).toEqual(["XAUUSD", "EURUSD"]);
+    expect(r.value?.diagnosticsCount).toBe(1);
+    expect(r.value?.warningsCount).toBe(0);
     expect(r.value?.errorsCount).toBe(0);
+  });
+
+  it("accepts bridge_status.json without optional diagnostic counters (pre–CP13.1 wire)", () => {
+    const legacy = `{
+  "schema_version": "MZP_BRIDGE_V1",
+  "exported_at_utc": "2026-05-04T12:00:00Z",
+  "terminal_id": "MT5_TERMINAL_CP10",
+  "account_login": 100200300,
+  "account_server": "MockBroker-Demo",
+  "account_currency": "USD",
+  "bridge_version": "MZP_BridgeEA_v1",
+  "ea_status": "RUNNING",
+  "auto_trading_enabled": false,
+  "connected": true,
+  "last_tick_time_utc": "2026-05-04T11:59:58Z",
+  "symbols_enabled": ["XAUUSD", "EURUSD"],
+  "errors_count": 0,
+  "last_error": ""
+}`;
+    const r = parseBridgeStatusJson(legacy);
+    expect(r.ok).toBe(true);
+    expect(r.value?.errorsCount).toBe(0);
+    expect(r.value?.diagnosticsCount).toBeUndefined();
+    expect(r.value?.warningsCount).toBeUndefined();
   });
 
   it("accepts QTG_BRIDGE_V1 schema alias", () => {

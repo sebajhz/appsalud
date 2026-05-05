@@ -102,7 +102,7 @@ Sanitized record of one successful **live MT5** export-only run (no account numb
 - **`bridge_errors.csv`:** only a startup **INFO** line (`BRIDGE_EA_START` / EA initialized message); no repeating **ERROR** spam observed.
 - **Trading:** no new orders or positions attributable to the EA; no command reader, **WebRequest**, DLL imports, **Trade.mqh**, or **CTrade** in the shipped source (unchanged design).
 
-**Follow-up (documentation / product polish, not a smoke blocker):** `bridge_status.json` reported `errors_count` = **1** while the only `bridge_errors.csv` row was **INFO**. Today the counter reflects “rows in the error buffer,” not strictly ERROR-severity events. **Future refinement (TODO, no implementation in this checkpoint):** either exclude **INFO** from `errors_count`, expose a separate diagnostics count, or rename/clarify the field so operators are not misled.
+**Checkpoint 13.1 (diagnostics counters):** `bridge_errors.csv` remains the full diagnostic log (all severities). In `bridge_status.json`, **`diagnostics_count`** = all buffered rows; **`warnings_count`** = **WARNING** only; **`errors_count`** = **ERROR** + **FATAL** only; **`last_error`** = message from the chronologically last **WARNING** / **ERROR** / **FATAL** (empty when only **INFO**, e.g. startup alone). **INFO** lines such as `BRIDGE_EA_START` no longer inflate **`errors_count`**.
 
 **Repository hygiene:** do **not** commit raw files from a real terminal into git (they can contain logins, servers, balances, and prices). Use **[`samples/`](./samples/)** or hand-redacted snippets for tickets and CI fixtures.
 
@@ -111,7 +111,7 @@ Sanitized record of one successful **live MT5** export-only run (no account numb
 1. **Repeat smoke on a demo terminal** using sections **2–7** of this checklist (compile, attach, confirm folder + file names, confirm Toolbox order count unchanged).
 2. **Optional parser check:** copy file **text** locally (not into the repo) and run **`@workspace/mapazapp-core`** parsers (`parseBridgeStatusJson`, `parseBridgeMarketSnapshotCsv`, …) from a scratch script or REPL — same contract as **`EXPORT_CONTRACT.md`** and **`checkpoint10-bridge-contract.test.ts`**.
 3. **Regressions:** after EA source edits, re-run **§8** forbidden-symbol search on `Mapazapp_BridgeEA.mq5` and MetaEditor compile.
-4. **Product backlog:** track the **`errors_count` vs INFO-severity** refinement (see note above); no backend watcher or live ingest is required for that item.
+4. **Optional:** confirm `bridge_status.json` after attach shows **`errors_count`: 0** when `bridge_errors.csv` contains only **INFO** (e.g. startup), with **`diagnostics_count`** ≥ 1 reflecting total rows.
 
 ---
 
@@ -132,7 +132,7 @@ Sanitized record of one successful **live MT5** export-only run (no account numb
 
 ## 7. Smoke checks
 
-- [ ] **`bridge_status.json`** exists; root object has `"schema_version": "MZP_BRIDGE_V1"` (unless you intentionally set legacy `QTG_BRIDGE_V1`).
+- [ ] **`bridge_status.json`** exists; root object has `"schema_version": "MZP_BRIDGE_V1"` (unless you intentionally set legacy `QTG_BRIDGE_V1`). With CP13.1+ EA, expect **`diagnostics_count`** ≥ 1 when **`bridge_errors.csv`** has rows, **`errors_count`: 0** when only **INFO** rows exist, and optional **`warnings_count`** consistent with **WARNING** rows.
 - [ ] **`latest_market_snapshot.csv`**: header row present; **≥ 1 data row** per symbol that successfully exported (same count as working symbols).
 - [ ] **`account_snapshot.csv`**: **exactly one** data row (one account snapshot).
 - [ ] **`candles.csv`**: **≥ 1 data row** when history is available (parser in Mapazapp core expects at least one valid candle row for a non-empty import).
