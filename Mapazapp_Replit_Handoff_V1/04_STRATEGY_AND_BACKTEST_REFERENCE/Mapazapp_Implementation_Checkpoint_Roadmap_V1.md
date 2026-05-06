@@ -5,6 +5,8 @@
 **Related:** `Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`, `Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`.  
 **Latest roadmap refresh:** checkpoint **17** closure — see **Document control** for revision history.
 
+**Before implementing CP18, read** `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md` (CP18 Scope Freeze — Assisted Execution Gated Future Phase).
+
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
 ---
@@ -35,7 +37,7 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 
 ### Next
 
-- **CP18** — Assisted Execution Gated Future Phase (explicit product approval only; separate from contract definition)  
+- **CP18** — Assisted Execution Gated Future Phase (**readiness only**; scope frozen in `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md` — **no** real execution, **no** `POST` execution routes, **no** MT5 command path; explicit product approval for any later execution phase)  
 
 ### Still not implemented (do not assume in production)
 
@@ -134,7 +136,7 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 
 | ID | Name | Intent (high level) |
 |----|------|------------------------|
-| **Checkpoint 18** | Assisted Execution Gated Future Phase | Any production-assisted execution ships only after explicit approval, forward/demo evidence, and regulatory/product gates — treated as a **separate** phase from 0–17. **CP17 does not enable execution; CP18 would still require explicit approval before any gated execution path.** |
+| **Checkpoint 18** | Assisted Execution Gated Future Phase | **Scope freeze:** `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md`. CP18 strengthens **disabled** readiness only (gates, mock `GET` contract, tests, UX copy, docs). **Not** real execution; **not** `POST`/command/WebSocket/DB/watcher/registry mutation/EA changes. **Real execution** remains **CP19+** (or later) with a **new** explicit approval — CP18 does not authorize it. |
 
 ---
 
@@ -153,7 +155,7 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 
 ## 6. Recommended immediate next checkpoint
 
-**Checkpoint 18 — Assisted Execution Gated Future Phase** — only after explicit product/regulatory sign-off; **checkpoint 17** has defined the **contract and safety gates** with **no** live execution, **no** MT5 command channel, and **no** registry mutation from Mapazapp.
+**Checkpoint 18 — Assisted Execution Gated Future Phase** — implement only per **`APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md`** (readiness layer; execution stays off). **Checkpoint 17** defined the **contract and safety gates** with **no** live execution, **no** MT5 command channel, and **no** registry mutation from Mapazapp. **Any real execution path** requires **human approval** and a **later checkpoint** (e.g. CP19+), not CP18 alone.
 
 ---
 
@@ -165,3 +167,4 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 | V1.1 | 2026-05-05 | Checkpoint **15** closure — **Current status** section; completed **0–15**; future table **16–18**; stale “next CP7” recommendation removed. |
 | V1.2 | 2026-05-05 | Checkpoint **16** closure — **Current status** completed through **CP16**; **Next** = CP17; summary table includes CP16; recommended next checkpoint updated. |
 | V1.3 | 2026-05-05 | Checkpoint **17** closure — **Current status** completed through **CP17**; **Next** = CP18; summary table includes CP17; future table starts at CP18; sequencing note for CP18 explicit approval. |
+| V1.4 | 2026-05-06 | **CP18 scope freeze** pointer — `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md`; **Next** / future table / §6 aligned: CP18 = readiness only; real execution = CP19+ with new approval. |

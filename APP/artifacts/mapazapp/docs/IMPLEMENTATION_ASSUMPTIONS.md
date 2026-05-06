@@ -2,6 +2,8 @@
 
 This file records **implementation-only** decisions and **test fixtures** that are not broker truth. Product rules remain in `Mapazapp_Replit_Handoff_V1/` and `APP/artifacts/mapazapp/docs/MOCK_DATA_CONTRACT.md`.
 
+**Before implementing CP18, read** `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md` — allowed vs forbidden scope, required invariants (`executionEnabled` / `sendToMt5Enabled` / `canAutoExecute` / `registryMutationAllowed` / `manualReviewRequired`), and the **no-go** rule if real execution is attempted.
+
 ---
 
 ## 1. Test symbol profiles (`@workspace/mapazapp-core` tests)

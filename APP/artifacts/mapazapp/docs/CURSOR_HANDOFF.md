@@ -8,6 +8,8 @@
 
 **Before starting a new implementation checkpoint, read** `Mapazapp_Replit_Handoff_V1/04_STRATEGY_AND_BACKTEST_REFERENCE/Mapazapp_Implementation_Checkpoint_Roadmap_V1.md`.
 
+**Before implementing CP18, read** `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md` — CP18 is a **gated future-phase readiness layer**; it **does not** enable real execution, `POST` command routes, MT5 command reading, or BridgeEA/TestEA logic changes.
+
 This document gives Cursor (or any future developer) everything needed to continue building Mapazapp from where the Replit mock phase left off.
 
 ---
