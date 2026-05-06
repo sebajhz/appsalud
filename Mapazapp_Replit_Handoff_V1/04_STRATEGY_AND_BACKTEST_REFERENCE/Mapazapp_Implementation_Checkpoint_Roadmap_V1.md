@@ -10,6 +10,7 @@
 **Before defining CP19+ scope, read** `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`. CP18.5 concludes that engine/backtest proof is the immediate priority over execution plumbing.
 
 **Roadmap V2 progress:** V2-01 completion/audit is documented at `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` (fixtures + characterization tests; no execution changes).
+**Roadmap V2 replay checkpoint:** V2-02 scope/results are documented at `APP/artifacts/mapazapp/docs/V2_02_CANDLE_REPLAY_TRADE_SIMULATOR.md` (deterministic candle replay lifecycle, MAE/MFE, no execution changes).
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
@@ -177,3 +178,4 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 | V1.5 | 2026-05-06 | **CP18 implementation** closure — **Current status** through **CP18**; summary table **0–18**; **Next** = CP19+; future table starts at 19+. |
 | V1.6 | 2026-05-06 | **CP18.5 audit pointer** — add explicit reference to `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` before CP19+ planning; emphasizes engine-proof-first sequencing. |
 | V1.7 | 2026-05-06 | **V2-01 progress pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` for engine fixture expansion/characterization results before V2-02 replay work. |
+| V1.8 | 2026-05-06 | **V2-02 replay pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_02_CANDLE_REPLAY_TRADE_SIMULATOR.md` for candle-by-candle lifecycle outcomes and MAE/MFE coverage. |
