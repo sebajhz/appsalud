@@ -338,13 +338,6 @@ void WriteExports(void)
    if(!InpWriteTradesCsv)
       g_diagNotes += " Trades file not written (InpWriteTradesCsv=false).";
 
-   datetime tStart = 0;
-   datetime tStop = 0;
-   if(TesterStartTime() > 0)
-      tStart = TesterStartTime();
-   if(TesterStopTime() > 0)
-      tStop = TesterStopTime();
-
    const ENUM_TIMEFRAMES curTf = Period();
    const string tfWire = TfToWire(curTf);
    const string splitLower = Trim(InpDatasetSplit);
@@ -367,14 +360,9 @@ void WriteExports(void)
       json += "  \"dataset_split\": \"" + JsonStringEscape(splitLower) + "\",\r\n";
       json += "  \"tester_symbol\": \"" + JsonStringEscape(g_brokerSymbol) + "\",\r\n";
       json += "  \"tester_period\": \"" + JsonStringEscape(tfWire) + "\",\r\n";
-      if(tStart > 0)
-         json += "  \"tester_from\": \"" + JsonStringEscape(TimeUtcIso(tStart)) + "\",\r\n";
-      else
-         json += "  \"tester_from\": null,\r\n";
-      if(tStop > 0)
-         json += "  \"tester_to\": \"" + JsonStringEscape(TimeUtcIso(tStop)) + "\",\r\n";
-      else
-         json += "  \"tester_to\": null,\r\n";
+      // Tester date range is intentionally not read in CP14 for MetaEditor portability.
+      json += "  \"tester_from\": null,\r\n";
+      json += "  \"tester_to\": null,\r\n";
       json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
       json += StringFormat("  \"trade_count\": %d,\r\n", tc);
       json += "  \"notes\": \"" + JsonStringEscape(g_diagNotes) + "\",\r\n";

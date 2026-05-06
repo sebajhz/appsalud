@@ -78,8 +78,8 @@ Advisory metadata only. **Not** consumed by `importBacktestTradesFromCsv` today 
 | `dataset_split` | string | e.g. `train`, `validation`, `forward`, `full` |
 | `tester_symbol` | string | Redundant with broker symbol for human clarity |
 | `tester_period` | string | Wire timeframe token (`H1`, `M15`, …) |
-| `tester_from` | string or `null` | From `TesterStartTime()` when non-zero |
-| `tester_to` | string or `null` | From `TesterStopTime()` when non-zero |
+| `tester_from` | string or `null` | **Optional.** CP14 always emits **`null`** — Strategy Tester model/date APIs are not called for MetaEditor portability across builds; enrich manually or in a future checkpoint if needed. |
+| `tester_to` | string or `null` | **Optional.** Same as `tester_from` — CP14 always **`null`**. |
 | `exported_at_utc` | string | ISO UTC |
 | `trade_count` | number | Must align with CSV data rows |
 | `notes` | string | Diagnostics / placeholder disclaimers |
