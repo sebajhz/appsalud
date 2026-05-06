@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { calculateTotalR } from "../src/backtest-metrics";
 import { createIfvgReplayBacktestFixtures } from "../src/ifvg-replay-backtest-fixtures";
-import { inferFvgCenterBarIndexFromSourceIfvgId, runIfvgReplayBacktest } from "../src/ifvg-replay-backtest";
+import { runIfvgReplayBacktest } from "../src/ifvg-replay-backtest";
 import { createEngineRealityFixtures } from "../src/engine-reality-fixtures";
 import { detectIfvgZoneCandidates } from "../src/strategy-detection";
 import type { ZoneCandidate } from "../src/zone-candidate";
@@ -32,6 +32,92 @@ describe("V2-04 IFVG replay backtest — C. clean fixture", () => {
     expect(["completed", "completed_with_warnings"]).toContain(r.status);
     expect(r.traces.length).toBeGreaterThan(0);
     expect(r.detection?.candidates.length).toBeGreaterThan(0);
+  });
+});
+
+describe("V2-04.1 candidate timing metadata — A. detection fixtures", () => {
+  it("clean detection candidate tiene timing exact o inferred y firstRetestSearchIndex coherente", () => {
+    const r = runIfvgReplayBacktest(fx.CLEAN_ONE_TP);
+    const z = r.detection?.candidates[0];
+    expect(z?.candidateTiming).toBeDefined();
+    expect(["exact", "inferred"]).toContain(z!.candidateTiming!.sourceKind);
+    expect(z!.candidateTiming!.candidateCreatedIndex).toBeDefined();
+    expect(z!.candidateTiming!.firstRetestSearchIndex).toBeGreaterThanOrEqual(
+      z!.candidateTiming!.candidateCreatedIndex!,
+    );
+  });
+});
+
+describe("V2-04.1 replay — B. usa metadata sin CANDIDATE_INDEX_UNAVAILABLE", () => {
+  it("fixture limpio no emite UNAVAILABLE cuando hay candidateTiming", () => {
+    const r = runIfvgReplayBacktest(fx.CLEAN_ONE_TP);
+    expect(r.diagnostics.some((d) => d.code === "CANDIDATE_INDEX_UNAVAILABLE")).toBe(false);
+  });
+});
+
+describe("V2-04.1 replay — C. fallback sourceIfvgId", () => {
+  it("sin metadata pero id parseable -> CANDIDATE_INDEX_INFERRED_FROM_ID", () => {
+    const er = createEngineRealityFixtures().CLEAN_BULLISH_IFVG;
+    const det = detectIfvgZoneCandidates({
+      candles: er.candles,
+      symbolProfile: er.symbolProfile,
+      settings: fx.CLEAN_ONE_TP.strategySettings!,
+      strategyId: er.strategyId,
+      parameterSetId: er.parameterSetId,
+      canonicalSymbol: er.canonicalSymbol,
+    });
+    const base = det.candidates[0]!;
+    const z: ZoneCandidate = {
+      ...base,
+      zoneId: "Z_INFER_ID" as never,
+      candidateTiming: undefined,
+    };
+
+    const r = runIfvgReplayBacktest({
+      ...fx.CLEAN_ONE_TP,
+      testOnlyAppendZones: [z],
+      backtestSettings: { ...fx.CLEAN_ONE_TP.backtestSettings, maxCandidates: 99 },
+    });
+    expect(r.diagnostics.some((d) => d.code === "CANDIDATE_INDEX_INFERRED_FROM_ID")).toBe(true);
+  });
+
+  it("sin metadata e id no parseable -> CANDIDATE_INDEX_UNAVAILABLE", () => {
+    const er = createEngineRealityFixtures().CLEAN_BULLISH_IFVG;
+    const det = detectIfvgZoneCandidates({
+      candles: er.candles,
+      symbolProfile: er.symbolProfile,
+      settings: fx.CLEAN_ONE_TP.strategySettings!,
+      strategyId: er.strategyId,
+      parameterSetId: er.parameterSetId,
+      canonicalSymbol: er.canonicalSymbol,
+    });
+    const base = det.candidates[0]!;
+    const badZone: ZoneCandidate = {
+      ...base,
+      zoneId: "Z_BAD_TEST" as never,
+      sourceIfvgId: "custom_bad_id",
+      candidateTiming: undefined,
+    };
+
+    const r = runIfvgReplayBacktest({
+      ...fx.CLEAN_ONE_TP,
+      testOnlyAppendZones: [badZone],
+      backtestSettings: { ...fx.CLEAN_ONE_TP.backtestSettings, maxCandidates: 99 },
+    });
+    expect(r.diagnostics.some((d) => d.code === "CANDIDATE_INDEX_UNAVAILABLE")).toBe(true);
+  });
+});
+
+describe("V2-04.1 replay — D. anti-lookahead slice", () => {
+  it("replay no empieza antes de candidateCreatedIndex cuando hay metadata", () => {
+    const r = runIfvgReplayBacktest(fx.CLEAN_ONE_TP);
+    const z = r.detection?.candidates[0];
+    const created = z?.candidateTiming?.candidateCreatedIndex;
+    expect(created).toBeDefined();
+    const withReplay = r.traces.filter((t) => t.replay != null && t.replaySliceStartBarIndex != null);
+    for (const t of withReplay) {
+      expect(t.replaySliceStartBarIndex!).toBeGreaterThanOrEqual(created!);
+    }
   });
 });
 
@@ -74,30 +160,6 @@ describe("V2-04 IFVG replay backtest — G. banderas de seguridad", () => {
     expect(r.executionEnabled).toBe(false);
     expect(r.registryMutationAllowed).toBe(false);
     expect(r.reviewOnly).toBe(true);
-  });
-});
-
-describe("V2-04 IFVG replay backtest — H. diagnostico indice candidato", () => {
-  it("id no parseable -> inferencia null y diagnostico en backtest", () => {
-    expect(inferFvgCenterBarIndexFromSourceIfvgId("custom_bad_id")).toBeNull();
-    const er = createEngineRealityFixtures().CLEAN_BULLISH_IFVG;
-    const det = detectIfvgZoneCandidates({
-      candles: er.candles,
-      symbolProfile: er.symbolProfile,
-      settings: fx.CLEAN_ONE_TP.strategySettings!,
-      strategyId: er.strategyId,
-      parameterSetId: er.parameterSetId,
-      canonicalSymbol: er.canonicalSymbol,
-    });
-    const base = det.candidates[0]!;
-    const badZone: ZoneCandidate = { ...base, zoneId: "Z_BAD_TEST" as never, sourceIfvgId: "custom_bad_id" };
-
-    const r = runIfvgReplayBacktest({
-      ...fx.CLEAN_ONE_TP,
-      testOnlyAppendZones: [badZone],
-      backtestSettings: { ...fx.CLEAN_ONE_TP.backtestSettings, maxCandidates: 99 },
-    });
-    expect(r.diagnostics.some((d) => d.code === "CANDIDATE_INDEX_UNAVAILABLE")).toBe(true);
   });
 });
 

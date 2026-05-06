@@ -1,4 +1,5 @@
 import type { CanonicalSymbol, ParameterSetId, StrategyId, ZoneId } from "./ids";
+import { buildCandidateTimingMetadataFromIfvg, type CandidateTimingMetadata } from "./candidate-timing";
 import type { InversionFairValueGap } from "./ifvg-converter";
 import { buildZoneBounds, zoneMidpoint } from "./zone-primitives";
 import { roundToTickSize, zonePaddingPrice } from "./normalize";
@@ -30,6 +31,8 @@ export interface ZoneCandidate {
   initialState: ZoneCandidateInitialState;
   /** Liquidity sweep class from IFVG detection (checkpoint 12+). */
   sweepStatus?: SweepStatus;
+  /** Bar-index timing for replay anti-lookahead (V2-04.1). */
+  candidateTiming?: CandidateTimingMetadata;
 }
 
 export interface ZoneCandidateBuildInput {
@@ -80,6 +83,8 @@ export function buildZoneCandidateFromIfvg(input: ZoneCandidateBuildInput): Zone
     dir === "BUY" ? "down" : "up",
   );
 
+  const candidateTiming = buildCandidateTimingMetadataFromIfvg(ifvg, input.createdAtIso);
+
   return {
     zoneId: input.zoneId,
     strategyId: input.strategyId,
@@ -93,6 +98,7 @@ export function buildZoneCandidateFromIfvg(input: ZoneCandidateBuildInput): Zone
     invalidationPrice,
     createdAt: input.createdAtIso,
     sourceIfvgId: ifvg.id,
+    candidateTiming,
     reasonSimple:
       dir === "BUY"
         ? "Inverted bearish gap — watch for long reaction in zone."

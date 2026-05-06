@@ -11,6 +11,12 @@ export interface FairValueGap {
   fvgHigh: number;
   /** Index of middle candle (B) in A=i-1, B=i, C=i+1. */
   centerIndex: number;
+  /** Index of candle A (left neighbour of center). */
+  fvgStartIndex: number;
+  /** Same as `centerIndex` — middle candle B. */
+  fvgMiddleIndex: number;
+  /** Index of candle C (right neighbour of center). */
+  fvgEndIndex: number;
   time: number;
   size: number;
 }
@@ -62,6 +68,9 @@ export function detectFvgAtIndex(
     fvgLow,
     fvgHigh,
     centerIndex: i,
+    fvgStartIndex: i - 1,
+    fvgMiddleIndex: i,
+    fvgEndIndex: i + 1,
     time: B.time,
     size,
   };

@@ -49,6 +49,43 @@ export function inferFvgCenterBarIndexFromSourceIfvgId(sourceIfvgId: string): nu
   return null;
 }
 
+function resolveRetestSearchStart(
+  zone: ZoneCandidate,
+  candleLen: number,
+): {
+  startSearch: number;
+  inferredCenterBarIndex: number | null;
+  diagnostic: "CANDIDATE_INDEX_UNAVAILABLE" | "CANDIDATE_INDEX_INFERRED_FROM_ID" | null;
+} {
+  const t = zone.candidateTiming;
+  let inferredCenterBarIndex: number | null = t?.fvgMiddleIndex ?? null;
+  let diagnostic: "CANDIDATE_INDEX_UNAVAILABLE" | "CANDIDATE_INDEX_INFERRED_FROM_ID" | null = null;
+
+  let startSearch: number;
+  if (t?.firstRetestSearchIndex != null) {
+    startSearch = Math.max(0, Math.min(t.firstRetestSearchIndex, candleLen));
+  } else if (t?.candidateCreatedIndex != null) {
+    startSearch = Math.max(0, Math.min(t.candidateCreatedIndex + 1, candleLen));
+  } else {
+    const inferred = inferFvgCenterBarIndexFromSourceIfvgId(zone.sourceIfvgId);
+    if (inferred != null) {
+      inferredCenterBarIndex = inferred;
+      diagnostic = "CANDIDATE_INDEX_INFERRED_FROM_ID";
+      const cap = candleLen > 0 ? candleLen - 1 : 0;
+      startSearch = Math.max(0, Math.min(inferred + 1, cap));
+    } else {
+      diagnostic = "CANDIDATE_INDEX_UNAVAILABLE";
+      startSearch = 0;
+    }
+  }
+
+  if (t?.candidateCreatedIndex != null && startSearch < t.candidateCreatedIndex + 1) {
+    startSearch = Math.max(0, Math.min(t.candidateCreatedIndex + 1, candleLen));
+  }
+
+  return { startSearch, inferredCenterBarIndex, diagnostic };
+}
+
 function findRetestConfirmIndices(
   candles: Candle[],
   zone: ZoneCandidate,
@@ -264,17 +301,16 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
 
     for (let ci = 0; ci < candidates.length; ci++) {
       const zone = candidates[ci]!;
-      const centerIdx = inferFvgCenterBarIndexFromSourceIfvgId(zone.sourceIfvgId);
-      if (centerIdx == null) {
+      const { startSearch, inferredCenterBarIndex: centerIdx, diagnostic: indexDiagnostic } =
+        resolveRetestSearchStart(zone, input.candles.length);
+
+      if (indexDiagnostic != null) {
         diagnostics.push({
-          code: "CANDIDATE_INDEX_UNAVAILABLE",
-          message: ifvgReplayBacktestReason("CANDIDATE_INDEX_UNAVAILABLE").message,
+          code: indexDiagnostic,
+          message: ifvgReplayBacktestReason(indexDiagnostic).message,
           candidateZoneId: zone.zoneId,
         });
       }
-
-      const startSearch =
-        centerIdx != null ? Math.min(centerIdx + 1, input.candles.length - 1) : 0;
 
       const path = findRetestConfirmIndices(
         input.candles,
@@ -289,6 +325,8 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           zoneId: zone.zoneId,
           sourceIfvgId: zone.sourceIfvgId,
           inferredCenterBarIndex: centerIdx,
+          retestSearchStartIndex: startSearch,
+          replaySliceStartBarIndex: null,
           planReadyBarIndex: null,
           detectionDiagnostics: detection.diagnostics,
           tradeEvaluation: null,
@@ -310,6 +348,8 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           zoneId: zone.zoneId,
           sourceIfvgId: zone.sourceIfvgId,
           inferredCenterBarIndex: centerIdx,
+          retestSearchStartIndex: startSearch,
+          replaySliceStartBarIndex: null,
           planReadyBarIndex: planReadyIdx,
           detectionDiagnostics: detection.diagnostics,
           tradeEvaluation: null,
@@ -373,6 +413,8 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           zoneId: zone.zoneId,
           sourceIfvgId: zone.sourceIfvgId,
           inferredCenterBarIndex: centerIdx,
+          retestSearchStartIndex: startSearch,
+          replaySliceStartBarIndex: null,
           planReadyBarIndex: planReadyIdx,
           detectionDiagnostics: detection.diagnostics,
           tradeEvaluation,
@@ -402,6 +444,8 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           zoneId: zone.zoneId,
           sourceIfvgId: zone.sourceIfvgId,
           inferredCenterBarIndex: centerIdx,
+          retestSearchStartIndex: startSearch,
+          replaySliceStartBarIndex: null,
           planReadyBarIndex: planReadyIdx,
           detectionDiagnostics: detection.diagnostics,
           tradeEvaluation,
@@ -414,12 +458,19 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
         continue;
       }
 
-      const replayCandles = replaySliceFromPlanReady(input.candles, planReadyIdx);
+      let replaySliceStartBar = planReadyIdx;
+      if (zone.candidateTiming?.firstReplayIndex != null) {
+        replaySliceStartBar = Math.max(planReadyIdx, zone.candidateTiming.firstReplayIndex);
+      }
+
+      const replayCandles = replaySliceFromPlanReady(input.candles, replaySliceStartBar);
       if (replayCandles.length === 0) {
         traces.push({
           zoneId: zone.zoneId,
           sourceIfvgId: zone.sourceIfvgId,
           inferredCenterBarIndex: centerIdx,
+          retestSearchStartIndex: startSearch,
+          replaySliceStartBarIndex: replaySliceStartBar,
           planReadyBarIndex: planReadyIdx,
           detectionDiagnostics: detection.diagnostics,
           tradeEvaluation,
@@ -458,6 +509,8 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
         zoneId: zone.zoneId,
         sourceIfvgId: zone.sourceIfvgId,
         inferredCenterBarIndex: centerIdx,
+        retestSearchStartIndex: startSearch,
+        replaySliceStartBarIndex: replaySliceStartBar,
         planReadyBarIndex: planReadyIdx,
         detectionDiagnostics: detection.diagnostics,
         tradeEvaluation,

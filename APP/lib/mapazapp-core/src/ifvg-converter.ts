@@ -14,6 +14,12 @@ export interface InversionFairValueGap {
   sourceFvgId: string;
   /** Bar where invalidation was detected. */
   invalidationIndex: number;
+  /** Same bar as `invalidationIndex` when set — IFVG break / FVG invalidation confirmation. */
+  ifvgBreakIndex?: number;
+  /** FVG three-candle indices when propagated from `FairValueGap` / converter. */
+  fvgStartIndex?: number;
+  fvgMiddleIndex?: number;
+  fvgEndIndex?: number;
   time: number;
 }
 
@@ -75,6 +81,10 @@ export function tryConvertFvgToIfvg(
           ifvgHigh: fvg.fvgHigh,
           sourceFvgId: fvg.id,
           invalidationIndex: j,
+          ifvgBreakIndex: j,
+          fvgStartIndex: fvg.fvgStartIndex,
+          fvgMiddleIndex: fvg.fvgMiddleIndex,
+          fvgEndIndex: fvg.fvgEndIndex,
           time: c.time,
         };
       }
@@ -90,6 +100,10 @@ export function tryConvertFvgToIfvg(
           ifvgHigh: fvg.fvgHigh,
           sourceFvgId: fvg.id,
           invalidationIndex: j,
+          ifvgBreakIndex: j,
+          fvgStartIndex: fvg.fvgStartIndex,
+          fvgMiddleIndex: fvg.fvgMiddleIndex,
+          fvgEndIndex: fvg.fvgEndIndex,
           time: c.time,
         };
       }

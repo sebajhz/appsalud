@@ -16,6 +16,7 @@ export * from "./liquidity-sweep";
 export * from "./displacement";
 export * from "./fvg-detector";
 export * from "./ifvg-converter";
+export * from "./candidate-timing";
 export * from "./zone-candidate";
 export * from "./retest-detector";
 export * from "./confirmation-detector";

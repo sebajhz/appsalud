@@ -16,6 +16,7 @@
 **Roadmap V2 replay pointer:** `APP/artifacts/mapazapp/docs/V2_02_CANDLE_REPLAY_TRADE_SIMULATOR.md` — V2-02 introduces deterministic candle replay outcomes (trigger/missed/expired/SL/TP/ambiguity + MAE/MFE), still review-only.
 **Roadmap V2 entry/SL/TP pointer:** `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` — V2-03 adds `buildEntrySlTpPlan` (modes, dynamic buffer, R:R, timing v1) and `replayInputPreview` for `simulateReplayTrade`, still review-only.
 **Roadmap V2 IFVG replay backtest pointer:** `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` — V2-04 adds `runIfvgReplayBacktest` (detection → trade plan → Entry/SL/TP → replay → metrics in R), still review-only and non-profitability-proof.
+**Roadmap V2-04.1:** `ZoneCandidate.candidateTiming` (`CandidateTimingMetadata` in `candidate-timing.ts`) propagates FVG/IFVG bar indices from detectors; replay prefers this over parsing `sourceIfvgId`. Full-series detection remains a v1 limitation; next engine step suggested: **V2-05** human-like tolerance calibration.
 
 This document gives Cursor (or any future developer) everything needed to continue building Mapazapp from where the Replit mock phase left off.
 
@@ -39,7 +40,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 | `src/displacement.ts` | Bullish/bearish displacement vs ATR + close position. |
 | `src/fvg-detector.ts` | 3-candle FVG + ATR size filter. |
 | `src/ifvg-converter.ts` | FVG → IFVG with dynamic break buffer + close/wick mode. |
-| `src/zone-candidate.ts` | Padded zone from IFVG + tick rounding; initial state `WAIT_RETEST` / `OBSERVE` only. |
+| `src/zone-candidate.ts` | Padded zone from IFVG + tick rounding; initial state `WAIT_RETEST` / `OBSERVE` only; optional `candidateTiming` (V2-04.1). |
+| `src/candidate-timing.ts` | `CandidateTimingMetadata` + `buildCandidateTimingMetadataFromIfvg` for replay anti-lookahead. |
 | `src/retest-detector.ts` | `full_zone` / `midpoint` / `edge` retest. |
 | `src/confirmation-detector.ts` | Post-retest confirmation + optional wick rule. |
 | `src/strategy-settings.ts` | Grouped `IfvgStrategySettings` + `createDefaultIfvgStrategySettingsForTests()`. |

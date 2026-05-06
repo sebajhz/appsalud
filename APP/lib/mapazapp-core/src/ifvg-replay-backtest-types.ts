@@ -27,6 +27,7 @@ export type IfvgReplayBacktestReasonCode =
   | "MISSING_STRATEGY_SETTINGS"
   | "DETECTION_FAILED"
   | "CANDIDATE_INDEX_UNAVAILABLE"
+  | "CANDIDATE_INDEX_INFERRED_FROM_ID"
   | "NO_RETEST_CONFIRM_PATH"
   | "PIPELINE_INTERNAL"
   | "DETECTION_ASSUMPTION";
@@ -109,6 +110,10 @@ export interface IfvgReplayBacktestCandidateTrace {
   zoneId: string;
   sourceIfvgId: string;
   inferredCenterBarIndex: number | null;
+  /** First bar index used for retest+confirmation search (full series coordinates). */
+  retestSearchStartIndex: number | null;
+  /** First bar index passed to `simulateReplayTrade` (full series coordinates). */
+  replaySliceStartBarIndex: number | null;
   planReadyBarIndex: number | null;
   detectionDiagnostics: DetectIfvgZoneCandidatesResult["diagnostics"] | null;
   tradeEvaluation: TradePlanEvaluationResult | null;

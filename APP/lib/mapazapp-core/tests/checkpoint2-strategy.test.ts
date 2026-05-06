@@ -170,6 +170,9 @@ describe("Checkpoint 2 — D. FVG / IFVG", () => {
     expect(fvg!.direction).toBe("BULLISH");
     expect(fvg!.fvgLow).toBe(100);
     expect(fvg!.fvgHigh).toBe(100.5);
+    expect(fvg!.fvgStartIndex).toBe(0);
+    expect(fvg!.fvgMiddleIndex).toBe(1);
+    expect(fvg!.fvgEndIndex).toBe(2);
   });
 
   it("detects bearish FVG", () => {
@@ -183,6 +186,9 @@ describe("Checkpoint 2 — D. FVG / IFVG", () => {
     expect(fvg!.direction).toBe("BEARISH");
     expect(fvg!.fvgLow).toBe(99.2);
     expect(fvg!.fvgHigh).toBe(100);
+    expect(fvg!.fvgStartIndex).toBe(0);
+    expect(fvg!.fvgMiddleIndex).toBe(1);
+    expect(fvg!.fvgEndIndex).toBe(2);
   });
 
   it("bearish FVG -> bullish IFVG after upside invalidation (close mode)", () => {
@@ -212,6 +218,8 @@ describe("Checkpoint 2 — D. FVG / IFVG", () => {
     );
     expect(ifvg).not.toBeNull();
     expect(ifvg!.direction).toBe("BULLISH");
+    expect(ifvg!.ifvgBreakIndex).toBe(3);
+    expect(ifvg!.fvgMiddleIndex).toBe(1);
   });
 
   it("bullish FVG -> bearish IFVG after downside invalidation", () => {
@@ -240,6 +248,8 @@ describe("Checkpoint 2 — D. FVG / IFVG", () => {
       "if2",
     );
     expect(ifvg?.direction).toBe("BEARISH");
+    expect(ifvg?.ifvgBreakIndex).toBe(3);
+    expect(ifvg?.fvgMiddleIndex).toBe(1);
   });
 });
 
@@ -270,6 +280,11 @@ describe("Checkpoint 2 — E. Zone candidate", () => {
     });
     expect(z.direction).toBe("BUY");
     expect(z.initialState).toBe("WAIT_RETEST");
+    expect(z.candidateTiming?.sourceKind).toBe("inferred");
+    expect(z.candidateTiming?.candidateCreatedIndex).toBe(5);
+    expect(z.candidateTiming?.firstRetestSearchIndex).toBeGreaterThanOrEqual(
+      z.candidateTiming!.candidateCreatedIndex!,
+    );
     const pad = zonePaddingPrice({
       atr: 2,
       zonePaddingAtrFactor: 0.05,
