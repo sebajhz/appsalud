@@ -34,12 +34,13 @@ Este archivo es el punto de entrada rápido para sesiones futuras en Cursor. **N
 - `APP/artifacts/mt5/experts/Mapazapp_TestEA/` — **checkpoint 14**: **Strategy Tester solamente** — exportación virtual `MZP_TESTEA_V1` (`backtest_trades.csv` + `backtest_summary.json`) alineada con **`importBacktestTradesFromCsv`**; **no** es BridgeEA, **no** órdenes vivas, **no** ingesta automática en el dashboard.
 - **Checkpoint 15** (`mapazapp-core` + dashboard + `api-server`): bucle de **evidencia de backtest** multi-run (CSV en memoria / fixtures ficticios), propuesta de aprobación **solo advisory** — **sin** mutación del registry, **sin** optimización MT5 automática, **sin** watcher de carpetas del tester.
 - **Checkpoint 16** (`mapazapp-core` + dashboard + `api-server`): **Forward/Demo Monitor** — modelo de observación **`evaluateForwardMonitorSnapshot`** (snapshots mock, agregación de simulación de scanner / estados de revisión), UI **`/forward-monitor`** y rutas **GET** `forward-monitor/*` — **sin** watcher de archivos, **sin** WebSocket, **sin** persistencia, **sin** ejecución de órdenes.
+- **Checkpoint 17** (`mapazapp-core` + dashboard + `api-server`): **Assisted Execution Contract** — tipos y **`validateAssistedExecutionIntent`** (solo validación pura), fixtures ficticios, UI **`/assisted-execution`** y rutas **GET** `assisted-execution/*` — **contrato y seguridad únicamente**; **sin** ejecución, **sin** POST de órdenes, **sin** envío a MT5, **sin** lectura de comandos BridgeEA, **sin** mutación de registry.
 
 ---
 
 ## Ignorar por ahora (no borrar)
 
-- `APP/artifacts/api-server/` — Express del workspace; **checkpoint 11–16** añade API HTTP **mock read-only** en `/api/mapazapp/*` (scanner en memoria, **forward-monitor** snapshot, etc.; sin MT5/DB/WebSocket/scanner en vivo). El dashboard sigue usando mocks in-process salvo integración explícita futura.
+- `APP/artifacts/api-server/` — Express del workspace; **checkpoint 11–17** añade API HTTP **mock read-only** en `/api/mapazapp/*` (scanner en memoria, **forward-monitor** snapshot, **assisted-execution** contrato mock, etc.; sin MT5/DB/WebSocket/scanner en vivo). El dashboard sigue usando mocks in-process salvo integración explícita futura.
 - `APP/artifacts/mockup-sandbox/` — artefacto sandbox / UI genérica; **no** es el producto Mapazapp.
 - `APP/lib/`, `APP/scripts/`, `APP/attached_assets/` — estructura del workspace Replit; el mock del dashboard **no** depende de ello para ejecutarse.
 - `old/` — backup; no alinear ni implementar desde ahí por defecto.

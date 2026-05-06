@@ -19,6 +19,7 @@ import ParameterSetDetailPage from "@/pages/ParameterSetDetailPage";
 import BridgePage from "@/pages/BridgePage";
 import ScannerSimulationPage from "@/pages/ScannerSimulationPage";
 import ForwardMonitorPage from "@/pages/ForwardMonitorPage";
+import AssistedExecutionPage from "@/pages/AssistedExecutionPage";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ function Router() {
       <Route path="/bridge" component={BridgePage} />
       <Route path="/scanner" component={ScannerSimulationPage} />
       <Route path="/forward-monitor" component={ForwardMonitorPage} />
+      <Route path="/assisted-execution" component={AssistedExecutionPage} />
       <Route component={NotFound} />
     </Switch>
   );

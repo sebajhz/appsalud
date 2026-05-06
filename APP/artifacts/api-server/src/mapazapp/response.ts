@@ -18,6 +18,11 @@ export interface MapazappApiResponse<T> {
   advisoryOnly?: boolean;
   registryMutationAllowed?: boolean;
   canAutoApply?: boolean;
+  /** Checkpoint 17 — assisted execution contract mock routes only. */
+  contractOnly?: boolean;
+  sendToMt5Enabled?: boolean;
+  canAutoExecute?: boolean;
+  requiresHumanConfirmation?: boolean;
 }
 
 export function okResponse<T>(
@@ -31,6 +36,10 @@ export function okResponse<T>(
       | "advisoryOnly"
       | "registryMutationAllowed"
       | "canAutoApply"
+      | "contractOnly"
+      | "sendToMt5Enabled"
+      | "canAutoExecute"
+      | "requiresHumanConfirmation"
     >
   >,
 ): MapazappApiResponse<T> {
@@ -46,6 +55,10 @@ export function okResponse<T>(
     advisoryOnly: extra?.advisoryOnly,
     registryMutationAllowed: extra?.registryMutationAllowed,
     canAutoApply: extra?.canAutoApply,
+    contractOnly: extra?.contractOnly,
+    sendToMt5Enabled: extra?.sendToMt5Enabled,
+    canAutoExecute: extra?.canAutoExecute,
+    requiresHumanConfirmation: extra?.requiresHumanConfirmation,
   };
 }
 

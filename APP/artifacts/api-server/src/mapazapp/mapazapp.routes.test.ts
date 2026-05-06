@@ -2,7 +2,7 @@ import request from "supertest";
 import { describe, expect, it } from "vitest";
 import app from "../app";
 
-describe("Mapazapp API (checkpoint 16)", () => {
+describe("Mapazapp API (checkpoint 17)", () => {
   it("GET /api/mapazapp/health returns ok envelope", async () => {
     const res = await request(app).get("/api/mapazapp/health");
     expect(res.status).toBe(200);
@@ -11,7 +11,7 @@ describe("Mapazapp API (checkpoint 16)", () => {
     expect(res.body.source).toBe("mock");
     expect(res.body.data?.service).toBe("mapazapp-api");
     expect(res.body.data?.readOnly).toBe(true);
-    expect(res.body.data?.checkpoint).toBe(16);
+    expect(res.body.data?.checkpoint).toBe(17);
   });
 
   it("GET /api/mapazapp/accounts lists mock accounts", async () => {
@@ -158,5 +158,36 @@ describe("Mapazapp API (checkpoint 16)", () => {
     const res = await request(app).get("/api/mapazapp/forward-monitor/sessions");
     expect(res.status).toBe(200);
     expect(res.body.data?.sessions?.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("GET /api/mapazapp/assisted-execution/contract returns executionEnabled false", async () => {
+    const res = await request(app).get("/api/mapazapp/assisted-execution/contract");
+    expect(res.status).toBe(200);
+    expect(res.body.executionEnabled).toBe(false);
+    expect(res.body.sendToMt5Enabled).toBe(false);
+    expect(res.body.canAutoExecute).toBe(false);
+    expect(res.body.contractOnly).toBe(true);
+    expect(res.body.data?.executionEnabled).toBe(false);
+  });
+
+  it("GET /api/mapazapp/assisted-execution/mock-validation returns contractOnly true", async () => {
+    const res = await request(app).get("/api/mapazapp/assisted-execution/mock-validation");
+    expect(res.status).toBe(200);
+    expect(res.body.contractOnly).toBe(true);
+    expect(res.body.mockOnly).toBe(true);
+    expect(res.body.data?.executionEnabled).toBe(false);
+    expect(res.body.data?.allowedForManualChecklist).toBe(true);
+  });
+
+  it("GET account assisted-execution mock-validation is scoped; unknown account 404", async () => {
+    const ok = await request(app).get(
+      "/api/mapazapp/accounts/ACC_THE5ERS_100K_PHASE1_A/assisted-execution/mock-validation",
+    );
+    expect(ok.status).toBe(200);
+    expect(ok.body.data?.auditPreview?.accountId).toBe("ACC_THE5ERS_100K_PHASE1_A");
+
+    const missing = await request(app).get("/api/mapazapp/accounts/UNKNOWN_AE/assisted-execution/mock-validation");
+    expect(missing.status).toBe(404);
+    expect(missing.body.errors[0]?.code).toBe("ACCOUNT_NOT_FOUND");
   });
 });

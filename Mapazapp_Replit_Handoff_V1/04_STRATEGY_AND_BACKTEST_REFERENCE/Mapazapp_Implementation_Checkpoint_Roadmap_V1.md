@@ -3,13 +3,13 @@
 **Document type:** product and engineering sequencing reference.  
 **Scope:** aligns completed work (through repo checkpoint commits) with planned future checkpoints.  
 **Related:** `Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`, `Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`.  
-**Latest roadmap refresh:** checkpoint **16** closure — see **Document control** for revision history.
+**Latest roadmap refresh:** checkpoint **17** closure — see **Document control** for revision history.
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
 ---
 
-## Current status (checkpoint 16)
+## Current status (checkpoint 17)
 
 ### Completed
 
@@ -31,10 +31,11 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 - **CP14** — TestEA Strategy Tester virtual export; real tester smoke passed  
 - **CP15** — Backtest evidence loop / manual approval proposal (advisory-only; no registry mutation)  
 - **CP16** — Forward / demo monitor (snapshot-only mock; observational review discipline; no watcher / no DB / no WebSocket / no execution)  
+- **CP17** — Assisted execution contract (typed gates + human confirmation model + audit DTO; no execution / no MT5 command path / no registry mutation)  
 
 ### Next
 
-- **CP17** — Assisted Execution Contract (as sequenced below)  
+- **CP18** — Assisted Execution Gated Future Phase (explicit product approval only; separate from contract definition)  
 
 ### Still not implemented (do not assume in production)
 
@@ -48,7 +49,7 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 | **Auto-approval** | Evidence may recommend; it does **not** approve parameter sets. |
 | **Order execution** | No broker submission from Mapazapp. |
 | **WebSocket live stream** | No push feed from markets or MT5. |
-| **Assisted execution** | Future checkpoint **17+** only as contract/product gates allow. |
+| **Assisted execution (live / MT5)** | **Not implemented** — checkpoint **17** defines **contract + validation only**; any routed execution remains **CP18+** with explicit approval. |
 
 ---
 
@@ -74,6 +75,7 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 | **Checkpoint 14** | MT5 TestEA / Strategy Tester virtual export |
 | **Checkpoint 15** | Backtest evidence loop / manual approval proposal |
 | **Checkpoint 16** | Forward / demo monitor (mock snapshot observability) |
+| **Checkpoint 17** | Assisted execution contract (validation model only; no execution) |
 
 ---
 
@@ -126,14 +128,13 @@ Earlier editions of this roadmap listed gaps relative to checkpoints **0–6** o
 
 ---
 
-## 4. Future checkpoints (17–18)
+## 4. Future checkpoints (18+)
 
 Short titles below; each checkpoint should have its own spec or addendum before coding starts.
 
 | ID | Name | Intent (high level) |
 |----|------|------------------------|
-| **Checkpoint 17** | Assisted Execution Contract | Human-in-the-loop execution **contract** only (APIs, states, safeguards) — **no** blind automation. |
-| **Checkpoint 18** | Assisted Execution Gated Future Phase | Any production-assisted execution ships only after explicit approval, forward/demo evidence, and regulatory/product gates — treated as a **separate** phase from 0–17. |
+| **Checkpoint 18** | Assisted Execution Gated Future Phase | Any production-assisted execution ships only after explicit approval, forward/demo evidence, and regulatory/product gates — treated as a **separate** phase from 0–17. **CP17 does not enable execution; CP18 would still require explicit approval before any gated execution path.** |
 
 ---
 
@@ -152,9 +153,7 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 
 ## 6. Recommended immediate next checkpoint
 
-**Checkpoint 17 — Assisted Execution Contract** (human-in-the-loop execution **contract** only — no blind automation), subject to product/regulatory gates documented outside this roadmap.
-
-Rationale: Forward/demo observability (checkpoint 16) is snapshot-only and stops before any execution path; the next sequenced work is execution **contracts** and safeguards, not production order routing.
+**Checkpoint 18 — Assisted Execution Gated Future Phase** — only after explicit product/regulatory sign-off; **checkpoint 17** has defined the **contract and safety gates** with **no** live execution, **no** MT5 command channel, and **no** registry mutation from Mapazapp.
 
 ---
 
@@ -165,3 +164,4 @@ Rationale: Forward/demo observability (checkpoint 16) is snapshot-only and stops
 | V1 | 2026-05-04 | Initial official checkpoint roadmap; aligns through commit `bb29545`. |
 | V1.1 | 2026-05-05 | Checkpoint **15** closure — **Current status** section; completed **0–15**; future table **16–18**; stale “next CP7” recommendation removed. |
 | V1.2 | 2026-05-05 | Checkpoint **16** closure — **Current status** completed through **CP16**; **Next** = CP17; summary table includes CP16; recommended next checkpoint updated. |
+| V1.3 | 2026-05-05 | Checkpoint **17** closure — **Current status** completed through **CP17**; **Next** = CP18; summary table includes CP17; future table starts at CP18; sequencing note for CP18 explicit approval. |

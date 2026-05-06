@@ -66,3 +66,8 @@ export * from "./forward-monitor-reasons";
 export * from "./forward-monitor-settings";
 export * from "./forward-monitor-evaluator";
 export * from "./forward-monitor-fixtures";
+export * from "./assisted-execution-types";
+export * from "./assisted-execution-reasons";
+export * from "./assisted-execution-settings";
+export * from "./assisted-execution-contract";
+export * from "./assisted-execution-fixtures";

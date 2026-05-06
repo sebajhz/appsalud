@@ -255,3 +255,17 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Tests:** `APP/lib/mapazapp-core/tests/checkpoint16-forward-monitor.test.ts`; API in **`mapazapp.routes.test.ts`**; dashboard **`mockForwardMonitorDataSource.test.ts`**, **`forwardMonitorUi.test.ts`**.
 - **Explicit non-goals:** real BridgeEA folder watcher, database persistence of monitor state, WebSocket push, order execution, registry mutation, command ingest, claiming **`TRADE_READY`** as live trading advice.
 - **Future:** optional HTTP client in the dashboard and/or BridgeEA snapshot ingest after stable contracts — still **human-in-the-loop** review before any assisted execution conversation (roadmap CP17+).
+
+---
+
+## 27. Assisted execution contract (checkpoint 17 — `@workspace/mapazapp-core`)
+
+- **Modules:** `assisted-execution-types.ts`, `assisted-execution-reasons.ts`, `assisted-execution-settings.ts`, `assisted-execution-contract.ts` (**`validateAssistedExecutionIntent`**), `assisted-execution-fixtures.ts` (fictional inputs — **not** live accounts).
+- **Intent:** typed **contract + safety gates** for a **future** human-controlled assisted workflow. Validates **`TRADE_READY`** review-only semantics, account guard **`allowTradeReview`**, registry **`allowTradeReview`**, symbol profile, SL/TP/R:R, optional backtest-evidence requirement, optional forward-monitor zone alignment, dedupe key, news/psych explicit flags, human confirmation flags + phrase — returns **`allowedForManualChecklist`** only when all gates pass.
+- **CP17 invariants:** every **`AssistedExecutionValidationResult`** sets **`executionEnabled: false`**, **`sendToMt5Enabled: false`**, **`requiresHumanConfirmation: true`**, **`canAutoExecute: false`**. **`FUTURE_SEND_TO_MT5_DISABLED`** action always blocks. No **`SEND_ORDER`** action exists.
+- **Audit:** **`AssistedExecutionAuditRecord`** is built in-memory for UI/API preview — **no** persistence, **no** DB, **no** file writes.
+- **API (mock):** `GET /api/mapazapp/assisted-execution/contract`, `GET /api/mapazapp/assisted-execution/mock-validation`, `GET /api/mapazapp/accounts/:accountId/assisted-execution/mock-validation` — envelope **`contractOnly: true`**, **`mockOnly: true`**, **`executionEnabled: false`**, **`sendToMt5Enabled: false`**, **`canAutoExecute: false`**, **`requiresHumanConfirmation: true`**; unknown account → **`ACCOUNT_NOT_FOUND`** (404). **No** `POST`, **no** command or order routes.
+- **Dashboard:** **`/assisted-execution`** (`AssistedExecutionPage`), **`assistedExecutionDataSource.ts`**, **`mockAssistedExecutionDataSource.ts`**, **`assistedExecutionUi.ts`** — read-only explanation + validation preview; **no** execute / send / place-order controls.
+- **Tests:** `APP/lib/mapazapp-core/tests/checkpoint17-assisted-execution.test.ts`; API in **`mapazapp.routes.test.ts`**; dashboard **`assistedExecutionUi.test.ts`**, **`mockAssistedExecutionDataSource.test.ts`**.
+- **Explicit non-goals:** live order routing, BridgeEA command reader, MT5 **`OrderSend`** / **`CTrade`** from TypeScript, WebSocket, registry mutation, treating **`allowedForManualChecklist`** as permission to trade.
+- **Checkpoint 18+:** any real execution path remains a **separate** gated phase; **CP17 does not enable execution** even if all gates pass — only **manual checklist** semantics in mock.

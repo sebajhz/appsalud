@@ -10,6 +10,7 @@ import * as registry from "./adapters/strategyRegistry";
 import * as tradeReview from "./adapters/tradeReview";
 import * as scannerSimulation from "./adapters/scannerSimulation";
 import * as forwardMonitor from "./adapters/forwardMonitor";
+import * as assistedExecution from "./adapters/assistedExecution";
 
 const router: IRouter = Router();
 
@@ -23,7 +24,7 @@ router.get("/health", (_req, res) => {
   res.json(
     okResponse({
       service: "mapazapp-api",
-      checkpoint: 16,
+      checkpoint: 17,
       readOnly: true,
       mockData: "in-memory",
     }),
@@ -225,6 +226,29 @@ router.get("/accounts/:accountId/forward-monitor/latest", (req, res) => {
     return;
   }
   res.json(okResponse(forwardMonitor.latestForwardMonitorForAccount(accountId as AccountId), FORWARD_MONITOR_FLAGS));
+});
+
+const ASSISTED_EXECUTION_FLAGS = assistedExecution.CP17_FLAGS;
+
+router.get("/assisted-execution/contract", (_req, res) => {
+  res.json(okResponse(assistedExecution.assistedExecutionContractPayload(), ASSISTED_EXECUTION_FLAGS));
+});
+
+router.get("/assisted-execution/mock-validation", (_req, res) => {
+  res.json(
+    okResponse(assistedExecution.mockAssistedExecutionValidation(), ASSISTED_EXECUTION_FLAGS),
+  );
+});
+
+router.get("/accounts/:accountId/assisted-execution/mock-validation", (req, res) => {
+  const { accountId } = req.params;
+  if (!accounts.findAccount(accountId)) {
+    res.status(404).json(errResponse([{ ...MAPAZAPP_ERROR_ACCOUNT_NOT_FOUND, detail: accountId }]));
+    return;
+  }
+  res.json(
+    okResponse(assistedExecution.mockAssistedExecutionValidationForAccount(accountId as AccountId), ASSISTED_EXECUTION_FLAGS),
+  );
 });
 
 export default router;
