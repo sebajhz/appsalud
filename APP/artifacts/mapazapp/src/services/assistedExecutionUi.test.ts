@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   assistedExecutionContractExplanation,
   assistedExecutionCopyImpliesLiveExecution,
+  assistedExecutionDisabledBannerTitle,
   assistedExecutionManualReviewBanner,
+  assistedExecutionNoOrderDisclaimer,
+  assistedExecutionSafetyChecklistLines,
   assistedExecutionSafetyHeadline,
 } from "./assistedExecutionUi";
 import type { AssistedExecutionValidationResult } from "@workspace/mapazapp-core";
@@ -16,6 +19,8 @@ function minimalResult(partial: Partial<AssistedExecutionValidationResult>): Ass
     executionEnabled: false,
     sendToMt5Enabled: false,
     requiresHumanConfirmation: true,
+    manualReviewRequired: true,
+    registryMutationAllowed: false,
     canAutoExecute: false,
     requestedAction: "REVIEW_ONLY",
     resolvedMode: "review_only",
@@ -42,6 +47,8 @@ function minimalResult(partial: Partial<AssistedExecutionValidationResult>): Ass
       },
       executionEnabled: false,
       canAutoExecute: false,
+      manualReviewRequired: true,
+      registryMutationAllowed: false,
     },
     humanConfirmationsEffective: {
       reviewedSetup: false,
@@ -62,9 +69,16 @@ describe("assistedExecutionUi", () => {
   it("banner and contract copy emphasize manual review without live execution CTAs", () => {
     expect(assistedExecutionManualReviewBanner()).toMatch(/manual review/i);
     expect(assistedExecutionManualReviewBanner()).toMatch(/disabled/i);
+    expect(assistedExecutionDisabledBannerTitle()).toMatch(/execution disabled/i);
+    expect(assistedExecutionDisabledBannerTitle()).toMatch(/contract only/i);
+    expect(assistedExecutionNoOrderDisclaimer().toLowerCase()).toContain("no order");
     expect(assistedExecutionContractExplanation()).toMatch(/future/i);
     expect(assistedExecutionCopyImpliesLiveExecution(assistedExecutionManualReviewBanner())).toBe(false);
     expect(assistedExecutionCopyImpliesLiveExecution(assistedExecutionContractExplanation())).toBe(false);
+    expect(assistedExecutionCopyImpliesLiveExecution(assistedExecutionDisabledBannerTitle())).toBe(false);
+    for (const line of assistedExecutionSafetyChecklistLines()) {
+      expect(assistedExecutionCopyImpliesLiveExecution(line)).toBe(false);
+    }
   });
 
   it("copy guard flags obvious live execution phrases", () => {

@@ -1,5 +1,5 @@
 /**
- * Assisted execution — **contract and validation only** (checkpoint 17).
+ * Assisted execution — **contract and validation only** (checkpoints 17–18).
  * No broker submission, no MT5 commands, no automation.
  */
 
@@ -130,7 +130,11 @@ export interface AssistedExecutionValidationResult {
   executionEnabled: false;
   sendToMt5Enabled: false;
   requiresHumanConfirmation: true;
+  /** CP18 — same product rule as `requiresHumanConfirmation`; explicit for API / audit parity with scope freeze. */
+  manualReviewRequired: true;
   canAutoExecute: false;
+  /** CP18 — Mapazapp never mutates registry from assisted flows in this phase. */
+  registryMutationAllowed: false;
   requestedAction: AssistedExecutionActionType;
   resolvedMode: AssistedExecutionMode;
   permissionState: AssistedExecutionPermissionState;
@@ -157,5 +161,7 @@ export interface AssistedExecutionAuditRecord {
   humanConfirmations: AssistedExecutionHumanConfirmation;
   executionEnabled: false;
   canAutoExecute: false;
+  manualReviewRequired: true;
+  registryMutationAllowed: false;
   notes?: string;
 }

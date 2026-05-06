@@ -19,8 +19,12 @@ describe("Checkpoint 17 — assisted execution contract", () => {
     expect(r.sendToMt5Enabled).toBe(false);
     expect(r.canAutoExecute).toBe(false);
     expect(r.requiresHumanConfirmation).toBe(true);
+    expect(r.manualReviewRequired).toBe(true);
+    expect(r.registryMutationAllowed).toBe(false);
     expect(r.auditPreview.executionEnabled).toBe(false);
     expect(r.auditPreview.canAutoExecute).toBe(false);
+    expect(r.auditPreview.manualReviewRequired).toBe(true);
+    expect(r.auditPreview.registryMutationAllowed).toBe(false);
     expect(r.auditPreview.validationStatus).toBe("allowed_for_manual_checklist");
   });
 
@@ -105,6 +109,8 @@ describe("Checkpoint 17 — assisted execution contract", () => {
       expect(r.executionEnabled).toBe(false);
       expect(r.canAutoExecute).toBe(false);
       expect(r.sendToMt5Enabled).toBe(false);
+      expect(r.registryMutationAllowed).toBe(false);
+      expect(r.manualReviewRequired).toBe(true);
     }
   });
 

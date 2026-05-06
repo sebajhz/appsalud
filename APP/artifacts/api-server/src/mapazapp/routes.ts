@@ -234,6 +234,14 @@ router.get("/assisted-execution/contract", (_req, res) => {
   res.json(okResponse(assistedExecution.assistedExecutionContractPayload(), ASSISTED_EXECUTION_FLAGS));
 });
 
+router.get("/assisted-execution/safety", (_req, res) => {
+  res.json(okResponse(assistedExecution.assistedExecutionSafetyPayload(), ASSISTED_EXECUTION_FLAGS));
+});
+
+router.get("/assisted-execution/invariants", (_req, res) => {
+  res.json(okResponse(assistedExecution.assistedExecutionInvariantsPayload(), ASSISTED_EXECUTION_FLAGS));
+});
+
 router.get("/assisted-execution/mock-validation", (_req, res) => {
   res.json(
     okResponse(assistedExecution.mockAssistedExecutionValidation(), ASSISTED_EXECUTION_FLAGS),

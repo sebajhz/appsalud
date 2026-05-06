@@ -8,7 +8,11 @@ describe("mockAssistedExecutionDataSource", () => {
     expect(r.executionEnabled).toBe(false);
     expect(r.sendToMt5Enabled).toBe(false);
     expect(r.canAutoExecute).toBe(false);
+    expect(r.manualReviewRequired).toBe(true);
+    expect(r.registryMutationAllowed).toBe(false);
     expect(r.auditPreview.executionEnabled).toBe(false);
+    expect(r.auditPreview.manualReviewRequired).toBe(true);
+    expect(r.auditPreview.registryMutationAllowed).toBe(false);
   });
 
   it("guard-block account yields blocked validation", () => {

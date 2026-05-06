@@ -4,7 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createMockAssistedExecutionDataSource } from "@/services/mockAssistedExecutionDataSource";
 import {
   assistedExecutionContractExplanation,
+  assistedExecutionDisabledBannerTitle,
+  assistedExecutionFuturePhaseExplanation,
   assistedExecutionManualReviewBanner,
+  assistedExecutionNoOrderDisclaimer,
+  assistedExecutionSafetyChecklistLines,
   assistedExecutionSafetyHeadline,
   assistedExecutionTechnicalSummary,
 } from "@/services/assistedExecutionUi";
@@ -24,12 +28,32 @@ export default function AssistedExecutionPage() {
     <Layout title="Assisted execution (contract)" supportsViewToggle>
       <div className="p-6 space-y-6 max-w-4xl">
         <div
-          className="rounded-lg border border-amber-900/50 bg-amber-950/25 px-4 py-3 text-sm text-amber-100"
+          className="rounded-lg border border-red-900/50 bg-red-950/30 px-4 py-3 text-sm text-red-100"
           data-testid="assisted-execution-banner"
         >
-          <strong className="text-amber-50">Contract only</strong> — {assistedExecutionManualReviewBanner()}{" "}
-          {assistedExecutionContractExplanation()}
+          <p className="font-semibold text-red-50" data-testid="assisted-execution-disabled-title">
+            {assistedExecutionDisabledBannerTitle()}
+          </p>
+          <p className="mt-2 text-red-100/95" data-testid="assisted-execution-no-order-disclaimer">
+            {assistedExecutionNoOrderDisclaimer()}
+          </p>
+          <p className="mt-2 text-red-100/90">
+            {assistedExecutionManualReviewBanner()} {assistedExecutionContractExplanation()}
+          </p>
         </div>
+
+        <Card data-testid="assisted-execution-safety-checklist-card">
+          <CardHeader>
+            <CardTitle className="text-base">Safety checklist (read-only)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5 text-sm text-slate-300 space-y-1">
+              {assistedExecutionSafetyChecklistLines().map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -51,7 +75,20 @@ export default function AssistedExecutionPage() {
               <dd className="text-slate-200">{audit.requestedAction}</dd>
               <dt>Trade review status</dt>
               <dd className="text-slate-200">{audit.tradeReviewStatus}</dd>
+              <dt>registryMutationAllowed</dt>
+              <dd className="text-slate-200">{String(audit.registryMutationAllowed)}</dd>
+              <dt>manualReviewRequired</dt>
+              <dd className="text-slate-200">{String(audit.manualReviewRequired)}</dd>
             </dl>
+          </CardContent>
+        </Card>
+
+        <Card data-testid="assisted-execution-future-phase-card">
+          <CardHeader>
+            <CardTitle className="text-base">Future phase only</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-slate-300">
+            <p>{assistedExecutionFuturePhaseExplanation()}</p>
           </CardContent>
         </Card>
 
@@ -72,7 +109,7 @@ export default function AssistedExecutionPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card data-testid="assisted-execution-audit-preview-card">
           <CardHeader>
             <CardTitle className="text-base">Audit preview (in-memory)</CardTitle>
           </CardHeader>

@@ -2,7 +2,7 @@ import request from "supertest";
 import { describe, expect, it } from "vitest";
 import app from "../app";
 
-describe("Mapazapp API (checkpoint 17)", () => {
+describe("Mapazapp API (checkpoints 17–18)", () => {
   it("GET /api/mapazapp/health returns ok envelope", async () => {
     const res = await request(app).get("/api/mapazapp/health");
     expect(res.status).toBe(200);
@@ -166,8 +166,40 @@ describe("Mapazapp API (checkpoint 17)", () => {
     expect(res.body.executionEnabled).toBe(false);
     expect(res.body.sendToMt5Enabled).toBe(false);
     expect(res.body.canAutoExecute).toBe(false);
+    expect(res.body.registryMutationAllowed).toBe(false);
+    expect(res.body.manualReviewRequired).toBe(true);
     expect(res.body.contractOnly).toBe(true);
+    expect(res.body.mockOnly).toBe(true);
     expect(res.body.data?.executionEnabled).toBe(false);
+  });
+
+  it("GET /api/mapazapp/assisted-execution/safety returns CP18 snapshot and disabled envelope", async () => {
+    const res = await request(app).get("/api/mapazapp/assisted-execution/safety");
+    expect(res.status).toBe(200);
+    expect(res.body.mockOnly).toBe(true);
+    expect(res.body.contractOnly).toBe(true);
+    expect(res.body.executionEnabled).toBe(false);
+    expect(res.body.sendToMt5Enabled).toBe(false);
+    expect(res.body.canAutoExecute).toBe(false);
+    expect(res.body.registryMutationAllowed).toBe(false);
+    expect(res.body.manualReviewRequired).toBe(true);
+    expect(res.body.data?.checkpoint).toBe(18);
+    expect(res.body.data?.normalizedFlags?.executionEnabled).toBe(false);
+    expect(res.body.data?.policyReasonCodes).toContain("EXECUTION_DISABLED_BY_CP18");
+  });
+
+  it("GET /api/mapazapp/assisted-execution/invariants returns normalized flags only", async () => {
+    const res = await request(app).get("/api/mapazapp/assisted-execution/invariants");
+    expect(res.status).toBe(200);
+    expect(res.body.executionEnabled).toBe(false);
+    expect(res.body.data?.normalizedFlags?.manualReviewRequired).toBe(true);
+    expect(res.body.data?.normalizedFlags?.registryMutationAllowed).toBe(false);
+    expect(res.body.data?.schema).toBe("MZP_ASSISTED_EXECUTION_INVARIANTS_V1");
+  });
+
+  it("POST assisted-execution routes are not defined (no execution channel)", async () => {
+    const res = await request(app).post("/api/mapazapp/assisted-execution/mock-validation").send({});
+    expect(res.status).toBe(404);
   });
 
   it("GET /api/mapazapp/assisted-execution/mock-validation returns contractOnly true", async () => {
@@ -175,7 +207,11 @@ describe("Mapazapp API (checkpoint 17)", () => {
     expect(res.status).toBe(200);
     expect(res.body.contractOnly).toBe(true);
     expect(res.body.mockOnly).toBe(true);
+    expect(res.body.registryMutationAllowed).toBe(false);
+    expect(res.body.manualReviewRequired).toBe(true);
     expect(res.body.data?.executionEnabled).toBe(false);
+    expect(res.body.data?.manualReviewRequired).toBe(true);
+    expect(res.body.data?.registryMutationAllowed).toBe(false);
     expect(res.body.data?.allowedForManualChecklist).toBe(true);
   });
 

@@ -23,6 +23,8 @@ export interface MapazappApiResponse<T> {
   sendToMt5Enabled?: boolean;
   canAutoExecute?: boolean;
   requiresHumanConfirmation?: boolean;
+  /** CP18 — assisted execution mock routes. */
+  manualReviewRequired?: boolean;
 }
 
 export function okResponse<T>(
@@ -40,6 +42,7 @@ export function okResponse<T>(
       | "sendToMt5Enabled"
       | "canAutoExecute"
       | "requiresHumanConfirmation"
+      | "manualReviewRequired"
     >
   >,
 ): MapazappApiResponse<T> {
@@ -59,6 +62,7 @@ export function okResponse<T>(
     sendToMt5Enabled: extra?.sendToMt5Enabled,
     canAutoExecute: extra?.canAutoExecute,
     requiresHumanConfirmation: extra?.requiresHumanConfirmation,
+    manualReviewRequired: extra?.manualReviewRequired,
   };
 }
 

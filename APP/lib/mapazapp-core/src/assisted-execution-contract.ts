@@ -96,6 +96,8 @@ function buildAuditRecord(params: {
     humanConfirmations: params.humanConfirmationsEffective,
     executionEnabled: false,
     canAutoExecute: false,
+    manualReviewRequired: true,
+    registryMutationAllowed: false,
     notes: params.input.notes,
   };
 }
@@ -309,7 +311,9 @@ export function validateAssistedExecutionIntent(
     executionEnabled: false,
     sendToMt5Enabled: false,
     requiresHumanConfirmation: true,
+    manualReviewRequired: true,
     canAutoExecute: false,
+    registryMutationAllowed: false,
     requestedAction: action,
     resolvedMode: resolveMode(allowedForManualChecklist, action),
     permissionState: resolvePermissionState(allowedForManualChecklist, blocking.length),

@@ -70,4 +70,5 @@ export * from "./assisted-execution-types";
 export * from "./assisted-execution-reasons";
 export * from "./assisted-execution-settings";
 export * from "./assisted-execution-contract";
+export * from "./assisted-execution-invariants";
 export * from "./assisted-execution-fixtures";

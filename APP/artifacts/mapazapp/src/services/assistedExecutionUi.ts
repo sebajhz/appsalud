@@ -5,8 +5,32 @@ export function assistedExecutionManualReviewBanner(): string {
   return "Execution is disabled in this version. Manual review only — no broker submission.";
 }
 
+/** CP18 — primary banner title; must not imply live execution. */
+export function assistedExecutionDisabledBannerTitle(): string {
+  return "Execution disabled — contract only.";
+}
+
+/** CP18 — explicit product disclaimer for the dashboard. */
+export function assistedExecutionNoOrderDisclaimer(): string {
+  return "No order can be sent from this version.";
+}
+
+export function assistedExecutionFuturePhaseExplanation(): string {
+  return "Real broker or MT5 routing would require a separate CP19+ approval and scope — not available in this build.";
+}
+
 export function assistedExecutionContractExplanation(): string {
   return "This page defines what must be checked before any future assisted execution workflow. No live execution path exists.";
+}
+
+/** Bullet lines for the safety checklist card — read-only copy. */
+export function assistedExecutionSafetyChecklistLines(): string[] {
+  return [
+    "All validation is contract-only — nothing on this page can route an order.",
+    assistedExecutionNoOrderDisclaimer(),
+    "Send-to-MT5 and command channels are absent — mock data only.",
+    "Registry mutation and auto-approval are not performed by Mapazapp in this build.",
+  ];
 }
 
 export function assistedExecutionSafetyHeadline(result: AssistedExecutionValidationResult): string {
@@ -25,6 +49,8 @@ export function assistedExecutionTechnicalSummary(result: AssistedExecutionValid
     `executionEnabled=${result.executionEnabled}`,
     `sendToMt5Enabled=${result.sendToMt5Enabled}`,
     `canAutoExecute=${result.canAutoExecute}`,
+    `registryMutationAllowed=${result.registryMutationAllowed}`,
+    `manualReviewRequired=${result.manualReviewRequired}`,
   ].join(" · ");
 }
 
