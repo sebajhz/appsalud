@@ -9,6 +9,7 @@ import * as bridge from "./adapters/bridge";
 import * as registry from "./adapters/strategyRegistry";
 import * as tradeReview from "./adapters/tradeReview";
 import * as scannerSimulation from "./adapters/scannerSimulation";
+import * as forwardMonitor from "./adapters/forwardMonitor";
 
 const router: IRouter = Router();
 
@@ -22,7 +23,7 @@ router.get("/health", (_req, res) => {
   res.json(
     okResponse({
       service: "mapazapp-api",
-      checkpoint: 15,
+      checkpoint: 16,
       readOnly: true,
       mockData: "in-memory",
     }),
@@ -201,6 +202,29 @@ router.get("/backtests/:parameterSetId/advisory", (req, res) => {
 
 router.get("/bridge/mock-import-summary", (_req, res) => {
   res.json(okResponse(bridge.loadMockBridgeImportSummary()));
+});
+
+const FORWARD_MONITOR_FLAGS = {
+  reviewOnly: true as const,
+  executionEnabled: false as const,
+  mockOnly: true as const,
+};
+
+router.get("/forward-monitor/latest", (_req, res) => {
+  res.json(okResponse(forwardMonitor.latestForwardMonitor(), FORWARD_MONITOR_FLAGS));
+});
+
+router.get("/forward-monitor/sessions", (_req, res) => {
+  res.json(okResponse({ sessions: forwardMonitor.listForwardMonitorSessions() }, FORWARD_MONITOR_FLAGS));
+});
+
+router.get("/accounts/:accountId/forward-monitor/latest", (req, res) => {
+  const { accountId } = req.params;
+  if (!accounts.findAccount(accountId)) {
+    res.status(404).json(errResponse([{ ...MAPAZAPP_ERROR_ACCOUNT_NOT_FOUND, detail: accountId }]));
+    return;
+  }
+  res.json(okResponse(forwardMonitor.latestForwardMonitorForAccount(accountId as AccountId), FORWARD_MONITOR_FLAGS));
 });
 
 export default router;

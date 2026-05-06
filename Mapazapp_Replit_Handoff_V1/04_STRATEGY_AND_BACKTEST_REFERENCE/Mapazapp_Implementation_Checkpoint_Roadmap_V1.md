@@ -3,13 +3,13 @@
 **Document type:** product and engineering sequencing reference.  
 **Scope:** aligns completed work (through repo checkpoint commits) with planned future checkpoints.  
 **Related:** `Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`, `Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`.  
-**Latest roadmap refresh:** checkpoint **15** closure — see **Document control** for revision history.
+**Latest roadmap refresh:** checkpoint **16** closure — see **Document control** for revision history.
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
 ---
 
-## Current status (checkpoint 15)
+## Current status (checkpoint 16)
 
 ### Completed
 
@@ -30,10 +30,11 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 - **CP13.1** — BridgeEA severity-aware diagnostics; real smoke passed  
 - **CP14** — TestEA Strategy Tester virtual export; real tester smoke passed  
 - **CP15** — Backtest evidence loop / manual approval proposal (advisory-only; no registry mutation)  
+- **CP16** — Forward / demo monitor (snapshot-only mock; observational review discipline; no watcher / no DB / no WebSocket / no execution)  
 
 ### Next
 
-- **CP16** — Forward / Demo Monitor  
+- **CP17** — Assisted Execution Contract (as sequenced below)  
 
 ### Still not implemented (do not assume in production)
 
@@ -51,7 +52,7 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 
 ---
 
-## 1. Completed checkpoints (0–15) — summary table
+## 1. Completed checkpoints (0–16) — summary table
 
 | ID | Name |
 |----|------|
@@ -72,12 +73,13 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 | **Checkpoint 13.1** | BridgeEA severity-aware diagnostics |
 | **Checkpoint 14** | MT5 TestEA / Strategy Tester virtual export |
 | **Checkpoint 15** | Backtest evidence loop / manual approval proposal |
+| **Checkpoint 16** | Forward / demo monitor (mock snapshot observability) |
 
 ---
 
 ## 2. What each completed checkpoint delivered (detail 0–6)
 
-Narratives for **checkpoints 7–15** are maintained in the codebase (e.g. `APP/artifacts/mapazapp/docs/IMPLEMENTATION_ASSUMPTIONS.md`, `CURSOR_HANDOFF.md`, MT5 artifact READMEs) and core/API packages — not duplicated here in full.
+Narratives for **checkpoints 7–16** are maintained in the codebase (e.g. `APP/artifacts/mapazapp/docs/IMPLEMENTATION_ASSUMPTIONS.md`, `CURSOR_HANDOFF.md`, MT5 artifact READMEs) and core/API packages — not duplicated here in full.
 
 ### Checkpoint 0 — Replit dashboard mock + handoff docs
 
@@ -120,17 +122,16 @@ Narratives for **checkpoints 7–15** are maintained in the codebase (e.g. `APP/
 
 ## 3. Historical note — “not implemented” snapshot (pre–CP7 era)
 
-Earlier editions of this roadmap listed gaps relative to checkpoints **0–6** only. As of **checkpoint 15**, use **Current status → Still not implemented** above as the authoritative product-wide list.
+Earlier editions of this roadmap listed gaps relative to checkpoints **0–6** only. As of **checkpoint 16**, use **Current status → Still not implemented** above as the authoritative product-wide list.
 
 ---
 
-## 4. Future checkpoints (16–18)
+## 4. Future checkpoints (17–18)
 
 Short titles below; each checkpoint should have its own spec or addendum before coding starts.
 
 | ID | Name | Intent (high level) |
 |----|------|------------------------|
-| **Checkpoint 16** | Forward / Demo Monitor | Forward or demo monitoring of signals/state — validation path before any execution talk. |
 | **Checkpoint 17** | Assisted Execution Contract | Human-in-the-loop execution **contract** only (APIs, states, safeguards) — **no** blind automation. |
 | **Checkpoint 18** | Assisted Execution Gated Future Phase | Any production-assisted execution ships only after explicit approval, forward/demo evidence, and regulatory/product gates — treated as a **separate** phase from 0–17. |
 
@@ -151,9 +152,9 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 
 ## 6. Recommended immediate next checkpoint
 
-**Checkpoint 16 — Forward / Demo Monitor.**
+**Checkpoint 17 — Assisted Execution Contract** (human-in-the-loop execution **contract** only — no blind automation), subject to product/regulatory gates documented outside this roadmap.
 
-Rationale: Backtest evidence (checkpoint 15) is advisory-only and stops before registry mutation; forward/demo observation is the next validation layer before any assisted execution conversation.
+Rationale: Forward/demo observability (checkpoint 16) is snapshot-only and stops before any execution path; the next sequenced work is execution **contracts** and safeguards, not production order routing.
 
 ---
 
@@ -163,3 +164,4 @@ Rationale: Backtest evidence (checkpoint 15) is advisory-only and stops before r
 |---------|------|-------|
 | V1 | 2026-05-04 | Initial official checkpoint roadmap; aligns through commit `bb29545`. |
 | V1.1 | 2026-05-05 | Checkpoint **15** closure — **Current status** section; completed **0–15**; future table **16–18**; stale “next CP7” recommendation removed. |
+| V1.2 | 2026-05-05 | Checkpoint **16** closure — **Current status** completed through **CP16**; **Next** = CP17; summary table includes CP16; recommended next checkpoint updated. |

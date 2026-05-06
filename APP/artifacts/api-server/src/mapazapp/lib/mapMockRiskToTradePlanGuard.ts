@@ -25,7 +25,11 @@ export function mapMockRiskToTradePlanGuard(
     bridgeConnected?: boolean;
     accountGuardSettings?: AccountGuardSettings;
   },
-): { tradePlanAccountGuard: TradePlanAccountGuardInput; accountGuardResult: AccountGuardResult } {
+): {
+  tradePlanAccountGuard: TradePlanAccountGuardInput;
+  accountGuardResult: AccountGuardResult;
+  accountGuardInput: AccountGuardInput;
+} {
   const settings = options?.accountGuardSettings ?? createDefaultAccountGuardSettingsForTests();
 
   const bridgeConnected =
@@ -66,5 +70,5 @@ export function mapMockRiskToTradePlanGuard(
 
   const accountGuardResult = evaluateAccountGuard(input, settings);
   const tradePlanAccountGuard = accountGuardResultToTradePlanAccountGuardInput(input, accountGuardResult);
-  return { tradePlanAccountGuard, accountGuardResult };
+  return { tradePlanAccountGuard, accountGuardResult, accountGuardInput: input };
 }

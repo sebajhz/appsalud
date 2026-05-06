@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'wouter';
 import {
   Home, Map, Shield, Building2, FlaskConical, BookOpen,
-  Brain, Bell, Settings, Activity, ChevronRight, Layers, Radar,
+  Brain, Bell, Settings, Activity, ChevronRight, Layers, Radar, Eye,
 } from 'lucide-react';
 import { mockAlerts } from '@/mock/alerts';
 import { useActiveAccount } from './Layout';
@@ -10,6 +10,7 @@ const navItems = [
   { path: '/',          label: 'Home',           icon: Home },
   { path: '/zones',     label: 'Market / Zones', icon: Map },
   { path: '/scanner',   label: 'Scanner (sim)', icon: Radar },
+  { path: '/forward-monitor', label: 'Forward Monitor', icon: Eye },
   { path: '/risk',      label: 'Risk Guard',     icon: Shield },
   { path: '/propfirm',  label: 'Prop Firm Guard',icon: Building2 },
   { path: '/backtests', label: 'Backtests',      icon: FlaskConical },
