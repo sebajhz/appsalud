@@ -53,7 +53,7 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 
 ---
 
-## 1. Completed checkpoints (0–16) — summary table
+## 1. Completed checkpoints (0–17) — summary table
 
 | ID | Name |
 |----|------|
@@ -124,7 +124,7 @@ Narratives for **checkpoints 7–16** are maintained in the codebase (e.g. `APP/
 
 ## 3. Historical note — “not implemented” snapshot (pre–CP7 era)
 
-Earlier editions of this roadmap listed gaps relative to checkpoints **0–6** only. As of **checkpoint 16**, use **Current status → Still not implemented** above as the authoritative product-wide list.
+Earlier editions of this roadmap listed gaps relative to checkpoints **0–6** only. As of **checkpoint 17**, use **Current status → Still not implemented** above as the authoritative product-wide list.
 
 ---
 
