@@ -12,6 +12,8 @@
 
 **Before planning CP19+ or any execution/infrastructure expansion, read** `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` — engine/heart proof is prioritized over execution plumbing, and profitability remains unproven at CP18.5.
 
+**Roadmap V2 progress pointer:** `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` — V2-01 expands deterministic engine fixtures/tests and documents current strengths/gaps before replay-phase work.
+
 This document gives Cursor (or any future developer) everything needed to continue building Mapazapp from where the Replit mock phase left off.
 
 ---

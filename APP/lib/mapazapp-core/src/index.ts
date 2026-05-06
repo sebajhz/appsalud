@@ -61,6 +61,7 @@ export * from "./scanner-settings";
 export * from "./scanner-simulation";
 export * from "./scanner-bridge-candles";
 export * from "./scanner-fixtures";
+export * from "./engine-reality-fixtures";
 export * from "./forward-monitor-types";
 export * from "./forward-monitor-reasons";
 export * from "./forward-monitor-settings";

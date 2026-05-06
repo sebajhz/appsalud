@@ -9,6 +9,8 @@
 
 **Before defining CP19+ scope, read** `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`. CP18.5 concludes that engine/backtest proof is the immediate priority over execution plumbing.
 
+**Roadmap V2 progress:** V2-01 completion/audit is documented at `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` (fixtures + characterization tests; no execution changes).
+
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
 ---
@@ -174,3 +176,4 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 | V1.4 | 2026-05-06 | **CP18 scope freeze** pointer — `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md`; **Next** / future table / §6 aligned: CP18 = readiness only; real execution = CP19+ with new approval. |
 | V1.5 | 2026-05-06 | **CP18 implementation** closure — **Current status** through **CP18**; summary table **0–18**; **Next** = CP19+; future table starts at 19+. |
 | V1.6 | 2026-05-06 | **CP18.5 audit pointer** — add explicit reference to `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` before CP19+ planning; emphasizes engine-proof-first sequencing. |
+| V1.7 | 2026-05-06 | **V2-01 progress pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` for engine fixture expansion/characterization results before V2-02 replay work. |

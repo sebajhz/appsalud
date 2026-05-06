@@ -6,6 +6,8 @@ This file records **implementation-only** decisions and **test fixtures** that a
 
 **Before planning CP19+ scope or investing in execution plumbing, read** `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` — current recommendation is engine/backtest proof first; no profitability claim exists yet.
 
+**Roadmap V2 checkpoint report:** `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` — synthetic fixture expansion and characterization tests for current engine behavior (no replay profitability proof yet).
+
 ---
 
 ## 1. Test symbol profiles (`@workspace/mapazapp-core` tests)
