@@ -2,6 +2,7 @@ import type { AccountId, ParameterSetRequestedUsage } from "@workspace/mapazapp-
 import {
   createDefaultStrategyRegistryEvaluationSettings,
   evaluateParameterSetCompatibility,
+  getCheckpoint15MockEvidenceBundleByParameterSetId,
   getCheckpoint8MockApprovalForParameterSet,
 } from "@workspace/mapazapp-core";
 import { MOCK_CHECKPOINT7_STRATEGY_REGISTRY } from "./mockTradeReviewDataSource";
@@ -52,6 +53,9 @@ export function createMockStrategyRegistryDataSource(): StrategyRegistryReadMode
     },
     getParameterSetBacktestAdvisory(parameterSetId: string) {
       return getCheckpoint8MockApprovalForParameterSet(parameterSetId);
+    },
+    getParameterSetBacktestEvidenceBundle(parameterSetId: string) {
+      return getCheckpoint15MockEvidenceBundleByParameterSetId(parameterSetId);
     },
   };
 }

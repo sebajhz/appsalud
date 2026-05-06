@@ -3,6 +3,7 @@ import type { AccountId } from "@workspace/mapazapp-core";
 import { MAPAZAPP_ERROR_ACCOUNT_NOT_FOUND, MAPAZAPP_ERROR_PARAMETER_SET_NOT_FOUND, MAPAZAPP_ERROR_ZONE_NOT_FOUND } from "./errors";
 import { errResponse, okResponse } from "./response";
 import * as accounts from "./adapters/accounts";
+import * as backtestEvidence from "./adapters/backtestEvidence";
 import * as backtests from "./adapters/backtests";
 import * as bridge from "./adapters/bridge";
 import * as registry from "./adapters/strategyRegistry";
@@ -11,11 +12,17 @@ import * as scannerSimulation from "./adapters/scannerSimulation";
 
 const router: IRouter = Router();
 
+const CP15_EVIDENCE_FLAGS = {
+  advisoryOnly: true as const,
+  registryMutationAllowed: false as const,
+  canAutoApply: false as const,
+};
+
 router.get("/health", (_req, res) => {
   res.json(
     okResponse({
       service: "mapazapp-api",
-      checkpoint: 12,
+      checkpoint: 15,
       readOnly: true,
       mockData: "in-memory",
     }),
@@ -132,6 +139,37 @@ router.get("/parameter-sets/:parameterSetId", (req, res) => {
     return;
   }
   res.json(okResponse(row));
+});
+
+router.get("/backtest-evidence", (_req, res) => {
+  res.json(
+    okResponse(
+      {
+        summaries: backtestEvidence.listBacktestEvidenceSummaries(),
+        evaluationNotes:
+          "Checkpoint 15 mock bundles only — fictional splits; no MT5 folder ingestion; no registry mutation.",
+      },
+      CP15_EVIDENCE_FLAGS,
+    ),
+  );
+});
+
+router.get("/parameter-sets/:parameterSetId/backtest-evidence", (req, res) => {
+  const bundle = backtestEvidence.evidenceBundleForParameterSet(req.params.parameterSetId);
+  if (!bundle) {
+    res.status(404).json(errResponse([{ ...MAPAZAPP_ERROR_PARAMETER_SET_NOT_FOUND, detail: req.params.parameterSetId }]));
+    return;
+  }
+  res.json(okResponse(bundle, CP15_EVIDENCE_FLAGS));
+});
+
+router.get("/parameter-sets/:parameterSetId/approval-proposal", (req, res) => {
+  const proposal = backtestEvidence.approvalProposalForParameterSet(req.params.parameterSetId);
+  if (!proposal) {
+    res.status(404).json(errResponse([{ ...MAPAZAPP_ERROR_PARAMETER_SET_NOT_FOUND, detail: req.params.parameterSetId }]));
+    return;
+  }
+  res.json(okResponse(proposal, CP15_EVIDENCE_FLAGS));
 });
 
 router.get("/accounts/:accountId/parameter-sets/:parameterSetId/compatibility", (req, res) => {

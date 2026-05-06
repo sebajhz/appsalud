@@ -3,13 +3,55 @@
 **Document type:** product and engineering sequencing reference.  
 **Scope:** aligns completed work (through repo checkpoint commits) with planned future checkpoints.  
 **Related:** `Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`, `Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`.  
-**Latest aligned commit (at authoring):** `bb29545` — feat(mapazapp-core): checkpoint 6 account risk guard alignment.
+**Latest roadmap refresh:** checkpoint **15** closure — see **Document control** for revision history.
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
 ---
 
-## 1. Completed checkpoints (0–6)
+## Current status (checkpoint 15)
+
+### Completed
+
+- **CP0** — Replit dashboard mock + handoff docs  
+- **CP1** — `mapazapp-core` foundation  
+- **CP2** — IFVG detection skeleton  
+- **CP3** — `TradeReviewPlan`  
+- **CP4** — Account-aware mock integration  
+- **CP5** — Decision explanation UX  
+- **CP6** — Account / risk guard  
+- **CP7** — Parameter-set registry  
+- **CP8** — Backtest model + CSV importer  
+- **CP9** — Strategy / parameter-set read-only UI  
+- **CP10** — Bridge file contract parsers  
+- **CP11** — Read-only mock API server (`@workspace/api-server`)  
+- **CP12** — Offline scanner simulation  
+- **CP13** — BridgeEA export-only; real MT5 smoke passed  
+- **CP13.1** — BridgeEA severity-aware diagnostics; real smoke passed  
+- **CP14** — TestEA Strategy Tester virtual export; real tester smoke passed  
+- **CP15** — Backtest evidence loop / manual approval proposal (advisory-only; no registry mutation)  
+
+### Next
+
+- **CP16** — Forward / Demo Monitor  
+
+### Still not implemented (do not assume in production)
+
+| Area | Notes |
+|------|--------|
+| **Database / domain persistence** | No SQLite or app-owned durable store for registry/evidence/trades. |
+| **Real file watchers** | No daemon watching BridgeEA or Strategy Tester output folders. |
+| **Live scanner daemon** | Offline simulation only; no live tick-fed scanner service. |
+| **Real MT5 folder ingest into backend** | Parsers accept **in-memory** strings; no automated ingest from terminal paths. |
+| **Registry mutation workflow** | No API or UI that writes approval state; humans apply registry updates elsewhere. |
+| **Auto-approval** | Evidence may recommend; it does **not** approve parameter sets. |
+| **Order execution** | No broker submission from Mapazapp. |
+| **WebSocket live stream** | No push feed from markets or MT5. |
+| **Assisted execution** | Future checkpoint **17+** only as contract/product gates allow. |
+
+---
+
+## 1. Completed checkpoints (0–15) — summary table
 
 | ID | Name |
 |----|------|
@@ -20,10 +62,22 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 | **Checkpoint 4** | Account-aware mock trade review integration |
 | **Checkpoint 5** | Trade review explanation and decision UX |
 | **Checkpoint 6** | Account / risk guard core alignment |
+| **Checkpoint 7** | Parameter Set / Strategy Profile Registry |
+| **Checkpoint 8** | Backtest result model & CSV importer skeleton |
+| **Checkpoint 9** | Strategy settings / parameter-set read-only UI |
+| **Checkpoint 10** | Bridge file contract reader skeleton |
+| **Checkpoint 11** | Local read-only mock API foundation |
+| **Checkpoint 12** | Scanner simulation from imported / fixture candles |
+| **Checkpoint 13** | MT5 BridgeEA export-only |
+| **Checkpoint 13.1** | BridgeEA severity-aware diagnostics |
+| **Checkpoint 14** | MT5 TestEA / Strategy Tester virtual export |
+| **Checkpoint 15** | Backtest evidence loop / manual approval proposal |
 
 ---
 
-## 2. What each completed checkpoint delivered
+## 2. What each completed checkpoint delivered (detail 0–6)
+
+Narratives for **checkpoints 7–15** are maintained in the codebase (e.g. `APP/artifacts/mapazapp/docs/IMPLEMENTATION_ASSUMPTIONS.md`, `CURSOR_HANDOFF.md`, MT5 artifact READMEs) and core/API packages — not duplicated here in full.
 
 ### Checkpoint 0 — Replit dashboard mock + handoff docs
 
@@ -64,42 +118,18 @@ This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to
 
 ---
 
-## 3. Explicitly not implemented (as of this roadmap)
+## 3. Historical note — “not implemented” snapshot (pre–CP7 era)
 
-The following remain **out of scope** for completed checkpoints 0–6 and must **not** be assumed to exist in production form:
-
-| Area | Status |
-|------|--------|
-| Real MT5 integration | **Not implemented** |
-| BridgeEA (real) | **Not implemented** |
-| TestEA (real) | **Not implemented** |
-| Backend Python (real services) | **Not implemented** |
-| SQLite / domain persistence | **Not implemented** |
-| WebSocket | **Not implemented** |
-| Live scanner | **Not implemented** |
-| Real market data | **Not implemented** |
-| Real backtest import | **Not implemented** |
-| Optimization loop | **Not implemented** |
-| Order execution | **Not implemented** |
-| Automated trading | **Not implemented** |
+Earlier editions of this roadmap listed gaps relative to checkpoints **0–6** only. As of **checkpoint 15**, use **Current status → Still not implemented** above as the authoritative product-wide list.
 
 ---
 
-## 4. Proposed next checkpoints (7–18)
+## 4. Future checkpoints (16–18)
 
-Short titles below; each future checkpoint should have its own spec or addendum before coding starts.
+Short titles below; each checkpoint should have its own spec or addendum before coding starts.
 
 | ID | Name | Intent (high level) |
 |----|------|------------------------|
-| **Checkpoint 7** | Parameter Set / Strategy Profile Registry | Canonical registry for strategy IDs, parameter sets, approval state, and account/symbol compatibility — single source of truth before UI and gates depend on “approved” sets. |
-| **Checkpoint 8** | Backtest Result Model & Importer Skeleton | Domain model for imported backtest results (metrics, run metadata, linkage to parameter sets); importer interfaces and validation **without** assuming live MT5. |
-| **Checkpoint 9** | Strategy Settings / Parameter Set read-only UI | Dashboard surfaces to browse approved parameter sets and linked strategy settings **read-only** (no optimization, no execution). |
-| **Checkpoint 10** | Bridge File Contract Reader Skeleton | Versioned contract for files the BridgeEA would produce/consume; parser/validator in TypeScript or backend stub **without** requiring a live terminal. |
-| **Checkpoint 11** | Local Backend Foundation | Minimal local API (language per project decision) for health, config, and serving registry/read models — **no** full prop stack required on day one. |
-| **Checkpoint 12** | Scanner Simulation from Imported Candles | Offline / batch scanner path using **imported** candles only — proves pipeline and UI integration **before** any live feed. |
-| **Checkpoint 13** | MT5 BridgeEA export-only | Real EA writes bridge contract files / payloads **outbound only** — still **no** order execution from Mapazapp. |
-| **Checkpoint 14** | MT5 TestEA / Strategy Tester Export | Export of tester-compatible inputs/outputs aligned with handoff TestEA specs; still not Mapazapp-driven live trading. |
-| **Checkpoint 15** | Backtest Optimization Loop | Controlled optimization workflow per symbol/account rules — **after** backtest model and parameter registry are stable. |
 | **Checkpoint 16** | Forward / Demo Monitor | Forward or demo monitoring of signals/state — validation path before any execution talk. |
 | **Checkpoint 17** | Assisted Execution Contract | Human-in-the-loop execution **contract** only (APIs, states, safeguards) — **no** blind automation. |
 | **Checkpoint 18** | Assisted Execution Gated Future Phase | Any production-assisted execution ships only after explicit approval, forward/demo evidence, and regulatory/product gates — treated as a **separate** phase from 0–17. |
@@ -108,7 +138,7 @@ Short titles below; each future checkpoint should have its own spec or addendum 
 
 ## 5. Sequencing rules (non-negotiable)
 
-1. **Do not implement MT5** before the **Bridge file contract reader** (Checkpoint 10) and **symbol / account registry** (Checkpoint 7 and related handoff types) are **stable** and tested.
+1. **Do not wire live MT5 ingest** before **Bridge file contract reader** (Checkpoint 10) and **symbol / account registry** (Checkpoint 7 and related handoff types) are **stable** and tested.
 2. **Do not implement a live scanner** before **parameter sets** (Checkpoint 7) and the **backtest result model** (Checkpoint 8) exist — otherwise UI and gates have nothing trustworthy to bind to.
 3. **Do not implement execution** before **forward/demo validation** (Checkpoint 16) and product sign-off on risk — execution is never the first proof of correctness.
 4. **Do not use unapproved parameter sets for `TRADE_READY`.** Approval state must be explicit in data and in tests; mock “approval” must mirror the same rules as future persistence.
@@ -121,14 +151,15 @@ Short titles below; each future checkpoint should have its own spec or addendum 
 
 ## 6. Recommended immediate next checkpoint
 
-**Checkpoint 7 — Parameter Set / Strategy Profile Registry.**
+**Checkpoint 16 — Forward / Demo Monitor.**
 
-Rationale: Checkpoints 3–6 already reference parameter-set and account-aware gates in core and UI. Without a **first-class registry** (IDs, versioning, approval, compatibility matrices), later backtest import, scanner simulation, and MT5 export will each invent incompatible ad-hoc structures. Checkpoint 7 reduces that risk and keeps `TRADE_READY` semantics honest.
+Rationale: Backtest evidence (checkpoint 15) is advisory-only and stops before registry mutation; forward/demo observation is the next validation layer before any assisted execution conversation.
 
 ---
 
 ## Document control
 
 | Version | Date | Notes |
-|---------|------|--------|
+|---------|------|-------|
 | V1 | 2026-05-04 | Initial official checkpoint roadmap; aligns through commit `bb29545`. |
+| V1.1 | 2026-05-05 | Checkpoint **15** closure — **Current status** section; completed **0–15**; future table **16–18**; stale “next CP7” recommendation removed. |

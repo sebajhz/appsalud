@@ -1,12 +1,13 @@
 # `@workspace/api-server`
 
-Express server for the Replit workspace. **Checkpoints 11–12** add read-only **Mapazapp mock API** routes under `/api/mapazapp/*` (checkpoint **12**: scanner simulation snapshots). **Checkpoint 13** adds the **MT5 BridgeEA MQL5 artifact** under `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` (compile in MetaTrader). **Checkpoint 14** adds **`Mapazapp_TestEA`** under `APP/artifacts/mt5/experts/Mapazapp_TestEA/` (Strategy Tester **virtual** CSV export for **`importBacktestTradesFromCsv`**). This server still has **no** live bridge ingest, **no** TestEA folder watcher, and **no** file persistence.
+Express server for the Replit workspace. **Checkpoints 11–12** add read-only **Mapazapp mock API** routes under `/api/mapazapp/*` (checkpoint **12**: scanner simulation snapshots). **Checkpoint 13** adds the **MT5 BridgeEA MQL5 artifact** under `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` (compile in MetaTrader). **Checkpoint 14** adds **`Mapazapp_TestEA`** under `APP/artifacts/mt5/experts/Mapazapp_TestEA/` (Strategy Tester **virtual** CSV export for **`importBacktestTradesFromCsv`**). **Checkpoint 15** adds **GET** mock evidence routes (**`/backtest-evidence`**, **`/parameter-sets/:id/backtest-evidence`**, **`/parameter-sets/:id/approval-proposal`**) returning fictional multi-run bundles — **`advisoryOnly: true`**, **`registryMutationAllowed: false`**, **`canAutoApply: false`**. This server still has **no** live bridge ingest, **no** TestEA folder watcher, **no** `POST` ingest, and **no** file persistence.
 
 ## Mapazapp API (mock / in-memory)
 
 - **Source:** `src/mapazapp/` — routes, response envelope, duplicated dashboard mock fixtures (see `mockData.ts`), and adapters that call `@workspace/mapazapp-core` (`evaluateTradeReviewPlan`, registry, CP8 advisory, bridge parsers).
 - **No** MT5, database persistence, WebSockets, order execution, file watchers, or live scanner.
 - **All** Mapazapp routes are `GET` only. Responses use `{ ok, data, warnings, errors, source: "mock", mockOnly: true }`.
+- **Checkpoint 15 evidence:** `GET /api/mapazapp/backtest-evidence`, `GET /api/mapazapp/parameter-sets/:parameterSetId/backtest-evidence`, `GET /api/mapazapp/parameter-sets/:parameterSetId/approval-proposal` — core-backed **mock fixtures only**; unknown parameter set id → **404** `PARAMETER_SET_NOT_FOUND`.
 - **Trade review** payloads include envelope flags `reviewOnly: true`, `executionEnabled: false`.
 - **Scanner simulation (checkpoint 12):** `GET /api/mapazapp/scanner/simulations`, `GET /api/mapazapp/scanner/simulations/latest`, `GET /api/mapazapp/accounts/:accountId/scanner/simulations/latest` — in-memory **`runCheckpoint12ScannerFixture`** output; same flags as trade review (`reviewOnly`, `executionEnabled: false`). **Not** a live scanner, **not** POST/run, **not** WebSocket.
 

@@ -4,6 +4,7 @@ import { getCheckpoint8MockRunForParameterSet } from "@workspace/mapazapp-core";
 import { Layout, useActiveAccount, useViewMode } from "@/components/Layout";
 import { createMockStrategyRegistryDataSource } from "@/services/mockStrategyRegistryDataSource";
 import { getMockSymbolMarketSpec } from "@/services/mockSymbolProfiles";
+import { backtestEvidenceSimpleLines, backtestEvidenceStatusHeadline } from "@/services/backtestEvidenceUi";
 import {
   classifyParameterSetBadge,
   parameterSetBadgeLabel,
@@ -50,6 +51,7 @@ export default function ParameterSetDetailPage() {
 
   const advisory = ps ? ds.getParameterSetBacktestAdvisory(ps.parameterSetId) : null;
   const cp8Run = ps ? getCheckpoint8MockRunForParameterSet(ps.parameterSetId) : null;
+  const evidenceBundle = ps ? ds.getParameterSetBacktestEvidenceBundle(ps.parameterSetId) : null;
 
   if (!ps || !strategy || !compatTradeReview) {
     return (
@@ -151,6 +153,66 @@ export default function ParameterSetDetailPage() {
             </div>
           ) : (
             <p className="text-xs text-slate-600">No checkpoint-8 fixture for this parameter set id.</p>
+          )}
+        </div>
+
+        <div className="rounded-lg border border-slate-800 bg-card p-5 space-y-3" data-testid="parameter-set-backtest-evidence-cp15">
+          <h3 className="text-sm font-semibold text-slate-300">Backtest evidence loop (checkpoint 15)</h3>
+          <p className="text-xs text-amber-200/90 border border-amber-900/40 bg-amber-950/20 rounded p-2">
+            Advisory bundle only — no upload, no registry mutation, no auto-approval. Strategy Tester exports remain on your
+            machine and must not be committed to the repo.
+          </p>
+          {evidenceBundle ? (
+            <>
+              {!isTechnical ? (
+                <ul className="text-sm text-slate-300 list-disc pl-4 space-y-1">
+                  {backtestEvidenceSimpleLines(evidenceBundle.evaluation.status).map((line, idx) => (
+                    <li key={`${idx}-${line.slice(0, 24)}`}>{line}</li>
+                  ))}
+                </ul>
+              ) : null}
+              <div className="text-xs font-mono text-slate-400 space-y-2">
+                <p data-testid="cp15-evidence-headline">{backtestEvidenceStatusHeadline(evidenceBundle.evaluation.status)}</p>
+                <p>
+                  registryMutationAllowed: {String(evidenceBundle.evaluation.registryMutationAllowed)} · canAutoApply:{" "}
+                  {String(evidenceBundle.proposal.canAutoApply)} · approvedForRecommendation:{" "}
+                  {String(evidenceBundle.evaluation.approvedForRecommendation)}
+                </p>
+                <p>
+                  aggregate PF:{" "}
+                  {evidenceBundle.evaluation.metricSnapshot.profitFactor === Number.POSITIVE_INFINITY
+                    ? "∞"
+                    : evidenceBundle.evaluation.metricSnapshot.profitFactor.toFixed(3)}{" "}
+                  · expectancyR: {evidenceBundle.evaluation.metricSnapshot.expectancyR.toFixed(4)} · maxDrawdownR:{" "}
+                  {evidenceBundle.evaluation.metricSnapshot.maxDrawdownR.toFixed(2)} · losing streak:{" "}
+                  {evidenceBundle.evaluation.metricSnapshot.maxLosingStreak} · trades:{" "}
+                  {evidenceBundle.evaluation.metricSnapshot.tradeCount}
+                </p>
+                <div>
+                  <p className="text-slate-500 mb-0.5">Split results</p>
+                  <ul className="space-y-1">
+                    {evidenceBundle.evaluation.splitResults.map((s) => (
+                      <li key={s.split}>
+                        {s.split}: runs={s.runIds.length} trades≈{s.aggregateTradeCount} passedNumeric={String(s.passedNumericGates)}{" "}
+                        · latest={s.latestRunId ?? "—"} · best={s.bestRunId ?? "—"}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <p>blocking: {evidenceBundle.evaluation.blockingReasons.map((b) => b.code).join(", ") || "—"}</p>
+                <p>warnings: {evidenceBundle.evaluation.warningReasons.map((w) => w.code).join(", ") || "—"}</p>
+                <div className="border border-slate-800 rounded p-2 space-y-1">
+                  <p className="text-slate-500">Approval proposal (preview)</p>
+                  <p>proposalStatus: {evidenceBundle.proposal.proposalStatus}</p>
+                  <p>recommended registry status: {evidenceBundle.proposal.recommendedParameterSetStatus}</p>
+                  <p>recommendedApprovalLevel: {evidenceBundle.proposal.recommendedApprovalLevel}</p>
+                  <p>allowedUsages: {evidenceBundle.proposal.allowedUsages.join(", ")}</p>
+                  <p>requiredHumanActions: {evidenceBundle.proposal.requiredHumanActions.join(" | ")}</p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <p className="text-xs text-slate-600">No checkpoint-15 mock evidence bundle for this parameter set id.</p>
           )}
         </div>
 

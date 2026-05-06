@@ -15,8 +15,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 ## Shared core package (`@workspace/mapazapp-core`)
 
 - **Location:** `APP/lib/mapazapp-core/`
-- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**, plus **checkpoint 10** BridgeEA **file contract parsers** (JSON + CSV on in-memory strings only — **no** disk path, **no** MT5 socket), plus **checkpoint 12** **offline scanner simulation** (`runScannerSimulation`, `runScannerSimulationFromBridgeCandlesCsv`, `bridgeCandleRowToCandle`, `scanner-fixtures`, `runCheckpoint12ScannerFixture` — **not** a live scanner daemon, **not** execution). **Checkpoint 13** adds a separate **MQL5 export-only EA** under `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` (not compiled by this repo); core parsers remain the validation target for wire format. **Checkpoint 14** adds **`Mapazapp_TestEA`** under `APP/artifacts/mt5/experts/Mapazapp_TestEA/` — **Strategy Tester only**, **virtual** CSV/JSON export (`MZP_TESTEA_V1`) aligned with **`importBacktestTradesFromCsv`**; **not** BridgeEA, **not** live orders. **No** React, HTTP, live MT5 from TypeScript, DB, WebSocket, or order execution in core.
-- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval / TestEA-shaped CSV sample in `tests/checkpoint8-backtest.test.ts`; bridge contract parsers in **`tests/checkpoint10-bridge-contract.test.ts`**; scanner simulation in **`tests/checkpoint12-scanner-simulation.test.ts`**.
+- **Purpose:** Pure TypeScript — symbol normalization, zone/risk primitives, IFVG **lifecycle** skeleton, **checkpoint 2** strategy detection, **checkpoint 3** **trade review plan** evaluation (`evaluateTradeReviewPlan`), **checkpoint 6** account guard, **checkpoint 7** strategy/parameter-set registry (`evaluateParameterSetCompatibility`), **checkpoint 8** backtest run/trade model, CSV import skeleton, and advisory **`evaluateBacktestApproval`**, plus **checkpoint 10** BridgeEA **file contract parsers** (JSON + CSV on in-memory strings only — **no** disk path, **no** MT5 socket), plus **checkpoint 12** **offline scanner simulation** (`runScannerSimulation`, `runScannerSimulationFromBridgeCandlesCsv`, `bridgeCandleRowToCandle`, `scanner-fixtures`, `runCheckpoint12ScannerFixture` — **not** a live scanner daemon, **not** execution). **Checkpoint 13** adds a separate **MQL5 export-only EA** under `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` (not compiled by this repo); core parsers remain the validation target for wire format. **Checkpoint 14** adds **`Mapazapp_TestEA`** under `APP/artifacts/mt5/experts/Mapazapp_TestEA/` — **Strategy Tester only**, **virtual** CSV/JSON export (`MZP_TESTEA_V1`) aligned with **`importBacktestTradesFromCsv`**; **not** BridgeEA, **not** live orders. **Checkpoint 15** adds **`evaluateBacktestEvidence`** + **`createBacktestEvidenceBundleFromCsvTexts`** + advisory **`BacktestEvidenceApprovalProposal`** (multi-run splits; **no** registry mutation, **no** MT5 folder ingest). **No** React, HTTP, live MT5 from TypeScript, DB, WebSocket, or order execution in core.
+- **Tests:** from `APP/` run `pnpm --filter @workspace/mapazapp-core test` and `pnpm --filter @workspace/mapazapp-core typecheck`. Strategy coverage in `tests/checkpoint2-strategy.test.ts`; trade plan coverage in `tests/checkpoint3-trade-plan.test.ts` (synthetic inputs only); backtest model / CSV / approval / TestEA-shaped CSV sample in `tests/checkpoint8-backtest.test.ts`; bridge contract parsers in **`tests/checkpoint10-bridge-contract.test.ts`**; scanner simulation in **`tests/checkpoint12-scanner-simulation.test.ts`**; multi-run evidence loop in **`tests/checkpoint15-backtest-evidence.test.ts`**.
 - **Test fixtures:** documented in `docs/IMPLEMENTATION_ASSUMPTIONS.md` (not broker truth).
 
 ### Strategy detection modules (checkpoint 2)
@@ -55,7 +55,7 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 - **Checkpoint 1:** `AccountDataSource` + `createMockAccountDataSource()` — reads existing `src/mock/` data, requires `accountId`, **no** `fetch`, no Express.
 - **Checkpoint 4 / 7:** `DashboardMockDataSource` (`tradeReviewDataSource.ts` + `mockTradeReviewDataSource.ts`) — **`createMockDashboardDataSource()`** exposes **`getZonesForAccount`**, **`getTradeReviewPlansForAccount`** (includes **`registryCompatibility`** per row), **`getTradeReviewPlanByZoneId`**, **`getAlertsForAccount`**, and **`getAccountSnapshot`** (delegates to checkpoint 1). Mock zones are mapped through **`mapMockZoneToCore.ts`**, risk through **`mapMockRiskToTradePlanGuard.ts`** with registry-derived **`approvedParameterSetForAccount`**, symbols through **`mockSymbolProfiles.ts`**, then **`evaluateTradeReviewPlan`** from `@workspace/mapazapp-core`. **No** backend, MT5, execution, WebSocket, or DB.
-- **Checkpoint 9:** **`StrategyRegistryReadModelDataSource`** (`strategyRegistryDataSource.ts` + **`mockStrategyRegistryDataSource.ts`**) — read-only registry + compatibility + CP8 advisory for inspector pages; **`strategyRegistryUi.ts`** for badges and summaries. **No** `fetch`, **no** editing.
+- **Checkpoint 9:** **`StrategyRegistryReadModelDataSource`** (`strategyRegistryDataSource.ts` + **`mockStrategyRegistryDataSource.ts`**) — read-only registry + compatibility + CP8 advisory + **CP15** **`getParameterSetBacktestEvidenceBundle`** for inspector pages; **`strategyRegistryUi.ts`** for badges and summaries; **`backtestEvidenceUi.ts`** for CP15 plain-language lines. **No** `fetch`, **no** editing.
 - **Checkpoint 10:** **`loadMockBridgeExportBundle()`** in **`bridgeMockExportDataSource.ts`** — parses **`bridge-fixtures.ts`** from core (fictional **`MZP_BRIDGE_V1`** / legacy **`QTG_BRIDGE_V1`** alias) via **`parseBridgeStatusJson`** + CSV parsers; **`bridgeImportUi.ts`** formats diagnostics. **`BridgePage.tsx`** surfaces schema, terminal, login, symbols, market row tick times, and aggregate import warnings/errors — **mock inspection only** (no file picker, no watcher, no backend).
 - **UI wiring:** `HomePage` (review-ready strip + banner counts), `ZonesPage` (core status badge + reason line), and `ZoneDetailPage` (core review block + technical fields + link to **`/parameter-sets/:id`**) consume the dashboard data source. **`ParameterSetsPage`** / **`ParameterSetDetailPage`** use the checkpoint 9 read-only registry source. Other pages still use mock imports directly where unchanged.
 - **Copy / UX:** “Review-ready”, “manual review only”, and **`TradeReviewStatusBadge`** reinforce that **`TRADE_READY`** is **not** an order signal.
@@ -112,6 +112,16 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 **Not implemented:** backend/dashboard **file ingest** of TestEA CSV from disk, persistence, registry auto-update from imports, or optimization loops. **Checkpoint 14** adds the **Mapazapp_TestEA** MQL5 exporter + fictional **`samples/`**; operators still copy CSV text manually into tooling using **`importBacktestTradesFromCsv`** until a watcher ships.
 
+### Multi-run backtest evidence (checkpoint 15)
+
+| Module | Role |
+|--------|------|
+| `backtest-evidence-types.ts` | `BacktestEvidenceBundle`, thresholds, split/run results, **`BacktestEvidenceApprovalProposal`**. |
+| `backtest-evidence-evaluator.ts` | **`evaluateBacktestEvidence`**, **`createBacktestEvidenceBundleFromCsvTexts`**, grouping + **`candidate_*`** statuses only. |
+| `backtest-evidence-fixtures.ts` | Fictional bundles for selected **`parameterSetId`** values (`getCheckpoint15MockEvidenceBundleByParameterSetId`). |
+
+**Rule:** evidence may **recommend** registry statuses; **only** explicit human-controlled registry updates may **approve** a parameter set — **`registryMutationAllowed`** is always **`false`** on evaluation outputs; **`canAutoApply`** is **`false`** on proposals.
+
 ### Strategy / parameter set read-only UI (checkpoint 9 — dashboard)
 
 | File | Role |
@@ -120,9 +130,9 @@ This document gives Cursor (or any future developer) everything needed to contin
 | `mockStrategyRegistryDataSource.ts` | **`createMockStrategyRegistryDataSource()`** — strategies + parameter sets from **`MOCK_CHECKPOINT7_STRATEGY_REGISTRY`**, **`evaluateParameterSetCompatibility`**, checkpoint-8 advisory lookup. |
 | `strategyRegistryUi.ts` | Badge classification + Simple/Technical copy + IFVG **`settings` summary** helpers. |
 | **`ParameterSetsPage.tsx`** | **`/parameter-sets`** — account-scoped table, **`supportsViewToggle`**. |
-| **`ParameterSetDetailPage.tsx`** | **`/parameter-sets/:parameterSetId`** — TRADE_READY gate explanation, compatibility codes, CP8 advisory, read-only settings. |
+| **`ParameterSetDetailPage.tsx`** | **`/parameter-sets/:parameterSetId`** — TRADE_READY gate explanation, compatibility codes, CP8 advisory, **CP15 evidence** panel (mock bundle — **no** approve/upload), read-only settings. |
 
-**Not implemented:** settings editing, optimization UI, registry persistence, server-backed registry.
+**Not implemented:** settings editing, optimization UI, registry persistence, server-backed registry, auto-approval from evidence.
 
 ### BridgeEA export contract parsers (checkpoint 10 — `@workspace/mapazapp-core` + minimal UI)
 
@@ -199,13 +209,14 @@ Mapazapp is a **trading intelligence and risk management dashboard** for discipl
 | Prop Firm Guard enforcement | NOT IMPLEMENTED | Prop firm state is static mock |
 | Multi-account backend | NOT IMPLEMENTED | Account switching is React useState only |
 | Multi-terminal MT5 bridge | NOT IMPLEMENTED | Bridge terminals are mock arrays |
-| Backtest / Strategy Tester UI wiring | NOT IMPLEMENTED | Dashboard backtest stats remain mock; **CP14 TestEA** produces **optional** CSV for core importer — **no** app-side folder ingest |
+| Backtest / Strategy Tester UI wiring | **PARTIAL (CP8 / CP14 / CP15)** | Backtests UI mixes mock rows with **CP8** advisory column + **CP15** mock multi-run **evidence** (parameter-set detail panel); **CP14 TestEA** CSV is for **manual** paste / tooling — **no** dashboard file picker, **no** upload route, **no** persistence of imports |
 | Journal import from MT5 | NOT IMPLEMENTED | Journal entries are hardcoded |
 | Real alert engine | NOT IMPLEMENTED | Alerts are hardcoded arrays |
 | Alert persistence | NOT IMPLEMENTED | Acknowledge state is React useState only |
 | Order execution | NOT IMPLEMENTED | No execution of any kind |
-| Python backend | NOT IMPLEMENTED | No server exists |
-| Database | NOT IMPLEMENTED | No persistence |
+| HTTP API (`@workspace/api-server`) | **PARTIAL (CP11+)** | Read-only **`GET /api/mapazapp/*`** mock envelope (`mockOnly: true`); serves registry, trade-review snapshots, bridge parser demo, scanner simulation, **CP15 evidence** — **no** DB, **no** live MT5 socket, **no** folder watcher ingest |
+| Python backend (Replit handoff stack) | NOT IMPLEMENTED | No Python services in this repo; Node mock API is **not** a production backend |
+| Database | NOT IMPLEMENTED | No domain persistence; mock API is in-memory only |
 | Authentication | NOT IMPLEMENTED | No auth |
 | WebSockets | NOT IMPLEMENTED | No live data |
 

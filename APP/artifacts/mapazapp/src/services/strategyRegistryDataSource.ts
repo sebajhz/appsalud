@@ -1,6 +1,7 @@
 import type {
   AccountId,
   BacktestApprovalResult,
+  BacktestEvidenceBundle,
   ParameterSetCompatibilityResult,
   ParameterSetDefinition,
   ParameterSetRequestedUsage,
@@ -27,4 +28,6 @@ export interface StrategyRegistryReadModelDataSource {
   ): ParameterSetCompatibilityResult;
   /** Checkpoint 8 mock/advisory evaluation when a fixture exists for this id. */
   getParameterSetBacktestAdvisory(parameterSetId: string): BacktestApprovalResult | null;
+  /** Checkpoint 15 multi-run evidence bundle (mock fixtures only). */
+  getParameterSetBacktestEvidenceBundle(parameterSetId: string): BacktestEvidenceBundle | null;
 }

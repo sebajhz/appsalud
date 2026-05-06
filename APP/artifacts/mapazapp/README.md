@@ -26,6 +26,8 @@
 
 **Checkpoint 14 — MT5 TestEA / Strategy Tester export:** separate MQL5 artifact **`APP/artifacts/mt5/experts/Mapazapp_TestEA/`** (`MZP_TESTEA_V1`). Runs **only** in **Strategy Tester** (`MQL_TESTER` guard); writes **virtual** **`backtest_trades.csv`** + **`backtest_summary.json`** under **`MQL5/Files/Mapazapp/testea/<run_id>/`** for **`importBacktestTradesFromCsv`** (checkpoint 8). **Not** live trading, **not** IFVG production logic, **not** registry auto-approval. See artifact **`README.md`** / **`MANUAL_TEST_CHECKLIST.md`**.
 
+**Checkpoint 15 — backtest evidence loop (advisory):** core **`evaluateBacktestEvidence`**, **`createBacktestEvidenceBundleFromCsvTexts`** (in-memory CSV strings only), fictional **`backtest-evidence-fixtures`** aligned to selected registry ids; **`BacktestsPage`** adds a **CP15 evidence** column; **`ParameterSetDetailPage`** adds a **CP15** panel. Mock API: **`GET /api/mapazapp/backtest-evidence`** and per-parameter-set evidence / approval-proposal routes (**`advisoryOnly`**, **`canAutoApply: false`**). **No** Strategy Tester folder watcher, **no** registry mutation, **no** optimization automation. Core tests: **`lib/mapazapp-core/tests/checkpoint15-backtest-evidence.test.ts`**.
+
 **Mapazapp** is a trading intelligence and risk management dashboard for disciplined prop firm traders. This repository contains the **visual dashboard mock** — a pure frontend build for validating the UI and product experience before connecting real trading infrastructure.
 
 Mapazapp is **multi-account and multi-broker by design**. Every entity in the system — risk state, prop firm guard, journal, alerts, bridge terminals, and backtests — is scoped to an `accountId`.

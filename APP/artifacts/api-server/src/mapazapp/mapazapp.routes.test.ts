@@ -2,7 +2,7 @@ import request from "supertest";
 import { describe, expect, it } from "vitest";
 import app from "../app";
 
-describe("Mapazapp API (checkpoint 12)", () => {
+describe("Mapazapp API (checkpoint 15)", () => {
   it("GET /api/mapazapp/health returns ok envelope", async () => {
     const res = await request(app).get("/api/mapazapp/health");
     expect(res.status).toBe(200);
@@ -11,7 +11,7 @@ describe("Mapazapp API (checkpoint 12)", () => {
     expect(res.body.source).toBe("mock");
     expect(res.body.data?.service).toBe("mapazapp-api");
     expect(res.body.data?.readOnly).toBe(true);
-    expect(res.body.data?.checkpoint).toBe(12);
+    expect(res.body.data?.checkpoint).toBe(15);
   });
 
   it("GET /api/mapazapp/accounts lists mock accounts", async () => {
@@ -101,5 +101,30 @@ describe("Mapazapp API (checkpoint 12)", () => {
     const res = await request(app).get("/api/mapazapp/accounts/UNKNOWN_X/scanner/simulations/latest");
     expect(res.status).toBe(404);
     expect(res.body.errors[0]?.code).toBe("ACCOUNT_NOT_FOUND");
+  });
+
+  it("GET /api/mapazapp/backtest-evidence returns advisoryOnly true", async () => {
+    const res = await request(app).get("/api/mapazapp/backtest-evidence");
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    expect(res.body.advisoryOnly).toBe(true);
+    expect(res.body.registryMutationAllowed).toBe(false);
+    expect(res.body.canAutoApply).toBe(false);
+    expect(Array.isArray(res.body.data?.summaries)).toBe(true);
+  });
+
+  it("GET approval-proposal returns canAutoApply false", async () => {
+    const res = await request(app).get("/api/mapazapp/parameter-sets/MZP_IFVG_XAUUSD_V1_SET_003/approval-proposal");
+    expect(res.status).toBe(200);
+    expect(res.body.data?.canAutoApply).toBe(false);
+    expect(res.body.data?.manualReviewRequired).toBe(true);
+    expect(res.body.canAutoApply).toBe(false);
+    expect(res.body.advisoryOnly).toBe(true);
+  });
+
+  it("GET approval-proposal for unknown parameter set returns PARAMETER_SET_NOT_FOUND", async () => {
+    const res = await request(app).get("/api/mapazapp/parameter-sets/MZP_UNKNOWN_PS_FOR_CP15_TEST/approval-proposal");
+    expect(res.status).toBe(404);
+    expect(res.body.errors[0]?.code).toBe("PARAMETER_SET_NOT_FOUND");
   });
 });

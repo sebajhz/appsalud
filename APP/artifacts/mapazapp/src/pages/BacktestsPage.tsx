@@ -4,7 +4,7 @@ import { mockBacktests } from '@/mock/backtests';
 import { Link } from 'wouter';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { MOCK_CHECKPOINT7_STRATEGY_REGISTRY } from '@/services/mockTradeReviewDataSource';
-import { getCheckpoint8MockApprovalForParameterSet } from '@workspace/mapazapp-core';
+import { getCheckpoint15MockEvidenceBundleByParameterSetId, getCheckpoint8MockApprovalForParameterSet } from '@workspace/mapazapp-core';
 
 function registryParameterSetStatus(parameterSetId: string): string {
   const ps = MOCK_CHECKPOINT7_STRATEGY_REGISTRY.parameterSets.find((p) => p.parameterSetId === parameterSetId);
@@ -18,6 +18,15 @@ function checkpoint8AdvisoryLabel(parameterSetId: string): string {
   return `${a.status} · ${a.approvedFor}`;
 }
 
+/** Checkpoint 15 multi-run evidence status from core fixtures (fictional). */
+function checkpoint15EvidenceBadge(parameterSetId: string): { label: string; lowRisk: boolean } {
+  const bundle = getCheckpoint15MockEvidenceBundleByParameterSetId(parameterSetId);
+  if (!bundle) return { label: '—', lowRisk: false };
+  const st = bundle.evaluation.status;
+  const lowRisk = st === 'candidate_for_alerts' || st === 'candidate_for_trade_review';
+  return { label: st, lowRisk };
+}
+
 export default function BacktestsPage() {
   const { activeAccountId, activeAccount } = useActiveAccount();
 
@@ -26,9 +35,11 @@ export default function BacktestsPage() {
       <div className="space-y-5">
         <p className="text-sm text-slate-400">
           Parameter sets shown here are mock backtest rows. Formal lifecycle status for trade review vs alerts comes from
-          the checkpoint 7 strategy registry (<span className="font-mono text-slate-500">Registry status</span> column).
+          the           checkpoint 7 strategy registry (<span className="font-mono text-slate-500">Registry status</span> column).
           <span className="font-mono text-slate-500"> CP8 import eval</span> shows a fictional advisory outcome from core
-          checkpoint-8 fixtures (CSV/backtest model skeleton — not MT5). There is no live scanner in this build.
+          checkpoint-8 fixtures (CSV/backtest model skeleton — not MT5).{' '}
+          <span className="font-mono text-slate-500">CP15 evidence</span> is a mock multi-run advisory loop — candidates only,
+          never auto-approved. There is no live scanner in this build.
         </p>
         <p className="text-xs">
           <Link href="/parameter-sets" className="text-blue-400 hover:text-blue-300" data-testid="link-strategy-sets-from-backtests">
@@ -44,6 +55,7 @@ export default function BacktestsPage() {
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Registry status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">CP8 import eval</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">CP15 evidence</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Symbol</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">TF</th>
                 <th className="text-right px-4 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Win %</th>
@@ -58,6 +70,7 @@ export default function BacktestsPage() {
             <tbody className="divide-y divide-slate-800">
               {mockBacktests.map(bt => {
                 const allowedForActive = bt.allowedAccountIds.includes(activeAccountId);
+                const cp15 = checkpoint15EvidenceBadge(bt.id);
                 return (
                   <tr
                     key={bt.id}
@@ -78,6 +91,15 @@ export default function BacktestsPage() {
                       data-testid={`backtest-cp8-${bt.id}`}
                     >
                       {checkpoint8AdvisoryLabel(bt.id)}
+                    </td>
+                    <td
+                      className={`px-4 py-3 font-mono text-xs max-w-[12rem] truncate ${
+                        cp15.lowRisk ? 'text-emerald-400/90' : 'text-slate-500'
+                      }`}
+                      title="Checkpoint 15 mock evidence status — advisory only"
+                      data-testid={`backtest-cp15-${bt.id}`}
+                    >
+                      {cp15.label}
                     </td>
                     <td className="px-4 py-3 text-slate-300">{bt.symbol}</td>
                     <td className="px-4 py-3 text-slate-400 font-mono text-xs">{bt.timeframe}</td>

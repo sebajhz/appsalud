@@ -32,6 +32,7 @@ Este archivo es el punto de entrada rápido para sesiones futuras en Cursor. **N
 - `APP/artifacts/mapazapp/` — aplicación Vite + React del mock Mapazapp.
 - `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` — **checkpoint 13**: fuente MQL5 del **BridgeEA solo exportación** (CSV/JSON bajo `MQL5/Files/`); sin lectura de comandos ni ejecución; el dashboard sigue en mocks salvo integración explícita futura.
 - `APP/artifacts/mt5/experts/Mapazapp_TestEA/` — **checkpoint 14**: **Strategy Tester solamente** — exportación virtual `MZP_TESTEA_V1` (`backtest_trades.csv` + `backtest_summary.json`) alineada con **`importBacktestTradesFromCsv`**; **no** es BridgeEA, **no** órdenes vivas, **no** ingesta automática en el dashboard.
+- **Checkpoint 15** (`mapazapp-core` + dashboard + `api-server`): bucle de **evidencia de backtest** multi-run (CSV en memoria / fixtures ficticios), propuesta de aprobación **solo advisory** — **sin** mutación del registry, **sin** optimización MT5 automática, **sin** watcher de carpetas del tester.
 
 ---
 

@@ -11,6 +11,7 @@ Separate Expert Advisor from **`Mapazapp_BridgeEA` (CP13)**. This EA is intended
 | **Commands** | **No** inbound command files. |
 | **Network / DLL** | **No** `WebRequest`, **no** `#import` DLLs. |
 | **Registry** | **No** MT5-side registry mutation; Mapazapp approval remains **advisory** (`evaluateBacktestApproval`). |
+| **Checkpoint 15 (TypeScript)** | Product-side **`evaluateBacktestEvidence`** ingests **pasted or programmatic CSV text** (no EA disk watcher). Operators keep raw tester CSV local; futures may add controlled import UI — still **no** auto-registry approval from exports alone. |
 | **Strategy logic** | **Placeholder skeleton only** — **not** the full IFVG engine; **not** a profitability claim. |
 
 **Manual handoff:** **[MANUAL_TEST_CHECKLIST.md](./MANUAL_TEST_CHECKLIST.md)**  
