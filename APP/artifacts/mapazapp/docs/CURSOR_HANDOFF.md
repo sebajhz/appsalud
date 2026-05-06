@@ -10,6 +10,8 @@
 
 **Before implementing CP18, read** `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md` — CP18 is a **gated future-phase readiness layer**; it **does not** enable real execution, `POST` command routes, MT5 command reading, or BridgeEA/TestEA logic changes.
 
+**Before planning CP19+ or any execution/infrastructure expansion, read** `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` — engine/heart proof is prioritized over execution plumbing, and profitability remains unproven at CP18.5.
+
 This document gives Cursor (or any future developer) everything needed to continue building Mapazapp from where the Replit mock phase left off.
 
 ---

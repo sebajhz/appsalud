@@ -4,6 +4,8 @@ This file records **implementation-only** decisions and **test fixtures** that a
 
 **Before implementing CP18, read** `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md` — allowed vs forbidden scope, required invariants (`executionEnabled` / `sendToMt5Enabled` / `canAutoExecute` / `registryMutationAllowed` / `manualReviewRequired`), and the **no-go** rule if real execution is attempted.
 
+**Before planning CP19+ scope or investing in execution plumbing, read** `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` — current recommendation is engine/backtest proof first; no profitability claim exists yet.
+
 ---
 
 ## 1. Test symbol profiles (`@workspace/mapazapp-core` tests)

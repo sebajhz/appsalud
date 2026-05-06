@@ -3,9 +3,11 @@
 **Document type:** product and engineering sequencing reference.  
 **Scope:** aligns completed work (through repo checkpoint commits) with planned future checkpoints.  
 **Related:** `Mapazapp_Symbol_Precision_Tick_Pip_Normalization_Addendum_V1.md`, `Mapazapp_IFVG_Strategy_Blueprint_Final_Draft_V1.md`.  
-**Latest roadmap refresh:** checkpoint **18** closure — see **Document control** for revision history.
+**Latest roadmap refresh:** checkpoint **18** closure + **CP18.5 final audit/roadmap-v2 pointer** — see **Document control** for revision history.
 
 **Before implementing CP18, read** `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md`. **CP18 implementation** adds safety/invariant hardening only — execution stays disabled; **CP19+** is required for any real execution decision.
+
+**Before defining CP19+ scope, read** `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`. CP18.5 concludes that engine/backtest proof is the immediate priority over execution plumbing.
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
@@ -171,3 +173,4 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 | V1.3 | 2026-05-05 | Checkpoint **17** closure — **Current status** completed through **CP17**; **Next** = CP18; summary table includes CP17; future table starts at CP18; sequencing note for CP18 explicit approval. |
 | V1.4 | 2026-05-06 | **CP18 scope freeze** pointer — `APP/artifacts/mapazapp/docs/CP18_SCOPE_FREEZE.md`; **Next** / future table / §6 aligned: CP18 = readiness only; real execution = CP19+ with new approval. |
 | V1.5 | 2026-05-06 | **CP18 implementation** closure — **Current status** through **CP18**; summary table **0–18**; **Next** = CP19+; future table starts at 19+. |
+| V1.6 | 2026-05-06 | **CP18.5 audit pointer** — add explicit reference to `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` before CP19+ planning; emphasizes engine-proof-first sequencing. |
