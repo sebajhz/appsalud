@@ -17,11 +17,13 @@ Separate Expert Advisor from **`Mapazapp_BridgeEA` (CP13)**. This EA is intended
 **Wire format:** **[EXPORT_CONTRACT.md](./EXPORT_CONTRACT.md)**  
 **Samples (fictional):** **[samples/](./samples/)**
 
+**Verified manually in MT5 Strategy Tester:** one real tester smoke succeeded after the portability compile fix (MetaEditor **0 errors / 0 warnings**). On that run, outputs appeared under the **Strategy Tester agent** profile — e.g. beneath **`MetaQuotes\Tester\<terminal-id>\Agent-…\MQL5\Files\`**, not necessarily under the interactive terminal’s **Open Data Folder**. See checklist **“First real Strategy Tester smoke result.”** **CP14 remains virtual skeleton export only** (placeholder row, **not** IFVG and **not** a profitability result).
+
 ---
 
 ## Outputs
 
-Under **`MQL5\Files\<InpExportRoot>\<run_id>\`** (default root `Mapazapp\testea`):
+Under **`MQL5\Files\<InpExportRoot>\<run_id>\`** within the active MT5 **Files** sandbox (interactive terminal **or** Strategy Tester **agent** tree — default root `Mapazapp\testea`):
 
 | File | Purpose |
 |------|---------|
@@ -29,6 +31,10 @@ Under **`MQL5\Files\<InpExportRoot>\<run_id>\`** (default root `Mapazapp\testea`
 | `backtest_summary.json` | Run metadata (not parsed by core importer yet) |
 
 Writes use temp files + **`FileMove`** under the Files sandbox (same pattern as BridgeEA).
+
+### Summary JSON — `tester_from` / `tester_to`
+
+Both fields are **always JSON `null`** in CP14. The EA does **not** read Strategy Tester model date APIs (e.g. `TesterStartTime` / `TesterStopTime`) so the source stays portable across MetaEditor / build variants. They remain **optional** contract keys for documentation or future checkpoints / manual enrichment from the tester UI.
 
 ---
 

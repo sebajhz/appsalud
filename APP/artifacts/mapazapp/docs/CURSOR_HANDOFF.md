@@ -142,6 +142,8 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 **Checkpoint 14 — MT5 TestEA (Strategy Tester export only):** source **`APP/artifacts/mt5/experts/Mapazapp_TestEA/Mapazapp_TestEA.mq5`** (`MZP_TESTEA_V1`) writes **`backtest_trades.csv`** + **`backtest_summary.json`** under **`MQL5/Files/<InpExportRoot>/<run_id>/`** (default `Mapazapp\testea\<run_id>\`). **`OnInit` fails on live charts** (`MQL_TESTER` guard). **Virtual export only** — **no** `OrderSend` / `CTrade`; placeholder trade row is **not** the IFVG engine and implies **no** profitability or registry promotion.
 
+**CP14 real tester smoke note:** a manual Strategy Tester run **succeeded** (compile **0/0**); files were observed under the **local tester agent** sandbox (`MetaQuotes\Tester\…\Agent-…\MQL5\Files\…`), not necessarily under the interactive terminal data folder. **Do not** commit raw tester CSV/JSON; **`samples/`** stay fictional. Large placeholder **`result_r`** values are **not** performance evidence.
+
 **Future flow:** BridgeEA writes exports → backend (or desktop agent) reads file **text** → core parsers validate → normalized models feed account/symbol/candle stores and UI. TestEA CSV → **`importBacktestTradesFromCsv`** → advisory **`evaluateBacktestApproval`** (still **no** registry mutation).
 
 ### Local mock HTTP API (checkpoint 11 — `@workspace/api-server`)

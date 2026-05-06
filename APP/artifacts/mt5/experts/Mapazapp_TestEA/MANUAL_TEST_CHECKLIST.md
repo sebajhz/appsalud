@@ -78,6 +78,31 @@ MQL5\Files\Mapazapp\testea\<run_id>\
 
 `<run_id>` = **`InpRunId`** (sanitized) or auto **`TESTEA_<symbol>_YYYYMMDD_HHMMSS_<suffix>`**.
 
+**Strategy Tester agent sandbox:** on a real tester run, exports may appear under the **local agent** profile rather than the usual terminal **File → Open Data Folder** tree — for example:
+
+```text
+MetaQuotes\Tester\<terminal-id>\Agent-127.0.0.1-3000\MQL5\Files\Mapazapp\testea\<run_id>\
+```
+
+Use **Explorer** / MT5 **Journal** hints / agent logs to locate `MQL5\Files` for that run. The relative tail **`Mapazapp\testea\<run_id>\`** still matches inputs.
+
+---
+
+## First real Strategy Tester smoke result
+
+Sanitized record of one successful **real Strategy Tester** run after the **`TesterStartTime` / `TesterStopTime` portability fix** (MetaEditor compile clean). No raw CSV/JSON from that machine is committed to git; no live prices or performance claims.
+
+- **MetaEditor:** compile completed with **0 errors, 0 warnings**.
+- **Strategy Tester:** run completed successfully (EA stayed in tester mode).
+- **Output path:** files were written under the **Strategy Tester agent sandbox** (not the normal interactive terminal `Open Data Folder` root), e.g.  
+  `MetaQuotes\Tester\<terminal-id>\Agent-127.0.0.1-3000\MQL5\Files\Mapazapp\testea\TEST_RUN_A\`
+- **Files present:** `backtest_trades.csv`, `backtest_summary.json`.
+- **CSV:** Checkpoint **8**-compatible header row as documented (`trade_id`, `direction`, `entry_time`, …). PowerShell or editors may **wrap long lines visually**; on disk the file remains a normal single-line-per-record CSV where applicable.
+- **Summary JSON (sanitized keys only):** `schema_version` = **`MZP_TESTEA_V1`**, `run_id` = **`TEST_RUN_A`**, `execution_mode` = **`virtual_export_only`**, `live_trading_enabled` = **`false`**, `trade_count` = **1**.
+- **Trading:** **no** live execution — EA remains **virtual export only**.
+- **Interpretation:** the exported trade row is the **placeholder virtual skeleton**, **not** IFVG production logic and **not** evidence of profitability. **Do not** treat large placeholder **`result_r`** values as strategy performance.
+- **Repository hygiene:** **do not** commit **`backtest_trades.csv`**, **`backtest_summary.json`**, or other outputs from real tester runs — they can embed market-derived fields. Keep **`samples/`** fictional fixtures or redacted snippets for tickets only.
+
 ---
 
 ## 7. Expected files
@@ -97,6 +122,7 @@ MQL5\Files\Mapazapp\testea\<run_id>\
 - [ ] **`backtest_trades.csv`** headers match **`EXPORT_CONTRACT.md`** (snake_case).
 - [ ] With **`InpExportSignalsOnly=true`** and ≥3 bars: **one** placeholder **BUY** row with **`PLACEHOLDER_VIRTUAL_SKELETON_NOT_IFVG`** (unless you disabled signals).
 - [ ] **`trade_count`** in JSON matches CSV data row count.
+- [ ] **`tester_from`** / **`tester_to`** are **`null`** in CP14 (by design for MetaEditor portability — not a failed export).
 - [ ] **Toolbox → Trade** unchanged (EA does not submit orders).
 
 ---
