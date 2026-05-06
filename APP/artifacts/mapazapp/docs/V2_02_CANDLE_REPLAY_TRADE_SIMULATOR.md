@@ -65,4 +65,4 @@ Todos los precios de entrada/SL/TP se normalizan por `tickSize` del `symbolProfi
 
 ## Siguiente paso recomendado
 
-`V2-03 — Entry/SL/TP Model v1` para profundizar reglas de trigger/salida con variantes estructurales y mejor calibracion.
+`V2-03 — Entry/SL/TP Model v1` esta documentado en `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` (`buildEntrySlTpPlan` + `replayInputPreview`).

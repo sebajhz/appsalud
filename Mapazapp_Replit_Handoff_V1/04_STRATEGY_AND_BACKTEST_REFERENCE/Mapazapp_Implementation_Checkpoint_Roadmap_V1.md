@@ -11,6 +11,7 @@
 
 **Roadmap V2 progress:** V2-01 completion/audit is documented at `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` (fixtures + characterization tests; no execution changes).
 **Roadmap V2 replay checkpoint:** V2-02 scope/results are documented at `APP/artifacts/mapazapp/docs/V2_02_CANDLE_REPLAY_TRADE_SIMULATOR.md` (deterministic candle replay lifecycle, MAE/MFE, no execution changes).
+**Roadmap V2 entry/SL/TP checkpoint:** V2-03 scope/results are documented at `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` (replay-ready entry/SL/TP plan + R:R/timing v1, no execution changes).
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
@@ -179,3 +180,4 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 | V1.6 | 2026-05-06 | **CP18.5 audit pointer** — add explicit reference to `APP/artifacts/mapazapp/docs/CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` before CP19+ planning; emphasizes engine-proof-first sequencing. |
 | V1.7 | 2026-05-06 | **V2-01 progress pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` for engine fixture expansion/characterization results before V2-02 replay work. |
 | V1.8 | 2026-05-06 | **V2-02 replay pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_02_CANDLE_REPLAY_TRADE_SIMULATOR.md` for candle-by-candle lifecycle outcomes and MAE/MFE coverage. |
+| V1.9 | 2026-05-06 | **V2-03 entry/SL/TP pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` for `buildEntrySlTpPlan`, dynamic buffer, and replay integration. |

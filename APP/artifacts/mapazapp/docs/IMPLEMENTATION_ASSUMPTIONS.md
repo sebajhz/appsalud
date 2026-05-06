@@ -8,6 +8,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 
 **Roadmap V2 checkpoint report:** `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` — synthetic fixture expansion and characterization tests for current engine behavior (no replay profitability proof yet).
 **Roadmap V2 replay report:** `APP/artifacts/mapazapp/docs/V2_02_CANDLE_REPLAY_TRADE_SIMULATOR.md` — deterministic replay engine for lifecycle outcomes and MAE/MFE (still no profitability claim).
+**Roadmap V2 entry/SL/TP report:** `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` — `buildEntrySlTpPlan` + fixtures/tests for replay-ready price plans (still no profitability claim).
 
 ---
 
