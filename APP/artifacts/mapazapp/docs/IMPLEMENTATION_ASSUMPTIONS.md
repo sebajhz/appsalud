@@ -9,6 +9,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2 checkpoint report:** `APP/artifacts/mapazapp/docs/V2_01_ENGINE_REALITY_AUDIT.md` — synthetic fixture expansion and characterization tests for current engine behavior (no replay profitability proof yet).
 **Roadmap V2 replay report:** `APP/artifacts/mapazapp/docs/V2_02_CANDLE_REPLAY_TRADE_SIMULATOR.md` — deterministic replay engine for lifecycle outcomes and MAE/MFE (still no profitability claim).
 **Roadmap V2 entry/SL/TP report:** `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` — `buildEntrySlTpPlan` + fixtures/tests for replay-ready price plans (still no profitability claim).
+**Roadmap V2 IFVG replay backtest report:** `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` — `runIfvgReplayBacktest` full-chain replay metrics in R (still no profitability claim; detection still uses full series in v1).
 
 ---
 
@@ -278,3 +279,11 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **CP18 policy codes (snapshot metadata only):** `EXECUTION_DISABLED_BY_CP18`, `SEND_TO_MT5_DISABLED_BY_CP18`, `POST_EXECUTION_FORBIDDEN`, `REGISTRY_MUTATION_FORBIDDEN`, `MANUAL_ONLY_PHASE` — not alternate validator blocking codes.
 - **Explicit non-goals:** live order routing, BridgeEA command reader, MT5 **`OrderSend`** / **`CTrade`** from TypeScript, WebSocket, registry mutation, treating **`allowedForManualChecklist`** as permission to trade.
 - **Checkpoint 19+:** any real execution path remains a **separate** gated phase with new approval; **CP17–CP18 do not enable execution** even if all gates pass — only **manual checklist** semantics in mock.
+
+---
+
+## 28. V2-04 IFVG replay backtest (`runIfvgReplayBacktest`)
+
+- **Module:** `ifvg-replay-backtest.ts` + `ifvg-replay-backtest-fixtures.ts` — chains detection, trade review plan, Entry/SL/TP v1, and candle replay; metrics in **R** only.
+- **Test-only input:** `IfvgReplayBacktestInput.testOnlyAppendZones` appends `ZoneCandidate[]` after detection (e.g. invalid `sourceIfvgId`) for unit coverage — **not** for production backtests.
+- **Doc:** `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md`.
