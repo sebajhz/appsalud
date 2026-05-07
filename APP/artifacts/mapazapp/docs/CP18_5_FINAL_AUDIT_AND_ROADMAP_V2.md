@@ -213,6 +213,12 @@ Priority order:
 - **Validation required:** out-of-sample reports and ranking rationale.
 - **Definition of done:** shortlist of symbols + candidate sets with explicit risk notes.
 
+#### V2-10 implementation note
+
+- Core module implemented: campaign runner with conservative rank score, recommendation classes, and explicit review-only safety flags.
+- No approval status output; recommendations remain advisory (`candidate_for_more_testing`, `promising_but_unproven`, `needs_more_data`, `unstable`, `rejected`, `not_rankable`).
+- Synthetic fixtures included for controlled comparisons before real imported evidence campaigns.
+
 ### V2-11 — Dashboard/API Connection Cleanup
 - **Goal:** reduce mock drift and align contracts to replay/evidence outputs.
 - **Adds:** DTO cleanup and minimal wiring updates.

@@ -1,3 +1,10 @@
+## V2-10 assumptions (symbol ranking campaign)
+
+- Campaign runner usa datasets in-memory o proporcionados manualmente; no file I/O automatizado.
+- Ranking es conservador y penaliza muestra chica, split coverage debil, diagnosticos severos y alta varianza.
+- Resultados sinteticos o con split `unknown` pueden quedar en `promising_but_unproven` o `not_rankable`.
+- El runner no promueve estados de aprobacion ni muta registry.
+- Cualquier decision operativa futura requiere evidencia out-of-sample adicional.
 # Mapazapp — Implementation assumptions (V1 checkpoint)
 
 This file records **implementation-only** decisions and **test fixtures** that are not broker truth. Product rules remain in `Mapazapp_Replit_Handoff_V1/` and `APP/artifacts/mapazapp/docs/MOCK_DATA_CONTRACT.md`.

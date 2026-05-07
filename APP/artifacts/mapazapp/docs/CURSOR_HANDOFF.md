@@ -1,3 +1,10 @@
+## V2-10 handoff update
+
+- Checkpoint activo: `V2-10 — Symbol Ranking / Backtest Campaign Runner`.
+- Modulo nuevo en core: `runBacktestCampaign(input)` con ranking conservador multi-simbolo y agregacion por parameter set.
+- Seguridad intacta: `executionEnabled: false`, `registryMutationAllowed: false`, `reviewOnly: true`.
+- No hay auto-aprobacion ni claims de rentabilidad.
+- Referencia tecnica: `APP/artifacts/mapazapp/docs/V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md`.
 # Cursor Handoff — Mapazapp Trading Guard Dashboard
 
 **Repo layout:** planning specs = `00_START_HERE/` and `Mapazapp_Replit_Handoff_V1/` at repo root; this mock = `APP/artifacts/mapazapp/`. See `00_START_HERE/CURSOR_NAVIGATION_NOTE.md` for what to ignore (`mockup-sandbox`, `api-server`, `old/`, nested ZIPs).

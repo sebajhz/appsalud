@@ -1,3 +1,10 @@
+## Addendum V2-10
+
+- Checkpoint: `V2-10 — Symbol Ranking / Backtest Campaign Runner`.
+- Scope kept in core only (pure TS logic).
+- Provides campaign orchestration across symbols/datasets/parameter sets with conservative ranking and recommendation output.
+- Keeps safety posture: no execution path, no registry mutation, no auto-approval.
+- Uses synthetic fixtures for baseline behavior; real-data governance remains pending.
 # Mapazapp — Official Implementation Checkpoint Roadmap (V1)
 
 **Document type:** product and engineering sequencing reference.  
