@@ -169,70 +169,78 @@ Priority order:
 - **Validation required:** regression suite with known scenario outcomes.
 - **Definition of done:** backtest run artifacts include lifecycle metrics + event trace.
 
-### V2-05 — Human-like Tolerance Calibration
+### V2-05 — Decision Model / Soft-Score Redesign
+- **Goal:** separate **hard gates** from a **weighted soft score**, classify variants (primary / accepted / weak-observe / invalid), attach explainability, and feed IFVG replay traces without claiming profitability.
+- **Adds:** `evaluateDecisionModel` + `IfvgReplayBacktestCandidateTrace.decisionModelResult` (optional `useDecisionModelScore` on replay settings).
+- **Must not add:** execution, MT5 command channel, registry mutation, live infra.
+- **Validation required:** `tests/v2-05-decision-model.test.ts` + existing replay regression tests.
+- **Definition of done:** documented in `APP/artifacts/mapazapp/docs/V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md`.
+- **Note:** older drafts that labeled “V2-05” as tolerance-only should use **V2-06** for tolerance calibration after this insertion.
+
+### V2-06 — Human-like Tolerance Calibration
 - **Goal:** calibrate near-sweep/wick/zone tolerance behavior by symbol.
 - **Adds:** calibration config and tests for tolerance stability regions.
 - **Must not add:** universal pip assumptions.
 - **Validation required:** sensitivity analysis and tolerance heatmaps per symbol.
 - **Definition of done:** documented accepted tolerance bands per symbol candidate.
 
-### V2-06 — Bias/Context Engine Upgrade
+### V2-07 — Bias/Context Engine Upgrade
 - **Goal:** improve context intelligence to reduce low-quality setups.
 - **Adds:** HTF/range/session context components with scoring/gating hooks.
 - **Must not add:** discretionary hidden rules without tests/docs.
 - **Validation required:** context scenario tests and impact analysis on replay outcomes.
 - **Definition of done:** context contributes measurably and transparently to decisions.
 
-### V2-07 — Parameter Set Optimization Matrix v2
+### V2-08 — Parameter Set Optimization Matrix v2
 - **Goal:** formalize block-based optimization for updated replay model.
 - **Adds:** v2 matrix and protocol for staged optimization.
 - **Must not add:** one-shot overfit search across all knobs.
 - **Validation required:** reproducible train/validation process documentation.
 - **Definition of done:** approved optimization workflow and artifact schema.
 
-### V2-08 — Symbol Ranking Backtest Campaign
+### V2-09 — Symbol Ranking Backtest Campaign
 - **Goal:** rank symbols by robustness, not peak return.
 - **Adds:** cross-symbol comparison on robustness metrics (PF/expectancy/DD/stability).
 - **Must not add:** cross-symbol parameter reuse without validation.
 - **Validation required:** out-of-sample reports and ranking rationale.
 - **Definition of done:** shortlist of symbols + candidate sets with explicit risk notes.
 
-### V2-09 — Dashboard/API Connection Cleanup
+### V2-10 — Dashboard/API Connection Cleanup
 - **Goal:** reduce mock drift and align contracts to replay/evidence outputs.
 - **Adds:** DTO cleanup and minimal wiring updates.
 - **Must not add:** execution endpoints or command APIs.
 - **Validation required:** API/dashboard tests with replay-driven payload fixtures.
 - **Definition of done:** UI/API consume consistent evidence-first contracts.
 
-### V2-10 — Local File Import from BridgeEA/TestEA exports
+### V2-11 — Local File Import from BridgeEA/TestEA exports
 - **Goal:** controlled local import path for real exported files.
 - **Adds:** explicit manual import workflow (read-only ingestion path).
 - **Must not add:** file watcher daemon or command channel.
 - **Validation required:** real export import tests with malformed-file handling.
 - **Definition of done:** reproducible manual import checklist and parser reliability.
 
-### V2-11 — Persistence Decision / SQLite local store
+### V2-12 — Persistence Decision / SQLite local store
 - **Goal:** decide if local persistence is required for evidence/session history.
 - **Adds:** decision record and minimal schema only if justified.
 - **Must not add:** premature heavy infra or live execution dependencies.
 - **Validation required:** design review + migration/rollback plan.
 - **Definition of done:** approved persistence decision with scope boundaries.
 
-### V2-12 — Forward Demo Read-only Monitor with real imported files
+### V2-13 — Forward Demo Read-only Monitor with real imported files
 - **Goal:** monitor replay/read-only outcomes using real imported data snapshots.
 - **Adds:** stronger observational monitor based on imported artifacts.
 - **Must not add:** auto-trading or order routing.
 - **Validation required:** monitor consistency tests against replay/backtest state.
 - **Definition of done:** reliable read-only monitor pipeline with audit-ready logs.
 
-### V2-13 — Alerts/Notifications review-only
+### V2-14 — Alerts/Notifications review-only
 - **Goal:** provide disciplined review alerts from proven replay/context conditions.
 - **Adds:** notification rules derived from validated engine states.
 - **Must not add:** actionable execution automation.
 - **Validation required:** false-positive/false-negative review on sample windows.
 - **Definition of done:** alert quality thresholds and suppression rules documented.
 
-### V2-14 — Re-evaluate assisted execution after proof
+### V2-15 — Re-evaluate assisted execution after proof
 - **Goal:** re-assess whether assisted execution should evolve beyond contract-only.
 - **Adds:** governance checkpoint decision, not automatic implementation.
 - **Must not add:** direct execution by default.

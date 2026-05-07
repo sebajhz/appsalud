@@ -30,12 +30,16 @@ import { detectIfvgZoneCandidates, type DetectIfvgZoneCandidatesResult } from ".
 import type { ZoneCandidate } from "./zone-candidate";
 import { evaluateTradeReviewPlan } from "./trade-plan-evaluator";
 import type { TradePlanInput } from "./trade-plan-types";
+import { buildDisplacementAtBar, evaluateDecisionModel } from "./decision-model";
+import { createDefaultDecisionModelSettingsForTests } from "./decision-model-settings";
+import type { DecisionModelInput, DecisionModelResult } from "./decision-model-types";
 
 export function createDefaultIfvgReplayBacktestSettings(): IfvgReplayBacktestSettings {
   return {
     replayOnlyTradeReady: true,
     includeObserveCandidates: false,
     defaultScore: 82,
+    useDecisionModelScore: true,
     allowNonReadyPlansWithPrices: false,
   };
 }
@@ -295,7 +299,7 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
       candidates = candidates.slice(0, bs.maxCandidates);
     }
 
-    const score = bs.defaultScore;
+    const legacyDefaultScore = bs.defaultScore;
     let replayAttempted = 0;
     let replayed = 0;
 
@@ -381,14 +385,17 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
       );
 
       const sweepStatus = zone.sweepStatus ?? "CONFIRMED_SWEEP";
-      const tradePlanInput: TradePlanInput = {
+      const dmSettings = bs.decisionModelSettings ?? createDefaultDecisionModelSettingsForTests();
+      const useDecisionModelScore = bs.useDecisionModelScore !== false;
+
+      const baseTradePlanInput: TradePlanInput = {
         zoneCandidate: zone,
         symbolProfile: input.symbolProfile,
         tradePlanSettings: input.tradePlanSettings,
         accountGuard,
         retestResult: retest,
         confirmationResult: confirmation,
-        score: { totalScore: score },
+        score: { totalScore: legacyDefaultScore },
         confirmationAtr,
         confirmationClose: confirmCandle.close,
         currentPrice: confirmCandle.close,
@@ -405,10 +412,93 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
         registryCompatibility: input.registryCompatibility ?? undefined,
       };
 
-      const tradeEvaluation = evaluateTradeReviewPlan(tradePlanInput);
-      const plan = tradeEvaluation.plan;
+      const tradeEvalBaseline = evaluateTradeReviewPlan(baseTradePlanInput);
+      const entrySlTpBaseline = buildEntrySlTpPlan({
+        tradeReviewPlan: tradeEvalBaseline.plan,
+        symbolProfile: input.symbolProfile,
+        atr: confirmationAtr,
+        confirmationClose: confirmCandle.close,
+        sweepLow: bs.sweepLow,
+        sweepHigh: bs.sweepHigh,
+        settings: input.entrySlTpSettings,
+      });
 
-      if (!planReplayEligible(plan, score, bs)) {
+      const displacement = buildDisplacementAtBar(
+        input.candles,
+        planReadyIdx,
+        atrSeries,
+        input.strategySettings.displacement,
+      );
+
+      let decisionModelResult: DecisionModelResult | null = null;
+      let effectiveScoreForReplay = legacyDefaultScore;
+
+      if (input.symbolProfile) {
+        decisionModelResult = evaluateDecisionModel({
+          settings: dmSettings,
+          minRr: input.entrySlTpSettings.minRr,
+          symbolProfile: input.symbolProfile,
+          zoneCandidate: zone,
+          entrySlTp: entrySlTpBaseline,
+          sweepStatus,
+          displacement,
+          fvgSizeAtr: undefined,
+          retest,
+          confirmation,
+          candidateTiming: zone.candidateTiming ?? null,
+          accountGuard,
+          registryCompatibility: input.registryCompatibility ?? undefined,
+          contextQualityScore: undefined,
+          confirmationAtr,
+          tradePlanHardGateFailures: tradeEvalBaseline.failedHardGates,
+        });
+        if (useDecisionModelScore) {
+          effectiveScoreForReplay = decisionModelResult.softScore.totalScore;
+        }
+      }
+
+      let tradeEvaluation = evaluateTradeReviewPlan({
+        ...baseTradePlanInput,
+        score: { totalScore: effectiveScoreForReplay },
+      });
+      let plan = tradeEvaluation.plan;
+      let entrySlTp = buildEntrySlTpPlan({
+        tradeReviewPlan: plan,
+        symbolProfile: input.symbolProfile,
+        atr: confirmationAtr,
+        confirmationClose: confirmCandle.close,
+        sweepLow: bs.sweepLow,
+        sweepHigh: bs.sweepHigh,
+        settings: input.entrySlTpSettings,
+      });
+
+      if (input.symbolProfile) {
+        decisionModelResult = evaluateDecisionModel({
+          settings: dmSettings,
+          minRr: input.entrySlTpSettings.minRr,
+          symbolProfile: input.symbolProfile,
+          zoneCandidate: zone,
+          entrySlTp,
+          sweepStatus,
+          displacement,
+          fvgSizeAtr: undefined,
+          retest,
+          confirmation,
+          candidateTiming: zone.candidateTiming ?? null,
+          accountGuard,
+          registryCompatibility: input.registryCompatibility ?? undefined,
+          contextQualityScore: undefined,
+          confirmationAtr,
+          tradePlanHardGateFailures: tradeEvaluation.failedHardGates,
+        });
+        if (useDecisionModelScore) {
+          effectiveScoreForReplay = decisionModelResult.softScore.totalScore;
+        }
+      }
+
+      const scoreForEligibility = useDecisionModelScore ? effectiveScoreForReplay : legacyDefaultScore;
+
+      if (!planReplayEligible(plan, scoreForEligibility, bs)) {
         traces.push({
           zoneId: zone.zoneId,
           sourceIfvgId: zone.sourceIfvgId,
@@ -418,26 +508,19 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           planReadyBarIndex: planReadyIdx,
           detectionDiagnostics: detection.diagnostics,
           tradeEvaluation,
-          entrySlTp: null,
+          entrySlTp,
           replay: null,
           skippedReason: "OK",
           skipMessage: "Plan filtered by replay eligibility settings.",
           backtestTrade: null,
+          decisionModelResult,
+          effectiveScoreForReplay,
+          legacyDefaultScore,
         });
         continue;
       }
 
       replayAttempted += 1;
-
-      const entrySlTp = buildEntrySlTpPlan({
-        tradeReviewPlan: plan,
-        symbolProfile: input.symbolProfile,
-        atr: confirmationAtr,
-        confirmationClose: confirmCandle.close,
-        sweepLow: bs.sweepLow,
-        sweepHigh: bs.sweepHigh,
-        settings: input.entrySlTpSettings,
-      });
 
       if (!entrySlTp.canReplay || !entrySlTp.replayInputPreview) {
         traces.push({
@@ -454,6 +537,9 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           skippedReason: "OK",
           skipMessage: "Entry/SL/TP plan not replayable.",
           backtestTrade: null,
+          decisionModelResult,
+          effectiveScoreForReplay,
+          legacyDefaultScore,
         });
         continue;
       }
@@ -479,6 +565,9 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           skippedReason: "INSUFFICIENT_CANDLES",
           skipMessage: "No candles after plan-ready index.",
           backtestTrade: null,
+          decisionModelResult,
+          effectiveScoreForReplay,
+          legacyDefaultScore,
         });
         continue;
       }
@@ -499,7 +588,7 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
         canonicalSymbol: input.canonicalSymbol,
         brokerSymbol: input.brokerSymbol,
         accountId: input.accountId,
-        scoreTotal: score,
+        scoreTotal: effectiveScoreForReplay,
       });
 
       if (bt) trades.push(bt);
@@ -517,6 +606,9 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
         entrySlTp,
         replay,
         backtestTrade: bt,
+        decisionModelResult,
+        effectiveScoreForReplay,
+        legacyDefaultScore,
       });
     }
 

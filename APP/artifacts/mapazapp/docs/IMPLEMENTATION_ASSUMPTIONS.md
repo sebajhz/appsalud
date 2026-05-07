@@ -10,6 +10,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2 replay report:** `APP/artifacts/mapazapp/docs/V2_02_CANDLE_REPLAY_TRADE_SIMULATOR.md` — deterministic replay engine for lifecycle outcomes and MAE/MFE (still no profitability claim).
 **Roadmap V2 entry/SL/TP report:** `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` — `buildEntrySlTpPlan` + fixtures/tests for replay-ready price plans (still no profitability claim).
 **Roadmap V2 IFVG replay backtest report:** `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` — `runIfvgReplayBacktest` full-chain replay metrics in R (still no profitability claim; detection still uses full series in v1). **V2-04.1** adds `ZoneCandidate.candidateTiming` and replay index resolution (§28).
+**Roadmap V2-05 decision model:** `APP/artifacts/mapazapp/docs/V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md` — `evaluateDecisionModel`, replay trace `decisionModelResult` / `effectiveScoreForReplay`; context score remains placeholder until HTF engine lands.
 
 ---
 

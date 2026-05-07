@@ -10,6 +10,8 @@ import type { TradePlanAccountGuardInput, TradePlanEvaluationResult } from "./tr
 import type { TradePlanEvaluationSettings } from "./trade-plan-settings";
 import type { DetectIfvgZoneCandidatesResult } from "./strategy-detection";
 import type { ZoneCandidate } from "./zone-candidate";
+import type { DecisionModelResult } from "./decision-model-types";
+import type { DecisionModelSettings } from "./decision-model-settings";
 
 export type IfvgReplayBacktestStatus =
   | "completed"
@@ -73,6 +75,13 @@ export interface IfvgReplayBacktestSettings {
   minScore?: number;
   /** Score passed to trade plan when not computed (synthetic / fixture). */
   defaultScore: number;
+  /**
+   * When true (default), `evaluateDecisionModel` supplies `effectiveScoreForReplay` for `evaluateTradeReviewPlan`
+   * and `planReplayEligible` instead of relying only on `defaultScore`. See V2-05.
+   */
+  useDecisionModelScore?: boolean;
+  /** Optional overrides for decision model weights / strict timing (V2-05). */
+  decisionModelSettings?: DecisionModelSettings;
   sweepLow?: number;
   sweepHigh?: number;
   /** When true, allow replay for plans with SL/TP that are not TRADE_READY but not NO_TRADE (e.g. some gates failed). */
@@ -122,6 +131,12 @@ export interface IfvgReplayBacktestCandidateTrace {
   skippedReason?: IfvgReplayBacktestReasonCode;
   skipMessage?: string;
   backtestTrade: BacktestTrade | null;
+  /** V2-05 — measured decision model snapshot for this candidate (null if not computed). */
+  decisionModelResult?: DecisionModelResult | null;
+  /** Score used with `evaluateTradeReviewPlan` after decision model merge (V2-05). */
+  effectiveScoreForReplay?: number;
+  /** Legacy synthetic score from settings when callers compare historical behaviour (V2-05). */
+  legacyDefaultScore?: number;
 }
 
 export interface IfvgReplayBacktestResult {

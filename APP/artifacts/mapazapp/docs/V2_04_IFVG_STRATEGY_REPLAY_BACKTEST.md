@@ -23,6 +23,7 @@
    - Buscar hacia adelante el primer par **retest + confirmación** desde ese índice.
    - Construir `TradePlanInput` en la vela de confirmación y llamar `evaluateTradeReviewPlan`.
    - Filtrar según `IfvgReplayBacktestSettings` (`replayOnlyTradeReady`, `includeObserveCandidates`, `minScore`, etc.).
+   - **V2-05:** `evaluateDecisionModel` sobre el plan Entry/SL/TP; `effectiveScoreForReplay` alimenta la segunda pasada de `evaluateTradeReviewPlan` y la elegibilidad por `minScore` cuando `useDecisionModelScore` no es `false` (ver `V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md`).
    - `buildEntrySlTpPlan` con el `TradeReviewPlan` resultante.
    - Si `canReplay`, `simulateReplayTrade` con **velas desde** `max(planReadyBarIndex, firstReplayIndex?)` (incluye esa barra).
 4. Agregar `BacktestTrade` sintéticos y `IfvgReplayBacktestSummary` (conteos por estado, totalR, winRate, profit factor, max drawdown R, MAE/MFE medios, mejor/peor R).
