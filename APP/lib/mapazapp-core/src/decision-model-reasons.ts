@@ -23,6 +23,8 @@ const MESSAGES: Record<DecisionReasonCode, string> = {
   COMPONENT_INSUFFICIENT_INPUT: "Not enough data to score this component; neutral penalty applied.",
   TOLERANCE_CALIBRATION_INVALID: "Tolerance calibration marks a critical dimension as invalid for this policy.",
   TOLERANCE_CALIBRATION_ADJUSTED: "Soft score component blended with V2-06 tolerance calibration output.",
+  CONTEXT_BIAS_HARD_BLOCK: "HTF context / bias policy blocks this path (strict mode).",
+  CONTEXT_BIAS_ADJUSTED: "Context quality adjusted from V2-07 HTF bias vs zone direction.",
 };
 
 export function decisionModelReason(code: DecisionReasonCode): { code: DecisionReasonCode; message: string } {

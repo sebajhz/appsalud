@@ -5,6 +5,21 @@
 
 import type { ToleranceDimension } from "./tolerance-calibration-types";
 
+export interface DecisionModelContextBiasIntegration {
+  /**
+   * When true, fails hard gates if `contextBiasResult.contextScore` is below `minContextBiasScoreForHardGate`.
+   * Default product policy keeps this false (context is usually soft).
+   */
+  contextBiasCanHardBlock: boolean;
+  minContextBiasScoreForHardGate: number;
+  /**
+   * When true, `preferredDirection === "no_trade"` on `contextBiasResult` forces `invalid_variant`
+   * if `contextScore` is at or below `noTradeInvalidateMaxContextScore`.
+   */
+  contextNoTradeInvalidatesVariant: boolean;
+  noTradeInvalidateMaxContextScore: number;
+}
+
 export interface DecisionModelToleranceIntegration {
   /** When true, blends tolerance dimension scores into selected soft-score components. */
   blendToleranceIntoSoftScore: boolean;
@@ -37,6 +52,8 @@ export interface DecisionModelSettings {
   };
   /** V2-06 — optional; when omitted, tolerance overlay is disabled even if a calibration result is supplied. */
   toleranceIntegration?: DecisionModelToleranceIntegration | null;
+  /** V2-07 — optional HTF context / bias policy hooks when `contextBiasResult` is supplied. */
+  contextBiasIntegration?: DecisionModelContextBiasIntegration | null;
 }
 
 export function createDefaultDecisionModelSettingsForTests(): DecisionModelSettings {
@@ -57,5 +74,6 @@ export function createDefaultDecisionModelSettingsForTests(): DecisionModelSetti
       spreadVolatilityQuality: 0.06,
     },
     toleranceIntegration: undefined,
+    contextBiasIntegration: undefined,
   };
 }

@@ -10,6 +10,7 @@ import type { ZoneCandidate } from "./zone-candidate";
 import type { SymbolMarketSpec } from "./symbol-profile";
 import type { DecisionModelSettings } from "./decision-model-settings";
 import type { ToleranceCalibrationResult } from "./tolerance-calibration-types";
+import type { ContextBiasResult } from "./context-bias-types";
 
 /** Stable machine codes for decision audit / UI mapping. */
 export type DecisionReasonCode =
@@ -34,7 +35,9 @@ export type DecisionReasonCode =
   | "CONTEXT_INPUT_MISSING"
   | "COMPONENT_INSUFFICIENT_INPUT"
   | "TOLERANCE_CALIBRATION_INVALID"
-  | "TOLERANCE_CALIBRATION_ADJUSTED";
+  | "TOLERANCE_CALIBRATION_ADJUSTED"
+  | "CONTEXT_BIAS_HARD_BLOCK"
+  | "CONTEXT_BIAS_ADJUSTED";
 
 export type DecisionVariantClassification =
   | "primary_setup"
@@ -144,4 +147,9 @@ export interface DecisionModelInput {
    * per-dimension tolerance scores (deterministic; review-only semantics unchanged).
    */
   toleranceCalibrationResult?: ToleranceCalibrationResult | null;
+  /**
+   * V2-07 — optional `evaluateContextBias` output. When present, feeds `contextQuality` instead of
+   * placeholder / raw `contextQualityScore` (unless you only pass score without bias — see evaluator).
+   */
+  contextBiasResult?: ContextBiasResult | null;
 }

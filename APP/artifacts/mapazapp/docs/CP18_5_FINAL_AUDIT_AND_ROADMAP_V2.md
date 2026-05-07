@@ -184,12 +184,12 @@ Priority order:
 - **Validation required:** `pnpm --filter @workspace/mapazapp-core test` + typecheck; workspace `pnpm typecheck`.
 - **Definition of done:** documented in `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md` (limitations + next step V2-07).
 
-### V2-07 — Bias/Context Engine Upgrade
-- **Goal:** improve context intelligence to reduce low-quality setups.
-- **Adds:** HTF/range/session context components with scoring/gating hooks.
-- **Must not add:** discretionary hidden rules without tests/docs.
-- **Validation required:** context scenario tests and impact analysis on replay outcomes.
-- **Definition of done:** context contributes measurably and transparently to decisions.
+### V2-07 — HTF Bias / Context Engine v1
+- **Goal:** measurable HTF bias (buy/sell/no-trade lean), premium/discount, trend/range/chop proxy, and H4/H1 conflict flag — feeding `contextQuality` instead of placeholder when data is supplied.
+- **Adds:** `evaluateContextBias` (`context-bias*.ts`), `createContextBiasFixtureInputs()`, `DecisionModelInput.contextBiasResult`, `DecisionModelSettings.contextBiasIntegration`, optional `IfvgReplayBacktestInput.htfCandlesByTimeframe` / trace `contextBiasResult`, tests `tests/v2-07-context-bias-engine.test.ts`.
+- **Must not add:** live execution, MT5 command channel, BridgeEA/TestEA edits, DB/watcher/WebSocket/live scanner, registry mutation, profitability claims, session engine (deferred).
+- **Validation required:** `pnpm --filter @workspace/mapazapp-core test` + typecheck; workspace `pnpm typecheck`; dashboard build unchanged functionally.
+- **Definition of done:** `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md` (limitations + next step V2-08).
 
 ### V2-08 — Parameter Set Optimization Matrix v2
 - **Goal:** formalize block-based optimization for updated replay model.

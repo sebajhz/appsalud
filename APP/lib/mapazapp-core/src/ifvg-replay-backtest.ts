@@ -32,7 +32,10 @@ import { evaluateTradeReviewPlan } from "./trade-plan-evaluator";
 import type { TradePlanInput } from "./trade-plan-types";
 import { buildDisplacementAtBar, evaluateDecisionModel } from "./decision-model";
 import { createDefaultDecisionModelSettingsForTests } from "./decision-model-settings";
-import type { DecisionModelInput, DecisionModelResult } from "./decision-model-types";
+import type { DecisionModelResult } from "./decision-model-types";
+import { evaluateContextBias } from "./context-bias-engine";
+import { createDefaultContextBiasSettingsForTests } from "./context-bias-settings";
+import type { ContextBiasResult } from "./context-bias-types";
 
 export function createDefaultIfvgReplayBacktestSettings(): IfvgReplayBacktestSettings {
   return {
@@ -430,6 +433,27 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
         input.strategySettings.displacement,
       );
 
+      let contextBiasForTrace: ContextBiasResult | null = null;
+      if (input.contextBiasResultOverride !== undefined) {
+        contextBiasForTrace = input.contextBiasResultOverride;
+      } else if (input.htfCandlesByTimeframe && input.symbolProfile) {
+        const hasAny = Object.values(input.htfCandlesByTimeframe).some(
+          (arr) => Array.isArray(arr) && arr.length > 0,
+        );
+        if (hasAny) {
+          contextBiasForTrace = evaluateContextBias({
+            canonicalSymbol: input.canonicalSymbol,
+            brokerSymbol: input.brokerSymbol,
+            lowerTimeframe: input.timeframe,
+            htfCandlesByTimeframe: input.htfCandlesByTimeframe,
+            currentPrice: confirmCandle.close,
+            directionToEvaluate: zone.direction,
+            symbolProfile: input.symbolProfile,
+            settings: input.contextBiasSettings ?? createDefaultContextBiasSettingsForTests(),
+          });
+        }
+      }
+
       let decisionModelResult: DecisionModelResult | null = null;
       let effectiveScoreForReplay = legacyDefaultScore;
 
@@ -451,6 +475,7 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           contextQualityScore: undefined,
           confirmationAtr,
           tradePlanHardGateFailures: tradeEvalBaseline.failedHardGates,
+          contextBiasResult: contextBiasForTrace ?? undefined,
         });
         if (useDecisionModelScore) {
           effectiveScoreForReplay = decisionModelResult.softScore.totalScore;
@@ -490,6 +515,7 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           contextQualityScore: undefined,
           confirmationAtr,
           tradePlanHardGateFailures: tradeEvaluation.failedHardGates,
+          contextBiasResult: contextBiasForTrace ?? undefined,
         });
         if (useDecisionModelScore) {
           effectiveScoreForReplay = decisionModelResult.softScore.totalScore;
@@ -516,6 +542,7 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           decisionModelResult,
           effectiveScoreForReplay,
           legacyDefaultScore,
+          contextBiasResult: contextBiasForTrace,
         });
         continue;
       }
@@ -540,6 +567,7 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           decisionModelResult,
           effectiveScoreForReplay,
           legacyDefaultScore,
+          contextBiasResult: contextBiasForTrace,
         });
         continue;
       }
@@ -568,6 +596,7 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
           decisionModelResult,
           effectiveScoreForReplay,
           legacyDefaultScore,
+          contextBiasResult: contextBiasForTrace,
         });
         continue;
       }
@@ -609,6 +638,7 @@ export function runIfvgReplayBacktest(input: IfvgReplayBacktestInput): IfvgRepla
         decisionModelResult,
         effectiveScoreForReplay,
         legacyDefaultScore,
+        contextBiasResult: contextBiasForTrace,
       });
     }
 

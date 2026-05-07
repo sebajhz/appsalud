@@ -12,6 +12,8 @@ import type { DetectIfvgZoneCandidatesResult } from "./strategy-detection";
 import type { ZoneCandidate } from "./zone-candidate";
 import type { DecisionModelResult } from "./decision-model-types";
 import type { DecisionModelSettings } from "./decision-model-settings";
+import type { ContextBiasResult, ContextBiasTimeframeInput } from "./context-bias-types";
+import type { ContextBiasSettings } from "./context-bias-settings";
 
 export type IfvgReplayBacktestStatus =
   | "completed"
@@ -113,6 +115,14 @@ export interface IfvgReplayBacktestInput {
    * Not for production backtests.
    */
   testOnlyAppendZones?: ZoneCandidate[];
+  /**
+   * V2-07 — optional HTF candles for `evaluateContextBias` (per run). When omitted, decision model
+   * uses placeholder context unless `contextBiasResultOverride` is set.
+   */
+  htfCandlesByTimeframe?: ContextBiasTimeframeInput;
+  contextBiasSettings?: ContextBiasSettings;
+  /** When set, skips HTF evaluation and uses this snapshot for `DecisionModelInput.contextBiasResult`. */
+  contextBiasResultOverride?: ContextBiasResult | null;
 }
 
 export interface IfvgReplayBacktestCandidateTrace {
@@ -137,6 +147,8 @@ export interface IfvgReplayBacktestCandidateTrace {
   effectiveScoreForReplay?: number;
   /** Legacy synthetic score from settings when callers compare historical behaviour (V2-05). */
   legacyDefaultScore?: number;
+  /** V2-07 — HTF context snapshot used for this candidate when supplied by the replay runner. */
+  contextBiasResult?: ContextBiasResult | null;
 }
 
 export interface IfvgReplayBacktestResult {

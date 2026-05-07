@@ -12,6 +12,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2 IFVG replay backtest report:** `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` — `runIfvgReplayBacktest` full-chain replay metrics in R (still no profitability claim; detection still uses full series in v1). **V2-04.1** adds `ZoneCandidate.candidateTiming` and replay index resolution (§28).
 **Roadmap V2-05 decision model:** `APP/artifacts/mapazapp/docs/V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md` — `evaluateDecisionModel`, replay trace `decisionModelResult` / `effectiveScoreForReplay`; context score remains placeholder until HTF engine lands.
 **Roadmap V2-06 tolerance calibration:** `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md` — `evaluateToleranceCalibration` + optional `DecisionModelInput.toleranceCalibrationResult` with `toleranceIntegration` settings; no universal pip assumptions; no profitability claim.
+**Roadmap V2-07 HTF context:** `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md` — `evaluateContextBias` + optional `contextBiasResult` / `contextBiasIntegration` on decision model; optional HTF input on IFVG replay; no live data requirement.
 
 ---
 
@@ -303,3 +304,15 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Non-goals:** does not replace `liquidity-sweep.ts` geometry; does not import live spread series; does not prove edge or profitability.
 - **Tests / fixtures:** `tests/v2-06-tolerance-calibration.test.ts`, `createToleranceCalibrationFixtures()` (synthetic multi-symbol cases aligned with `ENGINE_REALITY_SYMBOL_PROFILES`).
 - **Doc:** `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md`.
+
+---
+
+## 30. V2-07 HTF bias / context engine (`evaluateContextBias`)
+
+- **Modules:** `context-bias-types.ts`, `context-bias-reasons.ts`, `context-bias-settings.ts`, `context-bias-engine.ts`, `context-bias-fixtures.ts` — **pure** HTF summaries from in-memory `Candle[]` per `M15`/`H1`/`H4`/`D1` (any subset). No file I/O, no MT5.
+- **Signals v1:** swing structure via `detectSwings`, fallback directional lean from close slope, range premium/discount vs recent high/low, ATR expansion/contraction proxy, body/range chop proxy, H4 vs H1 directional conflict flag.
+- **Decision model:** `DecisionModelInput.contextBiasResult` overrides placeholder / explicit `contextQualityScore` precedence as documented in `V2_07_…md`. Optional `DecisionModelSettings.contextBiasIntegration` for strict hard gate / `no_trade` variant invalidation (defaults off in test settings).
+- **Replay:** `IfvgReplayBacktestInput.htfCandlesByTimeframe`, `contextBiasSettings`, `contextBiasResultOverride`; trace field `contextBiasResult` when runner evaluates or overrides.
+- **Non-goals:** session filters, true multi-broker calendar alignment, profitability proof, execution.
+- **Tests:** `tests/v2-07-context-bias-engine.test.ts`; fixtures are synthetic only.
+- **Doc:** `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md`.

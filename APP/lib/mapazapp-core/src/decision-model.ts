@@ -27,6 +27,7 @@ import type { Candle } from "./candle";
 import { detectDisplacement } from "./displacement";
 import { atrAtIndex } from "./atr";
 import type { ToleranceCalibrationResult, ToleranceDimension } from "./tolerance-calibration-types";
+import type { ContextBiasResult } from "./context-bias-types";
 
 function ref(code: DecisionReasonCode): DecisionReasonRef {
   const r = decisionModelReason(code);
@@ -322,10 +323,38 @@ function scoreTiming(
   return { score: Math.round(base), codes: codes.length ? codes : ["OK"], exp };
 }
 
-function scoreContext(
-  explicit: number | null | undefined,
-  placeholder: number,
-): { score: number; codes: DecisionReasonCode[]; exp: string } {
+function scoreContext(input: DecisionModelInput): { score: number; codes: DecisionReasonCode[]; exp: string } {
+  const bias = input.contextBiasResult;
+  const explicit = input.contextQualityScore;
+  const placeholder = input.settings.contextPlaceholderScore;
+  const zoneDir = input.zoneCandidate?.direction;
+
+  if (bias != null) {
+    let score = clamp01to100(bias.contextScore);
+    const codes: DecisionReasonCode[] = [];
+    if (zoneDir === "BUY" && bias.preferredDirection === "sell_only") {
+      score = Math.max(0, score - 14);
+      codes.push("CONTEXT_BIAS_ADJUSTED");
+    } else if (zoneDir === "SELL" && bias.preferredDirection === "buy_only") {
+      score = Math.max(0, score - 14);
+      codes.push("CONTEXT_BIAS_ADJUSTED");
+    } else if (zoneDir === "BUY" && bias.preferredDirection === "no_trade") {
+      score = Math.min(score, 46);
+      codes.push("CONTEXT_BIAS_ADJUSTED");
+    } else if (zoneDir === "SELL" && bias.preferredDirection === "no_trade") {
+      score = Math.min(score, 46);
+      codes.push("CONTEXT_BIAS_ADJUSTED");
+    }
+    if (bias.confidenceBand === "high" && bias.preferredDirection !== "no_trade") {
+      score = Math.min(100, score + 3);
+    }
+    if (!codes.length) codes.push("OK");
+    const exp = codes.includes("CONTEXT_BIAS_ADJUSTED")
+      ? "V2-07 HTF bias vs zone direction adjusted context quality."
+      : "HTF context / bias engine (V2-07) supplied contextScore.";
+    return { score: Math.round(clamp01to100(score)), codes, exp };
+  }
+
   if (explicit != null && Number.isFinite(explicit)) {
     const s = Math.min(100, Math.max(0, explicit));
     return { score: Math.round(s), codes: ["OK"], exp: "Explicit context / HTF quality input (v1)." };
@@ -368,8 +397,19 @@ function classifyVariant(params: {
   retest: RetestResult | null | undefined;
   settings: DecisionModelSettings;
   tolerance: ToleranceCalibrationResult | null | undefined;
+  contextBias: ContextBiasResult | null | undefined;
 }): DecisionVariantClassification {
   if (!params.hardPass) return "invalid_variant";
+  const cbi = params.settings.contextBiasIntegration;
+  const cbr = params.contextBias;
+  if (
+    cbi?.contextNoTradeInvalidatesVariant &&
+    cbr &&
+    cbr.preferredDirection === "no_trade" &&
+    cbr.contextScore <= cbi.noTradeInvalidateMaxContextScore
+  ) {
+    return "invalid_variant";
+  }
   const ti = params.settings.toleranceIntegration;
   if (
     ti?.invalidToleranceInvalidatesVariant &&
@@ -457,6 +497,12 @@ function collectHardGates(input: DecisionModelInput): DecisionHardGateResult {
     if (hasCriticalToleranceInvalid(tolRes, tolInt.criticalInvalidDimensions)) push("TOLERANCE_CALIBRATION_INVALID");
   }
 
+  const cbInt = input.settings.contextBiasIntegration;
+  const cbRes = input.contextBiasResult;
+  if (cbInt?.contextBiasCanHardBlock && cbRes != null && cbRes.contextScore < cbInt.minContextBiasScoreForHardGate) {
+    push("CONTEXT_BIAS_HARD_BLOCK");
+  }
+
   const dedup = new Map<string, DecisionReasonRef>();
   for (const b of blocking) dedup.set(b.code, b);
 
@@ -527,7 +573,7 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
     );
     return { score: b.score, codes: b.codes, exp: b.exp };
   })();
-  const cCtx = scoreContext(input.contextQualityScore ?? null, input.settings.contextPlaceholderScore);
+  const cCtx = scoreContext(input);
   const cSpBase = scoreSpreadVol(input.symbolProfile, atr);
   const cSp = (() => {
     const b = blendComponentWithTolerance(
@@ -599,6 +645,7 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
     retest: input.retest,
     settings: input.settings,
     tolerance: tol,
+    contextBias: input.contextBiasResult ?? null,
   });
 
   return {

@@ -66,4 +66,4 @@ Si no hay `toleranceIntegration` o no hay resultado de calibración, el comporta
 
 ## Siguiente paso recomendado
 
-**V2-07 — Motor de contexto / sesgo HTF v1** (según `CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`): sustituir placeholders de `contextQuality` con señales medibles y gobernanza documentada.
+**V2-08 — Entry variant model** u optimización por bloques según roadmap; el contexto HTF v1 quedó en `evaluateContextBias` (V2-07).

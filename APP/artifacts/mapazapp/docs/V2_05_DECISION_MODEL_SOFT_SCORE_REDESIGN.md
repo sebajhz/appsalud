@@ -55,7 +55,7 @@ Cada componente expone `reasonCodes` y `explanationSimple`. `explainability[]` d
 
 ## Qué sigue en esqueleto / parcial
 
-- **Contexto HTF real:** solo entrada opcional `contextQualityScore` o placeholder documentado.
+- **Contexto HTF:** V2-07 añade `evaluateContextBias` + `DecisionModelInput.contextBiasResult` (y replay opcional). Sigue sin sesiones / calendario real multi-broker.
 - **Anti-lookahead en detección:** sin cambios; el gate estricto de timing es opt-in vía `strictCandidateTiming`.
 - **Desplazamiento en replay:** el backtest usa `buildDisplacementAtBar` en la vela de confirmación; no sustituye un desplazamiento “por candidato” en `strategy-detection.ts` (pendiente de otro checkpoint).
 - **Sin prueba de rentabilidad:** métricas y scores son **evidencia técnica**, no edge económico.
@@ -64,8 +64,8 @@ Cada componente expone `reasonCodes` y `explanationSimple`. `explainability[]` d
 
 - **A / A2:** calidad IFVG/zona y variante (primaria vs aceptada) codificadas en componentes y clasificación.
 - **B / B2:** sweep confirmado vs near vs break-risk explícitos en score y variantes.
-- **Contexto + tolerancia + confianza:** contexto aún placeholder; tolerancias siguen en detectores existentes; confianza ahora **derivada** de factores medidos en el replay cuando `useDecisionModelScore` está activo.
+- **Contexto + tolerancia + confianza:** contexto HTF medible v1 (`evaluateContextBias`); tolerancias en detectores + V2-06; confianza **derivada** en replay cuando `useDecisionModelScore` está activo y se suministran factores.
 
 ## Siguiente paso recomendado
 
-**V2-07 — Motor de contexto / sesgo HTF v1:** sustituir el placeholder de `contextQuality` con señales medibles y políticas documentadas. **V2-06 (tolerancia)** quedó implementada en `evaluateToleranceCalibration` + integración opcional en `evaluateDecisionModel`; ver `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md`.
+**V2-08 — Parameter / entry variant matrix** (u hoja de ruta equivalente en `CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`). **V2-07 (contexto)** está en `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md`.
