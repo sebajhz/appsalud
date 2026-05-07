@@ -31,6 +31,10 @@ const MESSAGES: Record<DecisionReasonCode, string> = {
   ENTRY_VARIANT_LATE_CHASE: "Entry variant late chase timing (V2-08).",
   ENTRY_VARIANT_MISSED: "Entry variant missed move toward target (V2-08).",
   ENTRY_VARIANT_INVALID: "Entry variant invalid geometry or timing (V2-08).",
+  TARGET_OBJECTIVE_IDEAL_BOOST: "Target / liquidity objective classified as ideal — soft-score bump (V2-09).",
+  TARGET_OBJECTIVE_WEAK_PENALTY: "Target objective weak — soft-score penalty (V2-09).",
+  TARGET_OBJECTIVE_INVALID: "Target objective invalid or insufficient — decision quality capped (V2-09).",
+  TARGET_OBJECTIVE_TIMING_STRESS: "Target objective timing stress (too close / reached) vs current price (V2-09).",
 };
 
 export function decisionModelReason(code: DecisionReasonCode): { code: DecisionReasonCode; message: string } {

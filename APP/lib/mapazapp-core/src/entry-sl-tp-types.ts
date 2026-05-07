@@ -59,7 +59,11 @@ export type EntrySlTpReasonCode =
   | "ENTRY_CHASE_EXCEEDED"
   | "HYBRID_NO_VALID_TARGET"
   | "ENTRY_VARIANT_REPLAY_MODEL_MISMATCH"
-  | "ENTRY_VARIANT_LATE_TIMING_NOTE";
+  | "ENTRY_VARIANT_LATE_TIMING_NOTE"
+  | "TARGET_OBJECTIVE_WEAK_QUALITY"
+  | "TARGET_OBJECTIVE_TOO_CLOSE_NOTE"
+  | "TARGET_OBJECTIVE_ALREADY_REACHED_NOTE"
+  | "TARGET_OBJECTIVE_TOO_FAR_NOTE";
 
 export interface EntrySlTpSettings {
   minRr: number;
@@ -126,6 +130,10 @@ export interface EntrySlTpModelInput {
    * hints disagree with configured `entryMode` (does not change geometry).
    */
   entryVariantResult?: import("./entry-variant-types").EntryVariantResult | null;
+  /**
+   * V2-09 — optional `evaluateTargetObjective` output; influences hybrid / opposing TP selection and warnings.
+   */
+  targetObjectiveResult?: import("./target-objective-types").TargetObjectiveResult | null;
 }
 
 export interface EntrySlTpModelResult {

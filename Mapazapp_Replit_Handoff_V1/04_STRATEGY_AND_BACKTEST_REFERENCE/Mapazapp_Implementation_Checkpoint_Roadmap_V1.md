@@ -18,6 +18,7 @@
 **Roadmap V2-06:** Human-like tolerance calibration matrix — `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md`.
 **Roadmap V2-07:** HTF bias / context engine v1 — `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md`.
 **Roadmap V2-08:** Entry variant model — `APP/artifacts/mapazapp/docs/V2_08_ENTRY_VARIANT_MODEL.md`.
+**Roadmap V2-09:** Target / liquidity objective model v1 — `APP/artifacts/mapazapp/docs/V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md` (Entry/SL/TP + decision model hooks; review-only).
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 

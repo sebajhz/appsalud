@@ -21,8 +21,8 @@ Este checkpoint introduce un **modelo de decisión explícito** en `@workspace/m
 | `zoneQuality` | Ancho de zona vs ATR |
 | `retestQuality` | `RetestResult.retested` |
 | `confirmationQuality` | `ConfirmationResult` (CLEAR / MARGINAL / NONE) |
-| `entrySlTpQuality` | R:R, `targetQuality`, estado del plan de precios |
-| `timingQuality` | `CandidateTimingMetadata` + avisos/bloqueos de timing en Entry/SL/TP |
+| `entrySlTpQuality` | R:R, `targetQuality`, estado del plan de precios; **V2-09:** ajuste opcional vía `targetObjectiveResult` (ideal / débil / inválido / lejano) |
+| `timingQuality` | `CandidateTimingMetadata` + avisos/bloqueos de timing en Entry/SL/TP; **V2-09:** penalización si el objetivo marca `too_close` / `already_reached` |
 | `contextQuality` | **Esqueleto explícito:** placeholder neutral (`contextPlaceholderScore`) o `contextQualityScore` externo |
 | `spreadVolatilityQuality` | `spreadPrice` / ATR |
 
@@ -66,6 +66,10 @@ Cada componente expone `reasonCodes` y `explanationSimple`. `explainability[]` d
 - **B / B2:** sweep confirmado vs near vs break-risk explícitos en score y variantes.
 - **Contexto + tolerancia + confianza:** contexto HTF medible v1 (`evaluateContextBias`); tolerancias en detectores + V2-06; confianza **derivada** en replay cuando `useDecisionModelScore` está activo y se suministran factores.
 
+## Integración V2-09 (objetivo TP / liquidez)
+
+- Opcional: `DecisionModelInput.targetObjectiveResult` — refuerza `entrySlTpQuality` si la clasificación es `ideal_target`; penaliza `weak_target`, `too_far` o inválido; `timingQuality` reacciona a `too_close` / `already_reached`; la variante puede pasar a `weak_observe_variant` o `invalid_variant` según clasificación (ver `decision-model.ts`).
+
 ## Siguiente paso recomendado
 
-**V2-08 — Parameter / entry variant matrix** (u hoja de ruta equivalente en `CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`). **V2-07 (contexto)** está en `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md`.
+Ver `CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` para el orden actual de hitos V2 (p. ej. **V2-09** objetivo de liquidez, **V2-10** ranking multi-símbolo). **V2-07 (contexto)** está en `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md`.

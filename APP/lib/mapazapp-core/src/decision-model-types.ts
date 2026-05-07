@@ -12,6 +12,7 @@ import type { DecisionModelSettings } from "./decision-model-settings";
 import type { ToleranceCalibrationResult } from "./tolerance-calibration-types";
 import type { ContextBiasResult } from "./context-bias-types";
 import type { EntryVariantResult } from "./entry-variant-types";
+import type { TargetObjectiveResult } from "./target-objective-types";
 
 /** Stable machine codes for decision audit / UI mapping. */
 export type DecisionReasonCode =
@@ -44,7 +45,11 @@ export type DecisionReasonCode =
   | "ENTRY_VARIANT_WEAK_OBSERVE"
   | "ENTRY_VARIANT_LATE_CHASE"
   | "ENTRY_VARIANT_MISSED"
-  | "ENTRY_VARIANT_INVALID";
+  | "ENTRY_VARIANT_INVALID"
+  | "TARGET_OBJECTIVE_IDEAL_BOOST"
+  | "TARGET_OBJECTIVE_WEAK_PENALTY"
+  | "TARGET_OBJECTIVE_INVALID"
+  | "TARGET_OBJECTIVE_TIMING_STRESS";
 
 export type DecisionVariantClassification =
   | "primary_setup"
@@ -164,4 +169,8 @@ export interface DecisionModelInput {
    * and variant classification when present.
    */
   entryVariantResult?: EntryVariantResult | null;
+  /**
+   * V2-09 — optional target / liquidity objective; adjusts entry SLTP / timing soft scores and variant.
+   */
+  targetObjectiveResult?: TargetObjectiveResult | null;
 }

@@ -29,6 +29,7 @@ import { atrAtIndex } from "./atr";
 import type { ToleranceCalibrationResult, ToleranceDimension } from "./tolerance-calibration-types";
 import type { ContextBiasResult } from "./context-bias-types";
 import type { EntryVariantResult } from "./entry-variant-types";
+import type { TargetObjectiveResult } from "./target-objective-types";
 
 function ref(code: DecisionReasonCode): DecisionReasonRef {
   const r = decisionModelReason(code);
@@ -183,6 +184,17 @@ function applyEntryVariantVariantOverride(
     if (base === "primary_setup") return "accepted_variant";
     return "weak_observe_variant";
   }
+  return base;
+}
+
+function applyTargetObjectiveVariantOverride(
+  base: DecisionVariantClassification,
+  tobj: TargetObjectiveResult | null | undefined,
+): DecisionVariantClassification {
+  if (!tobj) return base;
+  if (tobj.classification === "invalid_target" || tobj.classification === "insufficient_data") return "invalid_variant";
+  if (tobj.classification === "already_reached") return "invalid_variant";
+  if (tobj.classification === "too_close") return "weak_observe_variant";
   return base;
 }
 
@@ -410,6 +422,7 @@ function scoreConfirmation(c: ConfirmationResult | null | undefined): {
 function scoreEntrySlTp(
   m: EntrySlTpModelResult | null,
   minRr: number,
+  targetObjective: TargetObjectiveResult | null | undefined,
 ): { score: number; codes: DecisionReasonCode[]; exp: string } {
   if (!m) {
     return { score: 0, codes: ["ENTRY_SL_TP_MISSING"], exp: "No Entry/SL/TP model output." };
@@ -436,13 +449,37 @@ function scoreEntrySlTp(
   if (tq === "strong") score = Math.min(100, score + 6);
   if (tq === "marginal") score = Math.max(0, score - 10);
   if (tq === "invalid") score = Math.min(score, 25);
-  return { score: Math.round(Math.min(100, Math.max(0, score))), codes: ["OK"], exp: "Entry/SL/TP geometry and R:R quality." };
+
+  const codes: DecisionReasonCode[] = ["OK"];
+  let exp = "Entry/SL/TP geometry and R:R quality.";
+  if (targetObjective) {
+    if (targetObjective.classification === "ideal_target") {
+      score = Math.round(clamp01to100(score + 6));
+      codes.push("TARGET_OBJECTIVE_IDEAL_BOOST");
+      exp = `${exp} V2-09 ideal target objective.`;
+    } else if (targetObjective.classification === "weak_target") {
+      score = Math.round(Math.max(0, score - 10));
+      codes.push("TARGET_OBJECTIVE_WEAK_PENALTY");
+      exp = `${exp} V2-09 weak target objective.`;
+    } else if (targetObjective.classification === "invalid_target" || targetObjective.classification === "insufficient_data") {
+      score = Math.min(score, 22);
+      codes.push("TARGET_OBJECTIVE_INVALID");
+      exp = `${exp} V2-09 target objective invalid.`;
+    } else if (targetObjective.classification === "too_far") {
+      score = Math.round(Math.max(0, score - 6));
+      codes.push("TARGET_OBJECTIVE_WEAK_PENALTY");
+      exp = `${exp} V2-09 distant target objective.`;
+    }
+  }
+
+  return { score: Math.round(Math.min(100, Math.max(0, score))), codes, exp };
 }
 
 function scoreTiming(
   timing: CandidateTimingMetadata | null | undefined,
   entrySlTp: EntrySlTpModelResult | null,
   settings: DecisionModelSettings,
+  targetObjective: TargetObjectiveResult | null | undefined,
 ): { score: number; codes: DecisionReasonCode[]; exp: string } {
   const codes: DecisionReasonCode[] = [];
   if (settings.strictCandidateTiming && (!timing || timing.sourceKind === "missing")) {
@@ -464,11 +501,22 @@ function scoreTiming(
   if (entrySlTp?.blockingReasons.some((b) => b.code === "TRADE_ALREADY_PAST_TARGET")) {
     return { score: 0, codes: ["TARGET_ALREADY_PASSED_BLOCKED"], exp: "Target already passed — blocked policy." };
   }
+
+  if (targetObjective?.classification === "already_reached") {
+    base = Math.min(base, 28);
+    codes.push("TARGET_OBJECTIVE_TIMING_STRESS");
+  } else if (targetObjective?.classification === "too_close") {
+    base = Math.min(base, 46);
+    codes.push("TARGET_OBJECTIVE_TIMING_STRESS");
+  }
+
   const exp =
     codes.length > 0
       ? "Timing warnings from Entry/SL/TP model reduce timing quality."
       : "Candidate timing metadata and Entry/SL/TP timing signals.";
-  return { score: Math.round(base), codes: codes.length ? codes : ["OK"], exp };
+  const codeOut: DecisionReasonCode[] =
+    codes.length > 0 ? (Array.from(new Set(codes)) as DecisionReasonCode[]) : ["OK"];
+  return { score: Math.round(base), codes: codeOut, exp };
 }
 
 function scoreContext(input: DecisionModelInput): { score: number; codes: DecisionReasonCode[]; exp: string } {
@@ -697,7 +745,7 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
     return { score: b.score, codes: b.codes, exp: b.exp };
   })();
   const cConf = scoreConfirmation(input.confirmation);
-  const cEstBase = scoreEntrySlTp(input.entrySlTp, input.minRr);
+  const cEstBase = scoreEntrySlTp(input.entrySlTp, input.minRr, input.targetObjectiveResult);
   const cEst = (() => {
     const b = blendComponentWithTolerance(
       cEstBase.score,
@@ -709,7 +757,7 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
     );
     return { score: b.score, codes: b.codes, exp: b.exp };
   })();
-  const cTimBase = scoreTiming(input.candidateTiming, input.entrySlTp, input.settings);
+  const cTimBase = scoreTiming(input.candidateTiming, input.entrySlTp, input.settings, input.targetObjectiveResult);
   const cTim = (() => {
     const b = blendComponentWithTolerance(
       cTimBase.score,
@@ -795,19 +843,22 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
 
   const effectiveTotal = hg.hardGatePassed ? totalScore : Math.min(totalScore, 44);
   const confidenceBand = hg.hardGatePassed ? confidenceFromTotal(totalScore) : "no_trade";
-  const variant = applyEntryVariantVariantOverride(
-    classifyVariant({
-      hardPass: hg.hardGatePassed,
-      total: totalScore,
-      sweep: input.sweepStatus,
-      disp: input.displacement,
-      conf: input.confirmation,
-      retest: input.retest,
-      settings: input.settings,
-      tolerance: tol,
-      contextBias: input.contextBiasResult ?? null,
-    }),
-    input.entryVariantResult,
+  const variant = applyTargetObjectiveVariantOverride(
+    applyEntryVariantVariantOverride(
+      classifyVariant({
+        hardPass: hg.hardGatePassed,
+        total: totalScore,
+        sweep: input.sweepStatus,
+        disp: input.displacement,
+        conf: input.confirmation,
+        retest: input.retest,
+        settings: input.settings,
+        tolerance: tol,
+        contextBias: input.contextBiasResult ?? null,
+      }),
+      input.entryVariantResult,
+    ),
+    input.targetObjectiveResult,
   );
 
   return {

@@ -189,7 +189,7 @@ Priority order:
 - **Adds:** `evaluateContextBias` (`context-bias*.ts`), `createContextBiasFixtureInputs()`, `DecisionModelInput.contextBiasResult`, `DecisionModelSettings.contextBiasIntegration`, optional `IfvgReplayBacktestInput.htfCandlesByTimeframe` / trace `contextBiasResult`, tests `tests/v2-07-context-bias-engine.test.ts`.
 - **Must not add:** live execution, MT5 command channel, BridgeEA/TestEA edits, DB/watcher/WebSocket/live scanner, registry mutation, profitability claims, session engine (deferred).
 - **Validation required:** `pnpm --filter @workspace/mapazapp-core test` + typecheck; workspace `pnpm typecheck`; dashboard build unchanged functionally.
-- **Definition of done:** `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md` (limitations + next step V2-08).
+- **Definition of done:** `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md` (limitations + next step V2-08 / V2-09).
 
 ### V2-08 — Entry Variant Model
 - **Goal:** classify human-like entry styles (ideal / accepted / observe / late / missed / invalid) vs rigid exact-level thinking — depth in zone, timing vs plan, optional link to tolerance calibration — **review-only**.
@@ -199,49 +199,56 @@ Priority order:
 - **Definition of done:** `APP/artifacts/mapazapp/docs/V2_08_ENTRY_VARIANT_MODEL.md` (limitations + honest scope).
 - **Note:** an older roadmap draft labeled “parameter-set optimization matrix” as V2-08 is **deferred** and not part of this checkpoint.
 
-### V2-09 — Symbol Ranking Backtest Campaign
+### V2-09 — Target / Liquidity Objective Model v1
+- **Goal:** evaluate TP objectives beyond a single fixed-R assumption (liquidity, structure, range, hybrid), with R:R / distance / context-aware scoring — **review-only**.
+- **Adds:** `evaluateTargetObjective` (`target-objective*.ts`), `createTargetObjectiveFixtures()`, optional `EntrySlTpModelInput.targetObjectiveResult`, optional `DecisionModelInput.targetObjectiveResult`, tests `tests/v2-09-target-objective-model.test.ts`; doc `APP/artifacts/mapazapp/docs/V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md`.
+- **Must not add:** execution, MT5 command channel, BridgeEA/TestEA edits, DB/watcher/WebSocket/live scanner, registry mutation, profitability claims.
+- **Validation required:** `pnpm --filter @workspace/mapazapp-core test` + typecheck; workspace `pnpm typecheck`.
+- **Definition of done:** documented limitations + integration notes in `V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md`.
+
+### V2-10 — Symbol Ranking Backtest Campaign
 - **Goal:** rank symbols by robustness, not peak return.
 - **Adds:** cross-symbol comparison on robustness metrics (PF/expectancy/DD/stability).
 - **Must not add:** cross-symbol parameter reuse without validation.
 - **Validation required:** out-of-sample reports and ranking rationale.
 - **Definition of done:** shortlist of symbols + candidate sets with explicit risk notes.
 
-### V2-10 — Dashboard/API Connection Cleanup
+### V2-11 — Dashboard/API Connection Cleanup
 - **Goal:** reduce mock drift and align contracts to replay/evidence outputs.
 - **Adds:** DTO cleanup and minimal wiring updates.
 - **Must not add:** execution endpoints or command APIs.
 - **Validation required:** API/dashboard tests with replay-driven payload fixtures.
 - **Definition of done:** UI/API consume consistent evidence-first contracts.
 
-### V2-11 — Local File Import from BridgeEA/TestEA exports
+### V2-12 — Local File Import from BridgeEA/TestEA exports
 - **Goal:** controlled local import path for real exported files.
 - **Adds:** explicit manual import workflow (read-only ingestion path).
 - **Must not add:** file watcher daemon or command channel.
 - **Validation required:** real export import tests with malformed-file handling.
 - **Definition of done:** reproducible manual import checklist and parser reliability.
 
-### V2-12 — Persistence Decision / SQLite local store
+### V2-13 — Persistence Decision / SQLite local store
 - **Goal:** decide if local persistence is required for evidence/session history.
 - **Adds:** decision record and minimal schema only if justified.
 - **Must not add:** premature heavy infra or live execution dependencies.
 - **Validation required:** design review + migration/rollback plan.
 - **Definition of done:** approved persistence decision with scope boundaries.
 
-### V2-13 — Forward Demo Read-only Monitor with real imported files
+### V2-14 — Forward Demo Read-only Monitor with real imported files
 - **Goal:** monitor replay/read-only outcomes using real imported data snapshots.
 - **Adds:** stronger observational monitor based on imported artifacts.
 - **Must not add:** auto-trading or order routing.
 - **Validation required:** monitor consistency tests against replay/backtest state.
 - **Definition of done:** reliable read-only monitor pipeline with audit-ready logs.
 
-### V2-14 — Alerts/Notifications review-only
+### V2-15 — Alerts/Notifications review-only
 - **Goal:** provide disciplined review alerts from proven replay/context conditions.
 - **Adds:** notification rules derived from validated engine states.
 - **Must not add:** actionable execution automation.
 - **Validation required:** false-positive/false-negative review on sample windows.
 - **Definition of done:** alert quality thresholds and suppression rules documented.
 
-### V2-15 — Re-evaluate assisted execution after proof
+### V2-16 — Re-evaluate assisted execution after proof
 - **Goal:** re-assess whether assisted execution should evolve beyond contract-only.
 - **Adds:** governance checkpoint decision, not automatic implementation.
 - **Must not add:** direct execution by default.

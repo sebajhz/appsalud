@@ -79,6 +79,10 @@ Salida del replay: `explicit_tp_sl` con precios ya resueltos.
 
 - `EntrySlTpModelInput.entryVariantResult` opcional: `buildEntrySlTpPlan` puede añadir **warnings** si el hint de replay (`confirmation_close` / `manual_reference_price`) o el timing (`late_chase`) del variant discrepan del `entryMode` — **sin** cambiar entradas ni SL/TP.
 
+## V2-09 — Objetivo de liquidez / TP (opcional)
+
+- `EntrySlTpModelInput.targetObjectiveResult` opcional: salida de `evaluateTargetObjective` (V2-09). En `hybrid_fixed_r_or_liquidity` y `opposing_liquidity`, la pata de liquidez puede tomar `selectedTargetPrice` cuando la clasificación no es `invalid_target` / `insufficient_data` / `already_reached` / `too_close`. Se añaden **warnings** (`TARGET_OBJECTIVE_*`) si el objetivo es débil, lejano o con mala relación temporal vs precio actual — **sin** ejecución.
+
 ## Limitaciones (v1)
 
 - Un solo conjunto de niveles por llamada; sin multi-TP parcial ni scaling.

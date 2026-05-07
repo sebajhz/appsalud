@@ -20,6 +20,7 @@ import type {
 import { roundToTickSize, slBufferPrice } from "./normalize";
 import type { ReplayEntryModel, ReplayTradeInput } from "./replay-trade-types";
 import type { SymbolMarketSpec } from "./symbol-profile";
+import type { TargetObjectiveClassification, TargetObjectiveResult } from "./target-objective-types";
 
 export function createDefaultEntrySlTpSettingsForTests(): EntrySlTpSettings {
   return {
@@ -197,12 +198,12 @@ function plannedTp(
     return { raw: l, code: null };
   }
   if (mode === "opposing_liquidity") {
-    const p = input.opposingLiquidityPrice;
+    const p = liquidityLegPrice(input);
     if (p == null || !Number.isFinite(p)) return { raw: null, code: "MISSING_OPPOSING_LIQUIDITY" };
     return { raw: p, code: null };
   }
   if (mode === "hybrid_fixed_r_or_liquidity") {
-    const liq = input.opposingLiquidityPrice;
+    const liq = liquidityLegPrice(input);
     if (liq == null || !Number.isFinite(liq)) return { raw: null, code: "MISSING_OPPOSING_LIQUIDITY" };
     const fixed =
       direction === "BUY" ? entry + risk * settings.fixedRTarget : entry - risk * settings.fixedRTarget;
@@ -247,6 +248,29 @@ function toReplayEntryModel(mode: EntryModelMode): ReplayEntryModel {
   if (mode === "confirmation_close") return "confirmation_close";
   if (mode === "manual_reference") return "manual_reference_price";
   return "zone_touch";
+}
+
+function canUseObjectiveTpPrice(obj: TargetObjectiveResult | null | undefined): boolean {
+  if (!obj || obj.selectedTargetPrice == null || !Number.isFinite(obj.selectedTargetPrice)) return false;
+  const bad: TargetObjectiveClassification[] = ["invalid_target", "insufficient_data", "already_reached", "too_close"];
+  return !bad.includes(obj.classification);
+}
+
+function liquidityLegPrice(input: EntrySlTpModelInput): number | undefined {
+  if (canUseObjectiveTpPrice(input.targetObjectiveResult)) {
+    return input.targetObjectiveResult!.selectedTargetPrice!;
+  }
+  const p = input.opposingLiquidityPrice;
+  return p != null && Number.isFinite(p) ? p : undefined;
+}
+
+function mergeTargetObjectiveWarnings(input: EntrySlTpModelInput, warnings: EntrySlTpReason[]): void {
+  const t = input.targetObjectiveResult;
+  if (!t) return;
+  if (t.classification === "weak_target") warnings.push(entrySlTpReason("TARGET_OBJECTIVE_WEAK_QUALITY"));
+  if (t.classification === "too_close") warnings.push(entrySlTpReason("TARGET_OBJECTIVE_TOO_CLOSE_NOTE"));
+  if (t.classification === "already_reached") warnings.push(entrySlTpReason("TARGET_OBJECTIVE_ALREADY_REACHED_NOTE"));
+  if (t.classification === "too_far") warnings.push(entrySlTpReason("TARGET_OBJECTIVE_TOO_FAR_NOTE"));
 }
 
 function mergeEntryVariantWarnings(input: EntrySlTpModelInput, warnings: EntrySlTpReason[]): void {
@@ -368,6 +392,7 @@ export function buildEntrySlTpPlan(input: EntrySlTpModelInput): EntrySlTpModelRe
   if (rrInfo.rewardDistance < rrInfo.riskDistance) {
     blocking.push(entrySlTpReason("REWARD_SHORTER_THAN_RISK"));
     mergeEntryVariantWarnings(input, warnings);
+    mergeTargetObjectiveWarnings(input, warnings);
     const decision = settings.preferObserveOverBlock ? "observe_only" : "blocked";
     return {
       status: decision,
@@ -392,6 +417,7 @@ export function buildEntrySlTpPlan(input: EntrySlTpModelInput): EntrySlTpModelRe
   if (rrInfo.rr < settings.minRr) {
     blocking.push(entrySlTpReason("RR_BELOW_MINIMUM"));
     mergeEntryVariantWarnings(input, warnings);
+    mergeTargetObjectiveWarnings(input, warnings);
     const decision = settings.preferObserveOverBlock ? "observe_only" : "blocked";
     return {
       status: decision,
@@ -452,6 +478,7 @@ export function buildEntrySlTpPlan(input: EntrySlTpModelInput): EntrySlTpModelRe
   }
 
   mergeEntryVariantWarnings(input, warnings);
+  mergeTargetObjectiveWarnings(input, warnings);
   const replayInputPreview = buildReplayPreview(input, pricePlan, direction, settings);
   const canReplay = status !== "blocked" && status !== "invalid" && status !== "insufficient_data";
 

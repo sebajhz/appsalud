@@ -24,6 +24,10 @@ const MESSAGES: Record<EntrySlTpReasonCode, string> = {
   HYBRID_NO_VALID_TARGET: "Hybrid TP could not satisfy min R and meaningful distance.",
   ENTRY_VARIANT_REPLAY_MODEL_MISMATCH: "Entry variant suggests a different replay entry model than configured entryMode.",
   ENTRY_VARIANT_LATE_TIMING_NOTE: "Entry variant timing suggests late chase vs planned entry (review-only note).",
+  TARGET_OBJECTIVE_WEAK_QUALITY: "Target / liquidity objective classified as weak (V2-09 review note).",
+  TARGET_OBJECTIVE_TOO_CLOSE_NOTE: "Target objective too close to current price (V2-09).",
+  TARGET_OBJECTIVE_ALREADY_REACHED_NOTE: "Target objective appears already reached vs current (V2-09).",
+  TARGET_OBJECTIVE_TOO_FAR_NOTE: "Target objective flagged as distant vs ATR (V2-09).",
 };
 
 export function entrySlTpReason(code: EntrySlTpReasonCode, detail?: string): EntrySlTpReason {
