@@ -9,6 +9,7 @@ import type { TradePlanAccountGuardInput, TradePlanHardGate } from "./trade-plan
 import type { ZoneCandidate } from "./zone-candidate";
 import type { SymbolMarketSpec } from "./symbol-profile";
 import type { DecisionModelSettings } from "./decision-model-settings";
+import type { ToleranceCalibrationResult } from "./tolerance-calibration-types";
 
 /** Stable machine codes for decision audit / UI mapping. */
 export type DecisionReasonCode =
@@ -31,7 +32,9 @@ export type DecisionReasonCode =
   | "ENTRY_CHASE_BLOCKED"
   | "CONTEXT_PLACEHOLDER_NEUTRAL"
   | "CONTEXT_INPUT_MISSING"
-  | "COMPONENT_INSUFFICIENT_INPUT";
+  | "COMPONENT_INSUFFICIENT_INPUT"
+  | "TOLERANCE_CALIBRATION_INVALID"
+  | "TOLERANCE_CALIBRATION_ADJUSTED";
 
 export type DecisionVariantClassification =
   | "primary_setup"
@@ -135,4 +138,10 @@ export interface DecisionModelInput {
   confirmationAtr: number | null | undefined;
   /** Optional failures from `collectTradePlanHardGateFailures` at the same evaluation bar. */
   tradePlanHardGateFailures?: TradePlanHardGate[];
+  /**
+   * V2-06 — optional human-like tolerance matrix output. When present with
+   * `settings.toleranceIntegration`, selected soft-score components may blend with
+   * per-dimension tolerance scores (deterministic; review-only semantics unchanged).
+   */
+  toleranceCalibrationResult?: ToleranceCalibrationResult | null;
 }

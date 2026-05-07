@@ -11,6 +11,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2 entry/SL/TP report:** `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` — `buildEntrySlTpPlan` + fixtures/tests for replay-ready price plans (still no profitability claim).
 **Roadmap V2 IFVG replay backtest report:** `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` — `runIfvgReplayBacktest` full-chain replay metrics in R (still no profitability claim; detection still uses full series in v1). **V2-04.1** adds `ZoneCandidate.candidateTiming` and replay index resolution (§28).
 **Roadmap V2-05 decision model:** `APP/artifacts/mapazapp/docs/V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md` — `evaluateDecisionModel`, replay trace `decisionModelResult` / `effectiveScoreForReplay`; context score remains placeholder until HTF engine lands.
+**Roadmap V2-06 tolerance calibration:** `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md` — `evaluateToleranceCalibration` + optional `DecisionModelInput.toleranceCalibrationResult` with `toleranceIntegration` settings; no universal pip assumptions; no profitability claim.
 
 ---
 
@@ -291,3 +292,14 @@ Replace test profiles with **live** `SymbolMarketSpec` built from exported MT5 f
 - **Anti-lookahead (partial):** retest search no longer defaults to FVG-center+1 when explicit timing exists; replay slice can floor at optional `firstReplayIndex`. **Not fixed:** `detectIfvgZoneCandidates` still scans the full `Candle[]` — true walk-forward detection is out of scope for V2-04.1.
 - **Test-only input:** `IfvgReplayBacktestInput.testOnlyAppendZones` appends `ZoneCandidate[]` after detection (e.g. strip `candidateTiming` + invalid `sourceIfvgId`) for unit coverage — **not** for production backtests.
 - **Doc:** `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md`.
+
+---
+
+## 29. V2-06 tolerance calibration matrix (`evaluateToleranceCalibration`)
+
+- **Modules:** `tolerance-calibration-types.ts`, `tolerance-calibration-reasons.ts`, `tolerance-calibration-settings.ts`, `tolerance-calibration.ts`, `tolerance-calibration-fixtures.ts` — **pure** evaluation of per-dimension tolerance bands using `max(ATR·k, spread·k, tick·n)` with **dimension-specific multipliers** (no fixed universal pip ladder).
+- **Outputs:** `ToleranceCalibrationResult` with `profile` (volatility + spread regime buckets), `byDimension` scores (0–100), `ToleranceReasonCode[]`, and `summaryExplanation` — deterministic rounding; **review-only** semantics are unchanged at the package boundary.
+- **Decision model wiring (optional):** `DecisionModelInput.toleranceCalibrationResult` plus `DecisionModelSettings.toleranceIntegration` controls **soft-score blending** (35% weight toward averaged tolerance scores for mapped dimensions) and optional **variant invalidation** / **hard gate** `TOLERANCE_CALIBRATION_INVALID` on configured critical dimensions. Defaults omit `toleranceIntegration`, preserving V2-05 behavior.
+- **Non-goals:** does not replace `liquidity-sweep.ts` geometry; does not import live spread series; does not prove edge or profitability.
+- **Tests / fixtures:** `tests/v2-06-tolerance-calibration.test.ts`, `createToleranceCalibrationFixtures()` (synthetic multi-symbol cases aligned with `ENGINE_REALITY_SYMBOL_PROFILES`).
+- **Doc:** `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md`.

@@ -14,6 +14,8 @@
 **Roadmap V2 entry/SL/TP checkpoint:** V2-03 scope/results are documented at `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` (replay-ready entry/SL/TP plan + R:R/timing v1, no execution changes).
 **Roadmap V2 IFVG replay backtest checkpoint:** V2-04 scope/results are documented at `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` (detection → plan → Entry/SL/TP → replay → summary in R, no execution changes).
 **Roadmap V2-04.1:** Candidate bar timing metadata (`ZoneCandidate.candidateTiming` / `CandidateTimingMetadata`) and replay index resolution — same doc (`V2_04_…`) § anti-lookahead; core-only, no BridgeEA/TestEA changes.
+**Roadmap V2-05:** Decision model / soft-score redesign — `APP/artifacts/mapazapp/docs/V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md`.
+**Roadmap V2-06:** Human-like tolerance calibration matrix — `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md`.
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 

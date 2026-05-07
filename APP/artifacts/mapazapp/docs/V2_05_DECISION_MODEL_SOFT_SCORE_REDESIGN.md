@@ -68,4 +68,4 @@ Cada componente expone `reasonCodes` y `explanationSimple`. `explainability[]` d
 
 ## Siguiente paso recomendado
 
-**V2-06 — Human-like tolerance calibration** (según `CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md` renumerado): calibrar near-sweep / break-risk / wick con matrices por símbolo **después** de estabilizar el modelo de decisión en campañas sintéticas.
+**V2-07 — Motor de contexto / sesgo HTF v1:** sustituir el placeholder de `contextQuality` con señales medibles y políticas documentadas. **V2-06 (tolerancia)** quedó implementada en `evaluateToleranceCalibration` + integración opcional en `evaluateDecisionModel`; ver `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md`.

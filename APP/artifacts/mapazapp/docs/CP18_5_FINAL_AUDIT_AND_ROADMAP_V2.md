@@ -178,11 +178,11 @@ Priority order:
 - **Note:** older drafts that labeled “V2-05” as tolerance-only should use **V2-06** for tolerance calibration after this insertion.
 
 ### V2-06 — Human-like Tolerance Calibration
-- **Goal:** calibrate near-sweep/wick/zone tolerance behavior by symbol.
-- **Adds:** calibration config and tests for tolerance stability regions.
-- **Must not add:** universal pip assumptions.
-- **Validation required:** sensitivity analysis and tolerance heatmaps per symbol.
-- **Definition of done:** documented accepted tolerance bands per symbol candidate.
+- **Goal:** unify near-sweep / oversweep / retest / chase / spread / wick / TP-distance tolerances into a **symbol-aware calibration matrix** that scores imperfect-but-valid behavior vs structurally broken conditions — without fixed universal pip ladders.
+- **Adds:** `evaluateToleranceCalibration` (`tolerance-calibration*.ts`), `createToleranceCalibrationFixtures()`, optional `DecisionModelInput.toleranceCalibrationResult` + `DecisionModelSettings.toleranceIntegration` (blend / variant invalidation / optional hard gate), tests `tests/v2-06-tolerance-calibration.test.ts`.
+- **Must not add:** live execution, MT5 command channel, profitability claims, replacement of `liquidity-sweep.ts` core geometry.
+- **Validation required:** `pnpm --filter @workspace/mapazapp-core test` + typecheck; workspace `pnpm typecheck`.
+- **Definition of done:** documented in `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md` (limitations + next step V2-07).
 
 ### V2-07 — Bias/Context Engine Upgrade
 - **Goal:** improve context intelligence to reduce low-quality setups.

@@ -21,6 +21,8 @@ const MESSAGES: Record<DecisionReasonCode, string> = {
   CONTEXT_PLACEHOLDER_NEUTRAL: "HTF/context score uses neutral placeholder until context engine exists.",
   CONTEXT_INPUT_MISSING: "No explicit context score provided — using placeholder.",
   COMPONENT_INSUFFICIENT_INPUT: "Not enough data to score this component; neutral penalty applied.",
+  TOLERANCE_CALIBRATION_INVALID: "Tolerance calibration marks a critical dimension as invalid for this policy.",
+  TOLERANCE_CALIBRATION_ADJUSTED: "Soft score component blended with V2-06 tolerance calibration output.",
 };
 
 export function decisionModelReason(code: DecisionReasonCode): { code: DecisionReasonCode; message: string } {

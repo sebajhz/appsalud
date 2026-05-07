@@ -26,10 +26,57 @@ import type { IfvgStrategySettings } from "./strategy-settings";
 import type { Candle } from "./candle";
 import { detectDisplacement } from "./displacement";
 import { atrAtIndex } from "./atr";
+import type { ToleranceCalibrationResult, ToleranceDimension } from "./tolerance-calibration-types";
 
 function ref(code: DecisionReasonCode): DecisionReasonRef {
   const r = decisionModelReason(code);
   return { code: r.code, message: r.message };
+}
+
+function clamp01to100(n: number): number {
+  return Math.min(100, Math.max(0, n));
+}
+
+function avgToleranceScores(tol: ToleranceCalibrationResult, dims: readonly ToleranceDimension[]): number | null {
+  const picked: number[] = [];
+  for (const d of dims) {
+    const r = tol.byDimension[d];
+    if (r && !r.reasonCodes.includes("MEASUREMENT_OMITTED")) picked.push(r.score);
+  }
+  if (!picked.length) return null;
+  return picked.reduce((a, b) => a + b, 0) / picked.length;
+}
+
+function hasCriticalToleranceInvalid(
+  tol: ToleranceCalibrationResult,
+  dims: readonly ToleranceDimension[],
+): boolean {
+  for (const d of dims) {
+    const r = tol.byDimension[d];
+    if (r && !r.reasonCodes.includes("MEASUREMENT_OMITTED") && r.quality === "invalid") return true;
+  }
+  return false;
+}
+
+function blendComponentWithTolerance(
+  baseScore: number,
+  baseCodes: DecisionReasonCode[],
+  baseExp: string,
+  tol: ToleranceCalibrationResult | null | undefined,
+  blend: boolean,
+  dims: readonly ToleranceDimension[],
+): { score: number; codes: DecisionReasonCode[]; exp: string } {
+  if (!blend || !tol) return { score: baseScore, codes: baseCodes, exp: baseExp };
+  const avg = avgToleranceScores(tol, dims);
+  if (avg == null) return { score: baseScore, codes: baseCodes, exp: baseExp };
+  const wT = 0.35;
+  const score = Math.round(clamp01to100(baseScore * (1 - wT) + avg * wT));
+  const changed = score !== baseScore;
+  const codes: DecisionReasonCode[] = changed
+    ? [...baseCodes, "TOLERANCE_CALIBRATION_ADJUSTED" as const]
+    : baseCodes;
+  const exp = changed ? `${baseExp} Tolerance calibration blended (V2-06).` : baseExp;
+  return { score, codes, exp };
 }
 
 function normalizeWeights(w: DecisionModelSettings["weights"]): DecisionModelSettings["weights"] {
@@ -320,8 +367,18 @@ function classifyVariant(params: {
   conf: ConfirmationResult | null | undefined;
   retest: RetestResult | null | undefined;
   settings: DecisionModelSettings;
+  tolerance: ToleranceCalibrationResult | null | undefined;
 }): DecisionVariantClassification {
   if (!params.hardPass) return "invalid_variant";
+  const ti = params.settings.toleranceIntegration;
+  if (
+    ti?.invalidToleranceInvalidatesVariant &&
+    params.tolerance &&
+    ti.criticalInvalidDimensions.length > 0 &&
+    hasCriticalToleranceInvalid(params.tolerance, ti.criticalInvalidDimensions)
+  ) {
+    return "invalid_variant";
+  }
   if (params.settings.breakRiskInvalidatesVariant && params.sweep === "POSSIBLE_BREAK_RISK") {
     return "invalid_variant";
   }
@@ -394,6 +451,12 @@ function collectHardGates(input: DecisionModelInput): DecisionHardGateResult {
     push("TIMING_LOOKAHEAD_UNSAFE");
   }
 
+  const tolInt = input.settings.toleranceIntegration;
+  const tolRes = input.toleranceCalibrationResult;
+  if (tolInt?.invalidToleranceAsHardBlock && tolRes && tolInt.criticalInvalidDimensions.length > 0) {
+    if (hasCriticalToleranceInvalid(tolRes, tolInt.criticalInvalidDimensions)) push("TOLERANCE_CALIBRATION_INVALID");
+  }
+
   const dedup = new Map<string, DecisionReasonRef>();
   for (const b of blocking) dedup.set(b.code, b);
 
@@ -408,16 +471,75 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
   const zone = input.zoneCandidate;
   const atr = input.confirmationAtr;
 
-  const cSweep = scoreSweep(input.sweepStatus);
+  const ti = input.settings.toleranceIntegration;
+  const tol = input.toleranceCalibrationResult ?? null;
+  const tolBlend = Boolean(ti?.blendToleranceIntoSoftScore && tol);
+
+  const cSweepBase = scoreSweep(input.sweepStatus);
+  const cSweep = (() => {
+    const b = blendComponentWithTolerance(
+      cSweepBase.score,
+      cSweepBase.codes,
+      cSweepBase.exp,
+      tol,
+      tolBlend,
+      ["liquidity_sweep", "near_sweep", "over_sweep_break_risk"],
+    );
+    return { score: b.score, codes: b.codes, exp: b.exp };
+  })();
   const cDisp = scoreDisplacement(input.displacement);
   const cIfvg = scoreIfvg(input.fvgSizeAtr, zone, atr);
   const cZone = scoreZone(zone, atr);
-  const cRetest = scoreRetest(input.retest);
+  const cRetestBase = scoreRetest(input.retest);
+  const cRetest = (() => {
+    const b = blendComponentWithTolerance(
+      cRetestBase.score,
+      cRetestBase.codes,
+      cRetestBase.exp,
+      tol,
+      tolBlend,
+      ["retest_depth"],
+    );
+    return { score: b.score, codes: b.codes, exp: b.exp };
+  })();
   const cConf = scoreConfirmation(input.confirmation);
-  const cEst = scoreEntrySlTp(input.entrySlTp, input.minRr);
-  const cTim = scoreTiming(input.candidateTiming, input.entrySlTp, input.settings);
+  const cEstBase = scoreEntrySlTp(input.entrySlTp, input.minRr);
+  const cEst = (() => {
+    const b = blendComponentWithTolerance(
+      cEstBase.score,
+      cEstBase.codes,
+      cEstBase.exp,
+      tol,
+      tolBlend,
+      ["sl_buffer", "entry_chase", "target_distance"],
+    );
+    return { score: b.score, codes: b.codes, exp: b.exp };
+  })();
+  const cTimBase = scoreTiming(input.candidateTiming, input.entrySlTp, input.settings);
+  const cTim = (() => {
+    const b = blendComponentWithTolerance(
+      cTimBase.score,
+      cTimBase.codes,
+      cTimBase.exp,
+      tol,
+      tolBlend,
+      ["confirmation_wick", "target_distance", "entry_chase"],
+    );
+    return { score: b.score, codes: b.codes, exp: b.exp };
+  })();
   const cCtx = scoreContext(input.contextQualityScore ?? null, input.settings.contextPlaceholderScore);
-  const cSp = scoreSpreadVol(input.symbolProfile, atr);
+  const cSpBase = scoreSpreadVol(input.symbolProfile, atr);
+  const cSp = (() => {
+    const b = blendComponentWithTolerance(
+      cSpBase.score,
+      cSpBase.codes,
+      cSpBase.exp,
+      tol,
+      tolBlend,
+      ["spread_cost"],
+    );
+    return { score: b.score, codes: b.codes, exp: b.exp };
+  })();
 
   const mk = (
     id: DecisionScoreComponent["id"],
@@ -476,6 +598,7 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
     conf: input.confirmation,
     retest: input.retest,
     settings: input.settings,
+    tolerance: tol,
   });
 
   return {

@@ -3,6 +3,19 @@
  * Weights are normalized to sum 1 inside the evaluator if they drift.
  */
 
+import type { ToleranceDimension } from "./tolerance-calibration-types";
+
+export interface DecisionModelToleranceIntegration {
+  /** When true, blends tolerance dimension scores into selected soft-score components. */
+  blendToleranceIntoSoftScore: boolean;
+  /** When true, critical invalid tolerance dimensions force `invalid_variant` after gates. */
+  invalidToleranceInvalidatesVariant: boolean;
+  /** When true, any critical invalid tolerance dimension also fails hard gates (audit / strict policy). */
+  invalidToleranceAsHardBlock: boolean;
+  /** Dimensions whose `invalid` classification triggers the policies above. */
+  criticalInvalidDimensions: ToleranceDimension[];
+}
+
 export interface DecisionModelSettings {
   /** When true, missing `candidateTiming.sourceKind === "missing"` blocks hard gates. */
   strictCandidateTiming: boolean;
@@ -22,6 +35,8 @@ export interface DecisionModelSettings {
     contextQuality: number;
     spreadVolatilityQuality: number;
   };
+  /** V2-06 — optional; when omitted, tolerance overlay is disabled even if a calibration result is supplied. */
+  toleranceIntegration?: DecisionModelToleranceIntegration | null;
 }
 
 export function createDefaultDecisionModelSettingsForTests(): DecisionModelSettings {
@@ -41,5 +56,6 @@ export function createDefaultDecisionModelSettingsForTests(): DecisionModelSetti
       contextQuality: 0.04,
       spreadVolatilityQuality: 0.06,
     },
+    toleranceIntegration: undefined,
   };
 }
