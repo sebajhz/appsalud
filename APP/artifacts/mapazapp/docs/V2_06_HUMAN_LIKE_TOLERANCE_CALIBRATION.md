@@ -66,4 +66,4 @@ Si no hay `toleranceIntegration` o no hay resultado de calibración, el comporta
 
 ## Siguiente paso recomendado
 
-**V2-08 — Entry variant model** u optimización por bloques según roadmap; el contexto HTF v1 quedó en `evaluateContextBias` (V2-07).
+**V2-08 — Entry variant model** (`evaluateEntryVariant`, doc `V2_08_ENTRY_VARIANT_MODEL.md`) consume opcionalmente esta matriz para aceptar retests imperfectos; la optimización por bloques de parámetros sigue en el roadmap largo (`CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`).

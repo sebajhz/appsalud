@@ -13,6 +13,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2-05 decision model:** `APP/artifacts/mapazapp/docs/V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md` — `evaluateDecisionModel`, replay trace `decisionModelResult` / `effectiveScoreForReplay`; context score remains placeholder until HTF engine lands.
 **Roadmap V2-06 tolerance calibration:** `APP/artifacts/mapazapp/docs/V2_06_HUMAN_LIKE_TOLERANCE_CALIBRATION.md` — `evaluateToleranceCalibration` + optional `DecisionModelInput.toleranceCalibrationResult` with `toleranceIntegration` settings; no universal pip assumptions; no profitability claim.
 **Roadmap V2-07 HTF context:** `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md` — `evaluateContextBias` + optional `contextBiasResult` / `contextBiasIntegration` on decision model; optional HTF input on IFVG replay; no live data requirement.
+**Roadmap V2-08 entry variants:** `APP/artifacts/mapazapp/docs/V2_08_ENTRY_VARIANT_MODEL.md` — `evaluateEntryVariant` + optional `entryVariantResult` on decision model and Entry/SL/TP input (warning-only integration); synthetic fixtures in `entry-variant-fixtures.ts`; no profitability claim.
 
 ---
 

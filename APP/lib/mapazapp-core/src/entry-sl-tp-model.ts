@@ -249,6 +249,21 @@ function toReplayEntryModel(mode: EntryModelMode): ReplayEntryModel {
   return "zone_touch";
 }
 
+function mergeEntryVariantWarnings(input: EntrySlTpModelInput, warnings: EntrySlTpReason[]): void {
+  const v = input.entryVariantResult;
+  if (!v) return;
+  const mode = input.settings.entryMode;
+  if (v.replayEntryModel === "confirmation_close" && mode !== "confirmation_close") {
+    warnings.push(entrySlTpReason("ENTRY_VARIANT_REPLAY_MODEL_MISMATCH"));
+  }
+  if (v.replayEntryModel === "manual_reference_price" && mode !== "manual_reference") {
+    warnings.push(entrySlTpReason("ENTRY_VARIANT_REPLAY_MODEL_MISMATCH"));
+  }
+  if (v.timingStatus === "late_chase") {
+    warnings.push(entrySlTpReason("ENTRY_VARIANT_LATE_TIMING_NOTE"));
+  }
+}
+
 function buildReplayPreview(
   input: EntrySlTpModelInput,
   plan: EntrySlTpPricePlan,
@@ -352,6 +367,7 @@ export function buildEntrySlTpPlan(input: EntrySlTpModelInput): EntrySlTpModelRe
 
   if (rrInfo.rewardDistance < rrInfo.riskDistance) {
     blocking.push(entrySlTpReason("REWARD_SHORTER_THAN_RISK"));
+    mergeEntryVariantWarnings(input, warnings);
     const decision = settings.preferObserveOverBlock ? "observe_only" : "blocked";
     return {
       status: decision,
@@ -375,6 +391,7 @@ export function buildEntrySlTpPlan(input: EntrySlTpModelInput): EntrySlTpModelRe
 
   if (rrInfo.rr < settings.minRr) {
     blocking.push(entrySlTpReason("RR_BELOW_MINIMUM"));
+    mergeEntryVariantWarnings(input, warnings);
     const decision = settings.preferObserveOverBlock ? "observe_only" : "blocked";
     return {
       status: decision,
@@ -434,6 +451,7 @@ export function buildEntrySlTpPlan(input: EntrySlTpModelInput): EntrySlTpModelRe
     }
   }
 
+  mergeEntryVariantWarnings(input, warnings);
   const replayInputPreview = buildReplayPreview(input, pricePlan, direction, settings);
   const canReplay = status !== "blocked" && status !== "invalid" && status !== "insufficient_data";
 

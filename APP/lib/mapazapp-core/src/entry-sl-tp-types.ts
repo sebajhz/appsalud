@@ -57,7 +57,9 @@ export type EntrySlTpReasonCode =
   | "TARGET_TOO_CLOSE_TO_PRICE"
   | "TRADE_ALREADY_PAST_TARGET"
   | "ENTRY_CHASE_EXCEEDED"
-  | "HYBRID_NO_VALID_TARGET";
+  | "HYBRID_NO_VALID_TARGET"
+  | "ENTRY_VARIANT_REPLAY_MODEL_MISMATCH"
+  | "ENTRY_VARIANT_LATE_TIMING_NOTE";
 
 export interface EntrySlTpSettings {
   minRr: number;
@@ -119,6 +121,11 @@ export interface EntrySlTpModelInput {
   explicitSl?: number;
   explicitTp?: number;
   settings: EntrySlTpSettings;
+  /**
+   * V2-08 — when present, `buildEntrySlTpPlan` may append warnings if replay/timing
+   * hints disagree with configured `entryMode` (does not change geometry).
+   */
+  entryVariantResult?: import("./entry-variant-types").EntryVariantResult | null;
 }
 
 export interface EntrySlTpModelResult {

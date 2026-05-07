@@ -56,4 +56,4 @@ Los fixtures son **sintéticos**. Los scores son **evidencia técnica** para rev
 
 ## Siguiente paso recomendado
 
-**V2-08 — Entry variant model** (variantes primaria / aceptada / observe explícitas en dominio) o profundizar contexto con sesiones según `CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`.
+**V2-08 — Entry variant model** queda descrito en `V2_08_ENTRY_VARIANT_MODEL.md`. Profundizar contexto con sesiones sigue según `CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`.

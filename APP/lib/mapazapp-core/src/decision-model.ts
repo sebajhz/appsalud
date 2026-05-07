@@ -28,6 +28,7 @@ import { detectDisplacement } from "./displacement";
 import { atrAtIndex } from "./atr";
 import type { ToleranceCalibrationResult, ToleranceDimension } from "./tolerance-calibration-types";
 import type { ContextBiasResult } from "./context-bias-types";
+import type { EntryVariantResult } from "./entry-variant-types";
 
 function ref(code: DecisionReasonCode): DecisionReasonRef {
   const r = decisionModelReason(code);
@@ -36,6 +37,153 @@ function ref(code: DecisionReasonCode): DecisionReasonRef {
 
 function clamp01to100(n: number): number {
   return Math.min(100, Math.max(0, n));
+}
+
+function pushReasonCode(codes: DecisionReasonCode[], code: DecisionReasonCode): DecisionReasonCode[] {
+  return codes.includes(code) ? codes : [...codes, code];
+}
+
+function applyEntryVariantSoftAdjustments(
+  ev: EntryVariantResult | null | undefined,
+  parts: {
+    retest: { score: number; codes: DecisionReasonCode[]; exp: string };
+    confirmation: { score: number; codes: DecisionReasonCode[]; exp: string };
+    timing: { score: number; codes: DecisionReasonCode[]; exp: string };
+    entrySlTp: { score: number; codes: DecisionReasonCode[]; exp: string };
+  },
+): typeof parts {
+  if (!ev) return parts;
+  switch (ev.classification) {
+    case "ideal_entry":
+      return {
+        retest: {
+          score: Math.round(clamp01to100(parts.retest.score + 8)),
+          codes: pushReasonCode(parts.retest.codes, "ENTRY_VARIANT_IDEAL_BOOST"),
+          exp: `${parts.retest.exp} V2-08 ideal entry variant.`,
+        },
+        confirmation: {
+          score: Math.round(clamp01to100(parts.confirmation.score + 6)),
+          codes: pushReasonCode(parts.confirmation.codes, "ENTRY_VARIANT_IDEAL_BOOST"),
+          exp: `${parts.confirmation.exp} V2-08 ideal entry variant.`,
+        },
+        timing: {
+          score: Math.round(clamp01to100(parts.timing.score + 4)),
+          codes: pushReasonCode(parts.timing.codes, "ENTRY_VARIANT_IDEAL_BOOST"),
+          exp: `${parts.timing.exp} V2-08 ideal entry variant.`,
+        },
+        entrySlTp: {
+          score: Math.round(clamp01to100(parts.entrySlTp.score + 4)),
+          codes: pushReasonCode(parts.entrySlTp.codes, "ENTRY_VARIANT_IDEAL_BOOST"),
+          exp: `${parts.entrySlTp.exp} V2-08 ideal entry variant.`,
+        },
+      };
+    case "accepted_entry":
+      return {
+        ...parts,
+        retest: {
+          score: Math.round(clamp01to100(parts.retest.score + 3)),
+          codes: pushReasonCode(parts.retest.codes, "ENTRY_VARIANT_ACCEPTED_PATH"),
+          exp: `${parts.retest.exp} V2-08 accepted entry variant.`,
+        },
+        entrySlTp: {
+          score: Math.round(clamp01to100(parts.entrySlTp.score + 3)),
+          codes: pushReasonCode(parts.entrySlTp.codes, "ENTRY_VARIANT_ACCEPTED_PATH"),
+          exp: `${parts.entrySlTp.exp} V2-08 accepted entry variant.`,
+        },
+      };
+    case "weak_observe_entry":
+      return {
+        ...parts,
+        retest: {
+          score: Math.round(Math.max(0, parts.retest.score - 8)),
+          codes: pushReasonCode(parts.retest.codes, "ENTRY_VARIANT_WEAK_OBSERVE"),
+          exp: `${parts.retest.exp} V2-08 weak/observe entry variant.`,
+        },
+        confirmation: {
+          score: Math.round(Math.max(0, parts.confirmation.score - 14)),
+          codes: pushReasonCode(parts.confirmation.codes, "ENTRY_VARIANT_WEAK_OBSERVE"),
+          exp: `${parts.confirmation.exp} V2-08 weak/observe entry variant.`,
+        },
+      };
+    case "late_entry":
+      return {
+        ...parts,
+        timing: {
+          score: Math.round(Math.max(0, parts.timing.score - 20)),
+          codes: pushReasonCode(parts.timing.codes, "ENTRY_VARIANT_LATE_CHASE"),
+          exp: `${parts.timing.exp} V2-08 late chase entry variant.`,
+        },
+        entrySlTp: {
+          score: Math.round(Math.max(0, parts.entrySlTp.score - 8)),
+          codes: pushReasonCode(parts.entrySlTp.codes, "ENTRY_VARIANT_LATE_CHASE"),
+          exp: `${parts.entrySlTp.exp} V2-08 late chase entry variant.`,
+        },
+      };
+    case "missed_entry":
+      return {
+        ...parts,
+        retest: {
+          score: Math.round(Math.min(parts.retest.score, 20)),
+          codes: pushReasonCode(parts.retest.codes, "ENTRY_VARIANT_MISSED"),
+          exp: `${parts.retest.exp} V2-08 missed entry variant.`,
+        },
+        confirmation: {
+          score: Math.round(Math.min(parts.confirmation.score, 24)),
+          codes: pushReasonCode(parts.confirmation.codes, "ENTRY_VARIANT_MISSED"),
+          exp: `${parts.confirmation.exp} V2-08 missed entry variant.`,
+        },
+        timing: {
+          score: Math.round(Math.min(parts.timing.score, 14)),
+          codes: pushReasonCode(parts.timing.codes, "ENTRY_VARIANT_MISSED"),
+          exp: `${parts.timing.exp} V2-08 missed entry variant.`,
+        },
+        entrySlTp: {
+          score: Math.round(Math.min(parts.entrySlTp.score, 22)),
+          codes: pushReasonCode(parts.entrySlTp.codes, "ENTRY_VARIANT_MISSED"),
+          exp: `${parts.entrySlTp.exp} V2-08 missed entry variant.`,
+        },
+      };
+    case "invalid_entry":
+      return {
+        ...parts,
+        retest: {
+          score: Math.round(Math.min(parts.retest.score, 18)),
+          codes: pushReasonCode(parts.retest.codes, "ENTRY_VARIANT_INVALID"),
+          exp: `${parts.retest.exp} V2-08 invalid entry variant.`,
+        },
+        confirmation: {
+          score: Math.round(Math.min(parts.confirmation.score, 22)),
+          codes: pushReasonCode(parts.confirmation.codes, "ENTRY_VARIANT_INVALID"),
+          exp: `${parts.confirmation.exp} V2-08 invalid entry variant.`,
+        },
+        timing: {
+          score: Math.round(Math.min(parts.timing.score, 12)),
+          codes: pushReasonCode(parts.timing.codes, "ENTRY_VARIANT_INVALID"),
+          exp: `${parts.timing.exp} V2-08 invalid entry variant.`,
+        },
+        entrySlTp: {
+          score: Math.round(Math.min(parts.entrySlTp.score, 18)),
+          codes: pushReasonCode(parts.entrySlTp.codes, "ENTRY_VARIANT_INVALID"),
+          exp: `${parts.entrySlTp.exp} V2-08 invalid entry variant.`,
+        },
+      };
+    default:
+      return parts;
+  }
+}
+
+function applyEntryVariantVariantOverride(
+  base: DecisionVariantClassification,
+  ev: EntryVariantResult | null | undefined,
+): DecisionVariantClassification {
+  if (!ev) return base;
+  if (ev.classification === "invalid_entry" || ev.classification === "missed_entry") return "invalid_variant";
+  if (ev.classification === "weak_observe_entry") return "weak_observe_variant";
+  if (ev.classification === "late_entry") {
+    if (base === "primary_setup") return "accepted_variant";
+    return "weak_observe_variant";
+  }
+  return base;
 }
 
 function avgToleranceScores(tol: ToleranceCalibrationResult, dims: readonly ToleranceDimension[]): number | null {
@@ -587,6 +735,17 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
     return { score: b.score, codes: b.codes, exp: b.exp };
   })();
 
+  const evPack = applyEntryVariantSoftAdjustments(input.entryVariantResult, {
+    retest: cRetest,
+    confirmation: cConf,
+    timing: cTim,
+    entrySlTp: cEst,
+  });
+  const cRetestAdj = evPack.retest;
+  const cConfAdj = evPack.confirmation;
+  const cTimAdj = evPack.timing;
+  const cEstAdj = evPack.entrySlTp;
+
   const mk = (
     id: DecisionScoreComponent["id"],
     label: string,
@@ -606,10 +765,10 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
     mk("displacementQuality", "Displacement quality", cDisp, w.displacementQuality),
     mk("ifvgQuality", "IFVG / FVG quality", cIfvg, w.ifvgQuality),
     mk("zoneQuality", "Zone quality", cZone, w.zoneQuality),
-    mk("retestQuality", "Retest quality", cRetest, w.retestQuality),
-    mk("confirmationQuality", "Confirmation quality", cConf, w.confirmationQuality),
-    mk("entrySlTpQuality", "Entry / SL / TP quality", cEst, w.entrySlTpQuality),
-    mk("timingQuality", "Timing / anti-lookahead quality", cTim, w.timingQuality),
+    mk("retestQuality", "Retest quality", cRetestAdj, w.retestQuality),
+    mk("confirmationQuality", "Confirmation quality", cConfAdj, w.confirmationQuality),
+    mk("entrySlTpQuality", "Entry / SL / TP quality", cEstAdj, w.entrySlTpQuality),
+    mk("timingQuality", "Timing / anti-lookahead quality", cTimAdj, w.timingQuality),
     mk("contextQuality", "Context / HTF (placeholder)", cCtx, w.contextQuality),
     mk("spreadVolatilityQuality", "Spread vs volatility", cSp, w.spreadVolatilityQuality),
   ];
@@ -636,17 +795,20 @@ export function evaluateDecisionModel(input: DecisionModelInput): DecisionModelR
 
   const effectiveTotal = hg.hardGatePassed ? totalScore : Math.min(totalScore, 44);
   const confidenceBand = hg.hardGatePassed ? confidenceFromTotal(totalScore) : "no_trade";
-  const variant = classifyVariant({
-    hardPass: hg.hardGatePassed,
-    total: totalScore,
-    sweep: input.sweepStatus,
-    disp: input.displacement,
-    conf: input.confirmation,
-    retest: input.retest,
-    settings: input.settings,
-    tolerance: tol,
-    contextBias: input.contextBiasResult ?? null,
-  });
+  const variant = applyEntryVariantVariantOverride(
+    classifyVariant({
+      hardPass: hg.hardGatePassed,
+      total: totalScore,
+      sweep: input.sweepStatus,
+      disp: input.displacement,
+      conf: input.confirmation,
+      retest: input.retest,
+      settings: input.settings,
+      tolerance: tol,
+      contextBias: input.contextBiasResult ?? null,
+    }),
+    input.entryVariantResult,
+  );
 
   return {
     hardGates: hg,

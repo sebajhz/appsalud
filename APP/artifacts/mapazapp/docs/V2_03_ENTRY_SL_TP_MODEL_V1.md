@@ -75,6 +75,10 @@ Si `currentPrice` está presente:
 
 Salida del replay: `explicit_tp_sl` con precios ya resueltos.
 
+## V2-08 — Notas de variante de entrada (opcional)
+
+- `EntrySlTpModelInput.entryVariantResult` opcional: `buildEntrySlTpPlan` puede añadir **warnings** si el hint de replay (`confirmation_close` / `manual_reference_price`) o el timing (`late_chase`) del variant discrepan del `entryMode` — **sin** cambiar entradas ni SL/TP.
+
 ## Limitaciones (v1)
 
 - Un solo conjunto de niveles por llamada; sin multi-TP parcial ni scaling.

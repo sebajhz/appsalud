@@ -22,6 +22,8 @@ const MESSAGES: Record<EntrySlTpReasonCode, string> = {
   TRADE_ALREADY_PAST_TARGET: "Price already at or beyond TP vs direction (v1).",
   ENTRY_CHASE_EXCEEDED: "Price moved too far beyond planned entry before retest (v1 chase rule).",
   HYBRID_NO_VALID_TARGET: "Hybrid TP could not satisfy min R and meaningful distance.",
+  ENTRY_VARIANT_REPLAY_MODEL_MISMATCH: "Entry variant suggests a different replay entry model than configured entryMode.",
+  ENTRY_VARIANT_LATE_TIMING_NOTE: "Entry variant timing suggests late chase vs planned entry (review-only note).",
 };
 
 export function entrySlTpReason(code: EntrySlTpReasonCode, detail?: string): EntrySlTpReason {

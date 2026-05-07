@@ -11,6 +11,7 @@ import type { SymbolMarketSpec } from "./symbol-profile";
 import type { DecisionModelSettings } from "./decision-model-settings";
 import type { ToleranceCalibrationResult } from "./tolerance-calibration-types";
 import type { ContextBiasResult } from "./context-bias-types";
+import type { EntryVariantResult } from "./entry-variant-types";
 
 /** Stable machine codes for decision audit / UI mapping. */
 export type DecisionReasonCode =
@@ -37,7 +38,13 @@ export type DecisionReasonCode =
   | "TOLERANCE_CALIBRATION_INVALID"
   | "TOLERANCE_CALIBRATION_ADJUSTED"
   | "CONTEXT_BIAS_HARD_BLOCK"
-  | "CONTEXT_BIAS_ADJUSTED";
+  | "CONTEXT_BIAS_ADJUSTED"
+  | "ENTRY_VARIANT_IDEAL_BOOST"
+  | "ENTRY_VARIANT_ACCEPTED_PATH"
+  | "ENTRY_VARIANT_WEAK_OBSERVE"
+  | "ENTRY_VARIANT_LATE_CHASE"
+  | "ENTRY_VARIANT_MISSED"
+  | "ENTRY_VARIANT_INVALID";
 
 export type DecisionVariantClassification =
   | "primary_setup"
@@ -152,4 +159,9 @@ export interface DecisionModelInput {
    * placeholder / raw `contextQualityScore` (unless you only pass score without bias — see evaluator).
    */
   contextBiasResult?: ContextBiasResult | null;
+  /**
+   * V2-08 — optional `evaluateEntryVariant` output; adjusts retest/confirmation/timing/entry SLTP soft scores
+   * and variant classification when present.
+   */
+  entryVariantResult?: EntryVariantResult | null;
 }

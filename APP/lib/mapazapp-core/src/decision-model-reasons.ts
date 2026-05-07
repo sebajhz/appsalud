@@ -25,6 +25,12 @@ const MESSAGES: Record<DecisionReasonCode, string> = {
   TOLERANCE_CALIBRATION_ADJUSTED: "Soft score component blended with V2-06 tolerance calibration output.",
   CONTEXT_BIAS_HARD_BLOCK: "HTF context / bias policy blocks this path (strict mode).",
   CONTEXT_BIAS_ADJUSTED: "Context quality adjusted from V2-07 HTF bias vs zone direction.",
+  ENTRY_VARIANT_IDEAL_BOOST: "Entry variant classified as ideal — soft-score bump (V2-08).",
+  ENTRY_VARIANT_ACCEPTED_PATH: "Entry variant accepted imperfect geometry (V2-08).",
+  ENTRY_VARIANT_WEAK_OBSERVE: "Entry variant weak / observe path (V2-08).",
+  ENTRY_VARIANT_LATE_CHASE: "Entry variant late chase timing (V2-08).",
+  ENTRY_VARIANT_MISSED: "Entry variant missed move toward target (V2-08).",
+  ENTRY_VARIANT_INVALID: "Entry variant invalid geometry or timing (V2-08).",
 };
 
 export function decisionModelReason(code: DecisionReasonCode): { code: DecisionReasonCode; message: string } {

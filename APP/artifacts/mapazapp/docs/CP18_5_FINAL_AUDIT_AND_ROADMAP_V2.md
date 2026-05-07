@@ -191,12 +191,13 @@ Priority order:
 - **Validation required:** `pnpm --filter @workspace/mapazapp-core test` + typecheck; workspace `pnpm typecheck`; dashboard build unchanged functionally.
 - **Definition of done:** `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md` (limitations + next step V2-08).
 
-### V2-08 — Parameter Set Optimization Matrix v2
-- **Goal:** formalize block-based optimization for updated replay model.
-- **Adds:** v2 matrix and protocol for staged optimization.
-- **Must not add:** one-shot overfit search across all knobs.
-- **Validation required:** reproducible train/validation process documentation.
-- **Definition of done:** approved optimization workflow and artifact schema.
+### V2-08 — Entry Variant Model
+- **Goal:** classify human-like entry styles (ideal / accepted / observe / late / missed / invalid) vs rigid exact-level thinking — depth in zone, timing vs plan, optional link to tolerance calibration — **review-only**.
+- **Adds:** `evaluateEntryVariant` (`entry-variant*.ts`), `createEntryVariantFixtures()` inputs, optional `DecisionModelInput.entryVariantResult`, optional `EntrySlTpModelInput.entryVariantResult` (warnings only), tests `tests/v2-08-entry-variant-model.test.ts`.
+- **Must not add:** execution, MT5 command channel, BridgeEA/TestEA edits, DB/watcher/WebSocket/live scanner, registry mutation, profitability claims.
+- **Validation required:** `pnpm --filter @workspace/mapazapp-core test` + typecheck; workspace `pnpm typecheck`.
+- **Definition of done:** `APP/artifacts/mapazapp/docs/V2_08_ENTRY_VARIANT_MODEL.md` (limitations + honest scope).
+- **Note:** an older roadmap draft labeled “parameter-set optimization matrix” as V2-08 is **deferred** and not part of this checkpoint.
 
 ### V2-09 — Symbol Ranking Backtest Campaign
 - **Goal:** rank symbols by robustness, not peak return.
