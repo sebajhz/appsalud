@@ -74,4 +74,4 @@ Para transicionar de ranking sintetico a evidencia fuerte aun falta:
 
 ## Siguiente paso recomendado
 
-Mantener V2-10 en core y usarlo para loops internos de mejora del engine. La capa API/dashboard se difiere a un checkpoint posterior solo cuando la salida de campana sea estable y util de forma repetible.
+V2-11 agrega import manual de CSV de velas hacia `BacktestCampaignDataset` (`V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`). Mantener V2-10 en core para loops internos; la capa API/dashboard para import UI/CLI sigue diferida (p. ej. V2-17).

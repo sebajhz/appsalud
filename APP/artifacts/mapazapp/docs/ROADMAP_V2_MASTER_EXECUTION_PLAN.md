@@ -1,5 +1,11 @@
 # ROADMAP V2 — Master Execution Plan
 
+## V2-11 checkpoint context
+
+- Checkpoint: `V2-11 — Manual Candle Dataset Import / Replay Campaign Input`.
+- Purpose: parse CSV de velas suministrado como texto en memoria hacia `Candle[]` y `BacktestCampaignDataset` (adaptador), sin watcher, sin DB, sin ejecución, sin ingest automático MT5.
+- Reference: `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`.
+
 ## V2-10.5 checkpoint context
 
 - Checkpoint: `V2-10.5 — Roadmap V2 Master Execution Plan Refresh`.
@@ -12,11 +18,11 @@
 ### Completed foundations
 
 - CP0 through CP18.5 completed (system foundation, review-only posture, safety invariants, architecture separation).
-- V2-01 through V2-10 completed (engine-first sequence).
+- V2-01 through V2-11 completed (engine-first sequence; V2-11 = import manual de datasets de velas para campañas).
 
 ### Current repo reference
 
-- Latest commit: `7ee3c13 — V2-10 symbol ranking backtest campaign runner`.
+- Latest commit: actualizar al cierre de V2-11 en git (import manual de velas + docs).
 
 ---
 
@@ -199,9 +205,9 @@ Interpretation:
 
 ## 6) Immediate next checkpoint recommendation
 
-**Recommendation:** `V2-11 — Manual Candle Dataset Import / Replay Campaign Input`
+**Recommendation:** `V2-12 — Real Export Sample Validation from BridgeEA/TestEA`
 
-**Reason:** the engine is now strong enough to start consuming controlled candle datasets, but still not ready for live watchers, automation, or demo execution paths.
+**Reason:** con V2-11 el core puede ingerir CSV controlado; el siguiente paso es un harness de validación sobre muestras exportadas **saneadas** (sin crudos reales en repo) para cerrar la brecha con contratos BridgeEA/TestEA.
 
 ---
 

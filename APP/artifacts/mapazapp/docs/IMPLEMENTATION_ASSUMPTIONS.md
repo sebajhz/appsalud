@@ -3,6 +3,14 @@
 - Fuente autoritativa de ejecucion Roadmap V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
 - Usar este plan para ordenar checkpoints V2-11..V2-25 y evitar scope drift durante desarrollo activo.
 
+## V2-11 assumptions (manual candle CSV import)
+
+- `importManualCandleDataset` solo acepta `csvText` en memoria; no hay I/O de archivos en el core para este checkpoint.
+- Formatos reconocidos: BridgeEA `candles.csv` completo (`mapazapp_bridge_candles_v1`), OHLC generico, y estilo MT5 `date`+`time`+OHLC; ver `V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`.
+- Fixtures `manual-candle-dataset-fixtures.ts` son precios sinteticos; no commitear exportes MT5 crudos reales.
+- `createBacktestCampaignDatasetFromManualImport` no ejecuta campanas ni replay; el llamador aporta `SymbolMarketSpec` (o null).
+- Sin watcher, sin DB, sin scanner live, sin mutacion de registry.
+
 ## V2-10 assumptions (symbol ranking campaign)
 
 - Campaign runner usa datasets in-memory o proporcionados manualmente; no file I/O automatizado.
@@ -27,6 +35,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2-07 HTF context:** `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md` — `evaluateContextBias` + optional `contextBiasResult` / `contextBiasIntegration` on decision model; optional HTF input on IFVG replay; no live data requirement.
 **Roadmap V2-08 entry variants:** `APP/artifacts/mapazapp/docs/V2_08_ENTRY_VARIANT_MODEL.md` — `evaluateEntryVariant` + optional `entryVariantResult` on decision model and Entry/SL/TP input (warning-only integration); synthetic fixtures in `entry-variant-fixtures.ts`; no profitability claim.
 **Roadmap V2-09 target / liquidity objective:** `APP/artifacts/mapazapp/docs/V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md` — `evaluateTargetObjective` + optional `targetObjectiveResult` on decision model and Entry/SL/TP input; fixtures `target-objective-fixtures.ts`; tests `tests/v2-09-target-objective-model.test.ts`; no profitability claim.
+**Roadmap V2-11 manual candle import:** `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md` — `importManualCandleDataset` + `createBacktestCampaignDatasetFromManualImport`; tests `tests/v2-11-manual-candle-dataset-importer.test.ts`; CSV in-memory only; no profitability claim.
 
 ---
 

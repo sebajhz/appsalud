@@ -1,3 +1,10 @@
+## Addendum V2-11
+
+- Checkpoint: `V2-11 — Manual Candle Dataset Import / Replay Campaign Input` (core only).
+- Importacion determinista de CSV de velas como texto (`importManualCandleDataset`) y adaptador a `BacktestCampaignDataset` (`createBacktestCampaignDatasetFromManualImport`).
+- Documentacion: `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`.
+- Siguiente en plan maestro V2: **V2-12** (validacion de muestras exportadas saneadas).
+
 ## Addendum V2-10.5
 
 - Plan maestro autoritativo para ejecucion Roadmap V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
@@ -31,6 +38,7 @@
 **Roadmap V2-07:** HTF bias / context engine v1 — `APP/artifacts/mapazapp/docs/V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md`.
 **Roadmap V2-08:** Entry variant model — `APP/artifacts/mapazapp/docs/V2_08_ENTRY_VARIANT_MODEL.md`.
 **Roadmap V2-09:** Target / liquidity objective model v1 — `APP/artifacts/mapazapp/docs/V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md` (Entry/SL/TP + decision model hooks; review-only).
+**Roadmap V2-11:** Manual candle dataset CSV import — `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md` (`importManualCandleDataset`, campaign dataset adapter; in-memory CSV only).
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
@@ -202,3 +210,4 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 | V1.9 | 2026-05-06 | **V2-03 entry/SL/TP pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_03_ENTRY_SL_TP_MODEL_V1.md` for `buildEntrySlTpPlan`, dynamic buffer, and replay integration. |
 | V1.10 | 2026-05-06 | **V2-04 IFVG replay backtest pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` for `runIfvgReplayBacktest` full-chain replay metrics. |
 | V1.11 | 2026-05-06 | **V2-04.1 pointer** — `candidateTiming` on `ZoneCandidate`, replay prefers explicit bar indices; see `V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` + `IMPLEMENTATION_ASSUMPTIONS.md` §28. |
+| V1.12 | 2026-05-07 | **V2-11 pointer** — manual candle CSV import + campaign dataset adapter; `V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`; addendum § V2-11. |
