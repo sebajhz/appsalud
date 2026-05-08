@@ -1,3 +1,8 @@
+## Addendum V2-10.5
+
+- Plan maestro autoritativo para ejecucion Roadmap V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
+- Este addendum fija la secuencia operativa V2-11..V2-25 y mantiene enfoque engine-first con invariantes de seguridad.
+
 ## Addendum V2-10
 
 - Checkpoint: `V2-10 — Symbol Ranking / Backtest Campaign Runner`.

@@ -1,3 +1,8 @@
+## V2-10.5 master roadmap pointer
+
+- Plan maestro autoritativo V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
+- Este documento define secuencia de ejecucion V2-11..V2-25, invariantes de seguridad y criterio de avance sin drift.
+
 ## V2-10 handoff update
 
 - Checkpoint activo: `V2-10 — Symbol Ranking / Backtest Campaign Runner`.

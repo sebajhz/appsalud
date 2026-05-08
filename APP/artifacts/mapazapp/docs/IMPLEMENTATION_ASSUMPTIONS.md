@@ -1,3 +1,8 @@
+## V2-10.5 master roadmap pointer
+
+- Fuente autoritativa de ejecucion Roadmap V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
+- Usar este plan para ordenar checkpoints V2-11..V2-25 y evitar scope drift durante desarrollo activo.
+
 ## V2-10 assumptions (symbol ranking campaign)
 
 - Campaign runner usa datasets in-memory o proporcionados manualmente; no file I/O automatizado.
