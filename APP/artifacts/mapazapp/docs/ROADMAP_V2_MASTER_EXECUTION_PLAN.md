@@ -1,5 +1,11 @@
 # ROADMAP V2 — Master Execution Plan
 
+## V2-12 checkpoint context
+
+- Checkpoint: `V2-12 — Real Export Sample Validation from BridgeEA/TestEA`.
+- Purpose: validar bundles de texto saneados (BridgeEA + TestEA) contra parsers/importers del core, privacidad heurística, sin `fs`, sin exportes crudos en repo.
+- Reference: `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md`.
+
 ## V2-11 checkpoint context
 
 - Checkpoint: `V2-11 — Manual Candle Dataset Import / Replay Campaign Input`.
@@ -18,11 +24,11 @@
 ### Completed foundations
 
 - CP0 through CP18.5 completed (system foundation, review-only posture, safety invariants, architecture separation).
-- V2-01 through V2-11 completed (engine-first sequence; V2-11 = import manual de datasets de velas para campañas).
+- V2-01 through V2-12 completed (engine-first sequence; V2-11 = import manual de velas; V2-12 = validación de muestras export saneadas BridgeEA/TestEA).
 
 ### Current repo reference
 
-- Latest commit: actualizar al cierre de V2-11 en git (import manual de velas + docs).
+- Latest commit: actualizar al cierre de V2-12 en git (validación de muestras export + docs).
 
 ---
 
@@ -205,9 +211,9 @@ Interpretation:
 
 ## 6) Immediate next checkpoint recommendation
 
-**Recommendation:** `V2-12 — Real Export Sample Validation from BridgeEA/TestEA`
+**Recommendation:** `V2-13 — Campaign Runner over Manual Datasets`
 
-**Reason:** con V2-11 el core puede ingerir CSV controlado; el siguiente paso es un harness de validación sobre muestras exportadas **saneadas** (sin crudos reales en repo) para cerrar la brecha con contratos BridgeEA/TestEA.
+**Reason:** con V2-11+V2-12 el core puede importar velas y validar formas de export; el siguiente paso es orquestar el runner de campaña sobre esos datasets con evidencia conservadora y sin auto-aprobación.
 
 ---
 

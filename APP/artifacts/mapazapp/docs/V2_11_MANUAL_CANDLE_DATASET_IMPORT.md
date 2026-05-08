@@ -59,7 +59,7 @@ Una sola columna temporal parseable (ISO recomendado) + OHLC. Campos opcionales 
 
 ## Siguiente checkpoint
 
-**V2-12 — Real Export Sample Validation from BridgeEA/TestEA:** validación reproducible sobre muestras **saneadas** locales, sin incluir exportes crudos reales en el repositorio.
+**V2-13 — Campaign Runner over Manual Datasets:** orquestar `runBacktestCampaign` sobre datasets importados/validados con evidencia conservadora (sin auto-aprobación). La validación de forma de export saneado queda descrita en **V2-12** (`V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md`).
 
 ## API (core)
 

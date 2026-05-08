@@ -1,9 +1,15 @@
+## Addendum V2-12
+
+- Checkpoint: `V2-12 — Real Export Sample Validation from BridgeEA/TestEA` (core only, texto en memoria).
+- Validacion de bundles saneados: BridgeEA (`parseBridgeStatusJson`, parsers CSV, `importManualCandleDataset` para velas) y TestEA (`importBacktestTradesFromCsv`, contrato `backtest_summary.json`).
+- Documentacion: `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md`.
+- Siguiente en plan maestro V2: **V2-13** (campaign runner sobre datasets manuales).
+
 ## Addendum V2-11
 
 - Checkpoint: `V2-11 — Manual Candle Dataset Import / Replay Campaign Input` (core only).
 - Importacion determinista de CSV de velas como texto (`importManualCandleDataset`) y adaptador a `BacktestCampaignDataset` (`createBacktestCampaignDatasetFromManualImport`).
 - Documentacion: `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`.
-- Siguiente en plan maestro V2: **V2-12** (validacion de muestras exportadas saneadas).
 
 ## Addendum V2-10.5
 
@@ -39,6 +45,7 @@
 **Roadmap V2-08:** Entry variant model — `APP/artifacts/mapazapp/docs/V2_08_ENTRY_VARIANT_MODEL.md`.
 **Roadmap V2-09:** Target / liquidity objective model v1 — `APP/artifacts/mapazapp/docs/V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md` (Entry/SL/TP + decision model hooks; review-only).
 **Roadmap V2-11:** Manual candle dataset CSV import — `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md` (`importManualCandleDataset`, campaign dataset adapter; in-memory CSV only).
+**Roadmap V2-12:** Export sample validation — `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md` (`validateExportSampleBundle`; sanitized bundles only).
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 
@@ -211,3 +218,4 @@ Short titles below; each checkpoint should have its own spec or addendum before 
 | V1.10 | 2026-05-06 | **V2-04 IFVG replay backtest pointer** — add reference to `APP/artifacts/mapazapp/docs/V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` for `runIfvgReplayBacktest` full-chain replay metrics. |
 | V1.11 | 2026-05-06 | **V2-04.1 pointer** — `candidateTiming` on `ZoneCandidate`, replay prefers explicit bar indices; see `V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md` + `IMPLEMENTATION_ASSUMPTIONS.md` §28. |
 | V1.12 | 2026-05-07 | **V2-11 pointer** — manual candle CSV import + campaign dataset adapter; `V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`; addendum § V2-11. |
+| V1.13 | 2026-05-07 | **V2-12 pointer** — export sample validation (BridgeEA/TestEA text bundles); `V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md`; addendum § V2-12. |
