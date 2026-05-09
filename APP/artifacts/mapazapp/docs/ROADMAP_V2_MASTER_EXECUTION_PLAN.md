@@ -1,5 +1,11 @@
 # ROADMAP V2 — Master Execution Plan
 
+## V2-14 checkpoint context
+
+- Checkpoint: `V2-14 — Parameter Set Grid Runner v1`.
+- Purpose: comparar parameter sets sobre los mismos datasets mediante campañas aisladas (`runParameterGrid` → `runBacktestCampaign`), ranking conservador y recomendaciones sin auto-aprobación.
+- Reference: `APP/artifacts/mapazapp/docs/V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`.
+
 ## V2-13 checkpoint context
 
 - Checkpoint: `V2-13 — Campaign Runner over Manual Datasets`.
@@ -30,11 +36,11 @@
 ### Completed foundations
 
 - CP0 through CP18.5 completed (system foundation, review-only posture, safety invariants, architecture separation).
-- V2-01 through V2-13 completed (engine-first sequence; V2-11 = import manual de velas; V2-12 = validación de muestras export saneadas BridgeEA/TestEA; V2-13 = pipeline manual → campaign runner).
+- V2-01 through V2-14 completed (engine-first sequence; V2-13 = pipeline manual → campaign runner; V2-14 = grid de parameter sets sobre mismos datasets).
 
 ### Current repo reference
 
-- Latest commit: actualizar al cierre de V2-13 en git (manual campaign pipeline + docs).
+- Latest commit: actualizar al cierre de V2-14 en git (parameter grid runner + docs).
 
 ---
 
@@ -76,7 +82,7 @@ Interpretation:
 1. V2-11 — Manual Candle Dataset Import / Replay Campaign Input (done)
 2. V2-12 — Real Export Sample Validation from BridgeEA/TestEA (done)
 3. V2-13 — Campaign Runner over Manual Datasets (done)
-4. V2-14 — Parameter Set Grid Runner v1
+4. V2-14 — Parameter Set Grid Runner v1 (done)
 5. V2-15 — Walk-forward / Train-Validation-Forward Evaluator
 6. V2-16 — Dashboard/API Connection Cleanup
 7. V2-17 — Local Import UI or CLI
@@ -217,9 +223,9 @@ Interpretation:
 
 ## 6) Immediate next checkpoint recommendation
 
-**Recommendation:** `V2-14 — Parameter Set Grid Runner v1`
+**Recommendation:** `V2-15 — Walk-forward / Train-Validation-Forward Evaluator`
 
-**Reason:** con V2-13 el core puede ejecutar campañas sobre datasets manuales/validados; el siguiente paso es una rejilla controlada de parameter sets sobre los mismos datasets (sin daemon de optimización).
+**Reason:** con V2-14 el core puede comparar parameter sets de forma controlada; el siguiente paso es gobernanza explícita de splits y walk-forward para reducir sobreajuste y documentar evidencia temporal.
 
 ---
 

@@ -1,9 +1,16 @@
+## Addendum V2-14
+
+- Checkpoint: `V2-14 — Parameter Set Grid Runner v1` (core only).
+- Comparacion controlada de parameter sets: `runParameterGrid` → campañas aisladas `runBacktestCampaign` por candidato, ranking conservador.
+- Documentacion: `APP/artifacts/mapazapp/docs/V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`.
+- Siguiente en plan maestro V2: **V2-15** (walk-forward / train-validation-forward).
+
 ## Addendum V2-13
 
 - Checkpoint: `V2-13 — Campaign Runner over Manual Datasets` (core only, texto en memoria).
 - Orquestacion: `runManualDatasetCampaign` conecta import manual V2-11, validacion de export V2-12 y `runBacktestCampaign` (V2-10).
 - Documentacion: `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`.
-- Siguiente en plan maestro V2: **V2-14** (parameter set grid runner v1).
+- Composicion: datasets de esta pipeline pueden alimentar `runParameterGrid` (V2-14).
 
 ## Addendum V2-12
 
@@ -54,6 +61,7 @@
 **Roadmap V2-11:** Manual candle dataset CSV import — `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md` (`importManualCandleDataset`, campaign dataset adapter; in-memory CSV only).
 **Roadmap V2-12:** Export sample validation — `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md` (`validateExportSampleBundle`; sanitized bundles only).
 **Roadmap V2-13:** Manual dataset campaign pipeline — `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md` (`runManualDatasetCampaign`; no live ingest).
+**Roadmap V2-14:** Parameter set grid runner — `APP/artifacts/mapazapp/docs/V2_14_PARAMETER_SET_GRID_RUNNER_V1.md` (`runParameterGrid`; comparative evidence only).
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 

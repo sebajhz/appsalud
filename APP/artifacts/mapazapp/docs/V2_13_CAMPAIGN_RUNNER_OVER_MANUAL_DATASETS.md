@@ -37,4 +37,4 @@ No sustituye un producto de ingest en vivo: el operador sigue aportando texto en
 
 ## Siguiente paso
 
-**V2-14 — Parameter Set Grid Runner v1**: comparar conjuntos de parámetros de forma controlada sobre los mismos datasets (sin daemon de optimización ni bucles desatendidos).
+**V2-14 — Parameter Set Grid Runner v1** (cerrado): `runParameterGrid` — ver `V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`. **V2-15** — walk-forward / train-validation-forward evaluator.
