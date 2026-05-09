@@ -1,9 +1,16 @@
+## Addendum V2-13
+
+- Checkpoint: `V2-13 — Campaign Runner over Manual Datasets` (core only, texto en memoria).
+- Orquestacion: `runManualDatasetCampaign` conecta import manual V2-11, validacion de export V2-12 y `runBacktestCampaign` (V2-10).
+- Documentacion: `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`.
+- Siguiente en plan maestro V2: **V2-14** (parameter set grid runner v1).
+
 ## Addendum V2-12
 
 - Checkpoint: `V2-12 — Real Export Sample Validation from BridgeEA/TestEA` (core only, texto en memoria).
 - Validacion de bundles saneados: BridgeEA (`parseBridgeStatusJson`, parsers CSV, `importManualCandleDataset` para velas) y TestEA (`importBacktestTradesFromCsv`, contrato `backtest_summary.json`).
 - Documentacion: `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md`.
-- Siguiente en plan maestro V2: **V2-13** (campaign runner sobre datasets manuales).
+- Consumo: pipeline V2-13 (`runManualDatasetCampaign`).
 
 ## Addendum V2-11
 
@@ -46,6 +53,7 @@
 **Roadmap V2-09:** Target / liquidity objective model v1 — `APP/artifacts/mapazapp/docs/V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md` (Entry/SL/TP + decision model hooks; review-only).
 **Roadmap V2-11:** Manual candle dataset CSV import — `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md` (`importManualCandleDataset`, campaign dataset adapter; in-memory CSV only).
 **Roadmap V2-12:** Export sample validation — `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md` (`validateExportSampleBundle`; sanitized bundles only).
+**Roadmap V2-13:** Manual dataset campaign pipeline — `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md` (`runManualDatasetCampaign`; no live ingest).
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 

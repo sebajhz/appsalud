@@ -46,7 +46,7 @@ Este checkpoint **no** observa el sistema de archivos del MT5 ni sincroniza expo
 
 ## Relación con V2-13
 
-V2-13 podrá ejecutar el runner de campañas sobre datasets ya importados/validados; V2-12 asegura que la forma de los exportes encaja con el core **antes** de mezclar evidencia multi-run.
+V2-13 (`runManualDatasetCampaign`) ejecuta el runner de campañas sobre datasets construidos desde CSV manual y/o bundles validados aquí; V2-12 asegura que la forma de los exportes encaja con el core **antes** de mezclar evidencia multi-run. Un bundle **solo TestEA** valida evidencia de backtest exportado, no suministra velas OHLC para replay IFVG.
 
 ## Limitaciones
 

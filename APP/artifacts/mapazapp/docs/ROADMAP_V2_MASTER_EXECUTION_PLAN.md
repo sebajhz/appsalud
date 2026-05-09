@@ -1,5 +1,11 @@
 # ROADMAP V2 — Master Execution Plan
 
+## V2-13 checkpoint context
+
+- Checkpoint: `V2-13 — Campaign Runner over Manual Datasets`.
+- Purpose: orquestar `runBacktestCampaign` sobre datasets procedentes de CSV manual y/o bundles BridgeEA/TestEA validados en memoria, con diagnósticos y flags de seguridad explícitos.
+- Reference: `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`.
+
 ## V2-12 checkpoint context
 
 - Checkpoint: `V2-12 — Real Export Sample Validation from BridgeEA/TestEA`.
@@ -24,11 +30,11 @@
 ### Completed foundations
 
 - CP0 through CP18.5 completed (system foundation, review-only posture, safety invariants, architecture separation).
-- V2-01 through V2-12 completed (engine-first sequence; V2-11 = import manual de velas; V2-12 = validación de muestras export saneadas BridgeEA/TestEA).
+- V2-01 through V2-13 completed (engine-first sequence; V2-11 = import manual de velas; V2-12 = validación de muestras export saneadas BridgeEA/TestEA; V2-13 = pipeline manual → campaign runner).
 
 ### Current repo reference
 
-- Latest commit: actualizar al cierre de V2-12 en git (validación de muestras export + docs).
+- Latest commit: actualizar al cierre de V2-13 en git (manual campaign pipeline + docs).
 
 ---
 
@@ -67,9 +73,9 @@ Interpretation:
 
 ## 4) Next execution plan (authoritative order)
 
-1. V2-11 — Manual Candle Dataset Import / Replay Campaign Input
-2. V2-12 — Real Export Sample Validation from BridgeEA/TestEA
-3. V2-13 — Campaign Runner over Manual Datasets
+1. V2-11 — Manual Candle Dataset Import / Replay Campaign Input (done)
+2. V2-12 — Real Export Sample Validation from BridgeEA/TestEA (done)
+3. V2-13 — Campaign Runner over Manual Datasets (done)
 4. V2-14 — Parameter Set Grid Runner v1
 5. V2-15 — Walk-forward / Train-Validation-Forward Evaluator
 6. V2-16 — Dashboard/API Connection Cleanup
@@ -211,9 +217,9 @@ Interpretation:
 
 ## 6) Immediate next checkpoint recommendation
 
-**Recommendation:** `V2-13 — Campaign Runner over Manual Datasets`
+**Recommendation:** `V2-14 — Parameter Set Grid Runner v1`
 
-**Reason:** con V2-11+V2-12 el core puede importar velas y validar formas de export; el siguiente paso es orquestar el runner de campaña sobre esos datasets con evidencia conservadora y sin auto-aprobación.
+**Reason:** con V2-13 el core puede ejecutar campañas sobre datasets manuales/validados; el siguiente paso es una rejilla controlada de parameter sets sobre los mismos datasets (sin daemon de optimización).
 
 ---
 

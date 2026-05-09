@@ -3,6 +3,14 @@
 - Fuente autoritativa de ejecucion Roadmap V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
 - Usar este plan para ordenar checkpoints V2-11..V2-25 y evitar scope drift durante desarrollo activo.
 
+## V2-13 assumptions (manual dataset campaign pipeline)
+
+- `runManualDatasetCampaign` solo orquesta texto en memoria (`csvText`, `files[]`); sin `fs`, sin watcher, sin DB, sin ejecución.
+- Combina V2-11 (import CSV), V2-12 (`validateExportSampleBundle` donde aplica) y V2-10 (`runBacktestCampaign`).
+- Bundles exclusivamente TestEA no aportan velas OHLC al replay IFVG; sirven como evidencia de validación y diagnósticos.
+- Resultados incluyen `autoApprovalEnabled: false` además de los flags del campaign runner; no se incrusta CSV crudo en salidas.
+- Fixtures `manual-campaign-fixtures.ts` son sintéticos; no sustituyen exportes reales ni prueban rentabilidad.
+
 ## V2-12 assumptions (export sample validation)
 
 - `validateExportSampleBundle` y funciones relacionadas solo consumen `{ fileName, text }`; no hay rutas de disco ni lectura MT5 en core.
@@ -44,6 +52,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2-09 target / liquidity objective:** `APP/artifacts/mapazapp/docs/V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md` — `evaluateTargetObjective` + optional `targetObjectiveResult` on decision model and Entry/SL/TP input; fixtures `target-objective-fixtures.ts`; tests `tests/v2-09-target-objective-model.test.ts`; no profitability claim.
 **Roadmap V2-11 manual candle import:** `APP/artifacts/mapazapp/docs/V2_11_MANUAL_CANDLE_DATASET_IMPORT.md` — `importManualCandleDataset` + `createBacktestCampaignDatasetFromManualImport`; tests `tests/v2-11-manual-candle-dataset-importer.test.ts`; CSV in-memory only; no profitability claim.
 **Roadmap V2-12 export sample validation:** `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md` — `validateExportSampleBundle` + privacidad; tests `tests/v2-12-export-sample-validation.test.ts`; no profitability claim.
+**Roadmap V2-13 manual campaign pipeline:** `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md` — `runManualDatasetCampaign`; tests `tests/v2-13-manual-campaign-runner.test.ts`; no profitability claim.
 
 ---
 

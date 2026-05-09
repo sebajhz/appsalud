@@ -59,7 +59,7 @@ Una sola columna temporal parseable (ISO recomendado) + OHLC. Campos opcionales 
 
 ## Siguiente checkpoint
 
-**V2-13 — Campaign Runner over Manual Datasets:** orquestar `runBacktestCampaign` sobre datasets importados/validados con evidencia conservadora (sin auto-aprobación). La validación de forma de export saneado queda descrita en **V2-12** (`V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md`).
+**V2-13 — Campaign Runner over Manual Datasets** (cerrado): `runManualDatasetCampaign` conecta este import con `runBacktestCampaign`; ver `V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`. Siguiente en plan maestro: **V2-14** (parameter set grid runner).
 
 ## API (core)
 
