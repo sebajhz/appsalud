@@ -1,5 +1,11 @@
 # ROADMAP V2 — Master Execution Plan
 
+## V2-15 checkpoint context
+
+- Checkpoint: `V2-15 — Walk-forward / Train-Validation-Forward Evaluator`.
+- Purpose: gobernar evidencia por splits (train / validation / forward), señalar riesgo de sobreajuste e inestabilidad, y emitir recomendaciones conservadoras sin auto-aprobación.
+- Reference: `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`.
+
 ## V2-14 checkpoint context
 
 - Checkpoint: `V2-14 — Parameter Set Grid Runner v1`.
@@ -36,11 +42,11 @@
 ### Completed foundations
 
 - CP0 through CP18.5 completed (system foundation, review-only posture, safety invariants, architecture separation).
-- V2-01 through V2-14 completed (engine-first sequence; V2-13 = pipeline manual → campaign runner; V2-14 = grid de parameter sets sobre mismos datasets).
+- V2-01 through V2-15 completed (engine-first sequence; V2-13 = pipeline manual → campaign runner; V2-14 = grid de parameter sets sobre mismos datasets; V2-15 = evaluador walk-forward sobre runs).
 
 ### Current repo reference
 
-- Latest commit: actualizar al cierre de V2-14 en git (parameter grid runner + docs).
+- Latest commit: actualizar al cierre de V2-15 en git (walk-forward evaluator + docs).
 
 ---
 
@@ -83,7 +89,7 @@ Interpretation:
 2. V2-12 — Real Export Sample Validation from BridgeEA/TestEA (done)
 3. V2-13 — Campaign Runner over Manual Datasets (done)
 4. V2-14 — Parameter Set Grid Runner v1 (done)
-5. V2-15 — Walk-forward / Train-Validation-Forward Evaluator
+5. V2-15 — Walk-forward / Train-Validation-Forward Evaluator (done)
 6. V2-16 — Dashboard/API Connection Cleanup
 7. V2-17 — Local Import UI or CLI
 8. V2-18 — Persistence Decision / Local SQLite Design

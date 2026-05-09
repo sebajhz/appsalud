@@ -38,7 +38,7 @@ No es optimización bayesiana ni búsqueda en grid desatendida: es un **informe 
 
 ## Relación con V2-15
 
-V2-15 añadirá gobernanza **train / validation / forward** y walk-forward. El grid runner v1 asume que los datasets ya traen `datasetSplit` coherente; V2-15 endurecerá cómo se interpreta la evidencia cruzada temporal sin filtraciones.
+V2-15 añade `evaluateWalkForward` para gobernanza **train / validation / forward** y señales de sobreajuste/inestabilidad sobre las filas `runResults` del campaign (incluidas salidas de `runParameterGrid`). El grid runner v1 sigue asumiendo `datasetSplit` coherente en datasets; el evaluador interpreta esa evidencia de forma conservadora (ver `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`).
 
 ## API (core)
 

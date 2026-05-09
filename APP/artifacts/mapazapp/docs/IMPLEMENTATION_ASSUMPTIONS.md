@@ -3,6 +3,14 @@
 - Fuente autoritativa de ejecucion Roadmap V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
 - Usar este plan para ordenar checkpoints V2-11..V2-25 y evitar scope drift durante desarrollo activo.
 
+## V2-15 assumptions (walk-forward evaluator)
+
+- `evaluateWalkForward` solo interpreta filas `runResults` ya producidas (o un grid interno opcional); no reparticiona velas ni garantiza ausencia de fuga si el llamador etiqueta splits incorrectamente.
+- Filas `full` se agregan en train, validation y forward simultaneamente: es conveniencia para fixtures/export agregado, no walk-forward limpio por si solo.
+- Heuristicas de sobreajuste y estabilidad son v1 deterministas; no sustituyen inferencia estadistica formal ni optimizacion.
+- Sin aprobacion automatica, sin mutacion de registry, sin I/O; flags de seguridad alineados con V2-10/V2-14.
+- Fixtures `walk-forward-fixtures.ts` son sinteticos; no prueba de rentabilidad.
+
 ## V2-14 assumptions (parameter set grid runner)
 
 - `runParameterGrid` ejecuta una campaña por candidato (mismos datasets tras filtro de simbolo); no es bucle de optimizacion ni auto-tuning.
@@ -62,6 +70,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2-12 export sample validation:** `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md` — `validateExportSampleBundle` + privacidad; tests `tests/v2-12-export-sample-validation.test.ts`; no profitability claim.
 **Roadmap V2-13 manual campaign pipeline:** `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md` — `runManualDatasetCampaign`; tests `tests/v2-13-manual-campaign-runner.test.ts`; no profitability claim.
 **Roadmap V2-14 parameter grid:** `APP/artifacts/mapazapp/docs/V2_14_PARAMETER_SET_GRID_RUNNER_V1.md` — `runParameterGrid`; tests `tests/v2-14-parameter-grid-runner.test.ts`; no profitability claim.
+**Roadmap V2-15 walk-forward:** `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md` — `evaluateWalkForward`; tests `tests/v2-15-walk-forward-evaluator.test.ts`; no profitability claim.
 
 ---
 
