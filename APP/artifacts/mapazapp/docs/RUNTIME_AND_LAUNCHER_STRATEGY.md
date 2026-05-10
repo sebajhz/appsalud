@@ -59,6 +59,9 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D10.2 (solo documentación):** [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) — diseño de acción futura **`open_mt5`** (launcher, gates, token, consentimiento); **sin** código.
 - **D10.3 (`@workspace/scripts`):** **`mapazapp-mt5-runtime-status.ts`** + tests — integración conservadora validación → **`Mt5RuntimeSlice`** + **`deriveOverallRuntimeStatus`**; **sin** watcher, **sin** “connected”.
 - **D10.4 (`@workspace/mapazapp`):** **`Mt5ConfigStatusPanel`** + **`mt5ConfigStatusPresenter`** — borrador UI **read-only** (mock); **sin** fetch nuevo, **sin** botones operativos.
+- **D10.5 (solo documentación):** [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md) — política de almacenamiento/config MT5 futura; **sin** persistencia real, **sin** `localStorage`.
+- **D10.6 (`@workspace/scripts`):** **`mapazapp-mt5-bridge-readiness.ts`** + tests — readiness conceptual de carpeta bridge (**sin** watcher, **sin** escritura; deps opcionales); wording **ready for read-only validation**, no “connected”.
+- **D10.7 (solo documentación):** [`MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md`](./MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md) — límites del discovery read-only BridgeEA/TestEA; **sin** filesystem real obligatorio en el núcleo reusable.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

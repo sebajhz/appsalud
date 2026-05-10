@@ -2,7 +2,7 @@
 
 **Checkpoint D10.0 — documentation + design gate.** Resume qué existe hoy respecto a MT5 en el repo, qué es fixture o sanitizado, qué está explícitamente fuera de alcance, y bajo qué condiciones puede avanzarse un **modelo TS puro de validación de configuración** (**D10.1**) sin abrir MT5, sin watcher y sin launcher real.
 
-**Relacionado:** [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) (**D10.2** — diseño `open_mt5`, sin código), [`USER_MANUAL_MT5_SETUP.md`](./USER_MANUAL_MT5_SETUP.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) (**D10.2** — diseño `open_mt5`, sin código), [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md) (**D10.5** — decisión de storage/settings), [`MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md`](./MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md) (**D10.7** — auditoría discovery read-only), [`USER_MANUAL_MT5_SETUP.md`](./USER_MANUAL_MT5_SETUP.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -124,3 +124,14 @@ Si en el futuro se requiere detección automática del ejecutable o del data fol
 | **D10.2** | [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) — acción futura **`open_mt5`**, criterios previos, sin implementación |
 | **D10.3** | `APP/scripts/src/mapazapp-mt5-runtime-status.ts` — mapeo conservador de validación D10.1 → `Mt5RuntimeSlice` + `deriveOverallRuntimeStatus`; **sin** watcher |
 | **D10.4** | Dashboard: `Mt5ConfigStatusPanel` + presenter — borrador **read-only**, mock estático, **sin** botones ni fetch nuevo |
+
+---
+
+## 13. Seguimiento D10.5–D10.7 (storage, readiness, discovery audit)
+
+| Checkpoint | Entrega |
+|------------|---------|
+| **D10.5** | [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md) — política de origen de verdad para config MT5 futura; **sin** persistencia real |
+| **D10.6** | `APP/scripts/src/mapazapp-mt5-bridge-readiness.ts` — modelo TS de readiness de carpeta bridge (**sin** watcher, **sin** escritura; deps opcionales; wording **ready for read-only validation**) |
+| **D10.7** | [`MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md`](./MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md) — límites del discovery read-only BridgeEA/TestEA; **sin** filesystem real obligatorio en core |
+
