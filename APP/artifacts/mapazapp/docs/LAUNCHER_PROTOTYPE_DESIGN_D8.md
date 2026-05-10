@@ -2,7 +2,7 @@
 
 **Checkpoint D8.1 — documentation only.** This document defines how the future Mapazapp **launcher** and **launcher-side action bridge** should be designed **before** any launcher code, process supervisor, HTTP `POST` action routes, dashboard operational buttons, MT5 runtime, folder watchers, databases, WebSocket live feeds, or real execution are implemented.
 
-**Related:** [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1 — dashboard ↔ governed local bridge), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (D2 — config schema and runtime semantics), [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (D4.1 — action IDs and wiring targets), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
+**Related:** [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1 — dashboard ↔ governed local bridge), [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — mandatory threat model and mitigations **before** any action `POST`, IPC, or launcher-side HTTP transport), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (D2 — config schema and runtime semantics), [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (D4.1 — action IDs and wiring targets), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
 
 ---
 
@@ -10,7 +10,7 @@
 
 - Mapazapp **already has** development scripts (`mapazapp:dev-preflight`, `mapazapp:dev-start`), a shared **`MapazappRuntimeStatus`** model, a read-only **`GET /api/mapazapp/runtime/status`** snapshot, a shared **`MapazappActionResult`** model (**D7.2**), and a dashboard **`DashboardActionClient`** stub (**D7.3**) that returns safe **`not_available`** / **`blocked`** results only.
 - There is **still no** product launcher executable, unified supervisor, launcher-side bridge implementation, or centralized launcher log policy in code.
-- **D8.1** records **how** the launcher and launcher-side bridge **should** be shaped **before** implementation: responsibilities, limits, process ownership, ports/logs, single-instance, Windows lifecycle, integration with **`ActionResult`** / runtime status, security posture, and a testing strategy for future code.
+- **D8.1** records **how** the launcher and launcher-side bridge **should** be shaped **before** implementation: responsibilities, limits, process ownership, ports/logs, single-instance, Windows lifecycle, integration with **`ActionResult`** / runtime status, security posture, and a testing strategy for future code. **D9.1** (`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`) formalizes localhost / CSRF / replay / path-privacy / process-ownership threats and **mandatory mitigations** — any future launcher-side or API transport for actions must align with it **before** endpoints ship.
 - The **launcher** (future) will be the **controlled owner** of local child processes and **governed** local actions that the browser must not perform directly.
 - The **dashboard must never** spawn OS processes, run arbitrary shells, open MetaTrader, kill unrelated PIDs, or read privileged local paths without a governed consent path (see **D7.1**).
 - Across all phases described in current governance docs, **`executionEnabled` remains `false`** until an explicit, separate product gate says otherwise.

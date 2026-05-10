@@ -2,7 +2,7 @@
 
 **Checkpoint D7.1 — documentation only.** No dashboard buttons, no new HTTP routes, no `POST` action endpoints, no launcher executable, no MT5 runtime integration, no watcher, no database, no WebSocket live streams, no polling, no `localStorage` action state, and no real execution. This document defines how future dashboard actions should connect to a **governed** local API and/or desktop launcher.
 
-**Related:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (D4.1 — action IDs and safety rules), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (D2 — config and runtime semantics), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (**D8.1** — launcher prototype + launcher-side bridge design, **documentation only**).
+**Related:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (D4.1 — action IDs and safety rules), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (D2 — config and runtime semantics), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (**D8.1** — launcher prototype + launcher-side bridge design, **documentation only**), [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — formal localhost / action-bridge threat model and mandatory mitigations — **must precede any `POST` / action endpoint**).
 
 ---
 
@@ -10,7 +10,7 @@
 
 - The dashboard **already** can show a **read-only** runtime status snapshot (`GET /api/mapazapp/runtime/status` via `runtimeStatusDataSource`, presented on Configuration — D6.x).
 - The **next** step for product UX will be **actions** (validate environment, start dev stack, validate CSV, open logs, etc.).
-- **Before** adding buttons or `POST` endpoints, the repo needs a **single written bridge contract**: who may spawn processes, how the browser participates, and how results return safely.
+- **Before** adding buttons or `POST` endpoints, the repo needs a **single written bridge contract**: who may spawn processes, how the browser participates, and how results return safely — and the formal **threat model** in [**D9.1** `./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) must be read and satisfied by any future action transport design.
 - The **browser must not** execute OS commands, spawn `pnpm`, open MT5, or read arbitrary local paths by itself.
 - A **local API** and/or **launcher** will act as the **trusted bridge** that runs controlled helpers and returns structured results.
 - Across all phases described in current governance docs, **`executionEnabled` remains `false`** until an explicit, separate product gate says otherwise.
@@ -42,8 +42,7 @@
 - **Operational database** for Mapazapp in this scope  
 - **WebSocket** live streams  
 - **Centralized launcher log folder** policy implemented  
-- **Permissions / capability model** for actions (beyond narrative docs)  
-- **`ActionResult`** type **implemented** in TypeScript (this doc proposes a **conceptual** JSON shape only)
+- **Typed caller/action gate enforcement layer** for actions (beyond `MapazappActionResult` + `assertActionResultSafety` + narrative docs — planned **D9.2**)
 
 ---
 

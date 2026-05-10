@@ -27,6 +27,7 @@
 - **D8.1 documents launcher prototype + launcher-side bridge (docs only).** Ver `APP/artifacts/mapazapp/docs/LAUNCHER_PROTOTYPE_DESIGN_D8.md` — no launcher executable, no process supervisor, no `spawn`, no API `POST` actions, no dashboard buttons.
 - **D8.2 adds `APP/scripts/src/mapazapp-launcher-model.ts`** — pure launcher config/process skeleton + tests; maps conservatively to `MapazappRuntimeStatus`; **no** `child_process`, **no** live action bridge.
 - **D8.3 adds `APP/scripts/src/mapazapp-launcher-preflight-bridge.ts`** — `runLauncherValidateEnvironmentPreflight` wraps read-only `performDevPreflight`, updates launcher model + derived runtime snapshot, returns safe `MapazappActionResult`; **no** spawn, **no** new CLI entry, **no** API/dashboard start.
+- **D9.1 documents `APP/artifacts/mapazapp/docs/LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`** — formal local action bridge threat model + mandatory mitigations **before** any `POST`/action endpoint; **docs only**, no TS gates/API/buttons/launcher.
 
 ## V2-16 handoff update
 

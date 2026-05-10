@@ -115,6 +115,8 @@ Interpretation:
 
 **Nota D8.1 (launcher prototype, solo docs):** `APP/artifacts/mapazapp/docs/LAUNCHER_PROTOTYPE_DESIGN_D8.md` define el diseño del futuro launcher y del puente **launcher-side** (procesos/PIDs, Windows, puertos, logs, seguridad localhost, pruebas futuras); no implementa código, supervisor, `spawn`, MT5 runtime, watcher, DB ni WebSocket live.
 
+**Nota D9.1 (threat model action bridge, solo docs):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md` formaliza amenazas y mitigaciones obligatorias (localhost/CSRF/replay/CORS/tokens/allowlist/procesos/logs/privacidad/`ActionResult`) **antes** de cualquier endpoint `POST` de acciones, IPC real o launcher ejecutable; sin código ni dependencias nuevas.
+
 ---
 
 ## 5) Checkpoint definitions (V2-11 through V2-25)
