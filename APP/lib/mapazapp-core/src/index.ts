@@ -139,3 +139,4 @@ export * from "./assisted-execution-contract";
 export * from "./assisted-execution-invariants";
 export * from "./assisted-execution-fixtures";
 export * from "./runtime-status";
+export * from "./action-result";

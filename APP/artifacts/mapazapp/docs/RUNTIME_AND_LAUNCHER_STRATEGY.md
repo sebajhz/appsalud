@@ -36,6 +36,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D4.1 (solo documentación):** `APP/artifacts/mapazapp/docs/DASHBOARD_RUNTIME_ACTIONS_DESIGN.md` — diseño de **acciones futuras** del dashboard (Validar entorno, Iniciar Mapazapp, Validar CSV, Estado del sistema, MT5, logs, parada) y cómo deben enlazarse con launcher/API segura; **sin** implementación de botones ni endpoints.
 - **D5.1b (`@workspace/api-server`):** `GET /api/mapazapp/runtime/status` — snapshot read-only desde `@workspace/mapazapp-core` (`runtime-status.ts`); **`mockOnly` / `reviewOnly`**, ejecución deshabilitada; MT5/bridge **`not_configured`**; **sin** watcher, **sin** DB, **sin** WebSocket; **no** `POST`.
 - **D7.1 (solo documentación):** `APP/artifacts/mapazapp/docs/ACTION_BRIDGE_DESIGN.md` — diseño formal del **puente de acciones** dashboard ↔ API local / launcher (límites del browser, contrato conceptual `ActionResult`, gates de seguridad, notas de amenaza localhost, secuencia D7.2–D10.0); **sin** implementación de código, **sin** `POST`, **sin** launcher ejecutable.
+- **D7.2 (modelo TS puro):** `@workspace/mapazapp-core` `action-result.ts` — tipos `MapazappActionResult`, factories seguros, `assertActionResultSafety`, `serializeActionResult`; tests vitest; **sin** endpoints, **sin** botones dashboard, **sin** ejecutar acciones reales.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

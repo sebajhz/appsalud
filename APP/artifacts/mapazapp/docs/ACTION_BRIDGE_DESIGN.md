@@ -173,6 +173,8 @@ Suggested **`status`** vocabulary (conceptual): `blocked` | `not_available` | `r
 - **`runtimeStatus`** is optional; omit or null when not applicable.  
 - **`not_available`** / **`blocked`** are valid outcomes while the bridge is absent or policy denies the action.  
 
+**D7.2 (implemented — pure TS only):** the JSON shape above is realized in `@workspace/mapazapp-core` as **`action-result.ts`** (`MapazappActionId`, `MapazappActionResult`, `createDefaultActionSafety`, `createActionNotAvailableResult`, `createBlockedActionResult`, `createSuccessfulReadOnlyActionResult`, `assertActionResultSafety`, `serializeActionResult`). Tests: **`APP/lib/mapazapp-core/tests/d7-action-result-model.d7.test.ts`**. This adds **no** HTTP endpoints, **no** dashboard buttons, and **no** executed actions — only a shared contract and validation helpers.
+
 ---
 
 ## 7. Safety gates
@@ -249,7 +251,7 @@ Any future action bridge **must** enforce (and reject violations of):
 
 - **`show_runtime_status`** read-only (current GET + panel pattern).  
 - **Documentation / specs** (including this file).  
-- Future **TypeScript-only contracts** (e.g. D7.2) **without** wiring buttons or live `POST`.  
+- **D7.2** shared **`ActionResult`** TypeScript model in `@workspace/mapazapp-core` — still **no** dashboard buttons and **no** `POST` action routes.  
 
 ### Not allowed before a launcher / trusted bridge (from the dashboard)
 
@@ -268,7 +270,7 @@ Use this table to reconcile older docs that used “D7 = launcher prototype”. 
 | ID | Topic |
 |----|-------|
 | **D7.1** | **Action bridge design docs** (this document) — **no code** |
-| **D7.2** | **`ActionResult` model** in pure TypeScript shared module — **no HTTP endpoints** |
+| **D7.2** | **`ActionResult` model** in `@workspace/mapazapp-core` (`action-result.ts`) — **implemented**; **no HTTP endpoints**; **no real actions** |
 | **D7.3** | **Dashboard action client interface** (types + fetch wrappers) — **no buttons** |
 | **D8.0** | **Launcher prototype** — audit / proposal only |
 | **D8.1** | **Launcher action bridge** — detailed launcher IPC/API design |
