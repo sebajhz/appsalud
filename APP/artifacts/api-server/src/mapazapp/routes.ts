@@ -11,8 +11,20 @@ import * as tradeReview from "./adapters/tradeReview";
 import * as scannerSimulation from "./adapters/scannerSimulation";
 import * as forwardMonitor from "./adapters/forwardMonitor";
 import * as assistedExecution from "./adapters/assistedExecution";
+import * as backtestCampaignAdapter from "./adapters/backtestCampaign";
+import * as manualCampaignAdapter from "./adapters/manualCampaign";
+import * as parameterGridAdapter from "./adapters/parameterGrid";
+import * as walkForwardAdapter from "./adapters/walkForward";
 
 const router: IRouter = Router();
+
+/** V2-16 mock evidence payloads — read-only, no promotion from API. */
+const EVIDENCE_V2_MOCK_FLAGS = {
+  reviewOnly: true as const,
+  executionEnabled: false as const,
+  registryMutationAllowed: false as const,
+  autoApprovalEnabled: false as const,
+};
 
 const CP15_EVIDENCE_FLAGS = {
   advisoryOnly: true as const,
@@ -27,7 +39,61 @@ router.get("/health", (_req, res) => {
       checkpoint: 17,
       readOnly: true,
       mockData: "in-memory",
+      evidenceMockRoutesV2: "v2-16",
     }),
+  );
+});
+
+router.get("/backtest-campaigns/mock-latest", (_req, res) => {
+  res.json(
+    okResponse(
+      {
+        kind: "mock_latest_backtest_campaign",
+        description:
+          "Synthetic XAUUSD train/validation campaign from core fixtures; replay stubbed for deterministic mock API.",
+        campaign: backtestCampaignAdapter.getMockLatestBacktestCampaign(),
+      },
+      EVIDENCE_V2_MOCK_FLAGS,
+    ),
+  );
+});
+
+router.get("/parameter-grid/mock-latest", (_req, res) => {
+  res.json(
+    okResponse(
+      {
+        kind: "mock_latest_parameter_grid",
+        description: "Three parameter sets on shared XAUUSD validation slice (V2-14 fixture); replay stubbed.",
+        grid: parameterGridAdapter.getMockLatestParameterGrid(),
+      },
+      EVIDENCE_V2_MOCK_FLAGS,
+    ),
+  );
+});
+
+router.get("/walk-forward/mock-latest", (_req, res) => {
+  res.json(
+    okResponse(
+      {
+        kind: "mock_latest_walk_forward",
+        description: "Walk-forward evaluation on synthetic stable train/validation/forward rows (V2-15 fixture).",
+        walkForward: walkForwardAdapter.getMockLatestWalkForward(),
+      },
+      EVIDENCE_V2_MOCK_FLAGS,
+    ),
+  );
+});
+
+router.get("/manual-campaign/mock-latest", (_req, res) => {
+  res.json(
+    okResponse(
+      {
+        kind: "mock_latest_manual_campaign",
+        description: "V2-13 manual CSV import fixture → runManualDatasetCampaign (full replay on imported candles).",
+        manualCampaign: manualCampaignAdapter.getMockLatestManualCampaign(),
+      },
+      EVIDENCE_V2_MOCK_FLAGS,
+    ),
   );
 });
 

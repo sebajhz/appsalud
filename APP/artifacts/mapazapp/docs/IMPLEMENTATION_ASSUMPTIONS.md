@@ -3,6 +3,14 @@
 - Fuente autoritativa de ejecucion Roadmap V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
 - Usar este plan para ordenar checkpoints V2-11..V2-25 y evitar scope drift durante desarrollo activo.
 
+## V2-16 assumptions (dashboard / API evidence cleanup)
+
+- Rutas `GET .../mock-latest` son solo mock en memoria; no sustituyen persistencia ni import real (V2-17+).
+- Campaña/grid en API usan replay stub en datasets donde aplica; pipeline manual usa replay completo sobre velas importadas del fixture (primer GET puede ser mas costoso; resultados cacheados en modulo servidor).
+- Dashboard puede usar los mismos snapshots via `engineEvidenceCoreSnapshots.ts` sin requerir HTTP.
+- `autoApprovalEnabled: false` en envelope API y en snapshots de servicios mock; la UI no debe interpretar recomendaciones como aprobacion.
+- Sin POST, sin upload UI, sin ejecucion, sin mutacion de registry en este checkpoint.
+
 ## V2-15 assumptions (walk-forward evaluator)
 
 - `evaluateWalkForward` solo interpreta filas `runResults` ya producidas (o un grid interno opcional); no reparticiona velas ni garantiza ausencia de fuga si el llamador etiqueta splits incorrectamente.
@@ -71,6 +79,7 @@ This file records **implementation-only** decisions and **test fixtures** that a
 **Roadmap V2-13 manual campaign pipeline:** `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md` — `runManualDatasetCampaign`; tests `tests/v2-13-manual-campaign-runner.test.ts`; no profitability claim.
 **Roadmap V2-14 parameter grid:** `APP/artifacts/mapazapp/docs/V2_14_PARAMETER_SET_GRID_RUNNER_V1.md` — `runParameterGrid`; tests `tests/v2-14-parameter-grid-runner.test.ts`; no profitability claim.
 **Roadmap V2-15 walk-forward:** `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md` — `evaluateWalkForward`; tests `tests/v2-15-walk-forward-evaluator.test.ts`; no profitability claim.
+**Roadmap V2-16 dashboard/API:** mock GET evidence routes en `api-server`; dashboard `engineEvidenceUi.ts`, `mock*DataSource.ts`, `engineEvidenceCoreSnapshots.ts`; tests `mapazapp.routes.test.ts` (API), `engineEvidenceUi.test.ts`, `mockEngineEvidenceDataSources.test.ts`; no persistence claim.
 
 ---
 

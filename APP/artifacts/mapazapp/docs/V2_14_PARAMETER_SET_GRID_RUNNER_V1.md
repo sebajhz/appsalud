@@ -45,3 +45,7 @@ V2-15 añade `evaluateWalkForward` para gobernanza **train / validation / forwar
 - `runParameterGrid(input: ParameterGridInput): ParameterGridResult`
 - Tipos: `parameter-grid-types.ts`; razones: `parameter-grid-reasons.ts`; settings: `parameter-grid-settings.ts`; fixtures: `parameter-grid-fixtures.ts`.
 - Tests: `APP/lib/mapazapp-core/tests/v2-14-parameter-grid-runner.test.ts`.
+
+## Mock API (V2-16, read-only)
+
+- `GET /api/mapazapp/parameter-grid/mock-latest` — snapshot desde fixtures core + replay stub; envelope `mockOnly`, `reviewOnly`, `executionEnabled: false`, `registryMutationAllowed: false`, `autoApprovalEnabled: false`; sin POST.

@@ -1,10 +1,17 @@
 # ROADMAP V2 — Master Execution Plan
 
+## V2-16 checkpoint context
+
+- Checkpoint: `V2-16 — Dashboard/API Connection Cleanup`.
+- Purpose: alinear contratos GET mock para la pila de evidencia V2 (campaña, grid, walk-forward, pipeline manual), servicios de dashboard y copy conservador; sin cambiar lógica de motor, sin persistencia, sin POST, sin import UI.
+- Rutas API: `GET /api/mapazapp/backtest-campaigns/mock-latest`, `GET /api/mapazapp/parameter-grid/mock-latest`, `GET /api/mapazapp/walk-forward/mock-latest`, `GET /api/mapazapp/manual-campaign/mock-latest` (sobre fixtures core, flags `reviewOnly`, `executionEnabled: false`, `registryMutationAllowed: false`, `autoApprovalEnabled: false`).
+
 ## V2-15 checkpoint context
 
 - Checkpoint: `V2-15 — Walk-forward / Train-Validation-Forward Evaluator`.
 - Purpose: gobernar evidencia por splits (train / validation / forward), señalar riesgo de sobreajuste e inestabilidad, y emitir recomendaciones conservadoras sin auto-aprobación.
 - Reference: `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`.
+- Consumo V2-16: la salida puede exponerse vía `GET .../walk-forward/mock-latest` (mock) además del core.
 
 ## V2-14 checkpoint context
 
@@ -42,11 +49,11 @@
 ### Completed foundations
 
 - CP0 through CP18.5 completed (system foundation, review-only posture, safety invariants, architecture separation).
-- V2-01 through V2-15 completed (engine-first sequence; V2-13 = pipeline manual → campaign runner; V2-14 = grid de parameter sets sobre mismos datasets; V2-15 = evaluador walk-forward sobre runs).
+- V2-01 through V2-16 completed (engine-first sequence; V2-16 = capa dashboard/API read-only para evidencia V2 sin motor nuevo).
 
 ### Current repo reference
 
-- Latest commit: actualizar al cierre de V2-15 en git (walk-forward evaluator + docs).
+- Latest commit: actualizar al cierre de V2-16 en git (mock API evidence routes + dashboard services + docs).
 
 ---
 
@@ -90,7 +97,7 @@ Interpretation:
 3. V2-13 — Campaign Runner over Manual Datasets (done)
 4. V2-14 — Parameter Set Grid Runner v1 (done)
 5. V2-15 — Walk-forward / Train-Validation-Forward Evaluator (done)
-6. V2-16 — Dashboard/API Connection Cleanup
+6. V2-16 — Dashboard/API Connection Cleanup (done)
 7. V2-17 — Local Import UI or CLI
 8. V2-18 — Persistence Decision / Local SQLite Design
 9. V2-19 — Forward Demo Read-only from Imported BridgeEA Files
@@ -147,11 +154,11 @@ Interpretation:
 
 ### V2-16 — Dashboard/API Connection Cleanup
 
-- **Goal:** dashboard can consume read-only API endpoints more consistently.
-- **Adds:** DTO alignment and read-only data contract cleanup.
-- **Must not add:** trading endpoints, execution routes, POST execution path.
-- **Validation required:** API tests + dashboard tests with replay/evidence payloads.
-- **Definition of done:** UI and API consume the same evidence-first contracts with no drift.
+- **Goal:** presentar la pila de evidencia V2 (campaña, grid, walk-forward, manual) de forma coherente entre API mock GET y dashboard in-process.
+- **Adds:** rutas `GET .../mock-latest`, adaptadores `api-server`, interfaces `*DataSource` + mocks en dashboard, helpers de copy conservador (`engineEvidenceUi`), tarjetas resumen en Backtests.
+- **Must not add:** motor nuevo, persistencia DB, POST, import/upload UI, ejecución, aprobación automática.
+- **Validation required:** tests API (200, flags, sin POST), tests frontend (helpers + mocks).
+- **Definition of done:** contratos read-only alineados; copy “evidence only / no approval / no execution”; sin `approved: true` en payloads mock de esta capa.
 
 ### V2-17 — Local Import UI or CLI
 

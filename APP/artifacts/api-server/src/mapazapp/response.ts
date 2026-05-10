@@ -25,6 +25,8 @@ export interface MapazappApiResponse<T> {
   requiresHumanConfirmation?: boolean;
   /** CP18 — assisted execution mock routes. */
   manualReviewRequired?: boolean;
+  /** V2-16 — evidence mock routes: never auto-approve from mock payloads. */
+  autoApprovalEnabled?: boolean;
 }
 
 export function okResponse<T>(
@@ -43,6 +45,7 @@ export function okResponse<T>(
       | "canAutoExecute"
       | "requiresHumanConfirmation"
       | "manualReviewRequired"
+      | "autoApprovalEnabled"
     >
   >,
 ): MapazappApiResponse<T> {
@@ -63,6 +66,7 @@ export function okResponse<T>(
     canAutoExecute: extra?.canAutoExecute,
     requiresHumanConfirmation: extra?.requiresHumanConfirmation,
     manualReviewRequired: extra?.manualReviewRequired,
+    autoApprovalEnabled: extra?.autoApprovalEnabled,
   };
 }
 

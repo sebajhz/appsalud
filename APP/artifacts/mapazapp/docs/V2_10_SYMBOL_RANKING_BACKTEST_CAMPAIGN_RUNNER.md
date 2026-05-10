@@ -74,4 +74,4 @@ Para transicionar de ranking sintetico a evidencia fuerte aun falta:
 
 ## Siguiente paso recomendado
 
-V2-13 orquesta `runBacktestCampaign` sobre datasets manuales y bundles validados (`V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`). V2-14 añade `runParameterGrid` para comparar parameter sets sobre esos mismos datasets (`V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`). Siguiente foco del plan maestro: **V2-15** (walk-forward / splits). La capa API/dashboard para import UI/CLI sigue diferida (p. ej. V2-17).
+V2-13 orquesta `runBacktestCampaign` sobre datasets manuales y bundles validados (`V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`). V2-14 añade `runParameterGrid` para comparar parameter sets sobre esos mismos datasets (`V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`). V2-15 añade walk-forward (`V2_15_…`). **V2-16** expone mock GET `GET /api/mapazapp/backtest-campaigns/mock-latest` y resumen en dashboard (`BacktestsPage`) — read-only, sin POST. La import UI/CLI sigue en **V2-17**.

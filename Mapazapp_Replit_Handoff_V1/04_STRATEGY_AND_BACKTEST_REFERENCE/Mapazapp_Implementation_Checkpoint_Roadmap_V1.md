@@ -1,9 +1,16 @@
+## Addendum V2-16
+
+- Checkpoint: `V2-16 — Dashboard/API Connection Cleanup` (mock API + dashboard; sin cambios de motor en core).
+- Rutas GET mock: `backtest-campaigns/mock-latest`, `parameter-grid/mock-latest`, `walk-forward/mock-latest`, `manual-campaign/mock-latest` bajo `/api/mapazapp/`; flags `reviewOnly`, `executionEnabled: false`, `registryMutationAllowed: false`, `autoApprovalEnabled: false`; sin POST, sin persistencia, sin import UI.
+- Plan maestro: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
+- Siguiente en plan maestro V2: **V2-17** (local import UI o CLI).
+
 ## Addendum V2-15
 
 - Checkpoint: `V2-15 — Walk-forward / Train-Validation-Forward Evaluator` (core only).
 - Evaluacion de evidencia por splits: `evaluateWalkForward` sobre `runResults` de campaña o grid; riesgo de sobreajuste y estabilidad v1; sin auto-aprobacion.
 - Documentacion: `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`.
-- Siguiente en plan maestro V2: **V2-16** (dashboard/API connection cleanup).
+- Consumo: mock API V2-16 `GET .../walk-forward/mock-latest`.
 
 ## Addendum V2-14
 
@@ -70,6 +77,7 @@
 **Roadmap V2-13:** Manual dataset campaign pipeline — `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md` (`runManualDatasetCampaign`; no live ingest).
 **Roadmap V2-14:** Parameter set grid runner — `APP/artifacts/mapazapp/docs/V2_14_PARAMETER_SET_GRID_RUNNER_V1.md` (`runParameterGrid`; comparative evidence only).
 **Roadmap V2-15:** Walk-forward / train-validation-forward evaluator — `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md` (`evaluateWalkForward`; split governance, no auto-approval).
+**Roadmap V2-16:** Dashboard/API mock evidence cleanup — `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md` § V2-16 (GET `.../mock-latest` routes; no POST, no persistence).
 
 This roadmap is the **official checkpoint narrative** for Mapazapp. It exists to prevent scope drift: implement only what the active checkpoint describes, and respect the sequencing rules below.
 

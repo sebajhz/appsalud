@@ -37,4 +37,4 @@ No sustituye un producto de ingest en vivo: el operador sigue aportando texto en
 
 ## Siguiente paso
 
-**V2-14 — Parameter Set Grid Runner v1** (cerrado): `runParameterGrid` — ver `V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`. **V2-15** — walk-forward / train-validation-forward evaluator.
+**V2-14 — Parameter Set Grid Runner v1** (cerrado): `runParameterGrid` — ver `V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`. **V2-15** — walk-forward. **V2-16** expone mock GET `GET /api/mapazapp/manual-campaign/mock-latest` (read-only) además del core.

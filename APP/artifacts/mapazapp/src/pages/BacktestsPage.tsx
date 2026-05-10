@@ -1,9 +1,21 @@
+import { useMemo } from 'react';
 import { Layout, useActiveAccount } from '@/components/Layout';
 import { BacktestStatusBadge } from '@/components/StatusBadge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { mockBacktests } from '@/mock/backtests';
 import { Link } from 'wouter';
 import { CheckCircle, XCircle } from 'lucide-react';
 import { MOCK_CHECKPOINT7_STRATEGY_REGISTRY } from '@/services/mockTradeReviewDataSource';
+import {
+  EVIDENCE_PANEL_DISCLAIMERS,
+  evidenceRecommendationLabel,
+  parameterGridRecommendationCopy,
+  walkForwardRiskLabel,
+} from '@/services/engineEvidenceUi';
+import { createMockBacktestCampaignDataSource } from '@/services/mockBacktestCampaignDataSource';
+import { createMockManualCampaignDataSource } from '@/services/mockManualCampaignDataSource';
+import { createMockParameterGridDataSource } from '@/services/mockParameterGridDataSource';
+import { createMockWalkForwardDataSource } from '@/services/mockWalkForwardDataSource';
 import { getCheckpoint15MockEvidenceBundleByParameterSetId, getCheckpoint8MockApprovalForParameterSet } from '@workspace/mapazapp-core';
 
 function registryParameterSetStatus(parameterSetId: string): string {
@@ -29,13 +41,94 @@ function checkpoint15EvidenceBadge(parameterSetId: string): { label: string; low
 
 export default function BacktestsPage() {
   const { activeAccountId, activeAccount } = useActiveAccount();
+  const campaignDs = useMemo(() => createMockBacktestCampaignDataSource(), []);
+  const gridDs = useMemo(() => createMockParameterGridDataSource(), []);
+  const wfDs = useMemo(() => createMockWalkForwardDataSource(), []);
+  const manualDs = useMemo(() => createMockManualCampaignDataSource(), []);
+
+  const engineCampaign = useMemo(() => campaignDs.getLatestMockSnapshot(), [campaignDs]);
+  const engineGrid = useMemo(() => gridDs.getLatestMockSnapshot(), [gridDs]);
+  const engineWf = useMemo(() => wfDs.getLatestMockSnapshot(), [wfDs]);
+  const engineManual = useMemo(() => manualDs.getLatestMockSnapshot(), [manualDs]);
+
+  const gridTopRec = engineGrid.grid.ranking[0]?.recommendation;
 
   return (
     <Layout title="Backtests">
       <div className="space-y-5">
+        <div
+          className="rounded-lg border border-amber-900/40 bg-amber-950/20 p-4 space-y-2 text-sm text-slate-300"
+          data-testid="engine-evidence-disclaimer"
+        >
+          <p className="font-semibold text-amber-100">{EVIDENCE_PANEL_DISCLAIMERS.evidenceOnly}</p>
+          <p>{EVIDENCE_PANEL_DISCLAIMERS.noApproval}</p>
+          <p>{EVIDENCE_PANEL_DISCLAIMERS.noExecution}</p>
+          <p className="text-xs text-slate-500">
+            Mock API (read-only GET): <span className="font-mono text-slate-400">/api/mapazapp/backtest-campaigns/mock-latest</span>,{' '}
+            <span className="font-mono text-slate-400">parameter-grid/mock-latest</span>,{' '}
+            <span className="font-mono text-slate-400">walk-forward/mock-latest</span>,{' '}
+            <span className="font-mono text-slate-400">manual-campaign/mock-latest</span>.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2" data-testid="engine-evidence-summary-cards">
+          <Card className="border-slate-800 bg-slate-900/40">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base text-slate-100">Backtest campaign (mock)</CardTitle>
+              <CardDescription className="text-xs">{engineCampaign.summaryNote}</CardDescription>
+            </CardHeader>
+            <CardContent className="text-xs font-mono text-slate-400 space-y-1">
+              <p>status: {engineCampaign.campaign.status}</p>
+              <p>runs: {engineCampaign.campaign.summary.runCount}</p>
+              <p>valid runs: {engineCampaign.campaign.summary.validRunCount}</p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-800 bg-slate-900/40">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base text-slate-100">Parameter grid (mock)</CardTitle>
+              <CardDescription className="text-xs">{parameterGridRecommendationCopy(engineGrid.grid.status, gridTopRec)}</CardDescription>
+            </CardHeader>
+            <CardContent className="text-xs font-mono text-slate-400 space-y-1">
+              <p>candidates: {engineGrid.grid.summary.candidateCount}</p>
+              <p>ranking rows: {engineGrid.grid.ranking.length}</p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-800 bg-slate-900/40">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base text-slate-100">Walk-forward (mock)</CardTitle>
+              <CardDescription className="text-xs">{walkForwardRiskLabel(engineWf.walkForward.overfitRisk.level)}</CardDescription>
+            </CardHeader>
+            <CardContent className="text-xs text-slate-400 space-y-1">
+              <p>
+                status: <span className="font-mono">{engineWf.walkForward.status}</span>
+              </p>
+              <p>
+                roll-up:{' '}
+                <span className="font-mono">
+                  {engineWf.walkForward.parameterSetResults[0]
+                    ? evidenceRecommendationLabel(engineWf.walkForward.parameterSetResults[0].recommendation)
+                    : '—'}
+                </span>
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-slate-800 bg-slate-900/40">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base text-slate-100">Manual campaign pipeline (mock)</CardTitle>
+              <CardDescription className="text-xs">{engineManual.summaryNote}</CardDescription>
+            </CardHeader>
+            <CardContent className="text-xs font-mono text-slate-400 space-y-1">
+              <p>pipeline status: {engineManual.manualCampaign.status}</p>
+              <p>datasets built: {engineManual.manualCampaign.summary.campaignDatasetsBuilt}</p>
+            </CardContent>
+          </Card>
+        </div>
+
         <p className="text-sm text-slate-400">
-          Parameter sets shown here are mock backtest rows. Formal lifecycle status for trade review vs alerts comes from
-          the           checkpoint 7 strategy registry (<span className="font-mono text-slate-500">Registry status</span> column).
+          Parameter sets shown here are mock backtest rows. The <span className="font-semibold text-slate-300">Status</span> column may
+          show legacy mock labels such as “APPROVED” — that is <span className="font-semibold">not</span> walk-forward approval and{' '}
+          <span className="font-semibold">not</span> evidence of profitability. Formal lifecycle status for trade review vs alerts comes from
+          the checkpoint 7 strategy registry (<span className="font-mono text-slate-500">Registry status</span> column).
           <span className="font-mono text-slate-500"> CP8 import eval</span> shows a fictional advisory outcome from core
           checkpoint-8 fixtures (CSV/backtest model skeleton — not MT5).{' '}
           <span className="font-mono text-slate-500">CP15 evidence</span> is a mock multi-run advisory loop — candidates only,

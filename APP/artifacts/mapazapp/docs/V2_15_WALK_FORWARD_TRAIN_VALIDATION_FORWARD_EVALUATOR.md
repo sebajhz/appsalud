@@ -75,7 +75,7 @@ Implementadas en `walk-forward-evaluator.ts` (orden de precedencia relevante):
 
 ## Relación con V2-16 (dashboard / API)
 
-V2-15 define **tipos y evaluación pura** listos para serializar en DTOs de solo lectura. V2-16 puede alinear respuestas API y vistas con `WalkForwardResult` / `WalkForwardParameterSetResult` sin introducir `POST` ni ejecución: el evaluador ya fija la postura de seguridad y las recomendaciones conservadoras que la UI debe reflejar textualmente.
+V2-16 alinea mock GET `GET /api/mapazapp/walk-forward/mock-latest` y vistas (p. ej. `BacktestsPage`) con `WalkForwardResult` — solo lectura, sin `POST` ni ejecución; copy conservador vía `engineEvidenceUi` en el dashboard.
 
 ## API (core)
 

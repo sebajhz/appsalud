@@ -3,13 +3,21 @@
 - Plan maestro autoritativo V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
 - Este documento define secuencia de ejecucion V2-11..V2-25, invariantes de seguridad y criterio de avance sin drift.
 
+## V2-16 handoff update
+
+- Checkpoint: `V2-16 — Dashboard/API Connection Cleanup`.
+- API (`@workspace/api-server`): GET mock-only `backtest-campaigns/mock-latest`, `parameter-grid/mock-latest`, `walk-forward/mock-latest`, `manual-campaign/mock-latest` — adaptadores bajo `src/mapazapp/adapters/` (fixtures core); envelope con `mockOnly`, `reviewOnly`, `executionEnabled: false`, `registryMutationAllowed: false`, `autoApprovalEnabled: false`; sin POST en estas rutas.
+- Dashboard: `engineEvidenceCoreSnapshots.ts`, `*DataSource.ts` + `mock*DataSource.ts`, `engineEvidenceUi.ts` (copy conservador); `BacktestsPage` tarjetas resumen; `ParameterSetsPage` enlace a evidencia; sin upload, sin ejecutar, sin aprobar.
+- No cambia motor core, no persistencia, no WebSocket, no ejecución.
+- Siguiente planificado: V2-17 (import UI o CLI).
+
 ## V2-15 handoff update
 
 - Checkpoint: `V2-15 — Walk-forward / Train-Validation-Forward Evaluator`.
 - Core: `evaluateWalkForward`, `walk-forward-*.ts` — agrupa runs por parameter set × símbolo × split; riesgo de sobreajuste, estabilidad v1, recomendaciones conservadoras; puede consumir `ParameterGridResult`, `BacktestCampaignResult` o ejecutar `runParameterGrid` internamente si se proveen `datasets` + `parameterSets` + `campaignSettings`.
 - No optimizador, no auto-aprobación, no mutación de registry; flags `reviewOnly`, `executionEnabled: false`, `registryMutationAllowed: false`, `autoApprovalEnabled: false`.
 - Referencia: `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`.
-- Siguiente planificado: V2-16 (dashboard/API connection cleanup).
+- Consumo V2-16: `GET /api/mapazapp/walk-forward/mock-latest` (mock) y mocks in-process en dashboard.
 
 ## V2-14 handoff update
 
@@ -76,7 +84,8 @@
 **Roadmap V2-12 — Export sample validation:** `validateExportSampleBundle` + privacidad heurística; see `APP/artifacts/mapazapp/docs/V2_12_REAL_EXPORT_SAMPLE_VALIDATION.md`.
 **Roadmap V2-13 — Manual dataset campaign pipeline:** `runManualDatasetCampaign`; see `APP/artifacts/mapazapp/docs/V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`.
 **Roadmap V2-14 — Parameter set grid runner:** `runParameterGrid`; see `APP/artifacts/mapazapp/docs/V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`.
-**Roadmap V2-15 — Walk-forward evaluator:** `evaluateWalkForward`; see `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`. Further items per `ROADMAP_V2_MASTER_EXECUTION_PLAN.md` (e.g. V2-16).
+**Roadmap V2-15 — Walk-forward evaluator:** `evaluateWalkForward`; see `APP/artifacts/mapazapp/docs/V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`.
+**Roadmap V2-16 — Dashboard/API evidence cleanup:** mock GET `.../mock-latest` routes + dashboard `*DataSource` / `engineEvidenceUi`; see `ROADMAP_V2_MASTER_EXECUTION_PLAN.md` § V2-16. Further items (e.g. V2-17).
 
 This document gives Cursor (or any future developer) everything needed to continue building Mapazapp from where the Replit mock phase left off.
 
@@ -241,7 +250,7 @@ This document gives Cursor (or any future developer) everything needed to contin
 
 | Area | Role |
 |------|------|
-| `src/mapazapp/routes.ts` | Read-only **`GET /api/mapazapp/*`** — health, accounts, summaries, account guard, trade reviews, strategies, parameter sets, compatibility, backtests list + CP8 advisory, bridge mock import summary, **checkpoint 12** scanner simulation list/latest + per-account latest, **checkpoint 16** forward-monitor, **checkpoints 17–18** assisted-execution contract + **CP18** `/assisted-execution/safety` and `/assisted-execution/invariants` (still **no** `POST`). |
+| `src/mapazapp/routes.ts` | Read-only **`GET /api/mapazapp/*`** — health, accounts, summaries, account guard, trade reviews, strategies, parameter sets, compatibility, backtests list + CP8 advisory, bridge mock import summary, **checkpoint 12** scanner simulation list/latest + per-account latest, **checkpoint 16** forward-monitor, **checkpoints 17–18** assisted-execution contract + **CP18** `/assisted-execution/safety` and `/assisted-execution/invariants`, **V2-16** `backtest-campaigns/mock-latest`, `parameter-grid/mock-latest`, `walk-forward/mock-latest`, `manual-campaign/mock-latest` (still **no** `POST` on those). |
 | `src/mapazapp/response.ts` | Stable JSON envelope (`ok`, `data`, `warnings`, `errors`, `source: "mock"`, `mockOnly: true`). |
 | `src/mapazapp/mockData.ts` | In-memory duplicates of dashboard mock fixtures (no React / Vite `@/` imports). |
 | `src/mapazapp/lib/tradeReviewLogic.ts` | Same core evaluation path as `createMockDashboardDataSource` (registry + trade plan). |
@@ -314,13 +323,13 @@ Mapazapp is a **trading intelligence and risk management dashboard** for discipl
 | Prop Firm Guard enforcement | NOT IMPLEMENTED | Prop firm state is static mock |
 | Multi-account backend | NOT IMPLEMENTED | Account switching is React useState only |
 | Multi-terminal MT5 bridge | NOT IMPLEMENTED | Bridge terminals are mock arrays |
-| Backtest / Strategy Tester UI wiring | **PARTIAL (CP8 / CP14 / CP15)** | Backtests UI mixes mock rows with **CP8** advisory column + **CP15** mock multi-run **evidence** (parameter-set detail panel); **CP14 TestEA** CSV is for **manual** paste / tooling — **no** dashboard file picker, **no** upload route, **no** persistence of imports |
+| Backtest / Strategy Tester UI wiring | **PARTIAL (CP8 / CP14 / CP15 / V2-16)** | Backtests UI mixes mock rows with **CP8** advisory column + **CP15** mock multi-run **evidence** (parameter-set detail panel) + **V2-16** in-process **engine evidence** summary cards (campaign / grid / walk-forward / manual pipeline mocks); **CP14 TestEA** CSV is for **manual** paste / tooling — **no** dashboard file picker, **no** upload route, **no** persistence of imports |
 | Journal import from MT5 | NOT IMPLEMENTED | Journal entries are hardcoded |
 | Real alert engine | NOT IMPLEMENTED | Alerts are hardcoded arrays |
 | Alert persistence | NOT IMPLEMENTED | Acknowledge state is React useState only |
 | Order execution | NOT IMPLEMENTED | No execution of any kind |
 | Assisted execution (live) | NOT IMPLEMENTED | Checkpoint **17** defines **contract + validation** only (`validateAssistedExecutionIntent`); **no** MT5 send, **no** command channel, **no** `POST` execution routes |
-| HTTP API (`@workspace/api-server`) | **PARTIAL (CP11+)** | Read-only **`GET /api/mapazapp/*`** mock envelope (`mockOnly: true`); serves registry, trade-review snapshots, bridge parser demo, scanner simulation, **CP15 evidence**, **CP16 forward-monitor**, **CP17–CP18 assisted-execution** contract + safety snapshot routes — **no** DB, **no** live MT5 socket, **no** folder watcher ingest |
+| HTTP API (`@workspace/api-server`) | **PARTIAL (CP11+)** | Read-only **`GET /api/mapazapp/*`** mock envelope (`mockOnly: true`); serves registry, trade-review snapshots, bridge parser demo, scanner simulation, **CP15 evidence**, **CP16 forward-monitor**, **CP17–CP18 assisted-execution** contract + safety snapshot routes, **V2-16** **`…/mock-latest`** engine-evidence snapshots — **no** DB, **no** live MT5 socket, **no** folder watcher ingest, **no** `POST` on V2-16 evidence paths |
 | Python backend (Replit handoff stack) | NOT IMPLEMENTED | No Python services in this repo; Node mock API is **not** a production backend |
 | Database | NOT IMPLEMENTED | No domain persistence; mock API is in-memory only |
 | Authentication | NOT IMPLEMENTED | No auth |

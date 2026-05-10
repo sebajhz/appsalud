@@ -12,6 +12,7 @@ describe("Mapazapp API (checkpoints 17–18)", () => {
     expect(res.body.data?.service).toBe("mapazapp-api");
     expect(res.body.data?.readOnly).toBe(true);
     expect(res.body.data?.checkpoint).toBe(17);
+    expect(res.body.data?.evidenceMockRoutesV2).toBe("v2-16");
   });
 
   it("GET /api/mapazapp/accounts lists mock accounts", async () => {
@@ -225,5 +226,44 @@ describe("Mapazapp API (checkpoints 17–18)", () => {
     const missing = await request(app).get("/api/mapazapp/accounts/UNKNOWN_AE/assisted-execution/mock-validation");
     expect(missing.status).toBe(404);
     expect(missing.body.errors[0]?.code).toBe("ACCOUNT_NOT_FOUND");
+  });
+
+  const V2_16_MOCK_PATHS = [
+    "/api/mapazapp/backtest-campaigns/mock-latest",
+    "/api/mapazapp/parameter-grid/mock-latest",
+    "/api/mapazapp/walk-forward/mock-latest",
+    "/api/mapazapp/manual-campaign/mock-latest",
+  ] as const;
+
+  it("V2-16 GET mock-latest evidence routes return 200 and safety envelope", async () => {
+    for (const path of V2_16_MOCK_PATHS) {
+      const res = await request(app).get(path);
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      expect(res.body.mockOnly).toBe(true);
+      expect(res.body.reviewOnly).toBe(true);
+      expect(res.body.executionEnabled).toBe(false);
+      expect(res.body.registryMutationAllowed).toBe(false);
+      expect(res.body.autoApprovalEnabled).toBe(false);
+      expect(JSON.stringify(res.body).includes('"approved":true')).toBe(false);
+    }
+  });
+
+  it("V2-16 mock-latest payloads include core artifacts", async () => {
+    const bc = await request(app).get("/api/mapazapp/backtest-campaigns/mock-latest");
+    expect(bc.body.data?.campaign?.status).toBeDefined();
+    const grid = await request(app).get("/api/mapazapp/parameter-grid/mock-latest");
+    expect(grid.body.data?.grid?.status).toBeDefined();
+    const wf = await request(app).get("/api/mapazapp/walk-forward/mock-latest");
+    expect(wf.body.data?.walkForward?.status).toBeDefined();
+    const manual = await request(app).get("/api/mapazapp/manual-campaign/mock-latest");
+    expect(manual.body.data?.manualCampaign?.status).toBeDefined();
+  });
+
+  it("V2-16 POST is not defined for mock-latest evidence routes", async () => {
+    for (const path of V2_16_MOCK_PATHS) {
+      const res = await request(app).post(path).send({});
+      expect(res.status).toBe(404);
+    }
   });
 });

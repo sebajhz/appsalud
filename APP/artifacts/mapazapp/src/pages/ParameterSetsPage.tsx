@@ -47,6 +47,13 @@ export default function ParameterSetsPage() {
             do not replace future MT5 / TestEA validation.
           </p>
           <p className="text-slate-500">
+            V2 engine evidence (campaign, grid, walk-forward, manual pipeline) is summarized on the{' '}
+            <Link href="/backtests" className="text-blue-400 hover:text-blue-300">
+              Backtests
+            </Link>{' '}
+            page — evidence only, no execution, no approval from those mocks.
+          </p>
+          <p className="text-slate-500">
             Selected account: <span className="text-slate-200 font-medium">{activeAccount.displayName}</span> (
             <span className="font-mono text-slate-400">{activeAccountId}</span>)
           </p>
