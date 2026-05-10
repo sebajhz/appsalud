@@ -12,6 +12,7 @@
 ## Phase D — launcher preparation (documentation)
 
 - **D2 cerrado (solo docs):** `APP/artifacts/mapazapp/docs/LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` define configuración futura, modelo de estado runtime y reglas anti-simulación MT5/bridge; **no** implementa launcher ni código.
+- **D3.1 cerrado (solo scripts package):** `pnpm --filter @workspace/scripts mapazapp:dev-preflight` — preflight dev (puertos/scripts + instrucciones PowerShell/Bash); **no** launcher, **no** procesos hijos, **no** MT5.
 
 ## V2-16 handoff update
 

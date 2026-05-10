@@ -31,6 +31,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - `pnpm run typecheck`
 - Paquetes `mapazapp-core`, `api-server`, `mapazapp`: `test`, `typecheck`, `build` según necesidad
 - **C3.1 / C3.2 (solo desarrollo):** validador local read-only de CSV MT5/manual: `pnpm --filter @workspace/scripts mapazapp:import-validate -- --file <ruta> --symbol <sym> --timeframe <tf>` — **no** guarda datos, **no** ejecuta trades y **no** reemplaza el launcher futuro; argumentos y mensajes endurecidos (p. ej. `--format` solo `auto|mt5|bridge|ohlc`; códigos de salida 0/1/2). Solo comprueba forma de archivo con el importador del core.
+- **D3.1 (solo desarrollo):** preflight dev **sin procesos hijos**: `pnpm --filter @workspace/scripts mapazapp:dev-preflight` (desde `APP/`). Comprueba puertos locales esperados y scripts `package.json`; imprime comandos seguros para PowerShell y Bash. **No** es `MapazappLauncher.exe`, **no** levanta API/dashboard/MT5, **no** abre navegador, **no** escribe logs de launcher, **no** simula estado runtime/bridge.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
@@ -148,6 +149,10 @@ Ubicación y formato: por definir en implementación aprobada.
 
 - Documento: **`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`** — esquema conceptual de configuración del launcher futuro, modelo de **runtime status** (`unknown`, `not_configured`, `not_checked`, `ok`, `error`, etc.), puertos, logs, modos runtime, reglas para **no simular** MT5/bridge real, y defaults de seguridad (`executionEnabled` false, etc.).
 - **No** hay implementación de launcher, scripts, API nueva ni código en D2; sirve de base antes de D3 (script dev) y D4+ (launcher usuario).
+
+### D3.1 implementado (preflight dev)
+
+- Script: `pnpm --filter @workspace/scripts mapazapp:dev-preflight` — validación read-only de puertos/scripts e instrucciones de arranque manual; **sin** `child_process`, **sin** MT5, **sin** launcher productivo.
 
 ---
 

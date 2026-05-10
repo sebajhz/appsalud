@@ -482,7 +482,8 @@ Orden **orientativo** (ajustable por producto):
 
 | ID | Tema |
 |----|------|
-| **D3** | Dev start script — diseño e implementación (sin MT5 obligatorio; sin exe) |
+| **D3.1** | Dev **preflight** — chequeos read-only + comandos documentados (**implementado** en `@workspace/scripts`; no launcher; sin procesos hijos) |
+| **D3.2+** | Dev **start** script completo u orquestación adicional (si se aprueba; distinto del preflight) |
 | **D4** | Runtime status model en **TypeScript puro** (tipos + fixtures `unknown`) |
 | **D5** | Endpoint API read-only de runtime status (**explicitamente** unknown/not_configured hasta probes reales) |
 | **D6** | Panel dashboard de runtime status (copy anti-confusión mock vs real) |
