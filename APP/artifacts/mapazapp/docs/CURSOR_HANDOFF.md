@@ -23,6 +23,7 @@
 - **D4.1 documents future dashboard action wiring; no dashboard buttons implemented yet.** Ver `APP/artifacts/mapazapp/docs/DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`.
 - **D7.1 documents the dashboard / launcher action bridge (docs only).** Ver `APP/artifacts/mapazapp/docs/ACTION_BRIDGE_DESIGN.md` — no `POST` actions, no launcher code.
 - **D7.2 adds `@workspace/mapazapp-core` `action-result.ts`** — pure `MapazappActionResult` model + safety helpers + vitest; no endpoints, no dashboard buttons, no executed actions.
+- **D7.3 adds `src/services/actionClient.ts`** — `DashboardActionClient` service stub (`createUnavailableDashboardActionClient`); safe `not_available`/`blocked` results only; no `fetch`/POST/UI wiring.
 
 ## V2-16 handoff update
 

@@ -215,6 +215,7 @@ This document **does not** implement or authorize:
 
 - `APP/artifacts/mapazapp/docs/ACTION_BRIDGE_DESIGN.md` — **D7.1** formal action bridge (browser limits, future `POST` sketch, `ActionResult` proposal, safety/threat notes).  
 - `@workspace/mapazapp-core` **`action-result.ts`** (**D7.2**) — shared pure **`MapazappActionResult`** types and safety helpers; **no** buttons or endpoints.  
+- **`APP/artifacts/mapazapp/src/services/actionClient.ts`** (**D7.3**) — dashboard **`DashboardActionClient`** stub + action definitions; **`runAction`** stays **`not_available`** / **`blocked`** until a real bridge exists; **no** TSX.  
 - `APP/artifacts/mapazapp/docs/LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` — authoritative status semantics and anti-simulation rules.  
 - `APP/artifacts/mapazapp/docs/RUNTIME_AND_LAUNCHER_STRATEGY.md` — launcher strategy and dev tooling context.  
 - `APP/scripts/package.json` — canonical `pnpm` script names for validators and dev tools.

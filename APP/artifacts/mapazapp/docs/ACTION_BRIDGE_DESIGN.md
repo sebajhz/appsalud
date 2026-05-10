@@ -271,7 +271,7 @@ Use this table to reconcile older docs that used “D7 = launcher prototype”. 
 |----|-------|
 | **D7.1** | **Action bridge design docs** (this document) — **no code** |
 | **D7.2** | **`ActionResult` model** in `@workspace/mapazapp-core` (`action-result.ts`) — **implemented**; **no HTTP endpoints**; **no real actions** |
-| **D7.3** | **Dashboard action client interface** (types + fetch wrappers) — **no buttons** |
+| **D7.3** | **Dashboard action client** — `APP/artifacts/mapazapp/src/services/actionClient.ts` — **implemented**; returns **`not_available`** / **`blocked`** `ActionResult` values only; **no** `fetch`, **no** `POST`, **no** buttons |
 | **D8.0** | **Launcher prototype** — audit / proposal only |
 | **D8.1** | **Launcher action bridge** — detailed launcher IPC/API design |
 | **D9.0** | **First guarded local action endpoint** or launcher-mediated equivalent — minimal scope |
