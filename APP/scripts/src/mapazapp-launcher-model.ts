@@ -1,6 +1,7 @@
 /**
- * D8.2 — Pure launcher configuration and process model skeleton (no OS process spawning APIs).
- * Aligned with LAUNCHER_PROTOTYPE_DESIGN_D8.md. Non-operational defaults only.
+ * D8.2 / D8.3 — Launcher configuration and process model (no OS process spawning APIs).
+ * D8.3: optional `preflight` snapshot tightens `deriveLauncherRuntimeStatus` after read-only checks.
+ * Aligned with LAUNCHER_PROTOTYPE_DESIGN_D8.md.
  */
 
 import {
@@ -89,6 +90,17 @@ export interface LauncherPortProbeModel {
   dashboard: LauncherPortStatus;
 }
 
+/** Last completed read-only preflight snapshot (no services started). */
+export interface LauncherPreflightSnapshot {
+  checkedAt: string;
+  ok: boolean;
+  scripts: {
+    apiServer: boolean;
+    dashboard: boolean;
+    scripts: boolean;
+  };
+}
+
 export interface LauncherChildProcessRecord {
   name: LauncherChildProcessName;
   pid: number | null;
@@ -108,6 +120,8 @@ export interface LauncherProcessModel {
   config: LauncherConfig;
   children: LauncherChildrenState;
   ports: LauncherPortProbeModel;
+  /** Set after `runLauncherValidateEnvironmentPreflight`; `null` before any launcher-side preflight. */
+  preflight: LauncherPreflightSnapshot | null;
   actionBridgeEnabled: boolean;
   mt5RuntimeEnabled: boolean;
   watcherEnabled: boolean;
@@ -210,6 +224,7 @@ export function createDefaultLauncherProcessModel(
       mt5: defaultChild("mt5"),
     },
     ports: { api: "unknown", dashboard: "unknown" },
+    preflight: null,
     actionBridgeEnabled: false,
     mt5RuntimeEnabled: false,
     watcherEnabled: false,
@@ -295,51 +310,180 @@ function mapChildToComponentStatus(
   }
 }
 
-function buildApiDashboardSlices(model: LauncherProcessModel): {
-  api: MapazappRuntimeStatus["api"];
-  dashboard: MapazappRuntimeStatus["dashboard"];
-} {
+function buildSliceFromApiChild(model: LauncherProcessModel): MapazappRuntimeStatus["api"] {
   const { config } = model;
   const apiChild = model.children.api;
-  const dashChild = model.children.dashboard;
-
   const apiStatus = mapChildToComponentStatus(apiChild);
-  const dashStatus = mapChildToComponentStatus(dashChild);
-
   const apiPort = config.api.port;
-  const dashPort = config.dashboard.port;
-
   const apiUrl =
     apiStatus === "ok" ? `http://${config.api.host}:${apiPort}` : null;
-  const dashUrl =
-    dashStatus === "ok" ? `http://${config.dashboard.host}:${dashPort}` : null;
-
-  const lastCheckedAt = model.launcherStartedAt;
-
   const apiError =
     apiChild.status === "running" && !apiChild.ownedByLauncher ?
       "Process reports running but is not owned by launcher."
     : null;
+  return {
+    status: apiStatus,
+    url: apiUrl,
+    port: apiStatus === "ok" ? apiPort : null,
+    lastCheckedAt: model.launcherStartedAt,
+    error: apiError,
+  };
+}
+
+function buildSliceFromDashboardChild(model: LauncherProcessModel): MapazappRuntimeStatus["dashboard"] {
+  const { config } = model;
+  const dashChild = model.children.dashboard;
+  const dashStatus = mapChildToComponentStatus(dashChild);
+  const dashPort = config.dashboard.port;
+  const dashUrl =
+    dashStatus === "ok" ? `http://${config.dashboard.host}:${dashPort}` : null;
   const dashError =
     dashChild.status === "running" && !dashChild.ownedByLauncher ?
       "Process reports running but is not owned by launcher."
     : null;
+  return {
+    status: dashStatus,
+    url: dashUrl,
+    port: dashStatus === "ok" ? dashPort : null,
+    lastCheckedAt: model.launcherStartedAt,
+    error: dashError,
+  };
+}
+
+function overlayPreflightOnApi(
+  model: LauncherProcessModel,
+  childSlice: MapazappRuntimeStatus["api"],
+): MapazappRuntimeStatus["api"] {
+  const pf = model.preflight;
+  if (pf === null) return childSlice;
+
+  const apiChild = model.children.api;
+  if (apiChild.status === "running" && apiChild.ownedByLauncher) {
+    return childSlice;
+  }
+
+  const port = model.ports.api;
+  const checkedAt = pf.checkedAt;
+
+  if (!pf.scripts.apiServer) {
+    return {
+      status: "error",
+      url: null,
+      port: null,
+      lastCheckedAt: checkedAt,
+      error: "Expected workspace scripts missing on API package.",
+    };
+  }
+  if (port === "invalid") {
+    return {
+      status: "error",
+      url: null,
+      port: null,
+      lastCheckedAt: checkedAt,
+      error: "API port probe failed.",
+    };
+  }
+  if (port === "occupied") {
+    return {
+      status: "error",
+      url: null,
+      port: null,
+      lastCheckedAt: checkedAt,
+      error: "API port is occupied.",
+    };
+  }
+  if (port === "unknown") {
+    return {
+      status: "unknown",
+      url: null,
+      port: null,
+      lastCheckedAt: checkedAt,
+      error: null,
+    };
+  }
+  return {
+    status: "not_started",
+    url: null,
+    port: model.config.api.port,
+    lastCheckedAt: checkedAt,
+    error: null,
+  };
+}
+
+function overlayPreflightOnDashboard(
+  model: LauncherProcessModel,
+  childSlice: MapazappRuntimeStatus["dashboard"],
+): MapazappRuntimeStatus["dashboard"] {
+  const pf = model.preflight;
+  if (pf === null) return childSlice;
+
+  const dashChild = model.children.dashboard;
+  if (dashChild.status === "running" && dashChild.ownedByLauncher) {
+    return childSlice;
+  }
+
+  const port = model.ports.dashboard;
+  const checkedAt = pf.checkedAt;
+
+  if (!pf.scripts.dashboard) {
+    return {
+      status: "error",
+      url: null,
+      port: null,
+      lastCheckedAt: checkedAt,
+      error: "Expected workspace scripts missing on dashboard package.",
+    };
+  }
+  if (port === "invalid") {
+    return {
+      status: "error",
+      url: null,
+      port: null,
+      lastCheckedAt: checkedAt,
+      error: "Dashboard port probe failed.",
+    };
+  }
+  if (port === "occupied") {
+    return {
+      status: "error",
+      url: null,
+      port: null,
+      lastCheckedAt: checkedAt,
+      error: "Dashboard port is occupied.",
+    };
+  }
+  if (port === "unknown") {
+    return {
+      status: "unknown",
+      url: null,
+      port: null,
+      lastCheckedAt: checkedAt,
+      error: null,
+    };
+  }
+  return {
+    status: "not_started",
+    url: null,
+    port: model.config.dashboard.port,
+    lastCheckedAt: checkedAt,
+    error: null,
+  };
+}
+
+function buildApiDashboardSlices(model: LauncherProcessModel): {
+  api: MapazappRuntimeStatus["api"];
+  dashboard: MapazappRuntimeStatus["dashboard"];
+} {
+  const apiChildSlice = buildSliceFromApiChild(model);
+  const dashChildSlice = buildSliceFromDashboardChild(model);
+
+  if (model.preflight === null) {
+    return { api: apiChildSlice, dashboard: dashChildSlice };
+  }
 
   return {
-    api: {
-      status: apiStatus,
-      url: apiUrl,
-      port: apiStatus === "ok" ? apiPort : null,
-      lastCheckedAt,
-      error: apiError,
-    },
-    dashboard: {
-      status: dashStatus,
-      url: dashUrl,
-      port: dashStatus === "ok" ? dashPort : null,
-      lastCheckedAt,
-      error: dashError,
-    },
+    api: overlayPreflightOnApi(model, apiChildSlice),
+    dashboard: overlayPreflightOnDashboard(model, dashChildSlice),
   };
 }
 
@@ -377,9 +521,10 @@ function buildMt5BridgeSlices(model: LauncherProcessModel): {
  */
 export function deriveLauncherRuntimeStatus(model: LauncherProcessModel): MapazappRuntimeStatus {
   const coreMode = mapLauncherRuntimeModeToCore(model.config.app.runtimeMode);
+  const generatedAt = model.preflight?.checkedAt ?? model.launcherStartedAt;
   const base = createDefaultRuntimeStatus({
     runtimeMode: coreMode,
-    generatedAt: model.launcherStartedAt,
+    generatedAt,
     apiStatus: "unknown",
     dashboardStatus: "unknown",
   });

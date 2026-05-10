@@ -55,6 +55,7 @@ test("A. default config is safe", () => {
 
 test("B. default process model has no running children", () => {
   const m = createDefaultLauncherProcessModel();
+  assert.equal(m.preflight, null);
   assert.equal(m.actionBridgeEnabled, false);
   assert.equal(m.mt5RuntimeEnabled, false);
   assert.equal(m.watcherEnabled, false);
@@ -219,4 +220,31 @@ test("J. MT5 enabled with private path markers fails safety", () => {
   const m = createDefaultLauncherProcessModel({ config: cfg });
   const r = assertLauncherModelSafety(m);
   assert.equal(r.ok, false);
+});
+
+test("K. preflight overlay — ports available yields not_started, not overall ok", () => {
+  const m = createDefaultLauncherProcessModel({ nowIso: "2026-05-10T12:00:00.000Z" });
+  m.ports = { api: "available", dashboard: "available" };
+  m.preflight = {
+    checkedAt: "2026-05-10T12:00:01.000Z",
+    ok: true,
+    scripts: { apiServer: true, dashboard: true, scripts: true },
+  };
+  const rs = deriveLauncherRuntimeStatus(m);
+  assert.equal(rs.api.status, "not_started");
+  assert.equal(rs.dashboard.status, "not_started");
+  assert.equal(rs.api.port, 3001);
+  assert.notEqual(rs.overall.status, "ok");
+});
+
+test("L. preflight overlay — missing API scripts yields api error", () => {
+  const m = createDefaultLauncherProcessModel({ nowIso: "2026-05-10T12:00:00.000Z" });
+  m.ports = { api: "available", dashboard: "available" };
+  m.preflight = {
+    checkedAt: "2026-05-10T12:00:01.000Z",
+    ok: false,
+    scripts: { apiServer: false, dashboard: true, scripts: true },
+  };
+  const rs = deriveLauncherRuntimeStatus(m);
+  assert.equal(rs.api.status, "error");
 });
