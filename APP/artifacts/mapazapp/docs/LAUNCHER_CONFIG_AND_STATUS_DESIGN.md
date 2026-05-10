@@ -483,7 +483,8 @@ Orden **orientativo** (ajustable por producto):
 | ID | Tema |
 |----|------|
 | **D3.1** | Dev **preflight** — chequeos read-only + comandos documentados (**implementado** en `@workspace/scripts`; no launcher; sin procesos hijos) |
-| **D3.2+** | Dev **start** script completo u orquestación adicional (si se aprueba; distinto del preflight) |
+| **D3.2** | Dev **start** MVP — levanta API + dashboard en modo desarrollo (**implementado** como `mapazapp:dev-start`; **no** launcher `.exe`; **sin** runtime MT5 integrado; bridge/MT5 “conectado” **no** aplica) |
+| **D3.3+** | Mejoras futuras de orquestación dev / packaging (si se aprueba) |
 | **D4** | Runtime status model en **TypeScript puro** (tipos + fixtures `unknown`) |
 | **D5** | Endpoint API read-only de runtime status (**explicitamente** unknown/not_configured hasta probes reales) |
 | **D6** | Panel dashboard de runtime status (copy anti-confusión mock vs real) |

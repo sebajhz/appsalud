@@ -238,26 +238,15 @@ export function mergeDeps(partial?: Partial<PreflightDeps>): PreflightDeps {
   };
 }
 
-export async function runMapazappDevPreflightCli(
-  argv: string[],
-  io: PreflightIo,
+/**
+ * Shared read-only preflight used by the preflight CLI and dev-start (D3.2).
+ */
+export async function performDevPreflight(
+  apiPort: number,
+  dashboardPort: number,
   deps?: Partial<PreflightDeps>,
-): Promise<number> {
+): Promise<{ ok: boolean; payload: PreflightJsonPayload }> {
   const merged = mergeDeps(deps);
-  const parsed = parseDevPreflightArgv(argv);
-
-  if (parsed.kind === "help") {
-    io.stdoutWrite(USAGE);
-    return 0;
-  }
-
-  if (parsed.kind === "error") {
-    io.stderrWrite(`${parsed.message}\n`);
-    io.stderrWrite(`Try \`mapazapp:dev-preflight -- --help\`.\n`);
-    return 2;
-  }
-
-  const { apiPort, dashboardPort, json } = parsed;
   const warnings: string[] = [];
   const errors: string[] = [];
 
@@ -273,30 +262,23 @@ export async function runMapazappDevPreflightCli(
     const msg =
       e instanceof Error ? e.message : "Failed to read workspace package.json files.";
     errors.push(msg);
-    const payload: PreflightJsonPayload = {
+    return {
       ok: false,
-      apiPort,
-      dashboardPort,
-      ports: { api: "error", dashboard: "error" },
-      scripts: { apiServer: false, dashboard: false, scripts: false },
-      executionEnabled: false,
-      readOnly: true,
-      startsProcesses: false,
-      mt5Runtime: false,
-      launcher: false,
-      warnings,
-      errors,
+      payload: {
+        ok: false,
+        apiPort,
+        dashboardPort,
+        ports: { api: "error", dashboard: "error" },
+        scripts: { apiServer: false, dashboard: false, scripts: false },
+        executionEnabled: false,
+        readOnly: true,
+        startsProcesses: false,
+        mt5Runtime: false,
+        launcher: false,
+        warnings,
+        errors,
+      },
     };
-    if (json) {
-      io.stdoutWrite(`${JSON.stringify(payload)}\n`);
-    } else {
-      for (const line of BANNER_LINES) {
-        io.stdoutWrite(`${line}\n`);
-      }
-      io.stdoutWrite("\n");
-      io.stderrWrite(`${msg}\n`);
-    }
-    return 1;
   }
 
   const scriptPresence = evaluateExpectedScripts(
@@ -366,27 +348,28 @@ export async function runMapazappDevPreflightCli(
     errors,
   };
 
-  if (json) {
-    io.stdoutWrite(`${JSON.stringify(payload)}\n`);
-    return ok ? 0 : 1;
-  }
+  return { ok, payload };
+}
+
+function printPreflightHuman(io: PreflightIo, payload: PreflightJsonPayload): void {
+  const { apiPort, dashboardPort, ports, scripts: sp } = payload;
 
   for (const line of BANNER_LINES) {
     io.stdoutWrite(`${line}\n`);
   }
   io.stdoutWrite("\n");
 
-  if (apiPortStatus === "available") {
+  if (ports.api === "available") {
     io.stdoutWrite(`API port available (${apiPort}).\n`);
-  } else if (apiPortStatus === "occupied") {
+  } else if (ports.api === "occupied") {
     io.stdoutWrite(`API port occupied (${apiPort}).\n`);
   } else {
     io.stdoutWrite(`API port check failed (${apiPort}).\n`);
   }
 
-  if (dashPortStatus === "available") {
+  if (ports.dashboard === "available") {
     io.stdoutWrite(`Dashboard port available (${dashboardPort}).\n`);
-  } else if (dashPortStatus === "occupied") {
+  } else if (ports.dashboard === "occupied") {
     io.stdoutWrite(`Dashboard port occupied (${dashboardPort}).\n`);
   } else {
     io.stdoutWrite(`Dashboard port check failed (${dashboardPort}).\n`);
@@ -394,15 +377,9 @@ export async function runMapazappDevPreflightCli(
 
   io.stdoutWrite("\n");
   io.stdoutWrite("Expected package scripts:\n");
-  io.stdoutWrite(
-    `- @workspace/api-server: ${scriptPresence.apiServer ? "ok" : "missing"}\n`,
-  );
-  io.stdoutWrite(
-    `- @workspace/mapazapp: ${scriptPresence.dashboard ? "ok" : "missing"}\n`,
-  );
-  io.stdoutWrite(
-    `- @workspace/scripts: ${scriptPresence.scriptsPkg ? "ok" : "missing"}\n`,
-  );
+  io.stdoutWrite(`- @workspace/api-server: ${sp.apiServer ? "ok" : "missing"}\n`);
+  io.stdoutWrite(`- @workspace/mapazapp: ${sp.dashboard ? "ok" : "missing"}\n`);
+  io.stdoutWrite(`- @workspace/scripts: ${sp.scripts ? "ok" : "missing"}\n`);
 
   io.stdoutWrite("\n");
   io.stdoutWrite(
@@ -435,13 +412,59 @@ export async function runMapazappDevPreflightCli(
   io.stdoutWrite(`- API health: http://127.0.0.1:${apiPort}/api/healthz\n`);
   io.stdoutWrite(`- Dashboard: http://127.0.0.1:${dashboardPort}/\n`);
 
-  if (errors.length > 0) {
+  if (payload.errors.length > 0) {
     io.stdoutWrite("\nIssues:\n");
-    for (const e of errors) {
+    for (const e of payload.errors) {
       io.stdoutWrite(`- ${e}\n`);
     }
   }
+}
 
+export async function runMapazappDevPreflightCli(
+  argv: string[],
+  io: PreflightIo,
+  deps?: Partial<PreflightDeps>,
+): Promise<number> {
+  const merged = mergeDeps(deps);
+  const parsed = parseDevPreflightArgv(argv);
+
+  if (parsed.kind === "help") {
+    io.stdoutWrite(USAGE);
+    return 0;
+  }
+
+  if (parsed.kind === "error") {
+    io.stderrWrite(`${parsed.message}\n`);
+    io.stderrWrite(`Try \`mapazapp:dev-preflight -- --help\`.\n`);
+    return 2;
+  }
+
+  const { apiPort, dashboardPort, json } = parsed;
+  const { ok, payload } = await performDevPreflight(apiPort, dashboardPort, merged);
+
+  if (json) {
+    io.stdoutWrite(`${JSON.stringify(payload)}\n`);
+    return ok ? 0 : 1;
+  }
+
+  const readFail =
+    payload.ports.api === "error" &&
+    payload.ports.dashboard === "error" &&
+    !payload.scripts.apiServer &&
+    !payload.scripts.dashboard &&
+    !payload.scripts.scripts &&
+    payload.errors.length > 0 &&
+    payload.errors.every((e) => !e.includes("Missing expected scripts"));
+  if (readFail) {
+    for (const line of BANNER_LINES) {
+      io.stdoutWrite(`${line}\n`);
+    }
+    io.stdoutWrite("\n");
+    io.stderrWrite(`${payload.errors[0]}\n`);
+    return ok ? 0 : 1;
+  }
+
+  printPreflightHuman(io, payload);
   return ok ? 0 : 1;
 }
 

@@ -32,6 +32,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - Paquetes `mapazapp-core`, `api-server`, `mapazapp`: `test`, `typecheck`, `build` según necesidad
 - **C3.1 / C3.2 (solo desarrollo):** validador local read-only de CSV MT5/manual: `pnpm --filter @workspace/scripts mapazapp:import-validate -- --file <ruta> --symbol <sym> --timeframe <tf>` — **no** guarda datos, **no** ejecuta trades y **no** reemplaza el launcher futuro; argumentos y mensajes endurecidos (p. ej. `--format` solo `auto|mt5|bridge|ohlc`; códigos de salida 0/1/2). Solo comprueba forma de archivo con el importador del core.
 - **D3.1 (solo desarrollo):** preflight dev **sin procesos hijos**: `pnpm --filter @workspace/scripts mapazapp:dev-preflight` (desde `APP/`). Comprueba puertos locales esperados y scripts `package.json`; imprime comandos seguros para PowerShell y Bash. **No** es `MapazappLauncher.exe`, **no** levanta API/dashboard/MT5, **no** abre navegador, **no** escribe logs de launcher, **no** simula estado runtime/bridge.
+- **D3.2 (solo desarrollo):** arranque coordinado MVP: `pnpm --filter @workspace/scripts mapazapp:dev-start` (desde `APP/`). Ejecuta el mismo preflight que D3.1, opcionalmente `pnpm --filter @workspace/api-server build`, luego `pnpm --filter @workspace/api-server start` con `PORT` y `NODE_ENV=development`, y el dashboard con `pnpm --filter @workspace/mapazapp dev -- --port …`. Prefijos `[api]` / `[dashboard]` en salida; Ctrl+C / SIGTERM intenta terminar **solo** los hijos creados por el script. **No** es launcher final, **no** abre MT5, **no** detecta bridge real, **no** habilita ejecución, **no** escribe archivos de log.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
@@ -153,6 +154,10 @@ Ubicación y formato: por definir en implementación aprobada.
 ### D3.1 implementado (preflight dev)
 
 - Script: `pnpm --filter @workspace/scripts mapazapp:dev-preflight` — validación read-only de puertos/scripts e instrucciones de arranque manual; **sin** `child_process`, **sin** MT5, **sin** launcher productivo.
+
+### D3.2 implementado (dev start MVP)
+
+- Script: `pnpm --filter @workspace/scripts mapazapp:dev-start` — preflight + build/start API + Vite dashboard como procesos hijos con shutdown coordinado; **sin** `.exe` productivo, **sin** MT5 runtime, **sin** bridge real, **sin** ejecución.
 
 ---
 
