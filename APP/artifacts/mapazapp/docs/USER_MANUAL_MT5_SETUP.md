@@ -79,9 +79,11 @@ Convención **orientativa** hasta fijar estructura en código:
 
 Ajustar rutas al layout real del repo antes de automatizar cualquier ingesta.
 
-### Development-only local import validator (C3.1)
+### Development-only local import validator (C3.1 / C3.2)
 
 Para **desarrollo**, existe un validador local **solo lectura** que revisa un CSV por ruta de archivo y delega el parseo al importador del core (`importManualCandleDataset`). **No** guarda datos, **no** ejecuta trades, **no** es runtime MT5, **no** sustituye un launcher futuro y **no** reemplaza ingesta por API o dashboard.
+
+Requiere **`--file`**, **`--symbol`** y **`--timeframe`** salvo **`--help`**. Códigos de salida típicos: **0** validación OK; **1** archivo ausente/ilegible, CSV vacío señalado, o import fallido; **2** argumentos incompletos o inválidos (p. ej. `--format` fuera de `auto|mt5|bridge|ohlc`). No imprime el contenido completo del CSV.
 
 Comando (pnpm ejecuta el script con cwd en **`APP/scripts`**; la ruta `--file` es relativa a ese directorio salvo que uses una ruta absoluta):
 

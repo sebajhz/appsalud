@@ -1,5 +1,5 @@
 /**
- * C3.1 — CLI validator tests (subprocess-free via runImportValidateCli).
+ * C3.1 / C3.2 — CLI validator tests (subprocess-free via runImportValidateCli).
  */
 
 import assert from "node:assert/strict";
@@ -149,4 +149,61 @@ test("G. output does not echo full CSV rows", () => {
   assert.equal(code, 0);
   const dangerousRow = "2020.01.02;10:00:00;1900.25;1902.10;1899.40;1901.05;50;0;12";
   assert.equal(getOut().includes(dangerousRow), false);
+});
+
+test("H. invalid --format — non-zero, clear message, no stack trace", () => {
+  const { io, getErr } = captureIo();
+  const path = fixturePath("XAUUSD_M15_SYNTHETIC_VALID.csv");
+  const code = runImportValidateCli(
+    ["--file", path, "--symbol", "XAUUSD", "--timeframe", "M15", "--format", "not-a-format"],
+    io,
+  );
+  assert.equal(code, 2);
+  assert.match(getErr(), /invalid --format/i);
+  assert.doesNotMatch(getErr(), /^\s+at\s+/m);
+  assert.equal(getErr().includes("Error:"), false);
+});
+
+test("I. missing --file — non-zero, clear message", () => {
+  const { io, getErr } = captureIo();
+  const code = runImportValidateCli(["--symbol", "XAUUSD", "--timeframe", "M15"], io);
+  assert.equal(code, 2);
+  assert.match(getErr(), /missing required --file/i);
+});
+
+test("J. missing --symbol or --timeframe — required by CLI design", () => {
+  const path = fixturePath("XAUUSD_M15_SYNTHETIC_VALID.csv");
+  let cap = captureIo();
+  assert.equal(runImportValidateCli(["--file", path, "--timeframe", "M15"], cap.io), 2);
+  assert.match(cap.getErr(), /missing required --symbol/i);
+
+  cap = captureIo();
+  assert.equal(runImportValidateCli(["--file", path, "--symbol", "XAUUSD"], cap.io), 2);
+  assert.match(cap.getErr(), /missing required --timeframe/i);
+});
+
+test("K. human output does not echo MT5 CSV row fragments (timestamp delimiter + OHLC)", () => {
+  const { io, getOut } = captureIo();
+  const path = fixturePath("XAUUSD_M15_SYNTHETIC_VALID.csv");
+  const code = runImportValidateCli(["--file", path, "--symbol", "XAUUSD", "--timeframe", "M15"], io);
+  assert.equal(code, 0);
+  const o = getOut();
+  assert.equal(o.includes("2020.01.02;10:00:00"), false);
+  assert.equal(o.includes("1900.25;1902.10"), false);
+});
+
+test("L. C1 synthetic fixture names do not match LIVE/REAL csv gitignore globs", () => {
+  const gitignorePath = resolve(__dirname, "../../../.gitignore");
+  const rules = readFileSync(gitignorePath, "utf8");
+  assert.ok(rules.includes("mt5-history"), ".gitignore should mention local mt5 history staging");
+  const syntheticFixtures = [
+    "XAUUSD_M15_SYNTHETIC_VALID.csv",
+    "XAUUSD_M15_SYNTHETIC_EMPTY.csv",
+    "XAUUSD_M15_SYNTHETIC_INVALID_OHLC.csv",
+  ];
+  for (const name of syntheticFixtures) {
+    assert.ok(name.includes("SYNTHETIC"), `${name} must stay synthetic-tagged`);
+    assert.equal(/LIVE/i.test(name), false);
+    assert.equal(/_REAL_/i.test(name), false);
+  }
 });

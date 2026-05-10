@@ -1,5 +1,5 @@
 /**
- * C3.1 — Development-only local import validator CLI (read-only summary).
+ * C3.1 / C3.2 — Development-only local import validator CLI (read-only summary).
  * Delegates CSV parsing to `importManualCandleDataset`; no persistence, no execution.
  */
 
@@ -47,18 +47,27 @@ Usage:
   pnpm --filter @workspace/scripts mapazapp:import-validate -- \\
     --file <path> --symbol <symbol> --timeframe <timeframe> [options]
 
-Required:
-  --file <path>       Local CSV file path
-  --symbol <symbol>   e.g. XAUUSD
-  --timeframe <tf>    e.g. M15
+Required (unless --help):
+  --file <path>       Local CSV file path (relative paths resolve from current working directory)
+  --symbol <symbol>   Canonical symbol e.g. XAUUSD
+  --timeframe <tf>    e.g. M15, H1
 
 Optional:
-  --format <auto|mt5|bridge|ohlc>   Default: auto
-  --json                           Structured JSON summary on stdout
-  --help                           Show this message
+  --format <auto|mt5|bridge|ohlc>   Hint for the core importer; default: auto
+  --json                           Structured JSON summary on stdout (still read-only)
+  --help, -h                       Show this message
 
-This tool validates CSV shape via the core importer only.
-It does not save data, connect to MT5, send orders to a broker, or replace a launcher.
+Exit codes:
+  0  Validation succeeded (see summary)
+  1  File not found / unreadable, empty CSV note, or import/validation failed
+  2  Invalid or incomplete arguments
+
+Scope:
+  Validates CSV shape in memory via the core importer only.
+  Does not persist data, run MT5, open sockets, or replace a future launcher.
+  Not a trading or profitability tool; does not enable execution.
+
+This tool does not save data, connect to MT5, send orders to a broker, or replace a launcher.
 `;
 
 function parseArgv(argv: string[]): ParsedCli {
