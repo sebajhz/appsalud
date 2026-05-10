@@ -56,6 +56,9 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D9.19 (`@workspace/api-server`, solo tests):** **`actionTransportReadiness.d9.test.ts`** — esqueletos de readiness para transporte futuro (sin endpoint, sin **`POST`** real); gates/token/dispatcher referenciados de forma estática o vía **`@workspace/mapazapp-core`**.
 - **D10.0 (solo documentación):** [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md) — auditoría de gates de detección MT5 antes de launch/watcher; rutas sensibles y non-goals.
 - **D10.1 (`@workspace/scripts`, modelo TS puro):** **`mapazapp-mt5-config-model.ts`** + tests — validación declarativa de config MT5 futura (**sin** lanzar MT5, **sin** `spawn`); flags **`allowLaunch`** / **`allowCommandFiles`** → **`unsafe`**.
+- **D10.2 (solo documentación):** [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) — diseño de acción futura **`open_mt5`** (launcher, gates, token, consentimiento); **sin** código.
+- **D10.3 (`@workspace/scripts`):** **`mapazapp-mt5-runtime-status.ts`** + tests — integración conservadora validación → **`Mt5RuntimeSlice`** + **`deriveOverallRuntimeStatus`**; **sin** watcher, **sin** “connected”.
+- **D10.4 (`@workspace/mapazapp`):** **`Mt5ConfigStatusPanel`** + **`mt5ConfigStatusPresenter`** — borrador UI **read-only** (mock); **sin** fetch nuevo, **sin** botones operativos.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

@@ -8,7 +8,7 @@ Declaración de **integración de datos** entre MetaTrader 5 y Mapazapp. Describ
 
 MT5 será fuente principal de **históricos** y, en el futuro bajo diseño aprobado, de datos **live o semi-live solo lectura**. Mapazapp debe consumir datos de forma **auditables**, **validables** y **seguras**: sin ejecutar órdenes desde la capa de integración descrita aquí.
 
-**Relacionado:** [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md) (**D10.0** auditoría de gates / **D10.1** validador declarativo de config — sin lanzar MT5).
+**Relacionado:** [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md) (**D10.0** auditoría / **D10.1** validador / **D10.3** mapeo runtime conservador), [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) (**D10.2** diseño `open_mt5` sin código).
 
 ---
 
@@ -23,7 +23,7 @@ MT5 será fuente principal de **históricos** y, en el futuro bajo diseño aprob
 | Lectura automática carpeta MT5 | **No** implementada como producto |
 | Ejecución real | **Fuera de alcance** de esta integración |
 
-**D10.0 / D10.1 — Gates de detección MT5 (sin runtime live):** ver [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md). **D10.0** fija baseline y non-goals antes de launch/watcher; **D10.1** añade validación declarativa de configuración MT5 futura (**sin** abrir terminal, **sin** filesystem obligatorio).
+**D10.x — Gates / modelo / UI draft (sin runtime live):** [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md) (**D10.0**); validador **`mapazapp-mt5-config-model`** (**D10.1**); diseño doc **`MT5_OPEN_ACTION_DESIGN_D10.md`** (**D10.2**); mapeo runtime **`mapazapp-mt5-runtime-status`** (**D10.3**); panel dashboard read-only mock (**D10.4**) — todo **sin** abrir MT5, **sin** watcher, **sin** comandos de trading.
 
 **C3.1 / C3.2 — Development-only local import validator:** CLI `pnpm --filter @workspace/scripts mapazapp:import-validate` con `--file`, `--symbol`, `--timeframe` obligatorios salvo `--help` (opcional `--format`, `--json`). Es **read-only**: valida/resume un CSV vía el importador del core en memoria; **no** persiste, **no** usa DB, **no** es watcher ni launcher, **no** ejecuta órdenes; salida con `executionEnabled: false` / `readOnly: true`. Errores de uso → código **2**; fallo de archivo o import → **1**. Los exports reales e históricos grandes deben quedar fuera de Git (no commitear datos operativos).
 

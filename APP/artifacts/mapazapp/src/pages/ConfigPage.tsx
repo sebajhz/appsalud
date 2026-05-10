@@ -1,4 +1,5 @@
 import { Layout } from '@/components/Layout';
+import { Mt5ConfigStatusPanel } from '@/components/Mt5ConfigStatusPanel';
 import { RuntimeStatusPanelContainer } from '@/components/RuntimeStatusPanelContainer';
 import { mockConfig } from '@/mock/config';
 import { createMockStrategyRegistryDataSource } from '@/services/mockStrategyRegistryDataSource';
@@ -71,6 +72,9 @@ export default function ConfigPage() {
             Development runtime snapshot. This does not start services or enable trading.
           </p>
           <RuntimeStatusPanelContainer />
+          <div className="pt-2">
+            <Mt5ConfigStatusPanel />
+          </div>
         </div>
 
         {/* Accounts */}

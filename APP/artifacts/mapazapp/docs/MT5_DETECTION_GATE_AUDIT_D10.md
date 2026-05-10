@@ -2,7 +2,7 @@
 
 **Checkpoint D10.0 — documentation + design gate.** Resume qué existe hoy respecto a MT5 en el repo, qué es fixture o sanitizado, qué está explícitamente fuera de alcance, y bajo qué condiciones puede avanzarse un **modelo TS puro de validación de configuración** (**D10.1**) sin abrir MT5, sin watcher y sin launcher real.
 
-**Relacionado:** [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`USER_MANUAL_MT5_SETUP.md`](./USER_MANUAL_MT5_SETUP.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) (**D10.2** — diseño `open_mt5`, sin código), [`USER_MANUAL_MT5_SETUP.md`](./USER_MANUAL_MT5_SETUP.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -114,3 +114,13 @@ Esto **no** implica: lanzar MT5, watchers, IPC de trading, ni afirmar que el ter
 **No hay bloqueo:** es seguro implementar **D10.1** como **modelo TS puro** (`validateMt5Config`, sanitización, flags `unsafe`), **sin** filesystem obligatorio y **sin** lanzamiento de MT5, alineado con este audit.
 
 Si en el futuro se requiere detección automática del ejecutable o del data folder vía SO, eso será un **checkpoint distinto** con amenaza/registro explícitos y probablemente solo en **launcher** gobernado — **fuera** del alcance actual.
+
+---
+
+## 12. Seguimiento D10.2–D10.4 (sin lanzar MT5)
+
+| Checkpoint | Entrega |
+|------------|---------|
+| **D10.2** | [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) — acción futura **`open_mt5`**, criterios previos, sin implementación |
+| **D10.3** | `APP/scripts/src/mapazapp-mt5-runtime-status.ts` — mapeo conservador de validación D10.1 → `Mt5RuntimeSlice` + `deriveOverallRuntimeStatus`; **sin** watcher |
+| **D10.4** | Dashboard: `Mt5ConfigStatusPanel` + presenter — borrador **read-only**, mock estático, **sin** botones ni fetch nuevo |
