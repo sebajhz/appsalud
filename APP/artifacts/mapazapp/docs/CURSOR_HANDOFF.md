@@ -41,6 +41,7 @@
 - **D9.13 adds `apiCorsConfig.ts`** — CORS allowlist desde **`ApiHardeningConfig`** (no credentials, **`GET`/`HEAD`/`OPTIONS`**); vitest **`apiCorsConfig.d9.test.ts`**, **`apiCorsIntegration.d9.test.ts`**; **no** token/**`POST`**, **no** route edits (**`app.ts`** wiring detail actualizado en **D9.14.1**).
 - **D9.14.1 hardens `app.ts`** — single **`createApiHardeningConfigFromEnv`** snapshot for **`createCorsOptions(apiHardeningConfig)`** + **`express.json`/`urlencoded`** **`limit: maxBodyBytes`** + **`safeErrorHandler`** (safe JSON **`413`/`400`/`500`**, no stack); vitest **`apiBodyAndErrorHandling.d9.test.ts`** + readiness updates; **no** action **`POST`**, **no** token/rate/CSRF.
 - **D9.14.2 adds `logRedaction.ts`** — **`sanitizeLogString`**, **`sanitizeLogValue`**, **`getApiLoggerRedactPaths`** for **`pino`** + **`sanitizeLogString`** on logged URL paths in **`pino-http`**; vitest **`logRedaction.d9.test.ts`** + readiness; **no** action **`POST`**, **no** transport token wiring.
+- **D9.15 adds `APP/artifacts/mapazapp/docs/API_TOKEN_CSRF_DESIGN_D9.md`** — diseño formal de token local **`X-Mapazapp-Action-Token`**, postura CSRF, launcher, gates y tests futuros (**D9.16**–**D9.18**); **solo documentación** — **sin** código, **sin** middleware, **sin** **`POST`**, **sin** token real.
 
 ## V2-16 handoff update
 

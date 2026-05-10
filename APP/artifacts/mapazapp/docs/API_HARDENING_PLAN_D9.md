@@ -2,7 +2,7 @@
 
 **Checkpoint D9.9 — documentation only.** No changes to `app.ts`, `index.ts`, routes, CORS, bind/listen, token/auth, CSRF, rate limits, body parsers, new endpoints, **`POST`** action routes, dashboard UI, launcher, **`spawn`**, **`child_process`**, MT5 runtime, watcher, DB, WebSocket live, polling, **`localStorage`**, or real execution. No new dependencies.
 
-**Related:** [`LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`](./LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md) (**D9.6** — HTTP minimums before action transport), [`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md) (**D9.7** — safety tests before transport), [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — threats + mitigations). **D9.8** (audit) informed this plan but left **no** repo edits.
+**Related:** [`LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`](./LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md) (**D9.6** — HTTP minimums before action transport), [`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md) (**D9.7** — safety tests before transport), [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — threats + mitigations), [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md) (**D9.15** — token / CSRF posture **before** action **`POST`** — **docs only**). **D9.8** (audit) informed this plan but left **no** repo edits.
 
 ---
 
@@ -44,10 +44,10 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 
 | # | Area | Current state | Required before local action transport | Gap | Risk | Suggested checkpoint |
 |---|------|---------------|----------------------------------------|-----|------|----------------------|
-| 1 | Host / bind | **`D9.12` done:** explicit **`listen(port, host)`**; default **`127.0.0.1`** | Same loopback policy must hold when action transport ships — **D9.6** §4.1 / **D9.1** §6.1 | Optional **`0.0.0.0`** still broadens LAN exposure if set | LAN exposure if misconfigured | **D9.12** closed; revisit with transport (**D9.16**+) |
-| 2 | CORS | **`D9.13` done:** global **allowlist** (default dev origins); disallowed **`Origin`** gets **no** **`Access-Control-Allow-Origin`** | Stricter **per-route** stacks for future **action** **`POST`** may still be required — **D9.6** §4.2 | Transport **`POST`** not layered yet | CSRF + future **`POST`** | **D9.13** closed; tighten with transport (**D9.16**+) |
-| 3 | Auth / local token | None | Unguessable transport secret / capability — **D9.6** §4.3 | No token model | Drive-by requests to localhost | **D9.15** design; implement with transport |
-| 4 | CSRF | None | CSRF token or equivalent for browser-reachable actions — **D9.1** §6.3 | No mitigation | Cross-site triggering | **D9.15** + transport PR |
+| 1 | Host / bind | **`D9.12` done:** explicit **`listen(port, host)`**; default **`127.0.0.1`** | Same loopback policy must hold when action transport ships — **D9.6** §4.1 / **D9.1** §6.1 | Optional **`0.0.0.0`** still broadens LAN exposure if set | LAN exposure if misconfigured | **D9.12** closed; revisit with transport (**D9.19**+) |
+| 2 | CORS | **`D9.13` done:** global **allowlist** (default dev origins); disallowed **`Origin`** gets **no** **`Access-Control-Allow-Origin`** | Stricter **per-route** stacks for future **action** **`POST`** may still be required — **D9.6** §4.2 | Transport **`POST`** not layered yet | CSRF + future **`POST`** | **D9.13** closed; tighten with transport (**D9.19**+) |
+| 3 | Auth / local token | None | Unguessable transport secret / capability — **D9.6** §4.3 | No token model | Drive-by requests to localhost | **D9.15** design doc ([`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md)); **D9.16**+ config/middleware/tests; implement verification with transport |
+| 4 | CSRF | None | CSRF token or equivalent for browser-reachable actions — **D9.1** §6.3 | No mitigation | Cross-site triggering | **D9.15** design doc; **D9.17**+ middleware skeleton + transport PR |
 | 5 | Body schema validation | N/A (no action body yet) | Per-**`actionId`** JSON schema at HTTP boundary — **D9.6** §4.5 | Not wired | Injection / arbitrary paths / commands | Action transport PR |
 | 6 | Body size limit | **`D9.14.1` done:** explicit **`maxBodyBytes`** on JSON + urlencoded parsers | Explicit **max** for future **action** routes — **D9.6** §4.8 | Transport **`POST`** not wired yet | DoS via large bodies | **D9.14.1** closed for global parsers |
 | 7 | Rate limit / cooldown | None | Per-class / per-identity limits — **D9.6** §4.6 | Absent | Flood / retry storms | Transport + **D9.14**/policy |
@@ -116,11 +116,14 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | **D9.13** | **CORS allowlist** — **`apiCorsConfig.ts`** + **`app.ts`** wiring — **no** action **`POST`** | **`createCorsOptions`** from shared hardening snapshot (**replaces** bare **`createCorsOptionsFromEnv()`**-only wiring in **`app.ts`** per **D9.14.1**); **`apiCorsConfig.d9.test.ts`**, **`apiCorsIntegration.d9.test.ts`**, readiness updates; **`MAPAZAPP_API_ALLOWED_ORIGINS`**. |
 | **D9.14.1** | **Body limits + safe global error handler** — **`app.ts`**, **`middleware/safeErrorHandler.ts`**, **`apiBodyAndErrorHandling.d9.test.ts`** — **no** action **`POST`** | **`maxBodyBytes`** → **`express.json` / `urlencoded`**; **`safeErrorHandler`** (**`413`/`400`/`500`** JSON); readiness/README updates. **No** token / CSRF / rate limit. |
 | **D9.14.2** | **Log redaction baseline** — **`logRedaction.ts`**, **`logRedaction.d9.test.ts`**, **`logger.ts`** redact paths, **`app.ts`** URL sanitization — **no** action **`POST`** | **`sanitizeLogString` / `sanitizeLogValue`**, **`getApiLoggerRedactPaths`**; readiness/README updates. **Optional minimal security headers** remain a **future** checkpoint (**D9.14.3**). |
-| **D9.15** | **Token / CSRF design + model** (optional pure types) | Doc + types; implementation ships with transport |
-| **D9.16** | **Action transport test skeletons** | Align filenames with **D9.7** §7 — **no** live endpoint until approved |
+| **D9.15** | **Token / CSRF design** — [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md) — **docs only** | Formal header contract, launcher relationship, gate/error/testing obligations; **no** code, **no** real token |
+| **D9.16** | **Token / CSRF config model** — pure TS in **`api-server`** (**e.g.** extend **`apiHardeningConfig`**) — **no** **`app.ts`** middleware wiring | Env-shaped fields for future token policy only — **no** verification behavior |
+| **D9.17** | **Token verification middleware skeleton** — **`app.ts`** wiring allowed — **no** Mapazapp action **`POST`** route | Validates **`X-Mapazapp-Action-Token`** only on opted-in routes (can be **zero** routes initially) |
+| **D9.18** | **Token tests + redaction integration** — **no** action **`POST`** | Missing/invalid/query token cases; logger redaction assertions (**D9.15** §11 / **D9.7** §3.1) |
+| **D9.19** | **Action transport test skeletons** | Align filenames with **D9.7** §7 — **no** live privileged endpoint until **D9.6** acceptance met |
 | **D10.0** | **MT5 detection gate audit** | As in roadmap — **no** MT5 transport before this |
 
-**Rationale:** separate **docs** (**D9.9**) → **types** (**D9.10**) → **tests documenting intent** (**D9.11**) before changing runtime behavior (**D9.12**–**D9.14**). **CORS** follows **bind** so origins are decided against a fixed listen address story. **Token/CSRF** (**D9.15**) stays adjacent to future transport (**D9.16**) to avoid partial auth surfaces.
+**Rationale:** separate **docs** (**D9.9**) → **types** (**D9.10**) → **tests documenting intent** (**D9.11**) before changing runtime behavior (**D9.12**–**D9.14**). **CORS** follows **bind** so origins are decided against a fixed listen address story. **Token/CSRF** is split into **design** (**D9.15**) → **config model** (**D9.16**) → **middleware skeleton** (**D9.17**) → **tests** (**D9.18**) before **transport skeletons** (**D9.19**) to avoid shipping secrets or **`POST`** without verification tests.
 
 ---
 
@@ -187,7 +190,8 @@ D9.9 **does not** implement or authorize implementation of:
 
 ## Document history
 
-- **D9.9** — API hardening plan (**documentation only**): gap table, env contract proposal, implementation sequence **D9.10**–**D9.16**, risks, conceptual tests, decision log.
+- **D9.9** — API hardening plan (**documentation only**): gap table, env contract proposal, implementation sequence **D9.10**–**D9.19**, risks, conceptual tests, decision log.
 - **D9.10** — Pure **`api-server`** config module (**no wiring**): types + safe defaults + validation + env bag parsing; **`ApiErrorExposurePolicy`** uses **`raw_stack_default_dev`** (avoids embedding framework product names in static governance scans).
 - **D9.14.1** — **`app.ts`** wires **`maxBodyBytes`** + **`safeErrorHandler`**.
 - **D9.14.2** — **`logRedaction`** helpers + tests + **`pino`** redact centralization + sanitized **`req.url`** logging; **optional security headers** deferred (**D9.14.3**); **token / rate / idempotency / CSRF** remain **D9.15**+.
+- **D9.15** — [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md) — token / CSRF posture (**documentation only**); **real token verification** remains **D9.16**–**D9.18**+.

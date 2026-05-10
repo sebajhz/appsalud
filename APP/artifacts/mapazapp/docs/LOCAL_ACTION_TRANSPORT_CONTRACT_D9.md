@@ -2,7 +2,7 @@
 
 **Checkpoint D9.6 — documentation only.** No `POST` action endpoints, no HTTP action transport implementation, no IPC implementation, no dashboard operational buttons, no product launcher executable, no MT5 runtime automation, no folder watchers, no operational database, no WebSocket live feeds, no polling loop for actions, no `localStorage` action state, no `spawn`, no `child_process`, no real execution or trading.
 
-**Related:** [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — threats + mandatory mitigations), [`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md) (**D9.7** — safety test plan before transport — **docs only**), [`API_HARDENING_PLAN_D9.md`](./API_HARDENING_PLAN_D9.md) (**D9.9** — API hardening **plan** before changing server code — **docs only**), [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1 — bridge roles), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (D8.1 — launcher-side bridge intent), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md). **D9.10 (implemented, unwired):** [`apiHardeningConfig.ts`](../../api-server/src/config/apiHardeningConfig.ts) in **`@workspace/api-server`** — typed future bind/CORS/transport/token/body/rate/idempotency/redaction/error-envelope defaults + validation only.
+**Related:** [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — threats + mandatory mitigations), [`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md) (**D9.7** — safety test plan before transport — **docs only**), [`API_HARDENING_PLAN_D9.md`](./API_HARDENING_PLAN_D9.md) (**D9.9** — API hardening **plan** before changing server code — **docs only**), [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md) (**D9.15** — token / CSRF posture before action **`POST`** — **docs only**), [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1 — bridge roles), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (D8.1 — launcher-side bridge intent), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md). **D9.10 (implemented, unwired):** [`apiHardeningConfig.ts`](../../api-server/src/config/apiHardeningConfig.ts) in **`@workspace/api-server`** — typed future bind/CORS/transport/token/body/rate/idempotency/redaction/error-envelope defaults + validation only.
 
 ---
 
@@ -43,7 +43,7 @@
 | **Rate limit / cooldown** for actions | Required before transport (**D9.1** §6) |
 | **Idempotency / nonce** scheme | Required for sensitive transitions before transport |
 | **Transport logging / redaction** policy implemented | Required before transport |
-| **CORS** restricted specifically for action routes | Current API uses permissive defaults — **not** sufficient alone for actions (**D9.5**) |
+| **CORS** + token posture for action routes | **D9.13:** global allowlist exists; **D9.15** defines future **`X-Mapazapp-Action-Token`** + CSRF-class rules — **still not** sufficient alone until verification + per-route stacks land (**D9.5**, **D9.6** §4.2) |
 | **Bind-to-loopback** enforcement for action listeners | Must be explicit before action transport (**D9.1** §6.1) |
 | MT5 runtime automation | **D10+** gates |
 
@@ -102,13 +102,13 @@
 
 ## 4. Minimum HTTP action transport requirements
 
-Before **any** future **`POST`** (or mutating HTTP method) for **Mapazapp actions**, **all** of the following must be **designed, approved, and implemented** (this list extends **D9.1** §6 for HTTP-specific concerns):
+Before **any** future **`POST`** (or mutating HTTP method) for **Mapazapp actions**, **all** of the following must be **designed, approved, and implemented** (this list extends **D9.1** §6 for HTTP-specific concerns). **Design reference:** [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md) (**D9.15**) — header contract, launcher boundaries, and test obligations; **implementation** remains future checkpoints (**D9.16**–**D9.18**+ per **D9.9** §6).
 
 | # | Requirement |
 |---|-------------|
 | 1 | **Bind** action listener explicitly to **`127.0.0.1`** (or stricter loopback policy) — **not** `0.0.0.0` by default. |
 | 2 | **CORS** strict: **no** wildcard origins for action routes; explicit **allowlist**; justify credentials if ever used. |
-| 3 | **Local secret / CSRF token** (or equivalent) — unguessable; patterns that block **cross-site drive-by** (**D9.1** §6.3). |
+| 3 | **Local secret / CSRF-class mitigation** — unguessable transport token ( **`X-Mapazapp-Action-Token`** per **D9.15** ); **no** query-string secret; blocks naive cross-site **`POST`** (**D9.1** §6.3). |
 | 4 | **`MapazappActionId` allowlist** at the HTTP boundary — reject unknown IDs. |
 | 5 | **JSON schema validation** for body — types, bounds; **no** arbitrary paths without consent/staging policy. |
 | 6 | **Rate limits / cooldowns** per action class and per client identity where identifiable (**D9.1** §6.9). |
@@ -324,3 +324,4 @@ D9.6 **does not** implement or authorize implementation of:
 ## Document history
 
 - **D9.6** — Transport contract (**documentation only**): HTTP loopback + IPC minimums, caller remapping, conceptual envelopes, action-class policy, testing obligations, recommended **D9.7** ([`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md)) / **D9.8** / **D9.9** ([`API_HARDENING_PLAN_D9.md`](./API_HARDENING_PLAN_D9.md)) / **D10.x** sequence.
+- **D9.15 cross-link** — [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md): formal token / CSRF posture required **before** action **`POST`**; **docs only**.
