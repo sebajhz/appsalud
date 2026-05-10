@@ -79,6 +79,21 @@ Convención **orientativa** hasta fijar estructura en código:
 
 Ajustar rutas al layout real del repo antes de automatizar cualquier ingesta.
 
+### Development-only local import validator (C3.1)
+
+Para **desarrollo**, existe un validador local **solo lectura** que revisa un CSV por ruta de archivo y delega el parseo al importador del core (`importManualCandleDataset`). **No** guarda datos, **no** ejecuta trades, **no** es runtime MT5, **no** sustituye un launcher futuro y **no** reemplaza ingesta por API o dashboard.
+
+Comando (pnpm ejecuta el script con cwd en **`APP/scripts`**; la ruta `--file` es relativa a ese directorio salvo que uses una ruta absoluta):
+
+```bash
+cd APP
+pnpm --filter @workspace/scripts mapazapp:import-validate -- \
+  --file ../lib/mapazapp-core/tests/fixtures/mt5/XAUUSD_M15_SYNTHETIC_VALID.csv \
+  --symbol XAUUSD --timeframe M15
+```
+
+Opcional: `--json` para resumen estructurado en stdout. Los exports **reales** de MT5 e históricos grandes deben permanecer **fuera del repo** y no deben commitearse.
+
 ---
 
 ## 8. Cómo iniciar Mapazapp hoy (modo desarrollo)

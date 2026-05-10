@@ -58,3 +58,12 @@ coverage/
 *.zip
 **/*.zip
 old/
+
+# Local MT5 exports / large histories (keep repo fixtures under tests/fixtures)
+data/mt5-history/
+data/mt5-exports/
+data/imports/
+**/mt5-export-staging/
+**/*_REAL_*.csv
+**/*LIVE*.csv
+**/*Live*.csv

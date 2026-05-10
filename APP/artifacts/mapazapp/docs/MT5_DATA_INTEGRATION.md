@@ -21,6 +21,8 @@ MT5 será fuente principal de **históricos** y, en el futuro bajo diseño aprob
 | Lectura automática carpeta MT5 | **No** implementada como producto |
 | Ejecución real | **Fuera de alcance** de esta integración |
 
+**C3.1 — Development-only local import validator:** CLI `pnpm --filter @workspace/scripts mapazapp:import-validate` con `--file`, `--symbol`, `--timeframe` (y opcional `--format`, `--json`). Es **read-only**: valida/resume un CSV vía el importador del core en memoria; **no** persiste, **no** usa DB, **no** es watcher ni launcher, **no** ejecuta órdenes. Los exports reales e históricos grandes deben quedar fuera de Git (no commitear datos operativos).
+
 ---
 
 ## 3. Data sources

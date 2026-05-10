@@ -634,6 +634,10 @@ importers:
         version: 3.2.4(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
 
   scripts:
+    dependencies:
+      '@workspace/mapazapp-core':
+        specifier: workspace:*
+        version: link:../lib/mapazapp-core
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
