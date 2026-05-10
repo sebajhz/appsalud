@@ -113,6 +113,8 @@ Interpretation:
 
 **Nota D7.1 (puente de acciones, solo docs):** `APP/artifacts/mapazapp/docs/ACTION_BRIDGE_DESIGN.md` define cómo el dashboard podría disparar operaciones futuras vía API local / launcher sin ejecutar comandos desde el browser; no añade endpoints `POST`, botones ni launcher ejecutable.
 
+**Nota D8.1 (launcher prototype, solo docs):** `APP/artifacts/mapazapp/docs/LAUNCHER_PROTOTYPE_DESIGN_D8.md` define el diseño del futuro launcher y del puente **launcher-side** (procesos/PIDs, Windows, puertos, logs, seguridad localhost, pruebas futuras); no implementa código, supervisor, `spawn`, MT5 runtime, watcher, DB ni WebSocket live.
+
 ---
 
 ## 5) Checkpoint definitions (V2-11 through V2-25)

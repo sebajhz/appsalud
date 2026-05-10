@@ -2,7 +2,7 @@
 
 Documento **D2**: diseño formal **solo documentación**. No implementa launcher, código, endpoints ni scripts.
 
-**Relacionado:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (**D4.1**) — cableado futuro de acciones dashboard/runtime respecto de preflight, dev-start, validador de import y modelo de estado; **sin** botones ni TSX en ese checkpoint.
+**Relacionado:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (**D4.1**) — cableado futuro de acciones dashboard/runtime respecto de preflight, dev-start, validador de import y modelo de estado; **sin** botones ni TSX en ese checkpoint. **D8.1:** [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) — prototipo de launcher + puente launcher-side (**solo documentación**).
 
 ---
 
@@ -493,9 +493,16 @@ Orden **orientativo** (ajustable por producto):
 | **D7.1** | **Diseño documental del action bridge** dashboard ↔ API local / launcher — [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md); **sin** código, **sin** `POST`, **sin** launcher `.exe`; el puente de acciones se define **antes** del prototipo launcher |
 | **D7.2** | Modelo TS **`ActionResult`** en `@workspace/mapazapp-core` (`action-result.ts`) — **implementado**; **sin** endpoints HTTP / **sin** acciones reales |
 | **D7.3** | Cliente de acciones en dashboard (si se aprueba) — **sin** botones |
-| **D8.0 / D8.1** | Auditoría y diseño del **prototipo launcher** + bridge launcher-side (IPC/API interna) |
-| **D9.0** | Primer endpoint local **acotado** / acción launcher equivalente (preflight u otra), con threat model mínimo |
-| **D10.0** | Gate de **detección MT5** (paths/presencia, política; **sin** ejecución) |
+| **D8.0** | Auditoría / propuesta del prototipo launcher — solo documentación |
+| **D8.1** | Diseño formal **prototipo launcher + puente launcher-side** — [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md); **sin** código ni `spawn` |
+| **D8.2** | Esqueleto config/modelo de proceso — **sin spawn** |
+| **D8.3** | Prototipo launcher **solo preflight** — **sin** levantar API/dashboard |
+| **D9.0** | Puente de acciones local **acotado** + threat model mínimo |
+| **D9.1** | Primer endpoint o IPC **`validate_environment`** solamente (alcance reducido) |
+| **D9.2** | Acción **`start_mapazapp_dev`** supervisada — solo si hay tests de PID/apagado |
+| **D10.0** | Gate **detección MT5** — auditoría/política; **sin** ejecución |
+| **D10.1** | Validador config MT5 — presencia/política; **sin** lanzar terminal |
+| **D10.2** | Acción opcional **`open_mt5`** — explícitamente acotada |
 
 Este documento debe revisarse antes de implementar **D5/D6** para no introducir payloads que parezcan “live ready” sin serlo.
 

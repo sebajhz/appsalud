@@ -190,7 +190,7 @@ Dashboard control → trade / order / MT5 command channel directly
 
 Completed **read-only** path: **D5.1b** (runtime status GET), **D6.x** (dashboard snapshot panel).
 
-**Forward-looking action bridge sequence** (authoritative detail): [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) §11 — **D7.1** docs → **D7.2** / **D7.3** TS contracts/client **without** buttons → **D8.x** launcher prototype design → **D9.0** first guarded local action → **D10.0** MT5 detection audit.
+**Forward-looking action bridge sequence** (authoritative detail): [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) §11 — **D7.1** docs → **D7.2** / **D7.3** TS contracts/client **without** buttons → **D8.1** launcher prototype + launcher-side bridge design ([`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), **docs only**) → **D8.2+** skeleton/preflight prototypes (**no** `spawn` until approved) → **D9.x** guarded bridge → **D10.x** MT5 detection gate.
 
 *(Older drafts called “D7 launcher prototype”; aligned numbering: launcher audit/design is **D8.x**, after **D7.1** bridge documentation.)*
 
@@ -217,5 +217,6 @@ This document **does not** implement or authorize:
 - `@workspace/mapazapp-core` **`action-result.ts`** (**D7.2**) — shared pure **`MapazappActionResult`** types and safety helpers; **no** buttons or endpoints.  
 - **`APP/artifacts/mapazapp/src/services/actionClient.ts`** (**D7.3**) — dashboard **`DashboardActionClient`** stub + action definitions; **`runAction`** stays **`not_available`** / **`blocked`** until a real bridge exists; **no** TSX.  
 - `APP/artifacts/mapazapp/docs/LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` — authoritative status semantics and anti-simulation rules.  
+- `APP/artifacts/mapazapp/docs/LAUNCHER_PROTOTYPE_DESIGN_D8.md` — **D8.1** launcher prototype + launcher-side bridge design (**documentation only**).  
 - `APP/artifacts/mapazapp/docs/RUNTIME_AND_LAUNCHER_STRATEGY.md` — launcher strategy and dev tooling context.  
 - `APP/scripts/package.json` — canonical `pnpm` script names for validators and dev tools.

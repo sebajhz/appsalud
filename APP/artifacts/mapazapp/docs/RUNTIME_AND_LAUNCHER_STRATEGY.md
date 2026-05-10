@@ -152,6 +152,8 @@ Ubicación y formato: por definir en implementación aprobada.
 
 **Nota de alineación:** esa tabla es **orientativa histórica**. En el repo, **D3.x** cubre scripts dev, **D4/D5.1a** el modelo runtime TS, **D5.1b** el GET de estado, **D6.x** el panel dashboard. La secuencia **D7+** (puente de acciones y launcher) está unificada en [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) §11 y en [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) §16.
 
+- **D8.1 (solo documentación):** [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) — diseño del futuro launcher y del puente **launcher-side** (propiedad de PIDs, Windows, puertos, logs, seguridad localhost); **no** implementa launcher, supervisor, `spawn`, ni endpoints `POST`.
+
 ### D2 completado (solo diseño)
 
 - Documento: **`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`** — esquema conceptual de configuración del launcher futuro, modelo de **runtime status** (`unknown`, `not_configured`, `not_checked`, `ok`, `error`, etc.), puertos, logs, modos runtime, reglas para **no simular** MT5/bridge real, y defaults de seguridad (`executionEnabled` false, etc.).

@@ -2,7 +2,7 @@
 
 **Checkpoint D7.1 — documentation only.** No dashboard buttons, no new HTTP routes, no `POST` action endpoints, no launcher executable, no MT5 runtime integration, no watcher, no database, no WebSocket live streams, no polling, no `localStorage` action state, and no real execution. This document defines how future dashboard actions should connect to a **governed** local API and/or desktop launcher.
 
-**Related:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (D4.1 — action IDs and safety rules), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (D2 — config and runtime semantics), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
+**Related:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (D4.1 — action IDs and safety rules), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (D2 — config and runtime semantics), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (**D8.1** — launcher prototype + launcher-side bridge design, **documentation only**).
 
 ---
 
@@ -273,9 +273,15 @@ Use this table to reconcile older docs that used “D7 = launcher prototype”. 
 | **D7.2** | **`ActionResult` model** in `@workspace/mapazapp-core` (`action-result.ts`) — **implemented**; **no HTTP endpoints**; **no real actions** |
 | **D7.3** | **Dashboard action client** — `APP/artifacts/mapazapp/src/services/actionClient.ts` — **implemented**; returns **`not_available`** / **`blocked`** `ActionResult` values only; **no** `fetch`, **no** `POST`, **no** buttons |
 | **D8.0** | **Launcher prototype** — audit / proposal only |
-| **D8.1** | **Launcher action bridge** — detailed launcher IPC/API design |
-| **D9.0** | **First guarded local action endpoint** or launcher-mediated equivalent — minimal scope |
+| **D8.1** | **Launcher prototype + launcher-side bridge design** — [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md); defines IPC/HTTP posture, process ownership, Windows lifecycle, ports/logs, and testing strategy — **documentation only** (**no** launcher code, **no** supervisor, **no** `spawn`) |
+| **D8.2** | Launcher **config + process model skeleton** — **no spawn** |
+| **D8.3** | Launcher **preflight-only prototype** — **no API/dashboard spawn** |
+| **D9.0** | **Guarded local action bridge prototype** — minimal scope + explicit threat model |
+| **D9.1** | First controlled **`validate_environment`** endpoint **or** launcher IPC equivalent — narrow scope |
+| **D9.2** | Controlled **`start_mapazapp_dev` / supervision** — **only if** PID ownership + shutdown tests exist |
 | **D10.0** | **MT5 detection gate** — audit / policy design; paths only; **no execution** |
+| **D10.1** | **MT5 config validator** — presence/policy checks; **no terminal launch requirement** |
+| **D10.2** | Optional **`open_mt5`** action — **explicitly gated** |
 
 **Later (separate approval):** dashboard action **buttons** UX spec, MT5 path probes, supervised process manager, upload policies for CSV.
 
@@ -300,6 +306,7 @@ This checkpoint **does not** implement or authorize:
 
 - [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md)  
 - [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md)  
+- [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (**D8.1**)  
 - [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md)  
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)  
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)  
