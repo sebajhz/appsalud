@@ -117,6 +117,8 @@ Interpretation:
 
 **Nota D9.1 (threat model action bridge, solo docs):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md` formaliza amenazas y mitigaciones obligatorias (localhost/CSRF/replay/CORS/tokens/allowlist/procesos/logs/privacidad/`ActionResult`) **antes** de cualquier endpoint `POST` de acciones, IPC real o launcher ejecutable; sin código ni dependencias nuevas.
 
+**Nota D9.6 (contrato de transporte, solo docs):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md` define requisitos mínimos para transporte HTTP loopback e IPC launcher-side, reglas de remapeo de caller (`validate_environment` solo en contexto launcher/script autorizado), envelopes conceptuales y política por clase de acción; **sin** implementación de `POST`, IPC, botones ni launcher.
+
 ---
 
 ## 5) Checkpoint definitions (V2-11 through V2-25)
