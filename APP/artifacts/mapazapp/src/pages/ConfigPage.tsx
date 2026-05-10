@@ -1,4 +1,5 @@
 import { Layout } from '@/components/Layout';
+import { RuntimeStatusPanelContainer } from '@/components/RuntimeStatusPanelContainer';
 import { mockConfig } from '@/mock/config';
 import { createMockStrategyRegistryDataSource } from '@/services/mockStrategyRegistryDataSource';
 import { Info, User, Shield, BookOpen, Globe, Layers } from 'lucide-react';
@@ -63,6 +64,13 @@ export default function ConfigPage() {
         <div className="flex items-start gap-2 rounded-md border border-blue-800 bg-blue-950/30 p-3 text-xs text-blue-300" data-testid="config-mock-notice">
           <Info className="w-4 h-4 shrink-0 mt-0.5" />
           Display-only view. Mapazapp is multi-account and multi-broker by design. Changes are not saved in this mock.
+        </div>
+
+        <div className="space-y-2" data-testid="config-runtime-status-section">
+          <p className="text-xs text-slate-500">
+            Development runtime snapshot. This does not start services or enable trading.
+          </p>
+          <RuntimeStatusPanelContainer />
         </div>
 
         {/* Accounts */}
