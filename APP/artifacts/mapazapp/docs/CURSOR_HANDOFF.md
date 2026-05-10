@@ -36,6 +36,7 @@
 - **D9.9 adds `APP/artifacts/mapazapp/docs/API_HARDENING_PLAN_D9.md`** — API **hardening plan** (gap table, env contract proposal, sequence **D9.10+** before `app.ts`/action `POST`); **documentation only** — **no** API code, **no** CORS/bind/token.
 - **D9.10 adds `APP/artifacts/api-server/src/config/apiHardeningConfig.ts`** — pure **API hardening config** model (defaults, env parsing, validation); vitest `apiHardeningConfig.d9.test.ts`; **no** `app.ts`/`index.ts` wiring, **no** runtime CORS/bind/token.
 - **D9.11 adds `APP/artifacts/api-server/src/config/apiHardeningReadiness.d9.test.ts`** — audit/readiness vitest (static baseline for listen/CORS/routes + **D9.10** validation + **`it.skip`** for future bind/CORS/token/action gates); **no** `app.ts`/`index.ts` changes, **no** endpoint/**`POST`**.
+- **D9.12 wires `APP/artifacts/api-server/src/index.ts`** — **`createApiHardeningConfigFromEnv`**, **`validateApiHardeningConfig`**, **`app.listen(port, host, …)`**; default host **`127.0.0.1`**, port **`3001`**; vitest **`apiListenConfig.d9.test.ts`** + readiness updates; **no** `app.ts` CORS changes, **no** token/**`POST`**, **no** Mapazapp route edits.
 
 ## V2-16 handoff update
 

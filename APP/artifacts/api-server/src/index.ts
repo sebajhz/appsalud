@@ -1,25 +1,39 @@
 import app from "./app";
+import {
+  createApiHardeningConfigFromEnv,
+  validateApiHardeningConfig,
+} from "./config/apiHardeningConfig";
 import { logger } from "./lib/logger";
 
-const rawPort = process.env["PORT"];
+const apiHardeningConfig = createApiHardeningConfigFromEnv(process.env);
+const validation = validateApiHardeningConfig(apiHardeningConfig);
 
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
+if (!validation.ok) {
+  logger.error(
+    { errors: validation.errors },
+    "Invalid API hardening configuration",
+  );
+  process.exit(1);
+}
+
+for (const warning of validation.warnings) {
+  logger.warn({ warning }, "API hardening configuration warning");
+}
+
+const { host, port } = apiHardeningConfig;
+
+if (host.trim() === "0.0.0.0") {
+  logger.warn(
+    {},
+    "MAPAZAPP_API_HOST=0.0.0.0 binds all interfaces; not recommended for the local mock API",
   );
 }
 
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-app.listen(port, (err) => {
+app.listen(port, host, (err) => {
   if (err) {
-    logger.error({ err }, "Error listening on port");
+    logger.error({ err }, "Error listening on host/port");
     process.exit(1);
   }
 
-  logger.info({ port }, "Server listening");
+  logger.info({ host, port }, "Server listening");
 });

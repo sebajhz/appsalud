@@ -7,7 +7,7 @@ Express server for the Replit workspace. **Checkpoints 11–18** add read-only *
 - **Source:** `src/mapazapp/` — routes, response envelope, duplicated dashboard mock fixtures (see `mockData.ts`), and adapters that call `@workspace/mapazapp-core` (`evaluateTradeReviewPlan`, registry, CP8 advisory, bridge parsers).
 - **No** MT5, database persistence, WebSockets, order execution, file watchers, or live scanner.
 - **All** Mapazapp routes are `GET` only. Responses use `{ ok, data, warnings, errors, source: "mock", mockOnly: true }`.
-- **D5.1b runtime snapshot:** `GET /api/mapazapp/runtime/status` — read-only payload from `@workspace/mapazapp-core` runtime status model; **`reviewOnly`**, **`executionEnabled: false`**; MT5 and bridge remain **`not_configured`** (not live connectivity); optional `PORT` env reflected only as **`127.0.0.1`** URL for this API process — **no** user folder paths, **no** `POST`.
+- **D5.1b runtime snapshot:** `GET /api/mapazapp/runtime/status` — read-only payload from `@workspace/mapazapp-core` runtime status model; **`reviewOnly`**, **`executionEnabled: false`**; MT5 and bridge remain **`not_configured`** (not live connectivity). The snapshot’s optional API URL line still reflects **`PORT`** when set; **D9.12** sets the real listen port from **`MAPAZAPP_API_PORT`** or **`PORT`** (default **3001**) and binds **`127.0.0.1`** by default — **no** user folder paths, **no** `POST`.
 - **Checkpoint 15 evidence:** `GET /api/mapazapp/backtest-evidence`, `GET /api/mapazapp/parameter-sets/:parameterSetId/backtest-evidence`, `GET /api/mapazapp/parameter-sets/:parameterSetId/approval-proposal` — core-backed **mock fixtures only**; unknown parameter set id → **404** `PARAMETER_SET_NOT_FOUND`.
 - **Trade review** payloads include envelope flags `reviewOnly: true`, `executionEnabled: false`.
 - **Scanner simulation (checkpoint 12):** `GET /api/mapazapp/scanner/simulations`, `GET /api/mapazapp/scanner/simulations/latest`, `GET /api/mapazapp/accounts/:accountId/scanner/simulations/latest` — in-memory **`runCheckpoint12ScannerFixture`** output; same flags as trade review (`reviewOnly`, `executionEnabled: false`). **Not** a live scanner, **not** POST/run, **not** WebSocket.
@@ -24,13 +24,21 @@ pnpm --filter @workspace/api-server typecheck
 pnpm --filter @workspace/api-server test
 ```
 
-Start (requires `PORT`):
+### Listen address (D9.12)
+
+- **`MAPAZAPP_API_HOST`:** bind address; default **`127.0.0.1`**. `localhost` is normalized to **`127.0.0.1`**. Using **`0.0.0.0`** is allowed only when action transport remains disabled; it is **not** recommended (wider interface exposure).
+- **Port:** **`MAPAZAPP_API_PORT`** if set, else **`PORT`**, else default **`3001`**. (Before D9.12, `PORT` was required; the default **3001** is the dev-hardening default when neither variable is set.)
+
+The process listens with an explicit host: **`app.listen(port, host, …)`** — loopback by default. **No** Mapazapp action **`POST`** routes; all mock Mapazapp routes remain **`GET`** only.
+
+Start (from `APP/`):
 
 ```bash
-set PORT=3001
 pnpm --filter @workspace/api-server build
 pnpm --filter @workspace/api-server start
 ```
+
+Optional: `set PORT=3001` or `set MAPAZAPP_API_PORT=3001` to override the default port; override host with `set MAPAZAPP_API_HOST=127.0.0.1`.
 
 ### Duplication note
 

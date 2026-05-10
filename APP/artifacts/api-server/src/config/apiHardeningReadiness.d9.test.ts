@@ -1,6 +1,6 @@
 /**
- * D9.11 — Readiness / audit tests: document current api-server baseline vs the D9.10
- * hardening model. No runtime behavior change; `app.ts` / `index.ts` stay unwired.
+ * D9.11 / D9.12 — Readiness / audit tests: api-server baseline vs the D9.10 hardening model.
+ * D9.12 wires `index.ts` to listen with an explicit loopback host by default; `app.ts` unchanged.
  */
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
@@ -40,25 +40,27 @@ function readSrc(rel: keyof typeof paths): string {
   return readFileSync(paths[rel], "utf8");
 }
 
-describe("D9.11 — API hardening readiness (audit, no behavior change)", () => {
-  describe("A — bootstrap not wired to apiHardeningConfig", () => {
-    it("app.ts and index.ts do not import the D9.10 config module", () => {
+describe("D9 API hardening readiness (audit)", () => {
+  describe("A — bootstrap wiring", () => {
+    it("app.ts does not import apiHardeningConfig; index.ts does", () => {
       const appSrc = readSrc("appTs");
       const indexSrc = readSrc("indexTs");
       expect(appSrc.includes("apiHardeningConfig")).toBe(false);
       expect(appSrc.includes("config/apiHardening")).toBe(false);
-      expect(indexSrc.includes("apiHardeningConfig")).toBe(false);
-      expect(indexSrc.includes("config/apiHardening")).toBe(false);
+      expect(
+        indexSrc.includes("createApiHardeningConfigFromEnv") ||
+          indexSrc.includes("validateApiHardeningConfig"),
+      ).toBe(true);
+      expect(indexSrc.includes("./config/apiHardeningConfig")).toBe(true);
     });
   });
 
-  describe("B — current listen has no explicit bind host (baseline)", () => {
-    it("documents index.ts listen(port, callback) until D9.12 wires loopback", () => {
+  describe("B — explicit listen host (D9.12)", () => {
+    it("index.ts uses app.listen(port, host, callback)", () => {
       const indexSrc = readSrc("indexTs");
-      expect(indexSrc).toMatch(/app\.listen\(\s*port\s*,/);
-      expect(indexSrc.includes("127.0.0.1")).toBe(false);
-      expect(indexSrc.includes("0.0.0.0")).toBe(false);
-      expect(indexSrc.includes("localhost")).toBe(false);
+      expect(indexSrc).toMatch(/app\.listen\(\s*port\s*,\s*host\s*,/);
+      expect(indexSrc.includes("app.listen(port, (err)")).toBe(false);
+      expect(indexSrc.includes("app.listen(port,(err)")).toBe(false);
     });
   });
 
@@ -121,10 +123,6 @@ describe("D9.11 — API hardening readiness (audit, no behavior change)", () => 
   });
 
   describe("G — future expectations (skipped until implemented)", () => {
-    it.skip("D9.12 future: wire listen host from validated ApiHardeningConfig (loopback-only default)", () => {
-      /* Implemented in D9.12 — supertest or integration harness required */
-    });
-
     it.skip("D9.13 future: reject browser Origin not in MAPAZAPP_API_ALLOWED_ORIGINS for action routes", () => {
       /* Implemented in D9.13 — requires CORS middleware change */
     });
@@ -160,9 +158,10 @@ describe("D9.11 — API hardening readiness (audit, no behavior change)", () => 
       expect(src.includes("router.post(")).toBe(false);
     });
 
-    it("listen entrypoint does not pin loopback or all-interface literal yet", () => {
+    it("listen entrypoint does not recommend 0.0.0.0 as default bind", () => {
       const indexSrc = readSrc("indexTs");
-      expect(indexSrc.includes("0.0.0.0")).toBe(false);
+      expect(indexSrc.includes("createDefaultApiHardeningConfig")).toBe(false);
+      expect(indexSrc).not.toMatch(/listen\s*\(\s*[^,]+,\s*["']0\.0\.0\.0["']/);
     });
   });
 });

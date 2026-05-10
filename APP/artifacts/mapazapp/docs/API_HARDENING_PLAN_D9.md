@@ -27,7 +27,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | Logging | **`pino-http`** enabled with trimmed serializers (method, URL path, status). |
 | CORS | **`app.use(cors())`** — **no** origin allowlist or credentials policy in code. |
 | Body parsers | **`express.json()`** and **`express.urlencoded({ extended: true })`** applied **globally**; **no** explicit `limit` in application code. |
-| Listen | **`app.listen(port)`** in `index.ts` — **no** host argument; **`PORT`** env **required**. Default Node binding is **all interfaces** (not loopback-only). |
+| Listen | **`D9.12`:** **`app.listen(port, host, …)`** in **`index.ts`** via **`createApiHardeningConfigFromEnv` / `validateApiHardeningConfig`** — default host **`127.0.0.1`**, default port **`3001`** if **`MAPAZAPP_API_PORT`** and **`PORT`** are unset. (**`0.0.0.0`** still discouraged; optional warning when used.) |
 | Auth / token | **None** for Mapazapp routes. |
 | CSRF | **None**. |
 | Rate limit / cooldown | **None** at server layer. |
@@ -44,7 +44,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 
 | # | Area | Current state | Required before local action transport | Gap | Risk | Suggested checkpoint |
 |---|------|---------------|----------------------------------------|-----|------|----------------------|
-| 1 | Host / bind | `listen(port)` only | Action listener on **`127.0.0.1`** (or documented stricter loopback policy) — **D9.6** §4.1 / **D9.1** §6.1 | No `HOST`; binds all interfaces by default | LAN exposure; broader attack surface | **D9.12** (implementation after plan + tests) |
+| 1 | Host / bind | **`D9.12` done:** explicit **`listen(port, host)`**; default **`127.0.0.1`** | Same loopback policy must hold when action transport ships — **D9.6** §4.1 / **D9.1** §6.1 | Optional **`0.0.0.0`** still broadens LAN exposure if set | LAN exposure if misconfigured | **D9.12** closed; revisit with transport (**D9.16**+) |
 | 2 | CORS | Permissive `cors()` | Strict allowlist for **action** routes; **no** `*` — **D9.6** §4.2 | Open CORS defaults | CSRF-style abuse combined with future **`POST`** | **D9.13** |
 | 3 | Auth / local token | None | Unguessable transport secret / capability — **D9.6** §4.3 | No token model | Drive-by requests to localhost | **D9.15** design; implement with transport |
 | 4 | CSRF | None | CSRF token or equivalent for browser-reachable actions — **D9.1** §6.3 | No mitigation | Cross-site triggering | **D9.15** + transport PR |
@@ -57,7 +57,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | 11 | ActionResult safety validation | Not on HTTP layer | **`assertActionResultSafety`** on every outward **`MapazappActionResult`** — **D9.6** §4.10 | Core helpers exist; HTTP not integrated | Unsafe payloads | Transport PR |
 | 12 | Private path redaction | Partial test coverage on select **`GET`** | Extend to new routes + logs — **D9.7** §3.6 | Policy not centralized | PII / path exfiltration | **D9.14** + transport tests |
 | 13 | POST route policy | No **`router.post`** in Mapazapp router | Explicit policy: **no** action **`POST`** until gates + hardening; allowlist only | Today “safe by absence”; future PRs need gate | “Escape hatch” endpoints | Doc + review checklist (**this doc**, **D9.6**) |
-| 14 | Tests | **`GET`** envelope + **no operational POST** tests | Bind, CORS, token, body limit, error handler tests — **D9.7** §8 | Not yet covering hardening | Regressions undetected | **D9.11** skeletons → strengthen as code lands |
+| 14 | Tests | **`GET`** envelope + **no operational POST** + **D9.12** listen config tests | CORS, token, body limit, error handler tests — **D9.7** §8 | Strict CORS / transport tests still pending | Regressions undetected | **D9.11**–**D9.12** baseline → strengthen as code lands |
 | 15 | Dev/prod separation | Weak explicit split | Documented env profiles; mock dev vs hardened transport mode | Ad-hoc **`NODE_ENV`** usage | Misconfigured prod-like exposure | **D9.10** model + README |
 | 16 | Logging | `pino-http` basics | Redaction policy for secrets/paths — **D9.6** §4.9 | No redactor config | Secrets in logs | **D9.14** |
 | 17 | Security headers | None specific | Baseline headers (CSP/HSTS etc.) **where appropriate** for local mock — **justify** per surface | No Helmet-style baseline | Clickjacking / MIME sniffing (lower on localhost, still worth design) | **D9.14** (optional subset) |
@@ -88,7 +88,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | Variable (proposed) | Role |
 |---------------------|------|
 | `MAPAZAPP_API_HOST` | e.g. **`127.0.0.1`** — bind address for the API process. |
-| `MAPAZAPP_API_PORT` or `PORT` | Listen port (today **`PORT`** is required). |
+| `MAPAZAPP_API_PORT` or `PORT` | Listen port (**`MAPAZAPP_API_PORT`** wins; default **3001** if both unset — **D9.12**). |
 | `MAPAZAPP_API_ALLOWED_ORIGINS` | Comma-separated allowlist, e.g. `http://127.0.0.1:5173,http://localhost:5173` for Vite dev. |
 | `MAPAZAPP_ACTION_TRANSPORT_ENABLED` | Feature flag — **`false`** until transport approved. |
 | `MAPAZAPP_ACTION_TOKEN_REQUIRED` | **`true`** when action routes exist — requests without valid token rejected. |
@@ -110,8 +110,8 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 |------|------------|--------|
 | **D9.9** | **API hardening plan** (this doc) — **docs only** | Baseline gaps, env contract, risks, test expectations |
 | **D9.10** | **API hardening config model** — **`APP/artifacts/api-server/src/config/apiHardeningConfig.ts`** + **`apiHardeningConfig.d9.test.ts`** — **pure TS**, **no `app.ts` / `index.ts` wiring** | **Implemented:** defaults, env parsing (`createApiHardeningConfigFromEnv`), `validateApiHardeningConfig`, normalize/parse helpers — runtime unchanged |
-| **D9.11** | **`apiHardeningReadiness.d9.test.ts`** — readiness/audit tests only — **no behavior change** | Documents **current** unwired posture (`app.ts`/`index.ts` **do not** import **`apiHardeningConfig`**); **`listen(port)`** still no explicit host; **`cors()`** still default; **no** Mapazapp **`router.post`**; validates **D9.10** model + **`it.skip`** placeholders for **D9.12**–**D9.16**. **Bind/CORS not wired yet.** |
-| **D9.12** | **Loopback bind implementation** — **no** action **`POST`** | `listen` host from config; update README/scripts as needed |
+| **D9.11** | **`apiHardeningReadiness.d9.test.ts`** — readiness/audit tests — **no runtime change at merge** | Snapshot at **D9.11**: documented unwired bootstrap; superseded for **`index.ts`** by **D9.12** (see readiness test updates). |
+| **D9.12** | **Loopback bind implementation** — **`index.ts`** only — **no** action **`POST`** | **`createApiHardeningConfigFromEnv` + `validateApiHardeningConfig`**; **`app.listen(port, host, …)`**; default host **`127.0.0.1`**, port **`3001`**; **`apiListenConfig.d9.test.ts`** + readiness updates; README. **CORS / token / rate / body / global error handler unchanged.** |
 | **D9.13** | **CORS allowlist implementation** — **no** action **`POST`** | Per-environment origins; keep mock **`GET`** working |
 | **D9.14** | **Error handler + body limit + log redaction baseline** (+ optional minimal security headers) | Safe JSON errors; explicit JSON/urlencoded limits |
 | **D9.15** | **Token / CSRF design + model** (optional pure types) | Doc + types; implementation ships with transport |

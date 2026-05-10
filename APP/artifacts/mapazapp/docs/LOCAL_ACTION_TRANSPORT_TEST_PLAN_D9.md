@@ -31,6 +31,7 @@
 | **`DashboardActionClient`** stub (`actionClient.ts`) | **`not_available`** / **`blocked`** only; **no** `fetch`, **no** `POST` (**D7.3**) |
 | **Transport contract D9.6** | Minimum HTTP + IPC requirements, caller remapping, conceptual envelopes (**documentation**) |
 | **D9.11 readiness tests (`api-server`)** | **`apiHardeningReadiness.d9.test.ts`** — baseline/readiness audit vs **D9.10** model + skipped future expectations; **no** HTTP endpoint, **no** **`POST`**, **no** runtime wiring |
+| **D9.12 listen bootstrap (`api-server`)** | **`index.ts`** explicit **`listen(port, host)`** + **`apiListenConfig.d9.test.ts`** — loopback default; **not** action transport, **not** strict CORS |
 
 ### Does not exist yet
 
@@ -54,6 +55,8 @@
 The following categories are **mandatory** for future transport work. Wording here describes **what tests must prove**, not how to implement them.
 
 ### 3.1 HTTP loopback transport tests
+
+**D9.12 (bootstrap only, no action transport):** the **`api-server`** entrypoint binds an explicit host (default **`127.0.0.1`**) and resolves port per **`MAPAZAPP_API_PORT`** / **`PORT`** / default **3001** — see **`apiListenConfig.d9.test.ts`** and **`apiHardeningReadiness.d9.test.ts`**. This satisfies only the **process listen** slice below; strict CORS, tokens, and **`POST`** action routes remain future work.
 
 Before any **`POST`** (or mutating HTTP method) for Mapazapp actions, tests must cover:
 
