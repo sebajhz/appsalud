@@ -1,6 +1,7 @@
 /**
- * D9.11 / D9.12 / D9.13 — Readiness / audit tests vs the D9.10 hardening model.
- * D9.12: explicit listen host in `index.ts`. D9.13: CORS allowlist wired from `apiCorsConfig`.
+ * D9.11 / D9.12 / D9.13 / D9.14.1 — Readiness / audit tests vs the D9.10 hardening model.
+ * D9.12: explicit listen host in `index.ts`. D9.13: CORS allowlist from hardening config.
+ * D9.14.1: `app.ts` loads hardening once for body limits + `createCorsOptions` + `safeErrorHandler`.
  */
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
@@ -42,13 +43,16 @@ function readSrc(rel: keyof typeof paths): string {
 
 describe("D9 API hardening readiness (audit)", () => {
   describe("A — bootstrap wiring", () => {
-    it("index.ts imports apiHardeningConfig; app.ts uses apiCorsConfig only", () => {
+    it("index.ts validates hardening; app.ts loads hardening for body limits + CORS + safe errors", () => {
       const appSrc = readSrc("appTs");
       const indexSrc = readSrc("indexTs");
-      expect(appSrc.includes("config/apiHardeningConfig")).toBe(false);
-      expect(appSrc.includes("apiHardeningConfig")).toBe(false);
+      expect(appSrc.includes("./config/apiHardeningConfig")).toBe(true);
+      expect(appSrc.includes("createApiHardeningConfigFromEnv")).toBe(true);
       expect(appSrc.includes("./config/apiCorsConfig")).toBe(true);
-      expect(appSrc.includes("createCorsOptionsFromEnv")).toBe(true);
+      expect(appSrc.includes("createCorsOptions")).toBe(true);
+      expect(appSrc.includes("safeErrorHandler")).toBe(true);
+      expect(appSrc.includes("express.json({ limit:")).toBe(true);
+      expect(appSrc.includes("express.urlencoded({ extended: true, limit:")).toBe(true);
       expect(
         indexSrc.includes("createApiHardeningConfigFromEnv") ||
           indexSrc.includes("validateApiHardeningConfig"),
@@ -67,10 +71,12 @@ describe("D9 API hardening readiness (audit)", () => {
   });
 
   describe("C — CORS allowlist wired (D9.13)", () => {
-    it("app.ts uses createCorsOptionsFromEnv(), not bare cors()", () => {
+    it("app.ts uses createCorsOptions(apiHardeningConfig), not bare cors()", () => {
       const appSrc = readSrc("appTs");
       expect(appSrc).not.toMatch(/app\.use\(\s*cors\s*\(\s*\)\s*\)/);
-      expect(appSrc).toMatch(/app\.use\(\s*cors\s*\(\s*createCorsOptionsFromEnv\s*\(\s*\)\s*\)\s*\)/);
+      expect(appSrc).toMatch(
+        /app\.use\(\s*cors\s*\(\s*createCorsOptions\s*\(\s*apiHardeningConfig\s*\)\s*\)\s*\)/,
+      );
       expect(appSrc).not.toMatch(/origin\s*:\s*["']\*["']/);
     });
   });

@@ -33,6 +33,7 @@
 | **D9.11 readiness tests (`api-server`)** | **`apiHardeningReadiness.d9.test.ts`** — baseline/readiness audit vs **D9.10** model + skipped future expectations; **no** HTTP endpoint, **no** **`POST`**, **no** runtime wiring |
 | **D9.12 listen bootstrap (`api-server`)** | **`index.ts`** explicit **`listen(port, host)`** + **`apiListenConfig.d9.test.ts`** — loopback default; **not** action transport, **not** strict CORS |
 | **D9.13 CORS allowlist (`api-server`)** | **`apiCorsConfig.ts`** + integration tests — global allowlist; **not** action **`POST`**, **not** token |
+| **D9.14.1 body limits + safe errors (`api-server`)** | **`apiBodyAndErrorHandling.d9.test.ts`** — oversized JSON **`413`**, invalid JSON **`400`**, safe **`500`** via **test-only** Express stack; **not** transport token, **not** action **`POST`** |
 
 ### Does not exist yet
 

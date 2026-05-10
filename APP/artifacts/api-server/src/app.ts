@@ -1,11 +1,18 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import pinoHttp from "pino-http";
-import { createCorsOptionsFromEnv } from "./config/apiCorsConfig";
+import { createApiHardeningConfigFromEnv } from "./config/apiHardeningConfig";
+import { createCorsOptions } from "./config/apiCorsConfig";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { safeErrorHandler } from "./middleware/safeErrorHandler";
 
 const app: Express = express();
+
+const apiHardeningConfig = createApiHardeningConfigFromEnv(
+  process.env as Record<string, string | undefined>,
+);
+const bodyLimitBytes = apiHardeningConfig.maxBodyBytes;
 
 app.use(
   pinoHttp({
@@ -26,10 +33,12 @@ app.use(
     },
   }),
 );
-app.use(cors(createCorsOptionsFromEnv()));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors(createCorsOptions(apiHardeningConfig)));
+app.use(express.json({ limit: bodyLimitBytes }));
+app.use(express.urlencoded({ extended: true, limit: bodyLimitBytes }));
 
 app.use("/api", router);
+
+app.use(safeErrorHandler);
 
 export default app;

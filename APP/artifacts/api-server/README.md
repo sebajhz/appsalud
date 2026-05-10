@@ -40,12 +40,19 @@ pnpm --filter @workspace/api-server start
 
 Optional: `set PORT=3001` or `set MAPAZAPP_API_PORT=3001` to override the default port; override host with `set MAPAZAPP_API_HOST=127.0.0.1`.
 
+### Body size limits (D9.14.1)
+
+- **`MAPAZAPP_ACTION_MAX_BODY_BYTES`:** maximum raw bytes for **`express.json`** and **`express.urlencoded`** bodies (defaults per **`apiHardeningConfig.ts`**, typically **`16384`**). Oversized requests receive **`413`** with a **safe JSON** error (`PAYLOAD_TOO_LARGE`) — **no** stack traces.
+- **Invalid JSON** (`Content-Type: application/json`) returns **`400`** with **`INVALID_JSON`** — **no** HTML error pages for parser failures caught by the global handler.
+- **Uncaught handler errors** return **`500`** with **`INTERNAL_SERVER_ERROR`** and a fixed message — **no** raw `Error.message`, **no** stack in the response body.
+- Read-only Mapazapp routes remain **`GET`** only; there are **no** Mapazapp **action** **`POST`** endpoints.
+
 ### CORS (D9.13)
 
 - **Allowlist active by default** (`corsPolicy: allowlist`): browser **`Origin`** must match an entry in **`allowedOrigins`** (defaults below). Requests **without** an **`Origin`** header (curl, supertest, many server-local callers) still succeed.
 - **`MAPAZAPP_API_ALLOWED_ORIGINS`:** comma-separated list, e.g. `http://127.0.0.1:5173,http://localhost:5173`. When unset, defaults are **`http://127.0.0.1:5173`** and **`http://localhost:5173`** (Vite dev).
 - **Credentials:** disabled (`credentials: false`). **Methods exposed:** `GET`, `HEAD`, `OPTIONS` only — there are **no** Mapazapp action **`POST`** routes to expose.
-- **Policy source:** **`createApiHardeningConfigFromEnv`** — today **`corsPolicy`** defaults to **`allowlist`** (see **`apiHardeningConfig.ts`** / **`apiCorsConfig.ts`**); there is **no** separate `MAPAZAPP_CORS_*` env toggle yet.
+- **Policy source:** **`createApiHardeningConfigFromEnv`** — today **`corsPolicy`** defaults to **`allowlist`** (see **`apiHardeningConfig.ts`** / **`apiCorsConfig.ts`**). **`app.ts`** loads one hardening snapshot for **CORS + body limits** (`createCorsOptions(apiHardeningConfig)`); there is **no** separate `MAPAZAPP_CORS_*` env toggle yet.
 
 ### Duplication note
 
