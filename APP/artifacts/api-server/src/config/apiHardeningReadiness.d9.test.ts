@@ -2,6 +2,7 @@
  * D9.11 / D9.12 / D9.13 / D9.14.x — Readiness / audit tests vs the D9.10 hardening model.
  * D9.12: explicit listen host in `index.ts`. D9.13: CORS allowlist from hardening config.
  * D9.14.1: body limits + `safeErrorHandler`. D9.14.2: `logRedaction` + pino redact paths + URL sanitization in logs.
+ * D9.16–D9.18: `apiActionTokenConfig` + `actionTokenMiddleware` exist; `app.ts` does not mount action-token middleware.
  */
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
@@ -136,7 +137,7 @@ describe("D9 API hardening readiness (audit)", () => {
       /* Implemented when action transport + token middleware ship */
     });
 
-    it.skip("D9.16 future: reject unknown actionId at HTTP boundary", () => {
+    it.skip("D9.19 future: reject unknown actionId at HTTP boundary", () => {
       /* Implemented with action transport router + allowlist */
     });
   });
@@ -190,6 +191,21 @@ describe("D9 API hardening readiness (audit)", () => {
       const slice = appSrc.slice(idx, idx + 900);
       expect(slice.includes("req.body")).toBe(false);
       expect(slice.includes("sanitizeLogString")).toBe(true);
+    });
+  });
+
+  describe("J — D9.16–D9.18 action token foundation (not wired to product routes)", () => {
+    it("apiActionTokenConfig.ts + actionTokenMiddleware.ts exist; app.ts does not mount middleware", () => {
+      const actionCfg = readFileSync(join(srcRoot, "config", "apiActionTokenConfig.ts"), "utf8");
+      expect(actionCfg.includes("validateApiActionTokenConfig")).toBe(true);
+      expect(actionCfg.includes("createApiActionTokenConfigFromEnv")).toBe(true);
+
+      const mw = readFileSync(join(srcRoot, "middleware", "actionTokenMiddleware.ts"), "utf8");
+      expect(mw.includes("createActionTokenMiddleware")).toBe(true);
+      expect(mw.includes("dispatchLauncherAction")).toBe(false);
+
+      const appSrc = readSrc("appTs");
+      expect(appSrc.includes("actionTokenMiddleware")).toBe(false);
     });
   });
 });

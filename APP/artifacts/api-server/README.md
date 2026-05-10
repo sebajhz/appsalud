@@ -54,6 +54,12 @@ Optional: `set PORT=3001` or `set MAPAZAPP_API_PORT=3001` to override the defaul
 - **`sanitizeLogString`** scrubs the logged path for Windows/macOS profile fragments, MT5 markers, token-shaped query fragments, and long CSV-like numeric rows before they appear in **`req.url`** log lines.
 - Use **`sanitizeLogValue`** for future structured previews (diagnostics, transport envelopes) so nested objects drop sensitive keys and scrub strings — **no** Mapazapp action **`POST`** routes.
 
+### Action token foundation (D9.16–D9.18)
+
+- **`src/config/apiActionTokenConfig.ts`** — pure **`ApiActionTokenConfig`** model: canonical header **`x-mapazapp-action-token`**, **`rejectQueryToken`**, CSRF posture (**`header_token_only`** by default), redaction/safe-error flags; **`createApiActionTokenConfigFromEnv(env)`** reads **policy env only** (no secret token values).
+- **`src/middleware/actionTokenMiddleware.ts`** — **`createActionTokenMiddleware({ config, getExpectedToken })`** returns Express middleware that enforces the header, rejects blocked query keys (**`token`**, **`action_token`**, **`x-mapazapp-action-token`**), and responds with safe JSON (**`ACTION_TOKEN_*`** codes). **Not imported by `app.ts`** — exercised from **`actionTokenMiddleware.d9.test.ts`** via temporary apps only.
+- **Future:** wiring to real routes, **`getExpectedToken`** backed by launcher/session, and Mapazapp action **`POST`** remain **out of scope** until transport checkpoints (**D9.19**+ / **D9.6** acceptance).
+
 ### CORS (D9.13)
 
 - **Allowlist active by default** (`corsPolicy: allowlist`): browser **`Origin`** must match an entry in **`allowedOrigins`** (defaults below). Requests **without** an **`Origin`** header (curl, supertest, many server-local callers) still succeed.

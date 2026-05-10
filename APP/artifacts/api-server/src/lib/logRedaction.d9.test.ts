@@ -146,6 +146,32 @@ describe("D9.14.2 — logRedaction helpers", () => {
     });
   });
 
+  describe("D9.18 — Mapazapp action-token log fragments", () => {
+    it("sanitizeLogString scrubs X-Mapazapp-Action-Token header values", () => {
+      const opaque = "opaque-at-secret-val-997";
+      const line = `X-Mapazapp-Action-Token: ${opaque}`;
+      const out = sanitizeLogString(line);
+      expect(out).not.toContain(opaque);
+      expect(out).toContain(LOG_REDACTED_PLACEHOLDER);
+    });
+
+    it("sanitizeLogString scrubs query-shaped x-mapazapp-action-token pairs", () => {
+      const opaque = "querypair792";
+      const s = `trace x-mapazapp-action-token=${opaque} tail`;
+      const out = sanitizeLogString(s);
+      expect(out).not.toContain(opaque);
+    });
+
+    it("sanitizeLogValue omits X-Mapazapp-Action-Token keys", () => {
+      const out = sanitizeLogValue({
+        "X-Mapazapp-Action-Token": "hidden-value",
+        ok: true,
+      }) as Record<string, unknown>;
+      expect(out["X-Mapazapp-Action-Token"]).toBeUndefined();
+      expect(out.ok).toBe(true);
+    });
+  });
+
   describe("G — safeErrorHandler stays non-leaky", () => {
     it("does not reference err.stack in HTTP responses", () => {
       const src = readFileSync(safeErrorHandlerPath, "utf8");

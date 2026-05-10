@@ -224,6 +224,18 @@ Detailed categories overlap **D9.7** §3.1 — **`API_TOKEN_CSRF_DESIGN_D9`** §
 
 ---
 
+## 14. Implementation baseline (D9.16–D9.18)
+
+**Shipped in repo (still non-operational for actions):**
+
+- **`APP/artifacts/api-server/src/config/apiActionTokenConfig.ts`** (+ **`apiActionTokenConfig.d9.test.ts`**) — policy model, env parsing from a bag (**never** reads a shared secret), **`validateApiActionTokenConfig`**.
+- **`APP/artifacts/api-server/src/middleware/actionTokenMiddleware.ts`** (+ **`actionTokenMiddleware.d9.test.ts`**) — **`createActionTokenMiddleware`**; verified only inside **test-only** Express apps — **`app.ts`** does **not** mount this middleware; **no** launcher-side action orchestration, **no** cookie auth.
+- **`logRedaction.ts`** — additional scrubbing for **`x-mapazapp-action-token`** header/query-shaped fragments; covered by **`logRedaction.d9.test.ts`**.
+
+**Still pending:** real token issuance/rotation, wiring **`getExpectedToken`** to launcher/runtime, Mapazapp **action** **`POST`** routes, rate limit, idempotency — see **D9.19**+ / transport PRs.
+
+---
+
 ## 13. Explicit non-goals (D9.15)
 
 D9.15 **does not** implement or authorize implementation of:
@@ -244,3 +256,4 @@ D9.15 **does not** implement or authorize implementation of:
 ## Document history
 
 - **D9.15** — API token / CSRF design (**documentation only**): purpose, baseline, threats, principles, **`X-Mapazapp-Action-Token`** header contract, CSRF posture, launcher relationship, gate pipeline, error JSON, test obligations, recommended **D9.16**–**D9.18** sequence.
+- **D9.16–D9.18** — Config model + unwired middleware skeleton + tests/redaction (**§14**); **no** product action endpoints.

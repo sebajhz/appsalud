@@ -52,6 +52,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D9.14.1 (`@workspace/api-server`, body + errores):** **`app.ts`** limita tamaño de body (**`maxBodyBytes`**) y añade **`safeErrorHandler`** (JSON seguro sin stack); **sin** **`POST`** de acciones Mapazapp, **sin** token/rate/CSRF.
 - **D9.14.2 (`@workspace/api-server`, logs):** **`logRedaction.ts`** + lista **`redact`** centralizada en **`pino`** y sanitización de **`req.url`** en logs; **sin** body crudo en serializers por defecto; **sin** **`POST`** de acciones.
 - **D9.15 (solo documentación):** [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md) — contrato conceptual de token **`X-Mapazapp-Action-Token`**, CSRF, integración con launcher y gates antes de cualquier **`POST`** de acciones; **sin** implementación, **sin** token real.
+- **D9.16–D9.18 (`@workspace/api-server`):** modelo **`apiActionTokenConfig`**, middleware **`createActionTokenMiddleware`** (solo tests / apps temporales; **no** cableado en **`app.ts`**), tests de token + redacción — base para transporte futuro; **sin** **`POST`** de acciones Mapazapp, **sin** emisión real de token.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

@@ -53,6 +53,14 @@ export function sanitizeLogString(value: string): string {
 
   s = s.replace(/Authorization\s*:\s*Bearer\s+\S+/gi, `Authorization: ${LOG_REDACTED_PLACEHOLDER}`);
   s = s.replace(
+    /\bx-mapazapp-action-token\s*:\s*\S+/gi,
+    `x-mapazapp-action-token: ${LOG_REDACTED_PLACEHOLDER}`,
+  );
+  s = s.replace(
+    /\bx-mapazapp-action-token\s*=\s*[^\s&;,]+/gi,
+    `x-mapazapp-action-token=${LOG_REDACTED_PLACEHOLDER}`,
+  );
+  s = s.replace(
     /\b(access_token|refresh_token|token|password|secret)\s*=\s*[^\s&;,]+/gi,
     `$1=${LOG_REDACTED_PLACEHOLDER}`,
   );

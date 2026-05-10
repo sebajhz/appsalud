@@ -42,6 +42,7 @@
 - **D9.14.1 hardens `app.ts`** — single **`createApiHardeningConfigFromEnv`** snapshot for **`createCorsOptions(apiHardeningConfig)`** + **`express.json`/`urlencoded`** **`limit: maxBodyBytes`** + **`safeErrorHandler`** (safe JSON **`413`/`400`/`500`**, no stack); vitest **`apiBodyAndErrorHandling.d9.test.ts`** + readiness updates; **no** action **`POST`**, **no** token/rate/CSRF.
 - **D9.14.2 adds `logRedaction.ts`** — **`sanitizeLogString`**, **`sanitizeLogValue`**, **`getApiLoggerRedactPaths`** for **`pino`** + **`sanitizeLogString`** on logged URL paths in **`pino-http`**; vitest **`logRedaction.d9.test.ts`** + readiness; **no** action **`POST`**, **no** transport token wiring.
 - **D9.15 adds `APP/artifacts/mapazapp/docs/API_TOKEN_CSRF_DESIGN_D9.md`** — diseño formal de token local **`X-Mapazapp-Action-Token`**, postura CSRF, launcher, gates y tests futuros (**D9.16**–**D9.18**); **solo documentación** — **sin** código, **sin** middleware, **sin** **`POST`**, **sin** token real.
+- **D9.16–D9.18 (`@workspace/api-server`):** **`apiActionTokenConfig.ts`** + tests (modelo/env/validación); **`actionTokenMiddleware.ts`** + **`actionTokenMiddleware.d9.test.ts`** (middleware **no** montado en **`app.ts`**); **`logRedaction`** ampliado para fragmentos del header; readiness §J — **sin** endpoints de acciones, **sin** **`POST`** Mapazapp, **sin** token real ni launcher wiring.
 
 ## V2-16 handoff update
 
