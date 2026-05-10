@@ -106,6 +106,8 @@ Declarar necesidad de pruebas sobre:
 - ausencia de datos futuros ilegítimos;
 - filas inválidas rechazadas o en cuarentena.
 
+**C1 — gobierno de fixtures MT5-shaped:** existen CSV sintéticos acotados en `APP/lib/mapazapp-core/tests/fixtures/mt5/` + tests `c1-mt5-fixture-governance.c1.test.ts`. Los históricos largos y exports reales deben permanecer fuera del repositorio; los fixtures commiteados no afirman calidad de mercado ni ejecución.
+
 ---
 
 ## 7. Replay / backtest tests

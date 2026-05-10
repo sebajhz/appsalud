@@ -71,6 +71,8 @@ Propuesta (ajustar al árbol real antes de codificar):
 - `docs/data-samples/` — ejemplos documentados
 - `runtime/mt5-bridge/` o carpeta equivalente — **futuro** para staging de exports validados
 
+**C1 — fixtures sintéticos en repo:** Los CSV pequeños **sintéticos** para pruebas viven en `APP/lib/mapazapp-core/tests/fixtures/mt5/` (ver `README.md` allí). Son deliberadamente mínimos y **no** sustituyen históricos reales ni miden rentabilidad. **No** se deben commitear exports MT5 grandes ni datos de cuenta/broker reales.
+
 ---
 
 ## 8. File naming
