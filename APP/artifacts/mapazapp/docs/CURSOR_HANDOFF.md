@@ -18,6 +18,7 @@
 - **D5.1a moves runtime status model to shared core module (`runtime-status.ts`).**
 - **D5.1b adds read-only `GET /api/mapazapp/runtime/status` (mock envelope; MT5/bridge not_configured); no dashboard UI; no POST.**
 - **D6.1 adds dashboard `runtimeStatusDataSource` (read-only HTTP integration + safe unavailable/blocked states); no TSX panel yet (D6.2).**
+- **D6.2.1 adds presentational `RuntimeStatusPanel` (props-only, no fetch/buttons/routes); page wiring deferred to D6.3.**
 - **D4.1 documents future dashboard action wiring; no dashboard buttons implemented yet.** Ver `APP/artifacts/mapazapp/docs/DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`.
 
 ## V2-16 handoff update

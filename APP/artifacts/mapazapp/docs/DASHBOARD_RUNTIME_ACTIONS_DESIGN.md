@@ -58,7 +58,15 @@
 |------|--------|
 | **Module** | `APP/artifacts/mapazapp/src/services/runtimeStatusDataSource.ts` |
 | **Behavior** | Read-only client for **`GET /api/mapazapp/runtime/status`** when **`VITE_MAPAZAPP_API_BASE_URL`** (or an injected `apiBaseUrl`) is set; safe **`unavailable`** / **`blocked`** states when misconfigured or unsafe flags/copy appear. |
-| **Does not** | Dashboard UI panel (**D6.2**), buttons, polling, WebSocket, MT5/bridge probes, or launcher control. |
+| **Does not** | Wired dashboard UI (**D6.3**), buttons, polling, WebSocket, MT5/bridge probes, or launcher control. |
+
+### F. Runtime status panel component (`D6.2.1`)
+
+| Item | Detail |
+|------|--------|
+| **Module** | `APP/artifacts/mapazapp/src/components/RuntimeStatusPanel.tsx` (+ pure `runtimeStatusPanelPresenter.ts`) |
+| **Behavior** | Presentational **read-only** panel: accepts **`RuntimeStatusViewModel`** props; fixed conservative copy; **no** fetch, **no** `import.meta.env`, **no** buttons. |
+| **Does not** | Page integration (**D6.3**), routes, navigation, or actions. |
 
 ### What is missing for dashboard use
 
@@ -75,7 +83,7 @@
 | `validate_environment` | Validar entorno | Check ports/scripts and print safe start guidance | Dev preflight CLI and/or launcher preflight equivalent | Preflight exists as CLI | **No** (not from dashboard UI) | Read-only; no process spawn from browser | D7 / D8 (action bridge design); launcher |
 | `start_mapazapp_dev` | Iniciar Mapazapp | Start API + dashboard for local dev | Dev start CLI and/or future launcher | Dev start exists as CLI | **No** (not from dashboard UI) | Must not imply product launcher; execution stays off | D8 / D9 |
 | `validate_csv` | Validar CSV | Validate local candle CSV shape | Import validator CLI + core importer | Validator exists as CLI | **No** (not from dashboard UI) | Read-only; file path policy required | D8 |
-| `show_runtime_status` | Ver estado del sistema | Show consolidated honest status | D4 model + **`GET /api/mapazapp/runtime/status`** (D5.1b) or launcher snapshot | API read-only snapshot exists; **D6.1** dashboard data source exists; **D6.2** UI panel not wired | **No** (no dashboard panel yet) | Never show MT5/bridge “connected” without real checks | D6.2 panel |
+| `show_runtime_status` | Ver estado del sistema | Show consolidated honest status | D4 model + **`GET /api/mapazapp/runtime/status`** (D5.1b) or launcher snapshot | API read-only snapshot exists; **D6.1** data source exists; **D6.2.1** presentational panel exists; **not** wired into a page (**D6.3**) | **No** (no in-page integration yet) | Never show MT5/bridge “connected” without real checks | D6.3 wiring |
 | `validate_mt5_config` | Validar MT5 | Policy-checked path / presence checks | Future launcher / MT5 gate | Not implemented | **No** | No execution; no fake “market connected” | D10 |
 | `open_mt5` | Abrir MT5 | Open terminal if policy allows | Future launcher + explicit config | Not implemented | **No** | Gated; optional; never default unsafe | D9+ |
 | `stop_mapazapp` | Detener Mapazapp | Stop supervised children cleanly | Launcher / supervisor for spawned processes | Dev start stops **only** its children via Ctrl+C locally | **No** | Dashboard must not kill arbitrary OS processes | D9 |
