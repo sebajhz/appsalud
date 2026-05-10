@@ -2,6 +2,8 @@
 
 Documento **D2**: diseño formal **solo documentación**. No implementa launcher, código, endpoints ni scripts.
 
+**Relacionado:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (**D4.1**) — cableado futuro de acciones dashboard/runtime respecto de preflight, dev-start, validador de import y modelo de estado; **sin** botones ni TSX en ese checkpoint.
+
 ---
 
 ## 1. Purpose
