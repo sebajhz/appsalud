@@ -162,7 +162,7 @@ Ubicación y formato: por definir en implementación aprobada.
 
 ### D4 implementado (runtime status model TS puro)
 
-- Módulo: `APP/scripts/src/mapazapp-runtime-status.ts` — tipos y helpers **sin** I/O; alineado al diseño D2; **sin** endpoint API, **sin** UI, **sin** watcher/DB/WebSocket; los scripts D3.x **aún no** lo importan.
+- Módulo: `APP/lib/mapazapp-core/src/runtime-status.ts` (`@workspace/mapazapp-core`) — tipos y helpers **sin** I/O; **D5.1a** lo movió desde `@workspace/scripts` para uso compartido; alineado al diseño D2; **sin** endpoint API de runtime status, **sin** UI, **sin** watcher/DB/WebSocket; los scripts D3.x **aún no** lo importan.
 
 ---
 

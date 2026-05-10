@@ -47,7 +47,7 @@
 
 | Item | Detail |
 |------|--------|
-| **Module** | `APP/scripts/src/mapazapp-runtime-status.ts` |
+| **Module** | `APP/lib/mapazapp-core/src/runtime-status.ts` (`@workspace/mapazapp-core`) |
 | **Represents** | `MapazappRuntimeStatus`: `api`, `dashboard`, `mt5`, `bridge`, `data`, `safety`, `overall`, `generatedAt`, plus `runtimeMode`. |
 | **Helpers** | e.g. `createDefaultRuntimeStatus`, `createManualImportRuntimeStatus`, `deriveOverallRuntimeStatus`, `assertRuntimeSafety`, `serializeRuntimeStatus`. |
 | **Does not** | Probe MT5, read `MQL5/Files`, expose HTTP, run watchers. **D3.x scripts do not import this module yet.** |

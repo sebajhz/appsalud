@@ -487,7 +487,7 @@ Orden **orientativo** (ajustable por producto):
 | **D3.1** | Dev **preflight** — chequeos read-only + comandos documentados (**implementado** en `@workspace/scripts`; no launcher; sin procesos hijos) |
 | **D3.2** | Dev **start** MVP — levanta API + dashboard en modo desarrollo (**implementado** como `mapazapp:dev-start`; **no** launcher `.exe`; **sin** runtime MT5 integrado; bridge/MT5 “conectado” **no** aplica) |
 | **D3.3+** | Mejoras futuras de orquestación dev / packaging (si se aprueba) |
-| **D4** | Runtime status model en **TypeScript puro** (**implementado** en `APP/scripts/src/mapazapp-runtime-status.ts`; tipos + helpers; **sin** endpoint HTTP todavía; **sin** probes MT5/bridge reales) |
+| **D4** | Runtime status model en **TypeScript puro** — código en **`APP/lib/mapazapp-core/src/runtime-status.ts`** (**D5.1a** lo consolidó en `@workspace/mapazapp-core`; antes vivía en `@workspace/scripts`); tipos + helpers; **sin** endpoint HTTP todavía; **sin** probes MT5/bridge reales |
 | **D5** | Endpoint API read-only de runtime status (**explicitamente** unknown/not_configured hasta probes reales) |
 | **D6** | Panel dashboard de runtime status (copy anti-confusión mock vs real) |
 | **D7** | Prototipo launcher (orquestación + UX errores) |
@@ -497,6 +497,7 @@ Este documento debe revisarse antes de implementar **D5/D6** para no introducir 
 
 ### D4 implementado (modelo TS puro)
 
-- Código: **`APP/scripts/src/mapazapp-runtime-status.ts`** (+ tests en el mismo paquete `@workspace/scripts`).
+- Código: **`APP/lib/mapazapp-core/src/runtime-status.ts`** — export público vía `@workspace/mapazapp-core` (`export *` en `src/index.ts`). Tests: **`APP/lib/mapazapp-core/tests/d5-runtime-status-model-shared.d5.test.ts`** (vitest).
+- **D5.1a:** refactor de ubicación compartida; **aún no hay** `GET /api/mapazapp/runtime/status` ni otro endpoint de runtime status.
 - Propósito: contrato de datos **honesto** (`unknown` / `not_configured`, etc.) para futuros launcher/API/UI; **no** lectura de disco MT5, **no** `terminal64.exe`, **no** carpeta `MQL5/Files`, **no** ejecución.
 - Los scripts **D3.x** aún **no** consumen este módulo (integración opcional en una fase posterior).

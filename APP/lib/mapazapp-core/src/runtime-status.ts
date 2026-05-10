@@ -1,6 +1,7 @@
 /**
- * D4 — Pure TypeScript runtime status model (no probes, no MT5, no HTTP).
- * Aligned with LAUNCHER_CONFIG_AND_STATUS_DESIGN.md for future launcher/API/UI use.
+ * D4 / D5.1a — Pure TypeScript runtime status model (no probes, no MT5, no HTTP).
+ * Shared in `@workspace/mapazapp-core` for scripts, future API, dashboard, and launcher.
+ * Aligned with LAUNCHER_CONFIG_AND_STATUS_DESIGN.md.
  * Dev scripts (D3.x) do not consume this module yet.
  */
 
