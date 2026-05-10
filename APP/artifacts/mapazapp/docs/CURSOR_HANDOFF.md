@@ -3,6 +3,12 @@
 - Plan maestro autoritativo V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
 - Este documento define secuencia de ejecucion V2-11..V2-25, invariantes de seguridad y criterio de avance sin drift.
 
+## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
+
+- **A0 cerrado:** V2-16 confirmado en Git como **`0082e26`** — `feat(dashboard+api): V2-16 mock engine evidence GET routes and UI summaries`.
+- **A1 abierto (solo documentacion, sin codigo nuevo):** `APP/artifacts/mapazapp/docs/AUDIT_TESTING_MT5_LAUNCHER_A1.md`, `TESTING_AND_VALIDATION_STRATEGY.md`, `USER_MANUAL_MT5_SETUP.md`, `RUNTIME_AND_LAUNCHER_STRATEGY.md`, `MT5_DATA_INTEGRATION.md`.
+- **Queda pendiente de aprobacion explicita:** launcher unico, MT5 runtime automatico, watcher live, DB operativa Mapazapp, WebSocket live, ejecucion real.
+
 ## V2-16 handoff update
 
 - Checkpoint: `V2-16 — Dashboard/API Connection Cleanup`.

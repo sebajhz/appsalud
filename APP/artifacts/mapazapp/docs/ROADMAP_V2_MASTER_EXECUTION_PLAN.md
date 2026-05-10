@@ -53,7 +53,8 @@
 
 ### Current repo reference
 
-- Latest commit: actualizar al cierre de V2-16 en git (mock API evidence routes + dashboard services + docs).
+- Ultimo commit de capa evidencia dashboard/API (V2-16): **`0082e26`** — `feat(dashboard+api): V2-16 mock engine evidence GET routes and UI summaries`.
+- **Fase A1 (documentacion):** estrategia de testing/validacion, manual MT5, runtime/launcher, integracion MT5 y auditoria `AUDIT_TESTING_MT5_LAUNCHER_A1.md`. La implementacion de launcher, ingesta MT5 runtime, watcher, DB, WebSocket live y ejecucion real **no** forma parte de A1 y requiere aprobacion aparte.
 
 ---
 
