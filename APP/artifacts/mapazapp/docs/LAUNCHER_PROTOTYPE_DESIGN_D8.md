@@ -332,7 +332,9 @@ A future launcher should compose **`MapazappRuntimeStatus`** inputs consistent w
 | **D. Electron/Tauri shell** | Heavy; justified only if product wants embedded dashboard + rich IPC |
 | **E. Keep `mapazapp:dev-start` for dev** | Remains valid contributor workflow; **not** a substitute for a governed user launcher |
 
-**Recommendation:** **D8.1 stays documentation-only.** A future **D8.2** may introduce a **config/process-model skeleton without spawn** if approved. **No packaged `.exe`** until packaging threat model + teardown validation exist.
+**D8.1** stays **documentation-only** (sections above through §16). **No packaged `.exe`** until packaging threat model + teardown validation exist.
+
+**D8.2 (implemented — skeleton only):** `APP/scripts/src/mapazapp-launcher-model.ts` (+ `mapazapp-launcher-model.test.ts`) provides pure TypeScript **`LauncherConfig`** / **`LauncherProcessModel`** types, safe defaults, conservative **`deriveLauncherRuntimeStatus`** (via `@workspace/mapazapp-core`), **`assertLauncherModelSafety`**, and **`serializeLauncherModel`**. **No** OS process spawning APIs, **no** launcher executable, **no** active action bridge (`actionBridgeEnabled` must remain **false** under D8.2 safety rules).
 
 ---
 
@@ -344,7 +346,7 @@ A future launcher should compose **`MapazappRuntimeStatus`** inputs consistent w
 |----|-------|
 | **D8.0** | Launcher prototype **audit / proposal** — documentation-only review (**completed as an audit milestone**) |
 | **D8.1** | **Launcher prototype + launcher-side bridge design** — this document; **no code** |
-| **D8.2** | Launcher **config + process model skeleton** — **no spawn** |
+| **D8.2** | Launcher **config + process model skeleton** — `mapazapp-launcher-model.ts` (**implemented**); **no spawn**, **no executable**, **no live bridge** |
 | **D8.3** | Launcher **preflight-only prototype** — **no API/dashboard spawn** |
 | **D9.0** | **Guarded local action bridge prototype** — minimal surface + explicit threat model |
 | **D9.1** | First controlled **`validate_environment`** endpoint **or** launcher IPC equivalent (**narrow scope**) |

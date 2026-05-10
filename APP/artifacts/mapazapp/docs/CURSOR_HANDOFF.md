@@ -25,6 +25,7 @@
 - **D7.2 adds `@workspace/mapazapp-core` `action-result.ts`** — pure `MapazappActionResult` model + safety helpers + vitest; no endpoints, no dashboard buttons, no executed actions.
 - **D7.3 adds `src/services/actionClient.ts`** — `DashboardActionClient` service stub (`createUnavailableDashboardActionClient`); safe `not_available`/`blocked` results only; no `fetch`/POST/UI wiring.
 - **D8.1 documents launcher prototype + launcher-side bridge (docs only).** Ver `APP/artifacts/mapazapp/docs/LAUNCHER_PROTOTYPE_DESIGN_D8.md` — no launcher executable, no process supervisor, no `spawn`, no API `POST` actions, no dashboard buttons.
+- **D8.2 adds `APP/scripts/src/mapazapp-launcher-model.ts`** — pure launcher config/process skeleton + tests; maps conservatively to `MapazappRuntimeStatus`; **no** `child_process`, **no** live action bridge.
 
 ## V2-16 handoff update
 

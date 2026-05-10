@@ -274,7 +274,7 @@ Use this table to reconcile older docs that used “D7 = launcher prototype”. 
 | **D7.3** | **Dashboard action client** — `APP/artifacts/mapazapp/src/services/actionClient.ts` — **implemented**; returns **`not_available`** / **`blocked`** `ActionResult` values only; **no** `fetch`, **no** `POST`, **no** buttons |
 | **D8.0** | **Launcher prototype** — audit / proposal only |
 | **D8.1** | **Launcher prototype + launcher-side bridge design** — [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md); defines IPC/HTTP posture, process ownership, Windows lifecycle, ports/logs, and testing strategy — **documentation only** (**no** launcher code, **no** supervisor, **no** `spawn`) |
-| **D8.2** | Launcher **config + process model skeleton** — **no spawn** |
+| **D8.2** | Launcher **config + process model skeleton** — `APP/scripts/src/mapazapp-launcher-model.ts` (**implemented**); pure TS defaults + safety asserts; **does not** activate HTTP/IPCs action bridge or `POST` routes |
 | **D8.3** | Launcher **preflight-only prototype** — **no API/dashboard spawn** |
 | **D9.0** | **Guarded local action bridge prototype** — minimal scope + explicit threat model |
 | **D9.1** | First controlled **`validate_environment`** endpoint **or** launcher IPC equivalent — narrow scope |
