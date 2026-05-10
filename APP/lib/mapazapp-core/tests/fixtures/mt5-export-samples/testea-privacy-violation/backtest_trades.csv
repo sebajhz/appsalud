@@ -1,0 +1,2 @@
+trade_id,direction,entry_time,exit_time,entry_price,exit_price,result_r,symbol,strategy_id,parameter_set_id
+T_FIX_001,BUY,2026-05-01T10:00:00Z,2026-05-01T11:00:00Z,2000.0,2001.0,0.5,XAUUSD,MZP_IFVG_ZONE_REACTION_V1,MZP_IFVG_XAUUSD_V1_SET_003

@@ -1,0 +1,23 @@
+{
+  "schema_version": "MZP_TESTEA_V1",
+  "ea_build": "fixture",
+  "run_id": "TESTEA_FIX_V212",
+  "strategy_id": "MZP_IFVG_ZONE_REACTION_V1",
+  "parameter_set_id": "MZP_IFVG_XAUUSD_V1_SET_003",
+  "canonical_symbol": "XAUUSD",
+  "broker_symbol": "XAUUSD",
+  "account_id": "TESTER_ACCOUNT",
+  "dataset_split": "validation",
+  "tester_symbol": "XAUUSD",
+  "tester_period": "M15",
+  "tester_from": null,
+  "tester_to": null,
+  "exported_at_utc": "2026-05-07T10:00:00Z",
+  "trade_count": 1,
+  "notes": "synthetic fixture",
+  "execution_mode": "virtual_export_only",
+  "live_trading_enabled": false,
+  "magic_reserved": 0,
+  "fixed_risk_r_meta": 1,
+  "rr_target_meta": 2
+}

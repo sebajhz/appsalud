@@ -75,6 +75,8 @@ Convención **orientativa** hasta fijar estructura en código:
 - `fixtures/mt5/` o equivalente bajo tests — fixtures **pequeños** commiteables
 - `docs/data-samples/` — muestras documentadas y anonimizadas si aplica
 
+**C2:** En el repo hay muestras **sintéticas** de export BridgeEA/TestEA solo para tests (`APP/lib/mapazapp-core/tests/fixtures/mt5-export-samples/`). No incluyas ahí exports **reales** de tu cuenta ni históricos grandes; conservalos fuera de Git.
+
 Ajustar rutas al layout real del repo antes de automatizar cualquier ingesta.
 
 ---

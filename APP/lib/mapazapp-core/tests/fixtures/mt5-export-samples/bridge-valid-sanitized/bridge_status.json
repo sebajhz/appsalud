@@ -1,0 +1,18 @@
+{
+  "schema_version": "MZP_BRIDGE_V1",
+  "exported_at_utc": "2026-05-07T10:00:00Z",
+  "terminal_id": "TERM_SYN_V212",
+  "account_login": 123456,
+  "account_server": "MockBroker-Demo",
+  "account_currency": "USD",
+  "bridge_version": "MZP_BridgeEA_fixture_v1",
+  "ea_status": "RUNNING",
+  "auto_trading_enabled": false,
+  "connected": true,
+  "last_tick_time_utc": "2026-05-07T09:59:00Z",
+  "symbols_enabled": ["XAUUSD", "EURUSD"],
+  "diagnostics_count": 1,
+  "warnings_count": 0,
+  "errors_count": 0,
+  "last_error": ""
+}

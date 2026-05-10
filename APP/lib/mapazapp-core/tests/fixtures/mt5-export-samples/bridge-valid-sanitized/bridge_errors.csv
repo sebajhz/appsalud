@@ -1,0 +1,2 @@
+schema_version,exported_at_utc,terminal_id,account_login,error_code,error_message,module,severity,context
+MZP_BRIDGE_V1,2026-05-07T10:00:00Z,TERM_SYN_V212,123456,I_V212,fixture info row,BridgeEA,INFO,fixture_only

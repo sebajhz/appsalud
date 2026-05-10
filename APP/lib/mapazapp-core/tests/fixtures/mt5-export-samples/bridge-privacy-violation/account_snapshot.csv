@@ -1,0 +1,2 @@
+schema_version,exported_at_utc,terminal_id,account_login,account_server,currency,balance,equity,margin,free_margin,margin_level,profit_open,leverage,trade_allowed,trade_expert,company
+MZP_BRIDGE_V1,2026-05-07T10:00:00Z,TERM_SYN_V212,123456,MockBroker-Demo,USD,10000.00,10000.00,0.00,10000.00,0.00,0.00,100,true,false,Mock Broker Synthetic

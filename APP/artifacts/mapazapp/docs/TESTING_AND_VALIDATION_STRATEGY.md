@@ -108,6 +108,8 @@ Declarar necesidad de pruebas sobre:
 
 **C1 — gobierno de fixtures MT5-shaped:** existen CSV sintéticos acotados en `APP/lib/mapazapp-core/tests/fixtures/mt5/` + tests `c1-mt5-fixture-governance.c1.test.ts`. Los históricos largos y exports reales deben permanecer fuera del repositorio; los fixtures commiteados no afirman calidad de mercado ni ejecución.
 
+**C2 — gobierno de export samples BridgeEA/TestEA:** bundles sanitizados en `APP/lib/mapazapp-core/tests/fixtures/mt5-export-samples/` + tests `c2-export-sample-governance.c2.test.ts`, alineados con `validateBridgeEaExportSample` / `validateTestEaExportSample`. Los exports reales de terminal/cuenta no se commitean; las muestras son evidencia de contrato y privacidad, no ejecución real.
+
 ---
 
 ## 7. Replay / backtest tests

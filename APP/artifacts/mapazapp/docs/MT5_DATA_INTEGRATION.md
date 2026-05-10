@@ -73,6 +73,8 @@ Propuesta (ajustar al árbol real antes de codificar):
 
 **C1 — fixtures sintéticos en repo:** Los CSV pequeños **sintéticos** para pruebas viven en `APP/lib/mapazapp-core/tests/fixtures/mt5/` (ver `README.md` allí). Son deliberadamente mínimos y **no** sustituyen históricos reales ni miden rentabilidad. **No** se deben commitear exports MT5 grandes ni datos de cuenta/broker reales.
 
+**C2 — muestras BridgeEA/TestEA:** Bundles **sintéticos y sanitizados** para validadores V2-12 están en `APP/lib/mapazapp-core/tests/fixtures/mt5-export-samples/`. BridgeEA/TestEA en el proyecto son **export-only**; los exports **reales** del terminal no deben versionarse. Las muestras **no** demuestran rentabilidad ni sustituyen datos operativos.
+
 ---
 
 ## 8. File naming
