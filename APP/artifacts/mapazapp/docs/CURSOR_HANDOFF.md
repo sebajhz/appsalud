@@ -29,6 +29,7 @@
 - **D8.3 adds `APP/scripts/src/mapazapp-launcher-preflight-bridge.ts`** — `runLauncherValidateEnvironmentPreflight` wraps read-only `performDevPreflight`, updates launcher model + derived runtime snapshot, returns safe `MapazappActionResult`; **no** spawn, **no** new CLI entry, **no** API/dashboard start.
 - **D9.1 documents `APP/artifacts/mapazapp/docs/LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`** — formal local action bridge threat model + mandatory mitigations **before** any `POST`/action endpoint; **docs only**, no TS gates/API/buttons/launcher.
 - **D9.2 adds `@workspace/mapazapp-core` `action-gates.ts`** — pure gate model (`evaluateActionGate`, definitions, policy, `assertActionGateDecisionSafety`, optional `MapazappActionResult` bridge); vitest `d9-action-gates-model.d9.test.ts`; **no** API routes, **no** dashboard UI, **no** launcher/spawn.
+- **D9.3 adds `APP/scripts/src/mapazapp-launcher-action-dispatcher.ts`** — `dispatchLauncherAction` (default caller **launcher**): D9.2 gates + **only** **`validate_environment`** → D8.3 preflight; node:test `mapazapp-launcher-action-dispatcher.test.ts`; **no** HTTP/IPC/CLI entry, **no** spawn.
 
 ## V2-16 handoff update
 

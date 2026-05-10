@@ -30,6 +30,7 @@
 | Launcher model skeleton (`mapazapp-launcher-model.ts`) | Config/process **model only**; maps conservatively to runtime status |
 | Launcher preflight bridge (`mapazapp-launcher-preflight-bridge.ts`) | **`validate_environment`** as **read-only** preflight → model + **`MapazappActionResult`**; **not** wired to dashboard or API |
 | Action gate model (`action-gates.ts`, **D9.2**) | Pure **`evaluateActionGate`** + definitions + policy; **no** HTTP, **no** execution; optional **`MapazappActionResult`** conversion |
+| Launcher action dispatcher (`mapazapp-launcher-action-dispatcher.ts`, **D9.3**) | Internal async **`dispatchLauncherAction`** — runs **D9.2** gates then routes **only** **`validate_environment`** to **D8.3** preflight; returns **`MapazappActionResult`** + optional **`LauncherProcessModel`** / **`MapazappRuntimeStatus`**; **no** HTTP/IPC, **no** CLI |
 
 ### Does not exist yet
 
@@ -214,8 +215,8 @@ The gate layer validates, among other things:
 |------|------------|--------|
 | **D9.1** | Local Action Bridge Threat Model (this doc) | Close threats + mitigations in writing before transport |
 | **D9.2** | Local Action Gate model — **TS only**, no endpoints | Allowlist + caller + caps in code |
-| **D9.3** | Launcher dispatcher **internal** model — **no HTTP** | Map actionId → handler in-process |
-| **D9.4** | **`validate_environment`** via internal dispatcher only | Still no browser POST unless gated separately |
+| **D9.3** | Launcher dispatcher **internal** model — **no HTTP** (**implemented** in `APP/scripts/src/mapazapp-launcher-action-dispatcher.ts`) | Gates + **only** **`validate_environment`** → preflight bridge in-process |
+| **D9.4** | Extend dispatcher / ergonomics (e.g. CLI entry) — **still no transport** | Optional; still no browser **`POST`** unless gated separately |
 | **D9.5** | API / IPC **transport** audit | Compare HTTPS cookie models vs localhost token vs desktop IPC |
 | **D9.6** | First **guarded transport** prototype | Only after gates + tests; still no trading |
 | **D10.0** | MT5 detection gate audit | Docs + policy before probes |
@@ -247,3 +248,4 @@ D9.1 **does not** implement or authorize implementation of:
 
 - **D9.1** — Initial formal threat model for the future local action bridge (documentation only).
 - **D9.2** — Shared **`action-gates.ts`** gate matrix + tests; still **no** endpoints or operational bridge.
+- **D9.3** — Scripts **`mapazapp-launcher-action-dispatcher.ts`** internal **`dispatchLauncherAction`** (gates + **`validate_environment`** only); **no** HTTP/IPC/CLI; tests `mapazapp-launcher-action-dispatcher.test.ts`.
