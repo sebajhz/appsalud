@@ -36,6 +36,7 @@
 | **D9.14.1 body limits + safe errors (`api-server`)** | **`apiBodyAndErrorHandling.d9.test.ts`** — oversized JSON **`413`**, invalid JSON **`400`**, safe **`500`** via **test-only** Express stack; **not** transport token, **not** action **`POST`** |
 | **D9.14.2 log redaction baseline (`api-server`)** | **`logRedaction.d9.test.ts`** + **`logRedaction.ts`** — string/value sanitizers, **`pino`** redact paths, **no** **`req.body`** logging in default serializers; **not** transport token, **not** action **`POST`** |
 | **D9.16–D9.18 action-token foundation (`api-server`)** | **`apiActionTokenConfig.ts`**, **`actionTokenMiddleware.ts`** (unwired from **`app.ts`**), **`actionTokenMiddleware.d9.test.ts`**, extended **`logRedaction`** tests — missing/invalid/query token JSON contracts; **no** Mapazapp action **`POST`**, **no** real token issuance |
+| **D9.19 transport readiness skeletons (`api-server`)** | **`actionTransportReadiness.d9.test.ts`** — audits sin endpoint (**no** **`/api/mapazapp/actions`**, **no** **`router.post`** en **`mapazapp/routes.ts`**), comprobaciones de gates/token/dispatcher vía core + fuente scripts, **`it.skip`** para futuros **`POST`**; **sin** transporte HTTP real |
 
 ### Does not exist yet
 

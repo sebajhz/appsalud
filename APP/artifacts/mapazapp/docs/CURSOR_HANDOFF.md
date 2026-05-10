@@ -43,6 +43,7 @@
 - **D9.14.2 adds `logRedaction.ts`** — **`sanitizeLogString`**, **`sanitizeLogValue`**, **`getApiLoggerRedactPaths`** for **`pino`** + **`sanitizeLogString`** on logged URL paths in **`pino-http`**; vitest **`logRedaction.d9.test.ts`** + readiness; **no** action **`POST`**, **no** transport token wiring.
 - **D9.15 adds `APP/artifacts/mapazapp/docs/API_TOKEN_CSRF_DESIGN_D9.md`** — diseño formal de token local **`X-Mapazapp-Action-Token`**, postura CSRF, launcher, gates y tests futuros (**D9.16**–**D9.18**); **solo documentación** — **sin** código, **sin** middleware, **sin** **`POST`**, **sin** token real.
 - **D9.16–D9.18 (`@workspace/api-server`):** **`apiActionTokenConfig.ts`** + tests (modelo/env/validación); **`actionTokenMiddleware.ts`** + **`actionTokenMiddleware.d9.test.ts`** (middleware **no** montado en **`app.ts`**); **`logRedaction`** ampliado para fragmentos del header; readiness §J — **sin** endpoints de acciones, **sin** **`POST`** Mapazapp, **sin** token real ni launcher wiring.
+- **D9.19–D10.1:** **`actionTransportReadiness.d9.test.ts`** — readiness transporte sin endpoint; **`MT5_DETECTION_GATE_AUDIT_D10.md`** — auditoría D10.0; **`mapazapp-mt5-config-model.ts`** + **`mapazapp-mt5-config-model.test.ts`** — validador MT5 declarativo D10.1 (**sin** MT5 live, **sin** watcher). Ver **`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`**, **`MT5_DATA_INTEGRATION.md`**, **`RUNTIME_AND_LAUNCHER_STRATEGY.md`**.
 
 ## V2-16 handoff update
 

@@ -40,7 +40,7 @@
 - **Launcher logs folder** policy implemented and wired  
 - **Single-instance** lock / mutex / handoff file for a product launcher  
 - **PID registry** owned by a product launcher  
-- **MT5 detection** implementation (policy-only audit starts at **D10.0**)  
+- **MT5 detection** implementation (policy-only audit: [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md) — **D10.0**)  
 - **MT5 runtime** integration from Node/TS  
 - **Bridge folder watcher** or live ingest daemons  
 - **Operational database** for Mapazapp in this scope  

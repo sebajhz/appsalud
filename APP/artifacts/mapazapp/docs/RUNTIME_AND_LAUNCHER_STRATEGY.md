@@ -53,6 +53,9 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D9.14.2 (`@workspace/api-server`, logs):** **`logRedaction.ts`** + lista **`redact`** centralizada en **`pino`** y sanitización de **`req.url`** en logs; **sin** body crudo en serializers por defecto; **sin** **`POST`** de acciones.
 - **D9.15 (solo documentación):** [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md) — contrato conceptual de token **`X-Mapazapp-Action-Token`**, CSRF, integración con launcher y gates antes de cualquier **`POST`** de acciones; **sin** implementación, **sin** token real.
 - **D9.16–D9.18 (`@workspace/api-server`):** modelo **`apiActionTokenConfig`**, middleware **`createActionTokenMiddleware`** (solo tests / apps temporales; **no** cableado en **`app.ts`**), tests de token + redacción — base para transporte futuro; **sin** **`POST`** de acciones Mapazapp, **sin** emisión real de token.
+- **D9.19 (`@workspace/api-server`, solo tests):** **`actionTransportReadiness.d9.test.ts`** — esqueletos de readiness para transporte futuro (sin endpoint, sin **`POST`** real); gates/token/dispatcher referenciados de forma estática o vía **`@workspace/mapazapp-core`**.
+- **D10.0 (solo documentación):** [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md) — auditoría de gates de detección MT5 antes de launch/watcher; rutas sensibles y non-goals.
+- **D10.1 (`@workspace/scripts`, modelo TS puro):** **`mapazapp-mt5-config-model.ts`** + tests — validación declarativa de config MT5 futura (**sin** lanzar MT5, **sin** `spawn`); flags **`allowLaunch`** / **`allowCommandFiles`** → **`unsafe`**.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
