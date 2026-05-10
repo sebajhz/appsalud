@@ -41,7 +41,8 @@ export const mockAlerts: Alert[] = [
     severity: 'INFO',
     source: 'ZONE_SCANNER',
     message: 'Zone zone_001 (XAUUSD BUY) transitioned from CONFIRMED to TRADE_READY. Score: 88.',
-    simpleMessage: 'The5ers 100k: Gold buy zone is now ready for trading. Review before acting.',
+    simpleMessage:
+      'The5ers 100k: Setup context is ready for manual review in alert-only mode. No execution is performed.',
     timestamp: new Date(Date.now() - 600000).toISOString(),
     acknowledged: true,
   },
@@ -63,7 +64,8 @@ export const mockAlerts: Alert[] = [
     severity: 'INFO',
     source: 'SYSTEM',
     message: 'Parameter set MZP_IFVG_EURUSD_V1_SET_001 is approved for alerts only in the checkpoint 7 registry (not trade-review).',
-    simpleMessage: 'Global: A new set of trading rules has been approved and is now active for The5ers 100k.',
+    simpleMessage:
+      'Global: Rule context is available for manual review in alert-only mode. No trade-review execution or auto-approval is enabled.',
     timestamp: new Date(Date.now() - 172800000).toISOString(),
     acknowledged: true,
   },
