@@ -1,5 +1,5 @@
 /**
- * D9.3 — Launcher internal action dispatcher tests (no subprocesses).
+ * D9.3 / D9.4.1 — Launcher internal action dispatcher tests (no subprocesses).
  */
 
 import assert from "node:assert/strict";
@@ -84,12 +84,19 @@ const BANNED_JSON_SUBSTRINGS = [
   "/Users/",
 ];
 
+/**
+ * Word-boundary scan aligned with `assertActionResultSafety` credential hints.
+ * Omits `server` alone: benign workspace paths include `api-server`, which still matches `\bserver\b`.
+ */
+const CREDENTIAL_WORD_RE = /\b(login|account|balance|equity|investor)\b/i;
+
 function assertNoBannedTokens(json: string): void {
   const low = json.toLowerCase();
   for (const token of BANNED_JSON_SUBSTRINGS) {
     const needle = token.toLowerCase();
     assert.ok(!low.includes(needle), `unexpected banned token ${token}`);
   }
+  assert.ok(!CREDENTIAL_WORD_RE.test(json), "unexpected credential-related word boundary token");
 }
 
 test("A. validate_environment happy path — gate allowed, preflight ok, safe snapshot", async () => {
@@ -299,12 +306,201 @@ test("J. no banned tokens in serialized dispatch samples", async () => {
       policy: { allowReadOnlyStatus: true },
     }),
     dispatchLauncherAction({ actionId: "stop_mapazapp", callerSource: "launcher", nowIso: iso }),
+    dispatchLauncherAction(
+      { actionId: "validate_environment", callerSource: "launcher", nowIso: iso },
+      {
+        runValidateEnvironmentPreflight: async () => {
+          throw new Error("noise");
+        },
+      },
+    ),
+    dispatchLauncherAction(
+      { actionId: "validate_environment", callerSource: "script", nowIso: iso },
+      {
+        runValidateEnvironmentPreflight: async () => ({
+          model: createDefaultLauncherProcessModel({ nowIso: iso }),
+          actionResult: {
+            ok: true,
+            actionId: "validate_environment",
+            status: "ok",
+            source: "launcher",
+            message: "x",
+            safety: {
+              executionEnabled: true,
+              sendToMt5Enabled: false,
+              canAutoExecute: false,
+              autoApprovalEnabled: false,
+              registryMutationAllowed: false,
+              manualReviewRequired: true,
+            },
+            logsPreview: [],
+            warnings: [],
+            errors: [],
+            generatedAt: iso,
+          },
+        }),
+      },
+    ),
   ]);
   assertNoBannedTokens(JSON.stringify(bundle));
 });
 
 test("K. default caller is launcher", () => {
   assert.equal(LAUNCHER_ACTION_DISPATCH_DEFAULT_CALLER, "launcher");
+});
+
+test("D9.4.1 A. preflight throws — safe ActionResult, no path leak", async () => {
+  let calls = 0;
+  const iso = "2026-05-10T21:00:00.000Z";
+  const nasty = "boom C:\\\\Users\\\\x\\\\AppData\\\\Roaming\\\\MetaQuotes\\\\terminal64.exe";
+  const res = await dispatchLauncherAction(
+    {
+      actionId: "validate_environment",
+      callerSource: "launcher",
+      nowIso: iso,
+    },
+    {
+      runValidateEnvironmentPreflight: async () => {
+        calls += 1;
+        throw new Error(nasty);
+      },
+    },
+  );
+  assert.equal(calls, 1);
+  assert.equal(res.actionResult.ok, false);
+  assert.equal(res.actionResult.status, "error");
+  assert.equal(res.actionResult.actionId, "validate_environment");
+  assert.equal(assertActionResultSafety(res.actionResult).ok, true);
+  const blob = JSON.stringify(res).toLowerCase();
+  assert.ok(!blob.includes("appdata"));
+  assert.ok(!blob.includes("metaquotes"));
+  assert.ok(!blob.includes("users"));
+  assert.ok(!blob.includes("terminal64"));
+  assertNoBannedTokens(JSON.stringify(res));
+});
+
+test("D9.4.1 B. preflight returns unsafe ActionResult — replaced with safe error", async () => {
+  const iso = "2026-05-10T21:01:00.000Z";
+  const fakeModel = createDefaultLauncherProcessModel({ nowIso: iso });
+  const unsafe: MapazappActionResult = {
+    ok: true,
+    actionId: "validate_environment",
+    status: "ok",
+    source: "launcher",
+    message: "ok",
+    safety: {
+      executionEnabled: true,
+      sendToMt5Enabled: false,
+      canAutoExecute: false,
+      autoApprovalEnabled: false,
+      registryMutationAllowed: false,
+      manualReviewRequired: true,
+    },
+    logsPreview: [],
+    warnings: [],
+    errors: [],
+    generatedAt: iso,
+  };
+  assert.equal(assertActionResultSafety(unsafe).ok, false);
+  const res = await dispatchLauncherAction(
+    { actionId: "validate_environment", callerSource: "script", nowIso: iso },
+    {
+      runValidateEnvironmentPreflight: async () => ({
+        model: fakeModel,
+        actionResult: unsafe,
+      }),
+    },
+  );
+  assert.equal(res.actionResult.ok, false);
+  assert.equal(res.actionResult.status, "error");
+  assert.equal(assertActionResultSafety(res.actionResult).ok, true);
+  assert.equal(res.processModel, null);
+  assert.equal(res.runtimeStatus, null);
+  assert.ok(!JSON.stringify(res.actionResult).includes('"executionEnabled":true'));
+  assertNoBannedTokens(JSON.stringify(res));
+});
+
+test("D9.4.1 D. callerSource unknown — validate_environment blocked, no preflight", async () => {
+  let calls = 0;
+  const iso = "2026-05-10T21:03:00.000Z";
+  const res = await dispatchLauncherAction(
+    {
+      actionId: "validate_environment",
+      callerSource: "unknown",
+      nowIso: iso,
+      preflightOptions: { preflightDeps: depsHappy() },
+    },
+    {
+      runValidateEnvironmentPreflight: async () => {
+        calls += 1;
+        throw new Error("preflight must not run");
+      },
+    },
+  );
+  assert.equal(calls, 0);
+  assert.equal(res.gateDecision.allowed, false);
+  assert.equal(res.actionResult.ok, false);
+  assert.equal(assertActionResultSafety(res.actionResult).ok, true);
+  assert.equal(res.processModel, null);
+});
+
+test("D9.4.1 E. params with private markers — not echoed in serialized result", async () => {
+  const iso = "2026-05-10T21:04:00.000Z";
+  const res = await dispatchLauncherAction({
+    actionId: "validate_environment",
+    callerSource: "launcher",
+    nowIso: iso,
+    params: {
+      p1: "C:\\\\Users\\\\x\\\\AppData\\\\Roaming\\\\MetaQuotes\\\\Terminal\\\\common\\\\terminal64.exe",
+      p2: "AppData",
+      p3: "MetaQuotes",
+    },
+    preflightOptions: { preflightDeps: depsHappy(), generatedAt: iso },
+  });
+  const blob = JSON.stringify(res).toLowerCase();
+  assert.ok(!blob.includes("appdata"));
+  assert.ok(!blob.includes("metaquotes"));
+  assert.ok(!blob.includes("users"));
+  assert.ok(!blob.includes("terminal64"));
+  assert.equal(res.actionResult.ok, true);
+  assertNoBannedTokens(JSON.stringify(res));
+});
+
+test("D9.4.1 F. permissive policy — lifecycle / MT5 / logs never invoke preflight", async () => {
+  let calls = 0;
+  const permissive = {
+    allowReadOnlyStatus: true,
+    allowLauncherSidePreflight: true,
+    allowFileValidation: true,
+    allowProcessLifecycle: true,
+    allowLogsOpen: true,
+    allowMt5ConfigValidation: true,
+    allowMt5Launch: true,
+    transportGateEnabled: true,
+    launcherAvailable: true,
+  };
+  const iso = "2026-05-10T21:05:00.000Z";
+  const deps = {
+    runValidateEnvironmentPreflight: async () => {
+      calls += 1;
+      throw new Error("unexpected preflight");
+    },
+  };
+  for (const actionId of ["start_mapazapp_dev", "open_mt5", "open_logs"] as const) {
+    const res = await dispatchLauncherAction(
+      {
+        actionId,
+        callerSource: "launcher",
+        nowIso: iso,
+        policy: permissive,
+        hasUserConfirmation: true,
+      },
+      deps,
+    );
+    assert.equal(calls, 0);
+    assert.equal(res.actionResult.ok, false);
+    assert.equal(assertActionResultSafety(res.actionResult).ok, true);
+  }
 });
 
 test("L. deps injection can replace preflight implementation", async () => {

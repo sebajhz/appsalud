@@ -40,6 +40,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D9.1 (solo documentación):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md` — threat model formal del futuro **local action bridge** (localhost, CSRF, replay, CORS, tokens, allowlist, procesos, logs, privacidad de rutas, `ActionResult`); **sin** código, **sin** `POST`, **sin** launcher real; debe cerrarse **antes** de cualquier endpoint de acciones o transporte privilegiado.
 - **D9.2 (modelo TS puro en core):** `APP/lib/mapazapp-core/src/action-gates.ts` — definiciones + política + `evaluateActionGate` + aserciones de seguridad; tests vitest; **sin** endpoints HTTP, **sin** UI, **sin** ejecución real.
 - **D9.3 (dispatcher interno scripts):** `APP/scripts/src/mapazapp-launcher-action-dispatcher.ts` — `dispatchLauncherAction` integra gates + única ejecución interna **`validate_environment`** vía puente D8.3; tests node:test; **sin** transporte HTTP/IPC, **sin** entrada CLI nueva, **sin** spawn.
+- **D9.4.1:** mismo dispatcher — errores de preflight y cargas **`ActionResult`** inseguras se convierten en respuestas **`ActionResult`** seguras (sin exponer trazas ni rutas); **sin** transporte HTTP/IPC ni cambios en API/dashboard.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

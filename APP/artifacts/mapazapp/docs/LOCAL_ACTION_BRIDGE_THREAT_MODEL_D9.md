@@ -30,7 +30,7 @@
 | Launcher model skeleton (`mapazapp-launcher-model.ts`) | Config/process **model only**; maps conservatively to runtime status |
 | Launcher preflight bridge (`mapazapp-launcher-preflight-bridge.ts`) | **`validate_environment`** as **read-only** preflight → model + **`MapazappActionResult`**; **not** wired to dashboard or API |
 | Action gate model (`action-gates.ts`, **D9.2**) | Pure **`evaluateActionGate`** + definitions + policy; **no** HTTP, **no** execution; optional **`MapazappActionResult`** conversion |
-| Launcher action dispatcher (`mapazapp-launcher-action-dispatcher.ts`, **D9.3**) | Internal async **`dispatchLauncherAction`** — runs **D9.2** gates then routes **only** **`validate_environment`** to **D8.3** preflight; returns **`MapazappActionResult`** + optional **`LauncherProcessModel`** / **`MapazappRuntimeStatus`**; **no** HTTP/IPC, **no** CLI |
+| Launcher action dispatcher (`mapazapp-launcher-action-dispatcher.ts`, **D9.3** / **D9.4.1**) | Internal async **`dispatchLauncherAction`** — runs **D9.2** gates then routes **only** **`validate_environment`** to **D8.3** preflight; **D9.4.1** hardens error paths so preflight faults and unsafe payloads become **`MapazappActionResult`** responses with conservative **`safety`** (no raw stack traces, no HTTP/IPC); returns optional **`LauncherProcessModel`** / **`MapazappRuntimeStatus`**; **no** HTTP/IPC, **no** CLI |
 
 ### Does not exist yet
 

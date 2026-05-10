@@ -28,7 +28,7 @@
 | `pnpm … mapazapp:import-validate` | Read-only CSV shape validation via `@workspace/mapazapp-core` importer |
 | `@workspace/mapazapp-core` `runtime-status.ts` | Shared pure TS runtime status model + safety derivation helpers |
 | `@workspace/mapazapp-core` `action-gates.ts` (**D9.2**) | Pure gate definitions + **`evaluateActionGate`** + policy; shared contract for future API/launcher wiring — **no HTTP**, **no `POST`** yet |
-| `APP/scripts/src/mapazapp-launcher-action-dispatcher.ts` (**D9.3**) | Internal **`dispatchLauncherAction`**: evaluates gates then executes **only** **`validate_environment`** via D8.3 preflight — **no endpoint**, **no dashboard buttons**, **no IPC** |
+| `APP/scripts/src/mapazapp-launcher-action-dispatcher.ts` (**D9.3** / **D9.4.1**) | Internal **`dispatchLauncherAction`**: evaluates gates then executes **only** **`validate_environment`** via D8.3 preflight; **D9.4.1** converts preflight exceptions and unsafe injected results into safe **`MapazappActionResult`** (still **no endpoint**, **no dashboard buttons**, **no IPC**) |
 | `GET /api/mapazapp/runtime/status` | Read-only API snapshot (honest defaults; no live MT5/bridge probes) |
 | `runtimeStatusDataSource.ts` | Dashboard service: fetches runtime GET; conservative `unavailable` / `blocked` behavior |
 | `RuntimeStatusPanel.tsx` | Presentational read-only panel |
