@@ -34,6 +34,7 @@
 | **D9.12 listen bootstrap (`api-server`)** | **`index.ts`** explicit **`listen(port, host)`** + **`apiListenConfig.d9.test.ts`** — loopback default; **not** action transport, **not** strict CORS |
 | **D9.13 CORS allowlist (`api-server`)** | **`apiCorsConfig.ts`** + integration tests — global allowlist; **not** action **`POST`**, **not** token |
 | **D9.14.1 body limits + safe errors (`api-server`)** | **`apiBodyAndErrorHandling.d9.test.ts`** — oversized JSON **`413`**, invalid JSON **`400`**, safe **`500`** via **test-only** Express stack; **not** transport token, **not** action **`POST`** |
+| **D9.14.2 log redaction baseline (`api-server`)** | **`logRedaction.d9.test.ts`** + **`logRedaction.ts`** — string/value sanitizers, **`pino`** redact paths, **no** **`req.body`** logging in default serializers; **not** transport token, **not** action **`POST`** |
 
 ### Does not exist yet
 

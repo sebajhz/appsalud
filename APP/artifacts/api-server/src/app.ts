@@ -5,6 +5,7 @@ import { createApiHardeningConfigFromEnv } from "./config/apiHardeningConfig";
 import { createCorsOptions } from "./config/apiCorsConfig";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { sanitizeLogString } from "./lib/logRedaction";
 import { safeErrorHandler } from "./middleware/safeErrorHandler";
 
 const app: Express = express();
@@ -19,10 +20,11 @@ app.use(
     logger,
     serializers: {
       req(req) {
+        const pathOnly = req.url?.split("?")[0] ?? "";
         return {
           id: req.id,
           method: req.method,
-          url: req.url?.split("?")[0],
+          url: sanitizeLogString(pathOnly),
         };
       },
       res(res) {

@@ -24,8 +24,8 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | Topic | State |
 |-------|--------|
 | Framework | **Express** (`express()`), router mounted at **`/api`** (`app.ts` → `routes/index.ts`). |
-| Logging | **`pino-http`** enabled with trimmed serializers (method, URL path, status). |
-| CORS | **`D9.13`:** **`cors(createCorsOptionsFromEnv())`** — **allowlist** from **`allowedOrigins`** (default Vite dev origins); **no** credentials; **`GET`/`HEAD`/`OPTIONS`** only; requests **without** **`Origin`** still accepted for local tooling. |
+| Logging | **`D9.14.2`:** **`pino`** **`redact`** via **`getApiLoggerRedactPaths()`**; **`pino-http`** serializers (**`id`**, **`method`**, path-only **`url`**, **`statusCode`**) — **no** **`req.body`**; **`sanitizeLogString`** on logged paths. |
+| CORS | **`D9.13` / **`D9.14.1`:** **`cors(createCorsOptions(apiHardeningConfig))`** — **allowlist** from **`allowedOrigins`** (default Vite dev origins); **no** credentials; **`GET`/`HEAD`/`OPTIONS`** only; requests **without** **`Origin`** still accepted for local tooling. |
 | Body parsers | **`D9.14.1`:** **`express.json({ limit })`** and **`express.urlencoded({ extended: true, limit })`** use **`maxBodyBytes`** from **`createApiHardeningConfigFromEnv`** (**`MAPAZAPP_ACTION_MAX_BODY_BYTES`** / default **`16384`**). |
 | Listen | **`D9.12`:** **`app.listen(port, host, …)`** in **`index.ts`** via **`createApiHardeningConfigFromEnv` / `validateApiHardeningConfig`** — default host **`127.0.0.1`**, default port **`3001`** if **`MAPAZAPP_API_PORT`** and **`PORT`** are unset. (**`0.0.0.0`** still discouraged; optional warning when used.) |
 | Auth / token | **None** for Mapazapp routes. |
@@ -59,7 +59,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | 13 | POST route policy | No **`router.post`** in Mapazapp router | Explicit policy: **no** action **`POST`** until gates + hardening; allowlist only | Today “safe by absence”; future PRs need gate | “Escape hatch” endpoints | Doc + review checklist (**this doc**, **D9.6**) |
 | 14 | Tests | **`GET`** envelope + **no operational POST** + **D9.12** listen + **D9.13** CORS tests | Token, body limit, error handler tests — **D9.7** §8 | Transport-bound tests still pending | Regressions undetected | **D9.11**–**D9.13** baseline → strengthen as code lands |
 | 15 | Dev/prod separation | Weak explicit split | Documented env profiles; mock dev vs hardened transport mode | Ad-hoc **`NODE_ENV`** usage | Misconfigured prod-like exposure | **D9.10** model + README |
-| 16 | Logging | `pino-http` basics + root **`pino` redact** paths | Redaction policy for secrets/paths — **D9.6** §4.9 | **`MAPAZAPP_LOG_REDACTION_ENABLED`** not wired to runtime toggles | Secrets in logs | **D9.14.2** (advanced log redaction baseline) |
+| 16 | Logging | **`D9.14.2` done:** **`logRedaction.ts`** + centralized **`pino` redact** paths + path sanitization in **`pino-http`** serializers | Stricter transport **`logsPreview`** policy — **D9.6** §4.9 | **`MAPAZAPP_LOG_REDACTION_ENABLED`** remains a **model** gate for future transport (not a runtime logger toggle yet) | Secrets in logs | Optional **D9.14.3** subset (**security headers** only) |
 | 17 | Security headers | None specific | Baseline headers (CSP/HSTS etc.) **where appropriate** for local mock — **justify** per surface | No Helmet-style baseline | Clickjacking / MIME sniffing (lower on localhost, still worth design) | **D9.14** (optional subset) |
 
 ---
@@ -115,7 +115,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | **D9.12.1** | **Runtime status URL/port alignment** — **`mapazapp/adapters/runtimeStatus.ts`** only | **`buildRuntimeStatusPayload`** uses the same env bag resolution as bootstrap for **`api.url`** / **`api.port`**; **`mapazapp.runtime-status.d9.test.ts`**. **No** route/`app.ts`/`index.ts` changes. **CORS / token / rate / body / error handler still pending.** |
 | **D9.13** | **CORS allowlist** — **`apiCorsConfig.ts`** + **`app.ts`** wiring — **no** action **`POST`** | **`createCorsOptions`** from shared hardening snapshot (**replaces** bare **`createCorsOptionsFromEnv()`**-only wiring in **`app.ts`** per **D9.14.1**); **`apiCorsConfig.d9.test.ts`**, **`apiCorsIntegration.d9.test.ts`**, readiness updates; **`MAPAZAPP_API_ALLOWED_ORIGINS`**. |
 | **D9.14.1** | **Body limits + safe global error handler** — **`app.ts`**, **`middleware/safeErrorHandler.ts`**, **`apiBodyAndErrorHandling.d9.test.ts`** — **no** action **`POST`** | **`maxBodyBytes`** → **`express.json` / `urlencoded`**; **`safeErrorHandler`** (**`413`/`400`/`500`** JSON); readiness/README updates. **No** token / CSRF / rate limit. |
-| **D9.14.2** | **Log redaction baseline** (+ optional minimal security headers) | Wire **`MAPAZAPP_LOG_REDACTION_ENABLED`** / extend **`pino-http`** policy beyond current defaults |
+| **D9.14.2** | **Log redaction baseline** — **`logRedaction.ts`**, **`logRedaction.d9.test.ts`**, **`logger.ts`** redact paths, **`app.ts`** URL sanitization — **no** action **`POST`** | **`sanitizeLogString` / `sanitizeLogValue`**, **`getApiLoggerRedactPaths`**; readiness/README updates. **Optional minimal security headers** remain a **future** checkpoint (**D9.14.3**). |
 | **D9.15** | **Token / CSRF design + model** (optional pure types) | Doc + types; implementation ships with transport |
 | **D9.16** | **Action transport test skeletons** | Align filenames with **D9.7** §7 — **no** live endpoint until approved |
 | **D10.0** | **MT5 detection gate audit** | As in roadmap — **no** MT5 transport before this |
@@ -189,4 +189,5 @@ D9.9 **does not** implement or authorize implementation of:
 
 - **D9.9** — API hardening plan (**documentation only**): gap table, env contract proposal, implementation sequence **D9.10**–**D9.16**, risks, conceptual tests, decision log.
 - **D9.10** — Pure **`api-server`** config module (**no wiring**): types + safe defaults + validation + env bag parsing; **`ApiErrorExposurePolicy`** uses **`raw_stack_default_dev`** (avoids embedding framework product names in static governance scans).
-- **D9.14.1** — **`app.ts`** wires **`maxBodyBytes`** + **`safeErrorHandler`**; **`D9.14.2`** tracks advanced **log redaction** / optional headers; **token / rate / idempotency / CSRF** remain **D9.15**+.
+- **D9.14.1** — **`app.ts`** wires **`maxBodyBytes`** + **`safeErrorHandler`**.
+- **D9.14.2** — **`logRedaction`** helpers + tests + **`pino`** redact centralization + sanitized **`req.url`** logging; **optional security headers** deferred (**D9.14.3**); **token / rate / idempotency / CSRF** remain **D9.15**+.

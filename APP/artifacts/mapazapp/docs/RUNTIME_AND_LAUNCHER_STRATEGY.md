@@ -50,6 +50,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D9.12.1 (`@workspace/api-server`, adapter):** `GET /api/mapazapp/runtime/status` reporta **`api.url`** / **`api.port`** con la misma resolución de env que el bootstrap; **sin** cambiar rutas ni CORS.
 - **D9.13 (`@workspace/api-server`, CORS):** **`app.ts`** aplica allowlist de **`Origin`** vía **`apiCorsConfig`** (defaults Vite dev); **sin** token, **sin** **`POST`** de acciones.
 - **D9.14.1 (`@workspace/api-server`, body + errores):** **`app.ts`** limita tamaño de body (**`maxBodyBytes`**) y añade **`safeErrorHandler`** (JSON seguro sin stack); **sin** **`POST`** de acciones Mapazapp, **sin** token/rate/CSRF.
+- **D9.14.2 (`@workspace/api-server`, logs):** **`logRedaction.ts`** + lista **`redact`** centralizada en **`pino`** y sanitización de **`req.url`** en logs; **sin** body crudo en serializers por defecto; **sin** **`POST`** de acciones.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

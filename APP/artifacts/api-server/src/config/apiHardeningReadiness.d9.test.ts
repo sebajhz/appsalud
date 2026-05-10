@@ -1,7 +1,7 @@
 /**
- * D9.11 / D9.12 / D9.13 / D9.14.1 — Readiness / audit tests vs the D9.10 hardening model.
+ * D9.11 / D9.12 / D9.13 / D9.14.x — Readiness / audit tests vs the D9.10 hardening model.
  * D9.12: explicit listen host in `index.ts`. D9.13: CORS allowlist from hardening config.
- * D9.14.1: `app.ts` loads hardening once for body limits + `createCorsOptions` + `safeErrorHandler`.
+ * D9.14.1: body limits + `safeErrorHandler`. D9.14.2: `logRedaction` + pino redact paths + URL sanitization in logs.
  */
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
@@ -167,6 +167,29 @@ describe("D9 API hardening readiness (audit)", () => {
       const indexSrc = readSrc("indexTs");
       expect(indexSrc.includes("createDefaultApiHardeningConfig")).toBe(false);
       expect(indexSrc).not.toMatch(/listen\s*\(\s*[^,]+,\s*["']0\.0\.0\.0["']/);
+    });
+  });
+
+  describe("I — log redaction baseline (D9.14.2)", () => {
+    it("logRedaction.ts defines sanitize helpers and redact path factory", () => {
+      const raw = readFileSync(join(srcRoot, "lib", "logRedaction.ts"), "utf8");
+      expect(raw.includes("sanitizeLogString")).toBe(true);
+      expect(raw.includes("getApiLoggerRedactPaths")).toBe(true);
+    });
+
+    it("logger.ts wires pino redact via getApiLoggerRedactPaths (no req.body hooks)", () => {
+      const src = readFileSync(join(srcRoot, "lib", "logger.ts"), "utf8");
+      expect(src.includes("getApiLoggerRedactPaths")).toBe(true);
+      expect(src.includes("req.body")).toBe(false);
+    });
+
+    it("app.ts req serializer sanitizes path-only URL and omits body", () => {
+      const appSrc = readSrc("appTs");
+      const idx = appSrc.indexOf("serializers:");
+      expect(idx).toBeGreaterThan(-1);
+      const slice = appSrc.slice(idx, idx + 900);
+      expect(slice.includes("req.body")).toBe(false);
+      expect(slice.includes("sanitizeLogString")).toBe(true);
     });
   });
 });

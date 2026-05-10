@@ -47,6 +47,13 @@ Optional: `set PORT=3001` or `set MAPAZAPP_API_PORT=3001` to override the defaul
 - **Uncaught handler errors** return **`500`** with **`INTERNAL_SERVER_ERROR`** and a fixed message — **no** raw `Error.message`, **no** stack in the response body.
 - Read-only Mapazapp routes remain **`GET`** only; there are **no** Mapazapp **action** **`POST`** endpoints.
 
+### Log redaction baseline (D9.14.2)
+
+- **`pino`** uses **`getApiLoggerRedactPaths()`** from **`src/lib/logRedaction.ts`** — sensitive header buckets (**`Authorization`**, **`Cookie`**, **`Set-Cookie`**, reserved **`x-mapazapp-action-token`**) are **redacted** in structured logs.
+- **`pino-http`** serializers stay minimal (**`id`**, **`method`**, **`url`** path without querystring, **`statusCode`**) — **no** **`req.body`** and **no** raw body logging on the default request snapshot.
+- **`sanitizeLogString`** scrubs the logged path for Windows/macOS profile fragments, MT5 markers, token-shaped query fragments, and long CSV-like numeric rows before they appear in **`req.url`** log lines.
+- Use **`sanitizeLogValue`** for future structured previews (diagnostics, transport envelopes) so nested objects drop sensitive keys and scrub strings — **no** Mapazapp action **`POST`** routes.
+
 ### CORS (D9.13)
 
 - **Allowlist active by default** (`corsPolicy: allowlist`): browser **`Origin`** must match an entry in **`allowedOrigins`** (defaults below). Requests **without** an **`Origin`** header (curl, supertest, many server-local callers) still succeed.
