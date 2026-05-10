@@ -15,7 +15,8 @@
 - **D3.1 cerrado (solo scripts package):** `pnpm --filter @workspace/scripts mapazapp:dev-preflight` — preflight dev (puertos/scripts + instrucciones PowerShell/Bash); **no** launcher, **no** procesos hijos, **no** MT5.
 - **D3.2 cerrado (solo scripts package):** `pnpm --filter @workspace/scripts mapazapp:dev-start` — preflight + build/start API + Vite dashboard (hijos); **no** launcher `.exe`, **no** MT5/bridge real, **no** ejecución.
 - **D4 modelo runtime:** TypeScript puro en **`APP/lib/mapazapp-core/src/runtime-status.ts`** (`@workspace/mapazapp-core`); tests en core (**vitest**); **sin** probes MT5/bridge reales; D3.x aún no lo consume.
-- **D5.1a moves runtime status model to shared core module; API endpoint still pending.**
+- **D5.1a moves runtime status model to shared core module (`runtime-status.ts`).**
+- **D5.1b adds read-only `GET /api/mapazapp/runtime/status` (mock envelope; MT5/bridge not_configured); no dashboard UI; no POST.**
 - **D4.1 documents future dashboard action wiring; no dashboard buttons implemented yet.** Ver `APP/artifacts/mapazapp/docs/DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`.
 
 ## V2-16 handoff update

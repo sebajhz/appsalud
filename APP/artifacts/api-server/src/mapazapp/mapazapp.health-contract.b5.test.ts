@@ -9,8 +9,8 @@ const MOCK_LATEST_PATHS = [
   "/api/mapazapp/manual-campaign/mock-latest",
 ] as const;
 
-const UNKNOWN_RUNTIME_PATHS = [
-  "/api/mapazapp/runtime/status",
+/** D5.1b implements GET /runtime/status; MT5/bridge live probes remain future work. */
+const UNIMPLEMENTED_MT5_BRIDGE_STATUS_PATHS = [
   "/api/mapazapp/mt5/status",
   "/api/mapazapp/bridge/status",
 ] as const;
@@ -106,13 +106,13 @@ describe("B5 API health and mock-latest contracts", () => {
     expect(manual.body.data?.manualCampaign?.status).toBeDefined();
   });
 
-  it("C. Gap note — runtime/MT5/bridge operational health is not implemented as live probes (unknown routes return 404)", async () => {
-    /** Real runtime status, MT5 detection, and bridge process health are future phases; see A1 governance docs. */
-    expect(UNKNOWN_RUNTIME_PATHS.length).toBeGreaterThan(0);
+  it("C. Gap note — MT5/bridge live operational status routes are not implemented (404)", async () => {
+    /** GET /api/mapazapp/runtime/status is read-only mock snapshot (D5.1b); MT5/bridge process probes remain future. */
+    expect(UNIMPLEMENTED_MT5_BRIDGE_STATUS_PATHS.length).toBeGreaterThan(0);
   });
 
-  it("D. Unknown runtime/MT5/bridge status paths — 404, no fake connected payloads", async () => {
-    for (const path of UNKNOWN_RUNTIME_PATHS) {
+  it("D. Unimplemented MT5/bridge status paths — 404, no fake connected payloads", async () => {
+    for (const path of UNIMPLEMENTED_MT5_BRIDGE_STATUS_PATHS) {
       const res = await request(app).get(path);
       expect(res.status).toBe(404);
       const raw = JSON.stringify(res.body ?? {});

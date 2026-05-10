@@ -15,6 +15,7 @@ import * as backtestCampaignAdapter from "./adapters/backtestCampaign";
 import * as manualCampaignAdapter from "./adapters/manualCampaign";
 import * as parameterGridAdapter from "./adapters/parameterGrid";
 import * as walkForwardAdapter from "./adapters/walkForward";
+import * as runtimeStatusAdapter from "./adapters/runtimeStatus";
 
 const router: IRouter = Router();
 
@@ -32,6 +33,14 @@ const CP15_EVIDENCE_FLAGS = {
   canAutoApply: false as const,
 };
 
+/** D5.1b — shared runtime status model; not live MT5/bridge health. */
+const RUNTIME_STATUS_FLAGS = {
+  reviewOnly: true as const,
+  executionEnabled: false as const,
+  registryMutationAllowed: false as const,
+  autoApprovalEnabled: false as const,
+};
+
 router.get("/health", (_req, res) => {
   res.json(
     okResponse({
@@ -42,6 +51,10 @@ router.get("/health", (_req, res) => {
       evidenceMockRoutesV2: "v2-16",
     }),
   );
+});
+
+router.get("/runtime/status", (_req, res) => {
+  res.json(okResponse(runtimeStatusAdapter.buildRuntimeStatusPayload(), RUNTIME_STATUS_FLAGS));
 });
 
 router.get("/backtest-campaigns/mock-latest", (_req, res) => {
