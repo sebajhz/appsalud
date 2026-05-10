@@ -30,6 +30,7 @@
 | **`RuntimeStatusPanel`** on **`ConfigPage`** | Presentational read-only panel; one-shot load (**D6.x**) |
 | **`DashboardActionClient`** stub (`actionClient.ts`) | **`not_available`** / **`blocked`** only; **no** `fetch`, **no** `POST` (**D7.3**) |
 | **Transport contract D9.6** | Minimum HTTP + IPC requirements, caller remapping, conceptual envelopes (**documentation**) |
+| **D9.11 readiness tests (`api-server`)** | **`apiHardeningReadiness.d9.test.ts`** — baseline/readiness audit vs **D9.10** model + skipped future expectations; **no** HTTP endpoint, **no** **`POST`**, **no** runtime wiring |
 
 ### Does not exist yet
 

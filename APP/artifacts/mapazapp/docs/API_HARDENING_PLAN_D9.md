@@ -110,7 +110,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 |------|------------|--------|
 | **D9.9** | **API hardening plan** (this doc) — **docs only** | Baseline gaps, env contract, risks, test expectations |
 | **D9.10** | **API hardening config model** — **`APP/artifacts/api-server/src/config/apiHardeningConfig.ts`** + **`apiHardeningConfig.d9.test.ts`** — **pure TS**, **no `app.ts` / `index.ts` wiring** | **Implemented:** defaults, env parsing (`createApiHardeningConfigFromEnv`), `validateApiHardeningConfig`, normalize/parse helpers — runtime unchanged |
-| **D9.11** | **Bind/CORS audit tests or test skeletons** — **no behavior change** | Document expected future behavior (`skip`/`todo` ok) |
+| **D9.11** | **`apiHardeningReadiness.d9.test.ts`** — readiness/audit tests only — **no behavior change** | Documents **current** unwired posture (`app.ts`/`index.ts` **do not** import **`apiHardeningConfig`**); **`listen(port)`** still no explicit host; **`cors()`** still default; **no** Mapazapp **`router.post`**; validates **D9.10** model + **`it.skip`** placeholders for **D9.12**–**D9.16**. **Bind/CORS not wired yet.** |
 | **D9.12** | **Loopback bind implementation** — **no** action **`POST`** | `listen` host from config; update README/scripts as needed |
 | **D9.13** | **CORS allowlist implementation** — **no** action **`POST`** | Per-environment origins; keep mock **`GET`** working |
 | **D9.14** | **Error handler + body limit + log redaction baseline** (+ optional minimal security headers) | Safe JSON errors; explicit JSON/urlencoded limits |
