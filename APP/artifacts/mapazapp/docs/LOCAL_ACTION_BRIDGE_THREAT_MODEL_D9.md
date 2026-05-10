@@ -29,6 +29,7 @@
 | `MapazappRuntimeStatus` + `deriveOverallRuntimeStatus` | Conservative runtime semantics; blocks misleading “all OK” where inappropriate |
 | Launcher model skeleton (`mapazapp-launcher-model.ts`) | Config/process **model only**; maps conservatively to runtime status |
 | Launcher preflight bridge (`mapazapp-launcher-preflight-bridge.ts`) | **`validate_environment`** as **read-only** preflight → model + **`MapazappActionResult`**; **not** wired to dashboard or API |
+| Action gate model (`action-gates.ts`, **D9.2**) | Pure **`evaluateActionGate`** + definitions + policy; **no** HTTP, **no** execution; optional **`MapazappActionResult`** conversion |
 
 ### Does not exist yet
 
@@ -43,8 +44,7 @@
 - **WebSocket live** action or status streams for this bridge  
 - **Auth/token** policy for localhost action calls  
 - **CORS policy** specific to action endpoints  
-- **Rate limiting** / replay controls for actions  
-- **Typed action gate model** enforcing caller + action class + caps (**planned D9.2**, not part of D9.1)
+- **Rate limiting** / replay / **cooldown** enforcement for actions (not implemented in D9.2 gate TS)
 
 ---
 
@@ -178,7 +178,7 @@ The following are **hard requirements** before implementing any **browser-reacha
 | Class | Examples | Allowed now? | Requires launcher? | Requires POST? | Required gates | Notes |
 |-------|----------|--------------|--------------------|----------------|----------------|-------|
 | Read-only status | `show_runtime_status` | **Yes** (via existing **`GET`** + panel) | No | **No** | Build-time API base URL; conservative copy | Not an “action endpoint”; read-only HTTP |
-| Read-only preflight | `validate_environment` | **Prototype only** (scripts / launcher bridge module) | **Recommended** for product | **Only if** browser-triggered — otherwise internal | D9.2+ gate model; D9.1 mitigations if HTTP | D8.3 does **not** expose to dashboard; message must say services **not** started |
+| Read-only preflight | `validate_environment` | **Prototype only** (scripts / launcher bridge module) | **Recommended** for product | **Only if** browser-triggered — otherwise internal | **D9.2** `evaluateActionGate` + D9.1 mitigations if HTTP | D8.3 does **not** expose to dashboard; message must say services **not** started |
 | File validation | `validate_csv` | **No** (CLI exists; not dashboard bridge) | TBD | Likely yes if remote-triggered | File policy, staging, consent, path sandbox | `mapazapp:import-validate` is dev CLI today |
 | Process lifecycle | `start_mapazapp_dev`, `stop_mapazapp` | **No** | **Yes** | TBD | Launcher supervisor, ownership, teardown tests | Browser **blocked** in stub; dev script ≠ product |
 | Logs | `open_logs` | **No** | **Yes** | TBD | Log root policy, redaction, no raw path to web | Paths stay off web client |
@@ -188,22 +188,23 @@ The following are **hard requirements** before implementing any **browser-reacha
 
 ---
 
-## 8. Proposed D9.2 gate model requirements (not implemented in D9.1)
+## 8. D9.2 gate model (implemented — pure TS, no endpoints)
 
-A future **pure TypeScript** gate module (**D9.2**) should validate, at minimum:
+**Checkpoint D9.2** adds `@workspace/mapazapp-core` **`action-gates.ts`**: definitions (`createActionGateDefinitionList`), default policy (`createDefaultActionGatePolicy`), evaluation (`evaluateActionGate`), decision safety (`assertActionGateDecisionSafety`), optional **`MapazappActionResult`** bridging (`createActionGateActionResult`), and serialization (`serializeActionGateDecision`). Tests: `tests/d9-action-gates-model.d9.test.ts`.
+
+The gate layer validates, among other things:
 
 - **Caller source** — `dashboard` | `api` | `launcher` | `script` | `unknown`  
-- **`actionId` allowlist** — must match `MAPAZAPP_ACTION_IDS` / policy  
+- **`actionId` allowlist** — matches documented IDs / rejects unknown  
 - **Action class** — maps to mitigations (read-only vs process vs file vs MT5)  
-- **`requiresLauncher`**, **`requiresApi`** — align with `DashboardActionDefinition` intent  
-- **`requiresUserConfirmation`** — for destructive or high-risk classes  
-- **`requiresFileConsent`** — before any path-bearing file action  
-- **`allowsProcessStart`**, **`allowsFileRead`**, **`allowsMT5`** — boolean caps  
-- **`maxFrequency` / cooldown** — per action class  
-- **Safety flags** — must remain in **safe** posture unless an explicit future gate allows otherwise  
-- **Result contract** — emitted **`MapazappActionResult`** must pass **`assertActionResultSafety`**
+- **`requiresLauncher`**, transport gate, **user confirmation**, **file consent** — enforced per definition + policy flags  
+- **`allowsProcessStart`**, **`allowsFileRead`**, **`allowsMT5`** — mirrored on definitions (no **`allowsTrading`** on shipped definitions)  
+- **Safety flags** — decisions carry safe **`MapazappActionSafety`** defaults; **`assertActionGateDecisionSafety`** scans messages and serialized JSON  
+- **Result contract** — **`createActionGateActionResult`** runs **`assertActionResultSafety`** on emitted results  
 
-**D9.1 does not implement** this module. **D9.2** may add it **without** endpoints.
+**There are still no `POST` action endpoints, no dashboard buttons, no launcher runtime, and no IPC** — this module is **non-operational** policy only. **`maxFrequency` / cooldown** remains future work (not in D9.2).
+
+**D9.1** remains the authoritative threat model; **D9.2** implements the static gate matrix described here **without** wiring to HTTP.
 
 ---
 
@@ -245,3 +246,4 @@ D9.1 **does not** implement or authorize implementation of:
 ## Document history
 
 - **D9.1** — Initial formal threat model for the future local action bridge (documentation only).
+- **D9.2** — Shared **`action-gates.ts`** gate matrix + tests; still **no** endpoints or operational bridge.

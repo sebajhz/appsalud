@@ -27,6 +27,7 @@
 | `pnpm … mapazapp:dev-start` | Dev orchestration: preflight + optional API build + spawns API + dashboard (**not** product launcher) |
 | `pnpm … mapazapp:import-validate` | Read-only CSV shape validation via `@workspace/mapazapp-core` importer |
 | `@workspace/mapazapp-core` `runtime-status.ts` | Shared pure TS runtime status model + safety derivation helpers |
+| `@workspace/mapazapp-core` `action-gates.ts` (**D9.2**) | Pure gate definitions + **`evaluateActionGate`** + policy; shared contract for future API/launcher wiring — **no HTTP**, **no `POST`** yet |
 | `GET /api/mapazapp/runtime/status` | Read-only API snapshot (honest defaults; no live MT5/bridge probes) |
 | `runtimeStatusDataSource.ts` | Dashboard service: fetches runtime GET; conservative `unavailable` / `blocked` behavior |
 | `RuntimeStatusPanel.tsx` | Presentational read-only panel |
@@ -42,7 +43,7 @@
 - **Operational database** for Mapazapp in this scope  
 - **WebSocket** live streams  
 - **Centralized launcher log folder** policy implemented  
-- **Typed caller/action gate enforcement layer** for actions (beyond `MapazappActionResult` + `assertActionResultSafety` + narrative docs — planned **D9.2**)
+- **Transport-bound rate limiting, replay nonces, and cooldown enforcement** (beyond static **`evaluateActionGate`** in **D9.2** `action-gates.ts`)
 
 ---
 

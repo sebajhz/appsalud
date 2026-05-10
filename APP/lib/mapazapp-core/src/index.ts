@@ -140,3 +140,4 @@ export * from "./assisted-execution-invariants";
 export * from "./assisted-execution-fixtures";
 export * from "./runtime-status";
 export * from "./action-result";
+export * from "./action-gates";
