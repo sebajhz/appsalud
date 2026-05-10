@@ -21,6 +21,7 @@
 - **D6.2.1 adds presentational `RuntimeStatusPanel` (props-only, no fetch/buttons/routes); page wiring deferred to D6.3.**
 - **D6.3.1 mounts `RuntimeStatusPanelContainer` on `ConfigPage` — one-shot read-only runtime snapshot (D6.1 data source); no buttons, no polling, no new routes.**
 - **D4.1 documents future dashboard action wiring; no dashboard buttons implemented yet.** Ver `APP/artifacts/mapazapp/docs/DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`.
+- **D7.1 documents the dashboard / launcher action bridge (docs only).** Ver `APP/artifacts/mapazapp/docs/ACTION_BRIDGE_DESIGN.md` — no `POST` actions, no launcher code.
 
 ## V2-16 handoff update
 

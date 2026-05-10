@@ -2,6 +2,8 @@
 
 **Checkpoint D4.1 — design only.** No UI buttons, no API routes, no launcher, no new scripts in this document.
 
+**D7.1 follow-up (docs only):** formal dashboard ↔ launcher/API **action bridge** specification — [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md). Operational **buttons** remain **future** work and require that bridge plus explicit approval; D7.1 does **not** add endpoints or TSX.
+
 ---
 
 ## 1. Purpose
@@ -88,14 +90,14 @@
 
 | Action ID | Button label (ES) | User goal | Backend / launcher dependency | Current status | Allowed now? | Safety notes | Future implementation checkpoint |
 |-----------|-------------------|-----------|-------------------------------|----------------|--------------|--------------|----------------------------------|
-| `validate_environment` | Validar entorno | Check ports/scripts and print safe start guidance | Dev preflight CLI and/or launcher preflight equivalent | Preflight exists as CLI | **No** (not from dashboard UI) | Read-only; no process spawn from browser | D7 / D8 (action bridge design); launcher |
-| `start_mapazapp_dev` | Iniciar Mapazapp | Start API + dashboard for local dev | Dev start CLI and/or future launcher | Dev start exists as CLI | **No** (not from dashboard UI) | Must not imply product launcher; execution stays off | D8 / D9 |
-| `validate_csv` | Validar CSV | Validate local candle CSV shape | Import validator CLI + core importer | Validator exists as CLI | **No** (not from dashboard UI) | Read-only; file path policy required | D8 |
-| `show_runtime_status` | Ver estado del sistema | Show consolidated honest status | D4 model + **`GET /api/mapazapp/runtime/status`** (D5.1b) or launcher snapshot | **D6.3.1** read-only snapshot on **Configuration** (`/config`) via container; **no** buttons or polling | **No** (still no dashboard *actions* — preflight/start/CSV from UI) | Never show MT5/bridge “connected” without real checks | Later: launcher / action bridge |
-| `validate_mt5_config` | Validar MT5 | Policy-checked path / presence checks | Future launcher / MT5 gate | Not implemented | **No** | No execution; no fake “market connected” | D10 |
-| `open_mt5` | Abrir MT5 | Open terminal if policy allows | Future launcher + explicit config | Not implemented | **No** | Gated; optional; never default unsafe | D9+ |
-| `stop_mapazapp` | Detener Mapazapp | Stop supervised children cleanly | Launcher / supervisor for spawned processes | Dev start stops **only** its children via Ctrl+C locally | **No** | Dashboard must not kill arbitrary OS processes | D9 |
-| `open_logs` | Ver logs | Open log folder or viewer | Future `logsFolder` + launcher | Not implemented | **No** | Paths must be policy-bound; no secrets | D7 / D9 |
+| `validate_environment` | Validar entorno | Check ports/scripts and print safe start guidance | Dev preflight CLI and/or launcher preflight equivalent | Preflight exists as CLI | **No** (not from dashboard UI) | Read-only; no process spawn from browser | **D7.1** bridge spec → **D9.0+** guarded endpoint / launcher |
+| `start_mapazapp_dev` | Iniciar Mapazapp | Start API + dashboard for local dev | Dev start CLI and/or future launcher | Dev start exists as CLI | **No** (not from dashboard UI) | Must not imply product launcher; execution stays off | **D9.0+** / launcher supervision |
+| `validate_csv` | Validar CSV | Validate local candle CSV shape | Import validator CLI + core importer | Validator exists as CLI | **No** (not from dashboard UI) | Read-only; file path policy required | **D9.0+** (sandboxed policy) |
+| `show_runtime_status` | Ver estado del sistema | Show consolidated honest status | D4 model + **`GET /api/mapazapp/runtime/status`** (D5.1b) or launcher snapshot | **D6.3.1** read-only snapshot on **Configuration** (`/config`) via container; **no** buttons or polling | **No** (still no dashboard *actions* — preflight/start/CSV from UI) | Never show MT5/bridge “connected” without real checks | **Read path done** (D5/D6); optional launcher snapshot later |
+| `validate_mt5_config` | Validar MT5 | Policy-checked path / presence checks | Future launcher / MT5 gate | Not implemented | **No** | No execution; no fake “market connected” | **D10.0+** |
+| `open_mt5` | Abrir MT5 | Open terminal if policy allows | Future launcher + explicit config | Not implemented | **No** | Gated; optional; never default unsafe | Launcher / post-**D9.0** |
+| `stop_mapazapp` | Detener Mapazapp | Stop supervised children cleanly | Launcher / supervisor for spawned processes | Dev start stops **only** its children via Ctrl+C locally | **No** | Dashboard must not kill arbitrary OS processes | **D9.0+** |
+| `open_logs` | Ver logs | Open log folder or viewer | Future `logsFolder` + launcher | Not implemented | **No** | Paths must be policy-bound; no secrets | Launcher / **D9.0+** |
 
 ---
 
@@ -186,16 +188,11 @@ Dashboard control → trade / order / MT5 command channel directly
 
 ## 8. Implementation checkpoints (proposal)
 
-| ID | Topic |
-|----|--------|
-| **D5** | API runtime status endpoint **read-only** (honest `unknown` / `not_configured` defaults). |
-| **D6** | Dashboard status panel **read-only** (mock vs real copy discipline). |
-| **D7** | Launcher **action bridge** design (how SPA triggers validated operations). |
-| **D8** | Dashboard **action buttons** design (labels, disable rules, error UX). |
-| **D9** | Launcher executable **prototype** (supervised processes only). |
-| **D10** | **MT5 detection** gate (paths/policy; no execution). |
+Completed **read-only** path: **D5.1b** (runtime status GET), **D6.x** (dashboard snapshot panel).
 
-*(Numbers align with roadmap intent; reconcile with `LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` table if product reorders phases.)*
+**Forward-looking action bridge sequence** (authoritative detail): [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) §11 — **D7.1** docs → **D7.2** / **D7.3** TS contracts/client **without** buttons → **D8.x** launcher prototype design → **D9.0** first guarded local action → **D10.0** MT5 detection audit.
+
+*(Older drafts called “D7 launcher prototype”; aligned numbering: launcher audit/design is **D8.x**, after **D7.1** bridge documentation.)*
 
 ---
 
@@ -216,6 +213,7 @@ This document **does not** implement or authorize:
 
 ## 10. References
 
+- `APP/artifacts/mapazapp/docs/ACTION_BRIDGE_DESIGN.md` — **D7.1** formal action bridge (browser limits, future `POST` sketch, `ActionResult` proposal, safety/threat notes).  
 - `APP/artifacts/mapazapp/docs/LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` — authoritative status semantics and anti-simulation rules.  
 - `APP/artifacts/mapazapp/docs/RUNTIME_AND_LAUNCHER_STRATEGY.md` — launcher strategy and dev tooling context.  
 - `APP/scripts/package.json` — canonical `pnpm` script names for validators and dev tools.

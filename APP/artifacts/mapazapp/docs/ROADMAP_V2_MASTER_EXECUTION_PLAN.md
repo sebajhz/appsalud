@@ -111,6 +111,8 @@ Interpretation:
 
 **Nota D2 (previo a scripts/launcher en código):** diseño formal de config y runtime status en `APP/artifacts/mapazapp/docs/LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` (documentación únicamente); alinear implementación futura de V2-23 / launcher con ese diseño antes de exponer estados que parezcan conectividad real.
 
+**Nota D7.1 (puente de acciones, solo docs):** `APP/artifacts/mapazapp/docs/ACTION_BRIDGE_DESIGN.md` define cómo el dashboard podría disparar operaciones futuras vía API local / launcher sin ejecutar comandos desde el browser; no añade endpoints `POST`, botones ni launcher ejecutable.
+
 ---
 
 ## 5) Checkpoint definitions (V2-11 through V2-25)

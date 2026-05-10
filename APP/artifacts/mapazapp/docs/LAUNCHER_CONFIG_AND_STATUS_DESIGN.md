@@ -489,9 +489,12 @@ Orden **orientativo** (ajustable por producto):
 | **D3.3+** | Mejoras futuras de orquestación dev / packaging (si se aprueba) |
 | **D4** | Runtime status model en **TypeScript puro** — código en **`APP/lib/mapazapp-core/src/runtime-status.ts`** (**D5.1a** lo consolidó en `@workspace/mapazapp-core`); tipos + helpers; **sin** probes MT5/bridge reales en el modelo |
 | **D5 / D5.1b** | **`GET /api/mapazapp/runtime/status`** en `@workspace/api-server` — read-only, mock envelope; MT5/bridge **`not_configured`**; **no** sustituye probes futuros ni launcher |
-| **D6** | Panel dashboard de runtime status (copy anti-confusión mock vs real) |
-| **D7** | Prototipo launcher (orquestación + UX errores) |
-| **D8** | Gate de detección MT5 (paths, política, sin ejecución) |
+| **D6** | Panel dashboard de runtime status (copy anti-confusión mock vs real) — **D6.3.1** montaje en Config |
+| **D7.1** | **Diseño documental del action bridge** dashboard ↔ API local / launcher — [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md); **sin** código, **sin** `POST`, **sin** launcher `.exe`; el puente de acciones se define **antes** del prototipo launcher |
+| **D7.2 / D7.3** | Modelo TS **`ActionResult`** y cliente de acciones (si se aprueba) — **sin** endpoints obligatorios / **sin** botones |
+| **D8.0 / D8.1** | Auditoría y diseño del **prototipo launcher** + bridge launcher-side (IPC/API interna) |
+| **D9.0** | Primer endpoint local **acotado** / acción launcher equivalente (preflight u otra), con threat model mínimo |
+| **D10.0** | Gate de **detección MT5** (paths/presencia, política; **sin** ejecución) |
 
 Este documento debe revisarse antes de implementar **D5/D6** para no introducir payloads que parezcan “live ready” sin serlo.
 

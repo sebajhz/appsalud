@@ -35,6 +35,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D3.2 (solo desarrollo):** arranque coordinado MVP: `pnpm --filter @workspace/scripts mapazapp:dev-start` (desde `APP/`). Ejecuta el mismo preflight que D3.1, opcionalmente `pnpm --filter @workspace/api-server build`, luego `pnpm --filter @workspace/api-server start` con `PORT` y `NODE_ENV=development`, y el dashboard con `pnpm --filter @workspace/mapazapp dev -- --port …`. Prefijos `[api]` / `[dashboard]` en salida; Ctrl+C / SIGTERM intenta terminar **solo** los hijos creados por el script. **No** es launcher final, **no** abre MT5, **no** detecta bridge real, **no** habilita ejecución, **no** escribe archivos de log.
 - **D4.1 (solo documentación):** `APP/artifacts/mapazapp/docs/DASHBOARD_RUNTIME_ACTIONS_DESIGN.md` — diseño de **acciones futuras** del dashboard (Validar entorno, Iniciar Mapazapp, Validar CSV, Estado del sistema, MT5, logs, parada) y cómo deben enlazarse con launcher/API segura; **sin** implementación de botones ni endpoints.
 - **D5.1b (`@workspace/api-server`):** `GET /api/mapazapp/runtime/status` — snapshot read-only desde `@workspace/mapazapp-core` (`runtime-status.ts`); **`mockOnly` / `reviewOnly`**, ejecución deshabilitada; MT5/bridge **`not_configured`**; **sin** watcher, **sin** DB, **sin** WebSocket; **no** `POST`.
+- **D7.1 (solo documentación):** `APP/artifacts/mapazapp/docs/ACTION_BRIDGE_DESIGN.md` — diseño formal del **puente de acciones** dashboard ↔ API local / launcher (límites del browser, contrato conceptual `ActionResult`, gates de seguridad, notas de amenaza localhost, secuencia D7.2–D10.0); **sin** implementación de código, **sin** `POST`, **sin** launcher ejecutable.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
@@ -147,6 +148,8 @@ Ubicación y formato: por definir en implementación aprobada.
 | D4 | Prototipo launcher usuario |
 | D5 | Detección MT5 y validación de rutas |
 | D6 | Página o panel de **status** unificado |
+
+**Nota de alineación:** esa tabla es **orientativa histórica**. En el repo, **D3.x** cubre scripts dev, **D4/D5.1a** el modelo runtime TS, **D5.1b** el GET de estado, **D6.x** el panel dashboard. La secuencia **D7+** (puente de acciones y launcher) está unificada en [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) §11 y en [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) §16.
 
 ### D2 completado (solo diseño)
 
