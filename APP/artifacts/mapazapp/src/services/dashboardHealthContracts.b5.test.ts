@@ -3,6 +3,7 @@ import { createMockBacktestCampaignDataSource } from "./mockBacktestCampaignData
 import { createMockManualCampaignDataSource } from "./mockManualCampaignDataSource";
 import { createMockParameterGridDataSource } from "./mockParameterGridDataSource";
 import { createMockWalkForwardDataSource } from "./mockWalkForwardDataSource";
+import { createHttpRuntimeStatusDataSource } from "./runtimeStatusDataSource";
 
 function visitFiniteNumbers(value: unknown, onBad: (path: string, n: number) => void, path = "root"): void {
   if (value === null || value === undefined) return;
@@ -86,9 +87,12 @@ describe("B5 dashboard mock evidence data sources", () => {
     }
   });
 
-  it("F. Gap — dashboard evidence services do not expose runtimeStatus / mt5Status / bridgeStatus / launcherStatus", () => {
-    /** Live runtime, MT5 terminal detection, bridge process, and launcher are not modeled in dashboard service layer yet. */
-    expect(true).toBe(true);
+  it("F. Runtime status — D6.1 read-only HTTP data source exists; no dashboard panel, buttons, polling, or WebSocket", async () => {
+    /** `runtimeStatusDataSource.ts` integrates GET /api/mapazapp/runtime/status when `apiBaseUrl` is set; D6.2 UI panel and launcher wiring remain future work. */
+    const ds = createHttpRuntimeStatusDataSource();
+    const vm = await ds.getRuntimeStatus();
+    expect(vm.source).toBe("unavailable");
+    expect(vm.ok).toBe(false);
   });
 
   it("G. Gap — no formal shared empty/error-state factory for engine evidence snapshots (UI uses loaded mock only)", () => {

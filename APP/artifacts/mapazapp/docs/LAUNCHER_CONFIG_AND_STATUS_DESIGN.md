@@ -23,7 +23,7 @@ Documento **D2**: diseño formal **solo documentación**. No implementa launcher
 - La **API** se levanta **por separado** (`@workspace/api-server`); requiere variable de entorno **`PORT`** en runtime.
 - El **dashboard** se levanta **por separado** (`@workspace/mapazapp`, Vite); puerto por defecto típico **5173** si no se redefine `PORT`.
 - Existe **CLI** de validación local de CSV (**read-only**, sin persistencia): `mapazapp-import-validate`.
-- El dashboard usa principalmente **mocks in-process**; la API expone **health** y rutas **mock GET** bajo `/api/mapazapp/*`.
+- El dashboard usa principalmente **mocks in-process**; la API expone **health** y rutas **mock GET** bajo `/api/mapazapp/*`. El dashboard puede consumir el snapshot de runtime vía **`runtimeStatusDataSource`** (**D6.1**) cuando **`VITE_MAPAZAPP_API_BASE_URL`** esté configurada; sin esa URL el estado runtime en el cliente permanece **unavailable** / conservador.
 - **No** hay runtime MT5 integrado en Node/TS, **no** hay watcher de carpetas, **no** hay endpoint **real** de estado MT5/bridge operativo (rutas “operativas” futuras no deben simular “conectado”).
 - **No** hay base de datos operativa Mapazapp en el alcance actual descrito para este mock.
 - **No** hay supervisor de procesos unificado ni **logs centralizados de launcher** (la API usa logger propio, p.ej. pino).

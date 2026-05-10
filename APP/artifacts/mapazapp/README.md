@@ -126,6 +126,12 @@ The account selector in the top bar is a React `useState` — switching accounts
 
 ---
 
+## Optional env — API base for runtime status (D6.1)
+
+- **`VITE_MAPAZAPP_API_BASE_URL`** — optional origin for the Mapazapp API (e.g. `http://127.0.0.1:3001`). When unset, the dashboard **runtime status data source** reports **`unavailable`** / unknown conservative posture and does not call the network. Not required for current in-process mocks.
+
+---
+
 ## Mock Data Structure
 
 All mock data is in `src/mock/`. The single source of truth is `config.ts`.
