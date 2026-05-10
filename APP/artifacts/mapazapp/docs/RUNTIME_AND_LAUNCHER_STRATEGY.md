@@ -144,6 +144,11 @@ Ubicación y formato: por definir en implementación aprobada.
 | D5 | Detección MT5 y validación de rutas |
 | D6 | Página o panel de **status** unificado |
 
+### D2 completado (solo diseño)
+
+- Documento: **`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`** — esquema conceptual de configuración del launcher futuro, modelo de **runtime status** (`unknown`, `not_configured`, `not_checked`, `ok`, `error`, etc.), puertos, logs, modos runtime, reglas para **no simular** MT5/bridge real, y defaults de seguridad (`executionEnabled` false, etc.).
+- **No** hay implementación de launcher, scripts, API nueva ni código en D2; sirve de base antes de D3 (script dev) y D4+ (launcher usuario).
+
 ---
 
 ## 11. Non-goals

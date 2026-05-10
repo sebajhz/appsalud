@@ -109,6 +109,8 @@ Interpretation:
 14. V2-24 — Stabilization / Packaging Plan
 15. V2-25 — Assisted Execution Re-evaluation Gate
 
+**Nota D2 (previo a scripts/launcher en código):** diseño formal de config y runtime status en `APP/artifacts/mapazapp/docs/LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` (documentación únicamente); alinear implementación futura de V2-23 / launcher con ese diseño antes de exponer estados que parezcan conectividad real.
+
 ---
 
 ## 5) Checkpoint definitions (V2-11 through V2-25)

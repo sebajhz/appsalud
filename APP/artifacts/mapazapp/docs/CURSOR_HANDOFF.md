@@ -9,6 +9,10 @@
 - **A1 abierto (solo documentacion, sin codigo nuevo):** `APP/artifacts/mapazapp/docs/AUDIT_TESTING_MT5_LAUNCHER_A1.md`, `TESTING_AND_VALIDATION_STRATEGY.md`, `USER_MANUAL_MT5_SETUP.md`, `RUNTIME_AND_LAUNCHER_STRATEGY.md`, `MT5_DATA_INTEGRATION.md`.
 - **Queda pendiente de aprobacion explicita:** launcher unico, MT5 runtime automatico, watcher live, DB operativa Mapazapp, WebSocket live, ejecucion real.
 
+## Phase D — launcher preparation (documentation)
+
+- **D2 cerrado (solo docs):** `APP/artifacts/mapazapp/docs/LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` define configuración futura, modelo de estado runtime y reglas anti-simulación MT5/bridge; **no** implementa launcher ni código.
+
 ## V2-16 handoff update
 
 - Checkpoint: `V2-16 — Dashboard/API Connection Cleanup`.
