@@ -8,7 +8,7 @@
     "mapazapp:import-validate": "tsx ./src/mapazapp-import-validate.ts",
     "mapazapp:dev-preflight": "tsx ./src/mapazapp-dev-preflight.ts",
     "mapazapp:dev-start": "tsx ./src/mapazapp-dev-start.ts",
-    "test": "node --import tsx/esm --test src/mapazapp-import-validate.test.ts src/mapazapp-dev-preflight.test.ts src/mapazapp-dev-start.test.ts",
+    "test": "node --import tsx/esm --test src/mapazapp-import-validate.test.ts src/mapazapp-dev-preflight.test.ts src/mapazapp-dev-start.test.ts src/mapazapp-runtime-status.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

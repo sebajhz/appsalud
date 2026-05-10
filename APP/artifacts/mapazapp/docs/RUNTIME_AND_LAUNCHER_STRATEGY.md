@@ -159,6 +159,10 @@ Ubicación y formato: por definir en implementación aprobada.
 
 - Script: `pnpm --filter @workspace/scripts mapazapp:dev-start` — preflight + build/start API + Vite dashboard como procesos hijos con shutdown coordinado; **sin** `.exe` productivo, **sin** MT5 runtime, **sin** bridge real, **sin** ejecución.
 
+### D4 implementado (runtime status model TS puro)
+
+- Módulo: `APP/scripts/src/mapazapp-runtime-status.ts` — tipos y helpers **sin** I/O; alineado al diseño D2; **sin** endpoint API, **sin** UI, **sin** watcher/DB/WebSocket; los scripts D3.x **aún no** lo importan.
+
 ---
 
 ## 11. Non-goals

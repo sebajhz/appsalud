@@ -14,6 +14,7 @@
 - **D2 cerrado (solo docs):** `APP/artifacts/mapazapp/docs/LAUNCHER_CONFIG_AND_STATUS_DESIGN.md` define configuración futura, modelo de estado runtime y reglas anti-simulación MT5/bridge; **no** implementa launcher ni código.
 - **D3.1 cerrado (solo scripts package):** `pnpm --filter @workspace/scripts mapazapp:dev-preflight` — preflight dev (puertos/scripts + instrucciones PowerShell/Bash); **no** launcher, **no** procesos hijos, **no** MT5.
 - **D3.2 cerrado (solo scripts package):** `pnpm --filter @workspace/scripts mapazapp:dev-start` — preflight + build/start API + Vite dashboard (hijos); **no** launcher `.exe`, **no** MT5/bridge real, **no** ejecución.
+- **D4 cerrado (solo scripts package):** `APP/scripts/src/mapazapp-runtime-status.ts` — modelo runtime TypeScript puro + tests; **sin** endpoint, **sin** UI, **sin** probes MT5/bridge reales; D3.x aún no lo consume.
 
 ## V2-16 handoff update
 
