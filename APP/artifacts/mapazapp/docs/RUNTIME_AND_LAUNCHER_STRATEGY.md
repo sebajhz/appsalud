@@ -48,6 +48,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D9.11 (`@workspace/api-server`, solo tests):** `apiHardeningReadiness.d9.test.ts` — auditoría estática del baseline actual (sin wiring de bind/CORS) y placeholders **`skip`** para endurecimiento futuro; **sin** endpoints, **sin** cambios en `app.ts`/`index.ts`.
 - **D9.12 (`@workspace/api-server`, bootstrap):** `index.ts` usa modelo **D9.10** para host/puerto explícitos (loopback por defecto); **sin** cambiar CORS ni rutas Mapazapp ni **`POST`** de acciones.
 - **D9.12.1 (`@workspace/api-server`, adapter):** `GET /api/mapazapp/runtime/status` reporta **`api.url`** / **`api.port`** con la misma resolución de env que el bootstrap; **sin** cambiar rutas ni CORS.
+- **D9.13 (`@workspace/api-server`, CORS):** **`app.ts`** aplica allowlist de **`Origin`** vía **`apiCorsConfig`** (defaults Vite dev); **sin** token, **sin** **`POST`** de acciones.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

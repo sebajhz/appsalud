@@ -32,6 +32,7 @@
 | **Transport contract D9.6** | Minimum HTTP + IPC requirements, caller remapping, conceptual envelopes (**documentation**) |
 | **D9.11 readiness tests (`api-server`)** | **`apiHardeningReadiness.d9.test.ts`** — baseline/readiness audit vs **D9.10** model + skipped future expectations; **no** HTTP endpoint, **no** **`POST`**, **no** runtime wiring |
 | **D9.12 listen bootstrap (`api-server`)** | **`index.ts`** explicit **`listen(port, host)`** + **`apiListenConfig.d9.test.ts`** — loopback default; **not** action transport, **not** strict CORS |
+| **D9.13 CORS allowlist (`api-server`)** | **`apiCorsConfig.ts`** + integration tests — global allowlist; **not** action **`POST`**, **not** token |
 
 ### Does not exist yet
 
@@ -57,6 +58,8 @@ The following categories are **mandatory** for future transport work. Wording he
 ### 3.1 HTTP loopback transport tests
 
 **D9.12 (bootstrap only, no action transport):** the **`api-server`** entrypoint binds an explicit host (default **`127.0.0.1`**) and resolves port per **`MAPAZAPP_API_PORT`** / **`PORT`** / default **3001** — see **`apiListenConfig.d9.test.ts`** and **`apiHardeningReadiness.d9.test.ts`**. This satisfies only the **process listen** slice below; strict CORS, tokens, and **`POST`** action routes remain future work.
+
+**D9.13 (CORS baseline, still no action transport):** **`app.ts`** uses **`createCorsOptionsFromEnv`** — allowlisted **`Origin`** only (default **`http://127.0.0.1:5173`**, **`http://localhost:5173`**); no **`Origin`** still OK for curl/supertest; see **`apiCorsConfig.d9.test.ts`** and **`apiCorsIntegration.d9.test.ts`**. Per-route / token / **`POST`** transport tests (**D9.15** / **D9.16**) remain pending.
 
 Before any **`POST`** (or mutating HTTP method) for Mapazapp actions, tests must cover:
 

@@ -38,6 +38,7 @@
 - **D9.11 adds `APP/artifacts/api-server/src/config/apiHardeningReadiness.d9.test.ts`** — audit/readiness vitest (static baseline for listen/CORS/routes + **D9.10** validation + **`it.skip`** for future bind/CORS/token/action gates); **no** `app.ts`/`index.ts` changes, **no** endpoint/**`POST`**.
 - **D9.12 wires `APP/artifacts/api-server/src/index.ts`** — **`createApiHardeningConfigFromEnv`**, **`validateApiHardeningConfig`**, **`app.listen(port, host, …)`**; default host **`127.0.0.1`**, port **`3001`**; vitest **`apiListenConfig.d9.test.ts`** + readiness updates; **no** `app.ts` CORS changes, **no** token/**`POST`**, **no** Mapazapp route edits.
 - **D9.12.1 aligns `runtimeStatus` adapter** — **`buildRuntimeStatusPayload`** resolves **`api.url`** / **`api.port`** via **`createApiHardeningConfigFromEnv`** (same as **`index.ts`**); vitest **`mapazapp.runtime-status.d9.test.ts`**; **no** new routes, **no** `index.ts`/`app.ts` edits.
+- **D9.13 adds `apiCorsConfig.ts`** — **`cors(createCorsOptionsFromEnv())`** in **`app.ts`** (allowlist, no credentials, **`GET`/`HEAD`/`OPTIONS`**); vitest **`apiCorsConfig.d9.test.ts`**, **`apiCorsIntegration.d9.test.ts`**; **no** token/**`POST`**, **no** route edits.
 
 ## V2-16 handoff update
 

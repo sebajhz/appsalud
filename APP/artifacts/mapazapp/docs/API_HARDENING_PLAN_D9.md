@@ -25,7 +25,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 |-------|--------|
 | Framework | **Express** (`express()`), router mounted at **`/api`** (`app.ts` → `routes/index.ts`). |
 | Logging | **`pino-http`** enabled with trimmed serializers (method, URL path, status). |
-| CORS | **`app.use(cors())`** — **no** origin allowlist or credentials policy in code. |
+| CORS | **`D9.13`:** **`cors(createCorsOptionsFromEnv())`** — **allowlist** from **`allowedOrigins`** (default Vite dev origins); **no** credentials; **`GET`/`HEAD`/`OPTIONS`** only; requests **without** **`Origin`** still accepted for local tooling. |
 | Body parsers | **`express.json()`** and **`express.urlencoded({ extended: true })`** applied **globally**; **no** explicit `limit` in application code. |
 | Listen | **`D9.12`:** **`app.listen(port, host, …)`** in **`index.ts`** via **`createApiHardeningConfigFromEnv` / `validateApiHardeningConfig`** — default host **`127.0.0.1`**, default port **`3001`** if **`MAPAZAPP_API_PORT`** and **`PORT`** are unset. (**`0.0.0.0`** still discouraged; optional warning when used.) |
 | Auth / token | **None** for Mapazapp routes. |
@@ -45,7 +45,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | # | Area | Current state | Required before local action transport | Gap | Risk | Suggested checkpoint |
 |---|------|---------------|----------------------------------------|-----|------|----------------------|
 | 1 | Host / bind | **`D9.12` done:** explicit **`listen(port, host)`**; default **`127.0.0.1`** | Same loopback policy must hold when action transport ships — **D9.6** §4.1 / **D9.1** §6.1 | Optional **`0.0.0.0`** still broadens LAN exposure if set | LAN exposure if misconfigured | **D9.12** closed; revisit with transport (**D9.16**+) |
-| 2 | CORS | Permissive `cors()` | Strict allowlist for **action** routes; **no** `*` — **D9.6** §4.2 | Open CORS defaults | CSRF-style abuse combined with future **`POST`** | **D9.13** |
+| 2 | CORS | **`D9.13` done:** global **allowlist** (default dev origins); disallowed **`Origin`** gets **no** **`Access-Control-Allow-Origin`** | Stricter **per-route** stacks for future **action** **`POST`** may still be required — **D9.6** §4.2 | Transport **`POST`** not layered yet | CSRF + future **`POST`** | **D9.13** closed; tighten with transport (**D9.16**+) |
 | 3 | Auth / local token | None | Unguessable transport secret / capability — **D9.6** §4.3 | No token model | Drive-by requests to localhost | **D9.15** design; implement with transport |
 | 4 | CSRF | None | CSRF token or equivalent for browser-reachable actions — **D9.1** §6.3 | No mitigation | Cross-site triggering | **D9.15** + transport PR |
 | 5 | Body schema validation | N/A (no action body yet) | Per-**`actionId`** JSON schema at HTTP boundary — **D9.6** §4.5 | Not wired | Injection / arbitrary paths / commands | Action transport PR |
@@ -57,7 +57,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | 11 | ActionResult safety validation | Not on HTTP layer | **`assertActionResultSafety`** on every outward **`MapazappActionResult`** — **D9.6** §4.10 | Core helpers exist; HTTP not integrated | Unsafe payloads | Transport PR |
 | 12 | Private path redaction | Partial test coverage on select **`GET`** | Extend to new routes + logs — **D9.7** §3.6 | Policy not centralized | PII / path exfiltration | **D9.14** + transport tests |
 | 13 | POST route policy | No **`router.post`** in Mapazapp router | Explicit policy: **no** action **`POST`** until gates + hardening; allowlist only | Today “safe by absence”; future PRs need gate | “Escape hatch” endpoints | Doc + review checklist (**this doc**, **D9.6**) |
-| 14 | Tests | **`GET`** envelope + **no operational POST** + **D9.12** listen config tests | CORS, token, body limit, error handler tests — **D9.7** §8 | Strict CORS / transport tests still pending | Regressions undetected | **D9.11**–**D9.12** baseline → strengthen as code lands |
+| 14 | Tests | **`GET`** envelope + **no operational POST** + **D9.12** listen + **D9.13** CORS tests | Token, body limit, error handler tests — **D9.7** §8 | Transport-bound tests still pending | Regressions undetected | **D9.11**–**D9.13** baseline → strengthen as code lands |
 | 15 | Dev/prod separation | Weak explicit split | Documented env profiles; mock dev vs hardened transport mode | Ad-hoc **`NODE_ENV`** usage | Misconfigured prod-like exposure | **D9.10** model + README |
 | 16 | Logging | `pino-http` basics | Redaction policy for secrets/paths — **D9.6** §4.9 | No redactor config | Secrets in logs | **D9.14** |
 | 17 | Security headers | None specific | Baseline headers (CSP/HSTS etc.) **where appropriate** for local mock — **justify** per surface | No Helmet-style baseline | Clickjacking / MIME sniffing (lower on localhost, still worth design) | **D9.14** (optional subset) |
@@ -113,7 +113,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | **D9.11** | **`apiHardeningReadiness.d9.test.ts`** — readiness/audit tests — **no runtime change at merge** | Snapshot at **D9.11**: documented unwired bootstrap; superseded for **`index.ts`** by **D9.12** (see readiness test updates). |
 | **D9.12** | **Loopback bind implementation** — **`index.ts`** only — **no** action **`POST`** | **`createApiHardeningConfigFromEnv` + `validateApiHardeningConfig`**; **`app.listen(port, host, …)`**; default host **`127.0.0.1`**, port **`3001`**; **`apiListenConfig.d9.test.ts`** + readiness updates; README. **CORS / token / rate / body / global error handler unchanged.** |
 | **D9.12.1** | **Runtime status URL/port alignment** — **`mapazapp/adapters/runtimeStatus.ts`** only | **`buildRuntimeStatusPayload`** uses the same env bag resolution as bootstrap for **`api.url`** / **`api.port`**; **`mapazapp.runtime-status.d9.test.ts`**. **No** route/`app.ts`/`index.ts` changes. **CORS / token / rate / body / error handler still pending.** |
-| **D9.13** | **CORS allowlist implementation** — **no** action **`POST`** | Per-environment origins; keep mock **`GET`** working |
+| **D9.13** | **CORS allowlist** — **`apiCorsConfig.ts`** + **`app.ts`** wiring — **no** action **`POST`** | **`createCorsOptionsFromEnv`**; **`apiCorsConfig.d9.test.ts`**, **`apiCorsIntegration.d9.test.ts`**, readiness updates; **`MAPAZAPP_API_ALLOWED_ORIGINS`**. **Token / rate / body / global error handler still pending.** |
 | **D9.14** | **Error handler + body limit + log redaction baseline** (+ optional minimal security headers) | Safe JSON errors; explicit JSON/urlencoded limits |
 | **D9.15** | **Token / CSRF design + model** (optional pure types) | Doc + types; implementation ships with transport |
 | **D9.16** | **Action transport test skeletons** | Align filenames with **D9.7** §7 — **no** live endpoint until approved |

@@ -1,6 +1,6 @@
 /**
- * D9.11 / D9.12 — Readiness / audit tests: api-server baseline vs the D9.10 hardening model.
- * D9.12 wires `index.ts` to listen with an explicit loopback host by default; `app.ts` unchanged.
+ * D9.11 / D9.12 / D9.13 — Readiness / audit tests vs the D9.10 hardening model.
+ * D9.12: explicit listen host in `index.ts`. D9.13: CORS allowlist wired from `apiCorsConfig`.
  */
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
@@ -42,11 +42,13 @@ function readSrc(rel: keyof typeof paths): string {
 
 describe("D9 API hardening readiness (audit)", () => {
   describe("A — bootstrap wiring", () => {
-    it("app.ts does not import apiHardeningConfig; index.ts does", () => {
+    it("index.ts imports apiHardeningConfig; app.ts uses apiCorsConfig only", () => {
       const appSrc = readSrc("appTs");
       const indexSrc = readSrc("indexTs");
+      expect(appSrc.includes("config/apiHardeningConfig")).toBe(false);
       expect(appSrc.includes("apiHardeningConfig")).toBe(false);
-      expect(appSrc.includes("config/apiHardening")).toBe(false);
+      expect(appSrc.includes("./config/apiCorsConfig")).toBe(true);
+      expect(appSrc.includes("createCorsOptionsFromEnv")).toBe(true);
       expect(
         indexSrc.includes("createApiHardeningConfigFromEnv") ||
           indexSrc.includes("validateApiHardeningConfig"),
@@ -64,11 +66,12 @@ describe("D9 API hardening readiness (audit)", () => {
     });
   });
 
-  describe("C — current CORS is global default cors() (baseline)", () => {
-    it("documents permissive default middleware until D9.13 adds allowlist", () => {
+  describe("C — CORS allowlist wired (D9.13)", () => {
+    it("app.ts uses createCorsOptionsFromEnv(), not bare cors()", () => {
       const appSrc = readSrc("appTs");
-      expect(appSrc).toMatch(/app\.use\(\s*cors\s*\(\s*\)\s*\)/);
-      expect(appSrc.includes("MAPAZAPP_API_ALLOWED_ORIGINS")).toBe(false);
+      expect(appSrc).not.toMatch(/app\.use\(\s*cors\s*\(\s*\)\s*\)/);
+      expect(appSrc).toMatch(/app\.use\(\s*cors\s*\(\s*createCorsOptionsFromEnv\s*\(\s*\)\s*\)\s*\)/);
+      expect(appSrc).not.toMatch(/origin\s*:\s*["']\*["']/);
     });
   });
 
@@ -123,10 +126,6 @@ describe("D9 API hardening readiness (audit)", () => {
   });
 
   describe("G — future expectations (skipped until implemented)", () => {
-    it.skip("D9.13 future: reject browser Origin not in MAPAZAPP_API_ALLOWED_ORIGINS for action routes", () => {
-      /* Implemented in D9.13 — requires CORS middleware change */
-    });
-
     it.skip("D9.15 future: reject mutating action request without transport token", () => {
       /* Implemented when action transport + token middleware ship */
     });
