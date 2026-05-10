@@ -42,6 +42,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D9.3 (dispatcher interno scripts):** `APP/scripts/src/mapazapp-launcher-action-dispatcher.ts` — `dispatchLauncherAction` integra gates + única ejecución interna **`validate_environment`** vía puente D8.3; tests node:test; **sin** transporte HTTP/IPC, **sin** entrada CLI nueva, **sin** spawn.
 - **D9.4.1:** mismo dispatcher — errores de preflight y cargas **`ActionResult`** inseguras se convierten en respuestas **`ActionResult`** seguras (sin exponer trazas ni rutas); **sin** transporte HTTP/IPC ni cambios en API/dashboard.
 - **D9.6 (solo documentación):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md` — contrato formal de transporte futuro (HTTP loopback, IPC launcher-side, remapeo de caller, envelopes, política por clase de acción, tests obligatorios); **sin** `POST`, **sin** IPC real, **sin** código.
+- **D9.7 (solo documentación):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md` — plan de tests de seguridad obligatorio antes de implementar transporte (HTTP, IPC, allowlist, replay/límites, esquema, `ActionResult`, privacidad, ownership, cliente dashboard); **sin** tests TS, **sin** endpoint, **sin** `POST`.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

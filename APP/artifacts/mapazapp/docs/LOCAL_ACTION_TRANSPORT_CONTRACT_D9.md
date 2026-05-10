@@ -2,7 +2,7 @@
 
 **Checkpoint D9.6 — documentation only.** No `POST` action endpoints, no HTTP action transport implementation, no IPC implementation, no dashboard operational buttons, no product launcher executable, no MT5 runtime automation, no folder watchers, no operational database, no WebSocket live feeds, no polling loop for actions, no `localStorage` action state, no `spawn`, no `child_process`, no real execution or trading.
 
-**Related:** [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — threats + mandatory mitigations), [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1 — bridge roles), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (D8.1 — launcher-side bridge intent), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
+**Related:** [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — threats + mandatory mitigations), [`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md) (**D9.7** — safety test plan before transport — **docs only**), [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1 — bridge roles), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (D8.1 — launcher-side bridge intent), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
 
 ---
 
@@ -294,13 +294,13 @@ Responses must carry a safe **`MapazappActionResult`** (embedded or as the sole 
 | Step | Checkpoint | Intent |
 |------|------------|--------|
 | **D9.6** | **Transport contract (this doc)** — **docs only** | Formal requirements before any transport code |
-| **D9.7** | Transport **safety test plan** docs and/or shared **test-fixture constants** — **no endpoint** | Reusable acceptance criteria for future HTTP/IPC PRs |
+| **D9.7** | Transport **safety test plan** — [`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md) — **docs only**; **no** TS tests here | Acceptance criteria + mandatory test categories before transport PRs |
 | **D9.8** | Optional **API hardening audit** (bind / CORS / headers) — **still no action `POST`** | Align **existing** dev server posture with **D9.1** §6.1–2 where feasible |
 | **D10.0** | MT5 **detection** gate audit — **docs + policy** | Before MT5 probes |
 | **D10.1** | MT5 **config validator** model — **no launch** | Path/presence policy only |
 | **D10.2** | Optional **`open_mt5`** design — **launcher-only**, explicit consent | No implementation until approved |
 
-**Rationale:** **D9.7** separates **test obligations** from **D9.6** contract prose so implementers can open a PR with a checklist. **D9.8** addresses **baseline HTTP posture** without conflating it with action `POST`. Sequence remains **guidance** — explicit approval required before coding each step.
+**Rationale:** **D9.7** ([`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md)) separates **test obligations** from **D9.6** contract prose so implementers can open a PR with a checklist. **D9.8** addresses **baseline HTTP posture** without conflating it with action `POST`. Sequence remains **guidance** — explicit approval required before coding each step.
 
 ---
 
@@ -322,4 +322,4 @@ D9.6 **does not** implement or authorize implementation of:
 
 ## Document history
 
-- **D9.6** — Transport contract (**documentation only**): HTTP loopback + IPC minimums, caller remapping, conceptual envelopes, action-class policy, testing obligations, recommended **D9.7** / **D9.8** / **D10.x** sequence.
+- **D9.6** — Transport contract (**documentation only**): HTTP loopback + IPC minimums, caller remapping, conceptual envelopes, action-class policy, testing obligations, recommended **D9.7** ([`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md)) / **D9.8** / **D10.x** sequence.

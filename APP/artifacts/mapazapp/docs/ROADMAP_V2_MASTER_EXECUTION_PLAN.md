@@ -119,6 +119,8 @@ Interpretation:
 
 **Nota D9.6 (contrato de transporte, solo docs):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md` define requisitos mínimos para transporte HTTP loopback e IPC launcher-side, reglas de remapeo de caller (`validate_environment` solo en contexto launcher/script autorizado), envelopes conceptuales y política por clase de acción; **sin** implementación de `POST`, IPC, botones ni launcher.
 
+**Nota D9.7 (plan de tests de transporte, solo docs):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md` documenta categorías de pruebas obligatorias y criterios de aceptación antes del primer `POST` de acciones o IPC real; **sin** tests TypeScript, **sin** endpoint ni cambios de API en este checkpoint.
+
 ---
 
 ## 5) Checkpoint definitions (V2-11 through V2-25)

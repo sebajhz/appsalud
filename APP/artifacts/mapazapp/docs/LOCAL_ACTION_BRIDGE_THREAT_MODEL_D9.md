@@ -2,7 +2,7 @@
 
 **Checkpoint D9.1 — documentation only.** No `POST` action endpoints, no dashboard operational buttons, no product launcher executable, no IPC transport, no MT5 runtime automation, no folder watchers, no operational database, no WebSocket live feeds, no polling loop for actions, no `localStorage` action state, no `spawn`, no `child_process`, no real execution or trading.
 
-**Related:** [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1 — bridge contract), [`LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`](./LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md) (**D9.6** — formal transport contract before HTTP/IPC/buttons), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (D8.1 — launcher + launcher-side bridge intent), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (D2), [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (D4.1 — action IDs), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
+**Related:** [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1 — bridge contract), [`LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`](./LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md) (**D9.6** — formal transport contract before HTTP/IPC/buttons), [`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md) (**D9.7** — safety test plan — **docs only**), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) (D8.1 — launcher + launcher-side bridge intent), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (D2), [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (D4.1 — action IDs), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
 
 ---
 
@@ -219,7 +219,7 @@ The gate layer validates, among other things:
 | **D9.4** | Dispatcher audit / hardening (**D9.4.0** audit + **D9.4.1** safe error paths) — **still no transport** | Optional ergonomics; still no browser **`POST`** |
 | **D9.5** | API / IPC **transport** audit — **docs only** | Compare HTTP loopback vs launcher IPC vs internal-only posture |
 | **D9.6** | **Transport contract** — [`LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`](./LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md) — **docs only** | Minimum HTTP + IPC requirements, caller rules, envelopes, tests — **no `POST`/IPC code** |
-| **D9.7** | Transport **safety test plan** docs / shared fixtures — **no endpoint** | Acceptance checklist before transport implementation PRs |
+| **D9.7** | Transport **safety test plan** — [`LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`](./LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md) — **docs only**; **no** TS tests in this checkpoint | Acceptance checklist + mandatory test categories before transport implementation PRs |
 | **D10.0** | MT5 detection gate audit | Docs + policy before probes |
 | **D10.1** | MT5 config validator — **no launch** | Path/presence policy only |
 | **D10.2** | Optional **`open_mt5`** gated prototype | Launcher-only, explicit consent |

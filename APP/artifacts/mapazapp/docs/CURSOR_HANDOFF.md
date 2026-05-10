@@ -32,6 +32,7 @@
 - **D9.3 adds `APP/scripts/src/mapazapp-launcher-action-dispatcher.ts`** — `dispatchLauncherAction` (default caller **launcher**): D9.2 gates + **only** **`validate_environment`** → D8.3 preflight; node:test `mapazapp-launcher-action-dispatcher.test.ts`; **no** HTTP/IPC/CLI entry, **no** spawn.
 - **D9.4.1 hardens `dispatchLauncherAction`** — preflight throws and unsafe preflight **`ActionResult`** payloads become safe **`MapazappActionResult`** (conservative **`safety`**, no stack leakage); **still no** HTTP/IPC, **no** API/dashboard changes.
 - **D9.6 adds `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`** — formal **transport contract** (HTTP/IPC minimums, **`evaluateActionGate`** + **`dispatchLauncherAction`** integration rules, caller remapping, test obligations); **documentation only** — **no** `POST`, **no** IPC, **no** launcher/buttons/TSX.
+- **D9.7 adds `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`** — transport **safety test plan** (categories, fixture policy, acceptance before first `POST` / IPC); **documentation only** — **no** TS tests, **no** endpoint.
 
 ## V2-16 handoff update
 
