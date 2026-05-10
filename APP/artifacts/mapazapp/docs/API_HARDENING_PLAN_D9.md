@@ -109,7 +109,7 @@ Observed from **`APP/artifacts/api-server`** (see **D9.8**):
 | Step | Checkpoint | Intent |
 |------|------------|--------|
 | **D9.9** | **API hardening plan** (this doc) — **docs only** | Baseline gaps, env contract, risks, test expectations |
-| **D9.10** | **API hardening config model** — **pure TS**, no `app.ts` wiring | Typed config defaults + validation helpers only |
+| **D9.10** | **API hardening config model** — **`APP/artifacts/api-server/src/config/apiHardeningConfig.ts`** + **`apiHardeningConfig.d9.test.ts`** — **pure TS**, **no `app.ts` / `index.ts` wiring** | **Implemented:** defaults, env parsing (`createApiHardeningConfigFromEnv`), `validateApiHardeningConfig`, normalize/parse helpers — runtime unchanged |
 | **D9.11** | **Bind/CORS audit tests or test skeletons** — **no behavior change** | Document expected future behavior (`skip`/`todo` ok) |
 | **D9.12** | **Loopback bind implementation** — **no** action **`POST`** | `listen` host from config; update README/scripts as needed |
 | **D9.13** | **CORS allowlist implementation** — **no** action **`POST`** | Per-environment origins; keep mock **`GET`** working |
@@ -186,3 +186,4 @@ D9.9 **does not** implement or authorize implementation of:
 ## Document history
 
 - **D9.9** — API hardening plan (**documentation only**): gap table, env contract proposal, implementation sequence **D9.10**–**D9.16**, risks, conceptual tests, decision log.
+- **D9.10** — Pure **`api-server`** config module (**no wiring**): types + safe defaults + validation + env bag parsing; **`ApiErrorExposurePolicy`** uses **`raw_stack_default_dev`** (avoids embedding framework product names in static governance scans).

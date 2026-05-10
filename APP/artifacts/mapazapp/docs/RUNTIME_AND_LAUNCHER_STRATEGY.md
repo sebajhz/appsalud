@@ -44,6 +44,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D9.6 (solo documentación):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md` — contrato formal de transporte futuro (HTTP loopback, IPC launcher-side, remapeo de caller, envelopes, política por clase de acción, tests obligatorios); **sin** `POST`, **sin** IPC real, **sin** código.
 - **D9.7 (solo documentación):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md` — plan de tests de seguridad obligatorio antes de implementar transporte (HTTP, IPC, allowlist, replay/límites, esquema, `ActionResult`, privacidad, ownership, cliente dashboard); **sin** tests TS, **sin** endpoint, **sin** `POST`.
 - **D9.9 (solo documentación):** `APP/artifacts/mapazapp/docs/API_HARDENING_PLAN_D9.md` — plan formal de endurecimiento del `api-server` (brechas, variables de entorno propuestas, secuencia D9.10–D9.16, riesgos, tests conceptuales); **sin** cambios a `app.ts`, CORS, bind, token ni **`POST`**.
+- **D9.10 (`@workspace/api-server`, modelo TS puro):** `APP/artifacts/api-server/src/config/apiHardeningConfig.ts` — defaults seguros, parsing de env vía objeto, validación (`validateApiHardeningConfig`); tests `apiHardeningConfig.d9.test.ts`; **sin** wiring a `app.ts`/`index.ts`, **sin** cambiar comportamiento del servidor en ejecución.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
