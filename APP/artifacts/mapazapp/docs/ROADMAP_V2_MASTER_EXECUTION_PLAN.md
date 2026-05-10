@@ -121,6 +121,8 @@ Interpretation:
 
 **Nota D9.7 (plan de tests de transporte, solo docs):** `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md` documenta categorías de pruebas obligatorias y criterios de aceptación antes del primer `POST` de acciones o IPC real; **sin** tests TypeScript, **sin** endpoint ni cambios de API en este checkpoint.
 
+**Nota D9.9 (plan de endurecimiento API, solo docs):** `APP/artifacts/mapazapp/docs/API_HARDENING_PLAN_D9.md` ordena brechas del `api-server`, variables/config propuestas, secuencia **D9.10–D9.16** y riesgos antes de cualquier transporte/`POST` de acciones; **sin** modificar código, CORS, bind ni token en este checkpoint.
+
 ---
 
 ## 5) Checkpoint definitions (V2-11 through V2-25)

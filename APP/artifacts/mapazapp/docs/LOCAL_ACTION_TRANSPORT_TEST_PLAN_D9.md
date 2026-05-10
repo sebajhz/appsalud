@@ -2,7 +2,7 @@
 
 **Checkpoint D9.7 — documentation only.** No TypeScript test files, no `POST` action endpoints, no HTTP action transport implementation, no IPC implementation, no dashboard operational buttons, no product launcher executable, no MT5 runtime automation, no folder watchers, no operational database, no WebSocket live feeds, no polling loop for actions, no `localStorage` action state, no `spawn`, no `child_process`, no real execution or trading.
 
-**Related:** [`LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`](./LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md) (**D9.6** — formal transport contract before implementation), [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — threats + mandatory mitigations), [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
+**Related:** [`LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`](./LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md) (**D9.6** — formal transport contract before implementation), [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md) (**D9.1** — threats + mandatory mitigations), [`API_HARDENING_PLAN_D9.md`](./API_HARDENING_PLAN_D9.md) (**D9.9** — API hardening plan & sequence **D9.10+** — **docs only**), [`ACTION_BRIDGE_DESIGN.md`](./ACTION_BRIDGE_DESIGN.md) (D7.1), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
 
 ---
 
@@ -237,8 +237,9 @@ Checklist (must be **true in code + tests** before real IPC for actions):
 | Step | Checkpoint | Intent |
 |------|------------|--------|
 | **D9.7** | **Transport safety test plan** (this doc) — **docs only** | Acceptance criteria + test categories before transport code |
-| **D9.8** | **API hardening audit** for bind / CORS / headers — **still no action `POST`** | Align baseline dev server posture with **D9.1** §6.1–2 where feasible |
-| **D9.9** | **Transport test skeletons only** — **no endpoint** | Empty or smoke scaffolding aligned to §7 names — **no** live transport |
+| **D9.8** | **API hardening audit** for bind / CORS / headers — **still no action `POST`** | Baseline **`api-server`** posture reviewed (**may leave no repo edits**) |
+| **D9.9** | **API hardening plan** — [`API_HARDENING_PLAN_D9.md`](./API_HARDENING_PLAN_D9.md) — **docs only** | Gap table, env contract proposal, ordered **D9.10–D9.16** before changing `app.ts` |
+| **D9.10**–**D9.16** | Per [`API_HARDENING_PLAN_D9.md`](./API_HARDENING_PLAN_D9.md) §6 | Config TS → audit/skeleton tests → loopback bind → CORS → errors/body/logs → token/CSRF design → **action transport test skeletons** (**D9.16**) |
 | **D10.0** | **MT5 detection gate audit** | Policy before probes |
 | **D10.1** | **MT5 config validator model** — **no launch** | Path/presence policy only |
 | **D10.2** | Optional **`open_mt5` design** — **no implementation** | Launcher-only future |
@@ -249,7 +250,7 @@ Checklist (must be **true in code + tests** before real IPC for actions):
 
 D9.7 **does not** implement or authorize implementation of:
 
-- **TypeScript tests** (files remain future work; **D9.9** may add skeletons only when approved)
+- **TypeScript tests** (files remain future work; **D9.16** per [`API_HARDENING_PLAN_D9.md`](./API_HARDENING_PLAN_D9.md) §6 may add transport test skeletons only when approved)
 - **`POST`** action routes or generic “run command” APIs
 - **New endpoint** or API surface changes
 - **CORS** behavior changes (documented expectations only)
@@ -266,4 +267,4 @@ D9.7 **does not** implement or authorize implementation of:
 
 ## Document history
 
-- **D9.7** — Transport safety test plan (**documentation only**): mandatory test categories, fixture policy, acceptance checklists before HTTP **`POST`** and before IPC, suggested future test filenames, sequence **D9.8+**.
+- **D9.7** — Transport safety test plan (**documentation only**): mandatory test categories, fixture policy, acceptance checklists before HTTP **`POST`** and before IPC, suggested future test filenames, sequence **D9.8+**; align post-D9.9 steps with [`API_HARDENING_PLAN_D9.md`](./API_HARDENING_PLAN_D9.md).

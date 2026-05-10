@@ -33,6 +33,7 @@
 - **D9.4.1 hardens `dispatchLauncherAction`** — preflight throws and unsafe preflight **`ActionResult`** payloads become safe **`MapazappActionResult`** (conservative **`safety`**, no stack leakage); **still no** HTTP/IPC, **no** API/dashboard changes.
 - **D9.6 adds `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_CONTRACT_D9.md`** — formal **transport contract** (HTTP/IPC minimums, **`evaluateActionGate`** + **`dispatchLauncherAction`** integration rules, caller remapping, test obligations); **documentation only** — **no** `POST`, **no** IPC, **no** launcher/buttons/TSX.
 - **D9.7 adds `APP/artifacts/mapazapp/docs/LOCAL_ACTION_TRANSPORT_TEST_PLAN_D9.md`** — transport **safety test plan** (categories, fixture policy, acceptance before first `POST` / IPC); **documentation only** — **no** TS tests, **no** endpoint.
+- **D9.9 adds `APP/artifacts/mapazapp/docs/API_HARDENING_PLAN_D9.md`** — API **hardening plan** (gap table, env contract proposal, sequence **D9.10+** before `app.ts`/action `POST`); **documentation only** — **no** API code, **no** CORS/bind/token.
 
 ## V2-16 handoff update
 
