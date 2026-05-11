@@ -4,6 +4,8 @@
 
 **Plan de referencia:** [`DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md) (**D12.5**). **Run API + dashboard previo (contexto HTTP):** [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**, commit **`63f39eb`**).
 
+**Segundo intento (D12.8, commit `0f1362a`):** mismo patrón de evidencia **parcial** (HTTP/CORS/logs/cleanup **OK**; sin cierre visual humano por el agente). Evidencia formal: [`DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md) (**D12.9**). Cierre visual humano ⇒ **D12.10** (ver plan §8 y handoff).
+
 ---
 
 ## 1. Purpose
