@@ -9,7 +9,7 @@ Aclaraciones:
 - **D13.5** implementó y ejecutó el supervisor de **dos procesos** (API en **3001**, dashboard Vite en **5173**), con preflight, builds, comprobaciones HTTP/CORS, cleanup ordenado y salida JSON segura.
 - **D13.6** (este documento) **solo archiva evidencia** en el repositorio; **no** ejecuta API, dashboard, supervisor, MT5 ni ningún otro proceso.
 
-**Relacionado:** [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.4** diseño / **D13.5** implementación), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3** — patrón API-only y lección de ownership).
+**Relacionado:** [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.4** diseño / **D13.5** implementación), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3** — patrón API-only y lección de ownership), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7** — compuerta siguiente **packaging / runtime**).
 
 ---
 
@@ -137,12 +137,14 @@ En el alcance de este run y de **D13.5**/**D13.6**:
 
 ## 10. Recommendation
 
-**Recomendación:** **D13.7 — Packaging/runtime decision gate** (en lugar de una revisión de evidencia separada antes de decidir packaging).
+**D13.7** quedó documentado en [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) — **compuerta de decisión** packaging/runtime **sin** implementación ni procesos en ese checkpoint.
 
-**Justificación breve:**
+**Siguiente recomendado:** **D13.8 — Supervisor hardening / evidence polish plan, no implementation** (plan explícito de logs, timeouts, envelopes, JSON de evidencia y criterios de aceptación **antes** de diseño de empaquetado **D13.9**).
+
+**Justificación breve (contexto D13.6 → D13.7):**
 
 - El supervisor **API-only** quedó validado (**D13.2** / evidencia **D13.3**).
 - El supervisor **API + dashboard** quedó validado (**D13.5** / evidencia **D13.6**).
 - La etapa **D13** ya consolidó **supervisión local controlada** en ambos modos.
 - El **próximo salto** razonable **no** debería ser MT5 ni **`POST`** todavía sin nuevas compuertas.
-- Corresponde **decidir packaging**, launcher real o **endurecimiento** antes de ampliar el **runtime** operativo.
+- **D13.7** formaliza **secuencia** endurecimiento → **diseño packaging** → **gate ejecutable** (**D14.0**), alineado a **D11.0**.

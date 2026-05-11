@@ -10,6 +10,8 @@
 
 **D13.2:** script `mapazapp:api-only-supervisor` en `@workspace/scripts` — primer **supervisor ejecutable API-only** (build + start `api-server`, verificación GET, stop hijo propio); **sin** `.exe`; `spawn` acotado al módulo del supervisor.
 
+**D13.7:** [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) — **retoma** el hilo de empaquetado / launcher de **esta auditoría (D11.0)** con **evidencia real** de supervisión (**D13.3** API-only, **D13.6** API+dashboard); fija **opciones**, **riesgos** y **secuencia recomendada** antes de cualquier **`.exe`**; **sin** implementación en ese checkpoint.
+
 **Declaración explícita (D11.0):** este documento **no** genera `.exe`, **no** lanza procesos del SO, **no** usa `spawn`, **no** abre ni controla MT5, **no** define instalador ni firma de binarios.
 
 ---
