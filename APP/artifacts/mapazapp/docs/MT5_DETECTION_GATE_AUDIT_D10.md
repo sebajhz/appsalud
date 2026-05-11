@@ -135,3 +135,13 @@ Si en el futuro se requiere detección automática del ejecutable o del data fol
 | **D10.6** | `APP/scripts/src/mapazapp-mt5-bridge-readiness.ts` — modelo TS de readiness de carpeta bridge (**sin** watcher, **sin** escritura; deps opcionales; wording **ready for read-only validation**) |
 | **D10.7** | [`MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md`](./MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md) — límites del discovery read-only BridgeEA/TestEA; **sin** filesystem real obligatorio en core |
 
+---
+
+## 14. Seguimiento D10.8–D10.10 (metadata, UI copy, readiness E2E)
+
+| Checkpoint | Entrega |
+|------------|---------|
+| **D10.8** | `APP/scripts/src/mapazapp-bridge-sample-metadata.ts` — metadata read-only de muestras BridgeEA/TestEA (**sin** `fs`, **sin** watcher) |
+| **D10.9** | Dashboard `Mt5ConfigStatusPanel` / `mt5ConfigStatusPresenter` — copy read-only reforzado; **sin** acciones |
+| **D10.10** | [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md) — auditoría consolidada antes de runtime live; propuesta **D11.0–D11.3** |
+

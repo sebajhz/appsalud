@@ -27,8 +27,9 @@ export function Mt5ConfigStatusPanel() {
     <Card className="border-slate-800 bg-card" data-testid="mt5-config-status-panel">
       <CardHeader className="pb-2">
         <CardTitle className="text-base text-slate-100">{MT5_CONFIG_STATUS_PANEL_TITLE}</CardTitle>
-        <CardDescription className="text-xs text-slate-400 leading-relaxed">
-          {vm.bullets[0]}
+        <CardDescription className="text-xs text-slate-400 leading-relaxed space-y-1">
+          <span className="block">{vm.bullets[0]}</span>
+          <span className="block text-slate-500">{vm.bullets[1]}</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-0">
@@ -49,7 +50,7 @@ export function Mt5ConfigStatusPanel() {
           ))}
         </dl>
         <ul className="list-disc pl-4 space-y-1 text-[11px] text-slate-400 leading-relaxed">
-          {vm.bullets.slice(1).map((line) => (
+          {vm.bullets.slice(2).map((line) => (
             <li key={line}>{line}</li>
           ))}
         </ul>

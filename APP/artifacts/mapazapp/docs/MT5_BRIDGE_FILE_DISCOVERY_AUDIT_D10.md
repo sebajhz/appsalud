@@ -2,7 +2,7 @@
 
 **Checkpoint D10.7 — documentación + límites.** Describe cómo **podría** implementarse el descubrimiento de archivos relacionados con BridgeEA/TestEA **solo lectura**, sin watcher, sin rutas reales por defecto y sin integración productiva.
 
-**Relacionado:** [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md), [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md) (D10.5), **`mapazapp-mt5-bridge-readiness.ts`** (D10.6), fuentes MQL5 bajo `APP/artifacts/mt5/experts/`.
+**Relacionado:** [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md), [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md) (D10.5), **`mapazapp-mt5-bridge-readiness.ts`** (D10.6), **`mapazapp-bridge-sample-metadata.ts`** (D10.8 — metadata read-only de basenames/snippets), [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md) (D10.10), fuentes MQL5 bajo `APP/artifacts/mt5/experts/`.
 
 ---
 
@@ -70,6 +70,11 @@ Nada de lo anterior es una carpeta **runtime** del terminal del usuario.
 
 - `evaluateMt5BridgeReadiness` formaliza **postura**: `not_configured`, `ready` (**solo** “ready for read-only validation”), `missing`, `invalid`, `unsafe`, `unknown`.
 - Encaja como capa **previa** a parsers: primero política + presencia de nombres esperados con **deps inyectadas**; luego validación de contenido en memoria.
+
+## 8b. Relación con D10.8 (sample metadata)
+
+- `createBridgeSampleMetadata` clasifica **basenames** y snippets **en memoria** (`sanitized_sample` para fixtures conocidos del repo) — **no** filesystem, **no** “bridge connected”.
+- Complementa el discovery conceptual de §5 sin sustituir lectura launcher-side futura.
 
 ---
 

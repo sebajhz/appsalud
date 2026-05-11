@@ -62,6 +62,9 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D10.5 (solo documentación):** [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md) — política de almacenamiento/config MT5 futura; **sin** persistencia real, **sin** `localStorage`.
 - **D10.6 (`@workspace/scripts`):** **`mapazapp-mt5-bridge-readiness.ts`** + tests — readiness conceptual de carpeta bridge (**sin** watcher, **sin** escritura; deps opcionales); wording **ready for read-only validation**, no “connected”.
 - **D10.7 (solo documentación):** [`MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md`](./MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md) — límites del discovery read-only BridgeEA/TestEA; **sin** filesystem real obligatorio en el núcleo reusable.
+- **D10.8 (`@workspace/scripts`):** **`mapazapp-bridge-sample-metadata.ts`** + tests — metadata read-only de muestras BridgeEA/TestEA (**sin** `fs`, **sin** watcher); rechaza tokens de API de trading y riesgos de command files en snippets **opcionales**.
+- **D10.9 (`@workspace/mapazapp`):** copy/presentación **`Mt5ConfigStatusPanel`** — fortalece disclaimers obligatorios; **sin** acciones nuevas.
+- **D10.10 (solo documentación):** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md) — readiness consolidado antes de runtime live; propone **D11.0–D11.3**.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

@@ -49,6 +49,7 @@
 - Dashboard **operational buttons** for host control actions  
 - Implementación de **`open_mt5`** — ver diseño **D10.2** [`MT5_OPEN_ACTION_DESIGN_D10.md`](./MT5_OPEN_ACTION_DESIGN_D10.md) (launcher futuro + gates + token; **sin** código en ese checkpoint)
 - **Archivo de config MT5/bridge persistido en runtime de producto** — decisión **D10.5** [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md) (por ahora modelo en memoria + docs; futuro: config local fuera del repo cargada por launcher)
+- **Readiness end-to-end antes de runtime live** — **D10.10** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md) (checklists launcher/watcher/`open_mt5`/acciones/transporte; propuesta **D11.0–D11.3**)
 
 ---
 
