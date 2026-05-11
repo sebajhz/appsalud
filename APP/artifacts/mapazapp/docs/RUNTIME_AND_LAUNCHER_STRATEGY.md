@@ -79,7 +79,8 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D12.1 (solo documentación):** [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) — evidencia formal del run D12.0.
 - **D12.2 (solo documentación):** [`API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md`](./API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md) — plan del run supervisado **API + dashboard** (puertos 3001/5173, pre-run, evidencia, cleanup); **sin** ejecutar procesos en el cierre de D12.2.
 - **D12.3–D12.4:** primer run real **API + dashboard** supervisado **OK** sobre commit **`63f39eb`**; evidencia [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**).
-- **D12.5 (solo documentación):** [`DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md) — plan de verificación **visual/humana** post-D12.3 (**sin** ejecutar API/dashboard en D12.5); ejecución ⇒ **D12.6** aprobada.
+- **D12.5 (solo documentación):** [`DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md) — plan de verificación **visual/humana** post-D12.3 (**sin** ejecutar API/dashboard en D12.5); ejecución acotada ⇒ **D12.6** aprobada.
+- **D12.6–D12.7:** run de verificación dashboard **limitado por entorno** sobre **`955f41a`** (HTTP/logs/CORS **OK**; sin DOM/consola humana); evidencia [`DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.7**); cierre visual ⇒ **D12.8** propuesto.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

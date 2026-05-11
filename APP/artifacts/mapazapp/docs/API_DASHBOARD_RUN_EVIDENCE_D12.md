@@ -4,6 +4,8 @@
 
 **Plan de referencia:** [`API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md`](./API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md) (**D12.2**). **Compuerta:** [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**).
 
+**Seguimiento visual post-D12.4:** el run **D12.6** (commit base **`955f41a`**) repitió API + dashboard con foco en verificación ampliada; el entorno no permitió inspección visual interactiva. Evidencia formal y límites (HTTP 200 ≠ UI verificada): [`DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.7**).
+
 ---
 
 ## 1. Purpose
