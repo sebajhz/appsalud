@@ -2,7 +2,7 @@
 
 **Checkpoint D11.0 — solo documentación.** Audita el salto desde **scripts de desarrollo** y **modelos TS puros** hacia un **launcher productivo empaquetable**, **sin** implementar ejecutable, **sin** `spawn` / `child_process` en el alcance de este documento, **sin** lanzar MT5 y **sin** generar `.exe` o instalador.
 
-**Relacionado:** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md) (plan dry-run desarrollador).
+**Relacionado:** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md).
 
 **Declaración explícita (D11.0):** este documento **no** genera `.exe`, **no** lanza procesos del SO, **no** usa `spawn`, **no** abre ni controla MT5, **no** define instalador ni firma de binarios.
 
@@ -22,6 +22,8 @@
 | `mapazapp-mt5-bridge-readiness.ts` | Readiness de carpeta bridge (deps opcionales). |
 | `GET /api/mapazapp/runtime/status` | Snapshot read-only; sin probes MT5 “live” como producto. |
 | Dashboard + `RuntimeStatusPanel` | Lectura one-shot; sin botones operativos de host. |
+| `mapazapp-launcher-process-lifecycle.ts` (**D11.4**) | Ciclo de vida hijo **declarativo**; **sin** APIs de proceso del SO. |
+| `mapazapp-launcher-ownership-model.ts` (**D11.5**) | Instancia / ownership de puertos **simulado** con deps; **sin** lockfile ni bind real. |
 
 ---
 
@@ -147,4 +149,14 @@
 
 ## 17. Conclusión
 
-El repositorio dispone de **cimientos sólidos en modelos y scripts de desarrollo**, pero el **launcher empaquetable** sigue siendo trabajo **posterior** y **gobernado**: D11.0 deja trazada la brecha sin ejecutar runtime real. Los pasos **D11.1–D11.2** continúan en modo **no operacional** (modelo de archivo local + dry-run documentado/CLI sin procesos).
+El repositorio dispone de **cimientos sólidos en modelos y scripts de desarrollo**, pero el **launcher empaquetable** sigue siendo trabajo **posterior** y **gobernado**: D11.0 deja trazada la brecha sin ejecutar runtime real. **D11.1–D11.2** añaden modelo de config local y dry-run **no operacional**. **D11.3** documenta el primer run local controlado (**plan**, sin ejecución en ese checkpoint). **D11.4–D11.5** añaden modelos TS de ciclo de vida e instancia/puertos **sin** `spawn`, lockfile real ni bind.
+
+---
+
+## 18. Seguimiento D11.3–D11.5
+
+| ID | Entrega |
+|----|---------|
+| **D11.3** | [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md) — orden y criterios del primer run; comandos marcados como **no ejecutar** en D11.3. |
+| **D11.4** | `APP/scripts/src/mapazapp-launcher-process-lifecycle.ts` + tests — transiciones declarativas; `commandLabel` solo etiqueta segura. |
+| **D11.5** | `APP/scripts/src/mapazapp-launcher-ownership-model.ts` + tests — `evaluatePortOwnership` / `evaluateSingleInstance` con deps inyectadas; sin I/O de lock ni red real. |

@@ -2,7 +2,7 @@
 
 **Checkpoint D10.10 — solo documentación.** Consolida el estado **D9.1–D10.9** y fija qué falta **antes** de MT5 live, launcher productivo, watchers, transporte de acciones o cualquier superficie que pueda confundirse con ejecución real.
 
-**Relacionado:** [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md), [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md), [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md), [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md), [`MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md`](./MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md).
+**Relacionado:** [`LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md`](./LOCAL_ACTION_BRIDGE_THREAT_MODEL_D9.md), [`API_TOKEN_CSRF_DESIGN_D9.md`](./API_TOKEN_CSRF_DESIGN_D9.md), [`MT5_DETECTION_GATE_AUDIT_D10.md`](./MT5_DETECTION_GATE_AUDIT_D10.md), [`MT5_CONFIG_STORAGE_DECISION_D10.md`](./MT5_CONFIG_STORAGE_DECISION_D10.md), [`MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md`](./MT5_BRIDGE_FILE_DISCOVERY_AUDIT_D10.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md).
 
 ---
 
@@ -126,7 +126,9 @@
 | **D11.0** | **Hecho (docs):** [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) — auditoría empaquetado / brechas; **sin** `.exe`, **sin** procesos. |
 | **D11.1** | **Hecho (TS puro):** `mapazapp-launcher-config-model.ts` — modelo archivo config local; **sin** I/O real, **sin** `spawn`. |
 | **D11.2** | **Hecho:** `mapazapp-e2e-dry-run.ts` + [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md) — dry-run declarativo; **sin** MT5, **sin** levantar API/dashboard desde el helper. |
-| **D11.3** | Plan documentado de **primera corrida local controlada** (quién inicia qué, rollback, logs) — aún **sin** trading. |
+| **D11.3** | **Hecho (docs):** [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md) — primer run local controlado (**plan**; comandos candidatos **no ejecutar** en D11.3). |
+| **D11.4** | **Hecho (TS puro):** `mapazapp-launcher-process-lifecycle.ts` — ciclo de vida hijo declarativo; **sin** `spawn` / `child_process`. |
+| **D11.5** | **Hecho (TS puro):** `mapazapp-launcher-ownership-model.ts` — instancia / ownership de puertos con deps; **sin** lockfile ni bind real. |
 
 **Justificación:** mantiene el orden **modelo/config → dry-run → plan de corrida**, antes de watcher o `open_mt5`. Si producto prioriza transporte **`POST`** antes que launcher, insertar un **D10.11** explícito “transport skeleton wired behind flag” **solo** tras re-aprobación de **D9.7** — no sustituye **D11.1**.
 

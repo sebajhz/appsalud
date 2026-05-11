@@ -68,6 +68,9 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D11.0 (solo documentación):** [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) — brechas packaging / supervisor / logs / MT5 / Windows; **sin** `.exe`, **sin** implementación runtime.
 - **D11.1 (`@workspace/scripts`, modelo TS puro):** **`mapazapp-launcher-config-model.ts`** + tests — config local futura (`schemaVersion`, host/puertos, flags `unsafe`, anidado **`Mt5Config`** + **`Mt5BridgeReadinessConfig`**); **sin** lectura/escritura de archivo real, **sin** `spawn`.
 - **D11.2 (`@workspace/scripts`):** **`mapazapp-e2e-dry-run.ts`** + tests + script **`mapazapp:e2e-dry-run`**; plan declarativo + validación de defaults + presencia de scripts en `package.json` (solo lectura); [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md) — **sin** `dev-start`, **sin** abrir servicios.
+- **D11.3 (solo documentación):** [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md) — secuencia del primer run local controlado (**plan**; comandos **no ejecutar** en D11.3); **sin** MT5, **sin** `POST` de acciones.
+- **D11.4 (`@workspace/scripts`, modelo TS puro):** **`mapazapp-launcher-process-lifecycle.ts`** + tests — ciclo de vida hijo declarativo (`commandLabel` seguro); **sin** `spawn` / `child_process` / `taskkill`.
+- **D11.5 (`@workspace/scripts`, modelo TS puro):** **`mapazapp-launcher-ownership-model.ts`** + tests — instancia y ownership de puertos vía deps; **sin** lockfile real, **sin** bind de red.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

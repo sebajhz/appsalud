@@ -33,3 +33,5 @@
 ## 3. Evolución futura
 
 Cuando exista launcher productivo, este plan se amplía con pasos **gobernados** (supervisor, logs, token de acciones, IPC) sin reutilizar el dry-run como sustituto del runtime real.
+
+**Siguiente lectura:** [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md) (**D11.3**) — secuencia completa del primer run local controlado (solo texto; comandos marcados como no ejecutar en ese checkpoint).
