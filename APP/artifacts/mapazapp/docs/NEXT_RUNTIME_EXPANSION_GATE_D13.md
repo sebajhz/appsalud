@@ -2,7 +2,7 @@
 
 **Checkpoint D13.0 — solo documentación / análisis.** Cierra la **decisión formal** sobre cuál será el **próximo salto** de runtime o producto **después** de la serie **D12**. **No** implementa código, **no** arranca procesos, **no** ejecuta API, dashboard, `mapazapp:dev-start` ni MT5.
 
-**Relacionado:** [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md), [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md), [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.1** — diseño detallado del supervisor API-only).
+**Relacionado:** [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md), [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md), [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.1** — diseño detallado del supervisor API-only).
 
 ---
 
@@ -160,10 +160,10 @@ Para cada opción: *qué aporta*, *archivos probables*, *riesgos*, *validaciones
 1. **D13.1 — Launcher/supervisor API-only prototype design (sin implementación)** — **Especificación:** [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (flujo preflight/build/start/health/stop, ownership, puertos, evidencia, fallos, tests §9, compuerta **D13.2**). **Sin** código ejecutable nuevo obligatorio en D13.1.
 
 2. **D13.2 — Launcher API-only supervised start/stop prototype**  
-   **Implementado** en `@workspace/scripts`: script **`mapazapp:api-only-supervisor`** (`mapazapp-api-only-supervisor.ts`). **Solo** con **aprobación explícita** y alcance **API-only**; ver **D13.1** §10 y salida `--json` para evidencia.
+   **Cerrado:** **implementado** en `@workspace/scripts`: script **`mapazapp:api-only-supervisor`** (`mapazapp-api-only-supervisor.ts`); **run real OK** con cleanup y health/runtime acordes. **Solo** con **aprobación explícita** y alcance **API-only**; ver **D13.1** §10 y salida `--json`.
 
 3. **D13.3–D13.5 — Evidencia API-only supervisor, luego diseño y prototipo API + dashboard**  
-   Tras **D13.2** estable: **D13.3** evidencia archivada del run bajo supervisor; **D13.4** diseño del segundo hijo (dashboard); **D13.5** prototipo/run con **aprobación explícita**. Detalle en **D13.1** §11. **Sin** MT5 ni **`POST`** en esta cadena sin nuevas compuertas.
+   **D13.2** estable ⇒ **D13.3** evidencia archivada del run bajo supervisor en [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md); **D13.4** diseño del segundo hijo (dashboard); **D13.5** prototipo/run con **aprobación explícita**. Detalle en **D13.1** §11. **Sin** MT5 ni **`POST`** en esta cadena sin nuevas compuertas.
 
 **Justificación:**
 

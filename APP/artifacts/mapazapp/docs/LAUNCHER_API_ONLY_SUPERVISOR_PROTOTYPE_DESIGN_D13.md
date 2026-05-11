@@ -1,10 +1,10 @@
 # Mapazapp — Launcher API-only Supervisor Prototype Design D13
 
-**Checkpoint D13.1 — diseño; D13.2 — implementación acotada.** Este documento especifica el **primer prototipo** de **launcher/supervisor** que orquesta **únicamente el proceso de la API** (`@workspace/api-server`), alineado a **D13.0** (opción **A**), **D11.4–D11.6**, **D11.8–D11.9**, y evidencias **D12**. En **D13.1** no había código; **D13.2** añade el prototipo ejecutable bajo alcance aprobado.
+**Checkpoint D13.1 — diseño; D13.2 — implementación acotada + run real OK; D13.3 — evidencia archivada.** Este documento especifica el **primer prototipo** de **launcher/supervisor** que orquesta **únicamente el proceso de la API** (`@workspace/api-server`), alineado a **D13.0** (opción **A**), **D11.4–D11.6**, **D11.8–D11.9**, y evidencias **D12**. En **D13.1** no había código; **D13.2** añadió el prototipo ejecutable bajo alcance aprobado y se ejecutó un **run real exitoso**; **D13.3** documenta esa evidencia en [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**sin** nuevos procesos en el acto de redactar D13.3).
 
 **Implementación D13.2 (API-only):** desde `APP/`, `pnpm --filter @workspace/scripts mapazapp:api-only-supervisor` (opciones `--help`, `--json`, `--skip-build`, `--max-wait-ms`, `--api-host`, `--api-port`). Código: `APP/scripts/src/mapazapp-api-only-supervisor.ts` — **`spawn` / `child_process` solo en este archivo** para build/start del `api-server` vía **`node build.mjs`** / **`node --enable-source-maps ./dist/index.mjs`** en `artifacts/api-server` (equivalente workspace a `pnpm --filter @workspace/api-server build|start`, PID hijo = listener); **sin** dashboard, MT5, `POST`, ni `.exe`.
 
-**Relacionado:** [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md), [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (contexto D12; el prototipo D13.2 **no** incluye dashboard).
+**Relacionado:** [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3** — evidencia run supervisor), [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md), [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (contexto D12; el prototipo D13.2 **no** incluye dashboard).
 
 ---
 
@@ -14,7 +14,7 @@
 - **D13.0** decidió que el **siguiente salto** priorizado es un **supervisor API-only** antes de MT5, `POST`, transporte de acciones o empaquetado **`.exe`**.
 - **D13.1** **diseñó** ese prototipo: flujos, reglas de ownership, evidencia, fallos y tests **obligatorios** alrededor de **D13.2**.
 - **D13.2** (tras aprobación explícita) **implementa** el supervisor API-only y permite **run real** controlado; el `spawn` queda **confinado** a `mapazapp-api-only-supervisor.ts` (no extender sin nuevo gate).
-- **D13.3** archivará evidencia del primer run bajo supervisor (plantilla §7 / salida `--json`).
+- **D13.3** archivó la evidencia del primer run bajo supervisor (plantilla §7 / salida `--json`) en [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md).
 
 ---
 
@@ -221,7 +221,7 @@ Antes de declarar **D13.2** mergeable / run aprobado, debe existir cobertura aut
 |----|-------------|
 | **D13.1** | Diseño prototipo supervisor API-only (**este documento**); **sin** implementación. |
 | **D13.2** | Implementación + run real **API-only**; **aprobación explícita**; `spawn` solo aquí si aprobado. |
-| **D13.3** | Evidencia archivada del run bajo supervisor (análoga **D12.1**): hashes, health, runtime, cleanup, logs redactados. |
+| **D13.3** | Evidencia archivada del run bajo supervisor (análoga **D12.1**): hashes, health, runtime, cleanup, logs redactados — ver [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md). |
 | **D13.4** | Diseño supervisor **API + dashboard** (segundo hijo, orden de start/stop, health dashboard). |
 | **D13.5** | Prototipo / run **API + dashboard** bajo supervisor; **aprobación explícita** separada. |
 
