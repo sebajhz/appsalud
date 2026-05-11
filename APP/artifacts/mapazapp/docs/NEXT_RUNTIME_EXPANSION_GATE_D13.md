@@ -2,7 +2,7 @@
 
 **Checkpoint D13.0 — solo documentación / análisis.** Cierra la **decisión formal** sobre cuál será el **próximo salto** de runtime o producto **después** de la serie **D12**. **No** implementa código, **no** arranca procesos, **no** ejecuta API, dashboard, `mapazapp:dev-start` ni MT5.
 
-**Relacionado:** [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md), [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md), [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md).
+**Relacionado:** [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md), [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md), [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.1** — diseño detallado del supervisor API-only).
 
 ---
 
@@ -157,14 +157,13 @@ Para cada opción: *qué aporta*, *archivos probables*, *riesgos*, *validaciones
 
 **Secuencia recomendada (alineada al cierre manual exitoso de D12):**
 
-1. **D13.1 — Launcher/supervisor API-only prototype design (sin implementación)**  
-   Documentar: contrato del supervisor, límites de `spawn`, registro de hijos, señales, interacción con **D11.4 / D11.5 / D11.6**, formato de evidencia y teardown. **Sin** código ejecutable nuevo obligatorio en D13.1.
+1. **D13.1 — Launcher/supervisor API-only prototype design (sin implementación)** — **Especificación:** [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (flujo preflight/build/start/health/stop, ownership, puertos, evidencia, fallos, tests §9, compuerta **D13.2**). **Sin** código ejecutable nuevo obligatorio en D13.1.
 
 2. **D13.2 — Launcher API-only supervised start/stop prototype**  
-   **Solo** tras **aprobación explícita** (equivalente **D11.8**): primer código que **sí** use proceso real **limitado a API-only**, con evidencia de run y cleanup, sin dashboard en alcance inicial.
+   **Solo** tras **aprobación explícita** (equivalente **D11.8**): primer código que **sí** use proceso real **limitado a API-only**, con evidencia de run y cleanup, sin dashboard en alcance inicial. Ver requisitos en **D13.1** §10.
 
-3. **D13.3 — Plan para API + dashboard bajo el mismo launcher**  
-   Tras **D13.2** estable: extender diseño y, en fase posterior aprobada, implementación de segundo hijo con las mismas salvaguardas.
+3. **D13.3–D13.5 — Evidencia API-only supervisor, luego diseño y prototipo API + dashboard**  
+   Tras **D13.2** estable: **D13.3** evidencia archivada del run bajo supervisor; **D13.4** diseño del segundo hijo (dashboard); **D13.5** prototipo/run con **aprobación explícita**. Detalle en **D13.1** §11. **Sin** MT5 ni **`POST`** en esta cadena sin nuevas compuertas.
 
 **Justificación:**
 
@@ -195,7 +194,7 @@ Para cada opción: *qué aporta*, *archivos probables*, *riesgos*, *validaciones
 
 - [x] Documento **`NEXT_RUNTIME_EXPANSION_GATE_D13.md`** creado en `APP/artifacts/mapazapp/docs/`.
 - [x] Opciones **A–G** evaluadas con criterios pedidos.
-- [x] Recomendación explícita y secuencia **D13.1 → D13.2 → D13.3** registrada.
+- [x] Recomendación explícita y secuencia **D13.1 → D13.2 → D13.3–D13.5** registrada (refinada en **D13.1** §11).
 - [x] Próximos checkpoints propuestos y criterios de aprobación referenciados.
 - [x] **Sin** cambios de código de aplicación, **sin** ejecución de servicios en el acto de redactar D13.0, **sin** dependencias nuevas.
 

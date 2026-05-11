@@ -84,6 +84,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D12.8–D12.9:** segundo run con el mismo patrón sobre **`0f1362a`**; evidencia parcial del agente [`DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md) (**D12.9**).
 - **D12.10–D12.11:** verificación visual **humana OK** (operador) + archivo de evidencia [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.11**); serie **D12** cerrada con evidencia técnica y humana completa.
 - **D13.0 (solo documentación):** [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md) — **compuerta de decisión** post-D12 para el **siguiente salto** de runtime/producto; evalúa candidatos (launcher/supervisor, packaging, MT5 read-only, transporte, UX, persistencia); **sin** implementación, **sin** asumir MT5/trading; siguiente diseño recomendado **D13.1** (prototype design API-only).
+- **D13.1 (solo documentación):** [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) — diseño del **supervisor API-only** (preflight, build, start, health, runtime safety, ownership/puerto, stop, evidencia, tests, compuerta **D13.2**); **sin** `spawn` en este checkpoint; secuencia **D13.2–D13.5** en §11 de ese doc.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

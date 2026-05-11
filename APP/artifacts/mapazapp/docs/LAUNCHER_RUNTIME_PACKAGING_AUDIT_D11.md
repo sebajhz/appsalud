@@ -6,6 +6,8 @@
 
 **D13.0 (post-D12):** [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md) evalúa el **launcher/supervisor controlado** como **principal candidato** al próximo salto de runtime (junto otras opciones), **sin** `.exe` ni implementación en ese gate.
 
+**D13.1:** [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) — refina el **supervisor API-only** (preflight, ownership de proceso/puerto **3001**, health/runtime, stop seguro, evidencia, tests y compuerta **D13.2**); **sin** código en ese checkpoint.
+
 **Declaración explícita (D11.0):** este documento **no** genera `.exe`, **no** lanza procesos del SO, **no** usa `spawn`, **no** abre ni controla MT5, **no** define instalador ni firma de binarios.
 
 ---
