@@ -160,7 +160,7 @@ Para cada opción: *qué aporta*, *archivos probables*, *riesgos*, *validaciones
 1. **D13.1 — Launcher/supervisor API-only prototype design (sin implementación)** — **Especificación:** [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (flujo preflight/build/start/health/stop, ownership, puertos, evidencia, fallos, tests §9, compuerta **D13.2**). **Sin** código ejecutable nuevo obligatorio en D13.1.
 
 2. **D13.2 — Launcher API-only supervised start/stop prototype**  
-   **Solo** tras **aprobación explícita** (equivalente **D11.8**): primer código que **sí** use proceso real **limitado a API-only**, con evidencia de run y cleanup, sin dashboard en alcance inicial. Ver requisitos en **D13.1** §10.
+   **Implementado** en `@workspace/scripts`: script **`mapazapp:api-only-supervisor`** (`mapazapp-api-only-supervisor.ts`). **Solo** con **aprobación explícita** y alcance **API-only**; ver **D13.1** §10 y salida `--json` para evidencia.
 
 3. **D13.3–D13.5 — Evidencia API-only supervisor, luego diseño y prototipo API + dashboard**  
    Tras **D13.2** estable: **D13.3** evidencia archivada del run bajo supervisor; **D13.4** diseño del segundo hijo (dashboard); **D13.5** prototipo/run con **aprobación explícita**. Detalle en **D13.1** §11. **Sin** MT5 ni **`POST`** en esta cadena sin nuevas compuertas.

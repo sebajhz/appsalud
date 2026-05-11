@@ -8,6 +8,8 @@
 
 **D13.1:** [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) — refina el **supervisor API-only** (preflight, ownership de proceso/puerto **3001**, health/runtime, stop seguro, evidencia, tests y compuerta **D13.2**); **sin** código en ese checkpoint.
 
+**D13.2:** script `mapazapp:api-only-supervisor` en `@workspace/scripts` — primer **supervisor ejecutable API-only** (build + start `api-server`, verificación GET, stop hijo propio); **sin** `.exe`; `spawn` acotado al módulo del supervisor.
+
 **Declaración explícita (D11.0):** este documento **no** genera `.exe`, **no** lanza procesos del SO, **no** usa `spawn`, **no** abre ni controla MT5, **no** define instalador ni firma de binarios.
 
 ---
