@@ -166,7 +166,7 @@ Para cada opción: *qué aporta*, *archivos probables*, *riesgos*, *validaciones
 
 4. **D13.4 — Diseño supervisor API + dashboard (sin implementación)** — [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md): dos procesos, ownership/puertos **3001**/**5173**, checks HTTP + CORS, cleanup ordenado, tests y compuerta **D13.5**.
 
-5. **D13.5–D13.7** — implementación + run **API + dashboard** bajo supervisor (**D13.5**, aprobación explícita); evidencia archivada (**D13.6**); compuerta packaging/runtime (**D13.7**). Detalle en **D13.4** §12. **Sin** MT5 ni **`POST`** en esta cadena sin nuevas compuertas.
+5. **D13.5–D13.7** — **D13.5** prototipo **`mapazapp:api-dashboard-supervisor`** implementado (`mapazapp-api-dashboard-supervisor.ts`); run real bajo aprobación; **D13.6** evidencia archivada; **D13.7** compuerta packaging/runtime. Detalle en **D13.4** §12. **Sin** MT5 ni **`POST`** en esta cadena sin nuevas compuertas.
 
 **Justificación:**
 
@@ -187,7 +187,7 @@ Para cada opción: *qué aporta*, *archivos probables*, *riesgos*, *validaciones
 | **D13.1** | **Diseño** del prototipo API-only bajo supervisor; **sin** obligación de `spawn` aún. |
 | **D13.2** | **Primer prototipo real** con procesos — **requiere aprobación explícita** y evidencia de run (similar cultura a **D12**). |
 | **D13.4** | **Diseño** supervisor API + dashboard — [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md); **sin** `spawn` en el acto del diseño. |
-| **D13.5** | **Segundo prototipo** (API + dashboard) — **requiere aprobación explícita** y criterios de **D13.4** §11. |
+| **D13.5** | **Prototipo API + dashboard** — script `mapazapp:api-dashboard-supervisor`; **requiere aprobación explícita** por run real; criterios **D13.4** §11. |
 | Cada run real | Debe dejar **evidencia** archivada (comandos, hashes, health, cleanup). |
 | **MT5** | **Nuevo gate** dedicado; **no** inferirse de D13.0–D13.2. |
 | **`POST` / action endpoints** | **Nuevo gate** (**D9.x** completo + tests **D9.7**). |

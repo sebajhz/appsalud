@@ -1,6 +1,6 @@
 # Mapazapp — API + Dashboard Supervisor Prototype Design D13
 
-**Checkpoint D13.4 — solo diseño / documentación.** Define el **prototipo futuro** de supervisor que orquesta **dos procesos**: **`@workspace/api-server`** (loopback **3001**) y **`@workspace/mapazapp`** dev server (loopback **5173**), alineado a **D13.2–D13.3**, evidencias **D12** (API+dashboard y verificación visual humana), y políticas **D11.4–D11.6**, **D11.8**. **No** implementa código, **no** ejecuta procesos, **no** usa `spawn` / `child_process` en este documento.
+**Checkpoint D13.4 — diseño; D13.5 — implementación autorizada.** Este documento define el **prototipo** de supervisor **API + dashboard** (**dos procesos**, **3001** / **5173**), alineado a **D13.2–D13.3**, evidencias **D12** y políticas **D11.4–D11.6**, **D11.8**. **D13.5** añade el ejecutable bajo alcance aprobado: script **`mapazapp:api-dashboard-supervisor`** en `APP/scripts/src/mapazapp-api-dashboard-supervisor.ts` — **`spawn` / `child_process` solo en ese archivo**; API con **node** directo en `artifacts/api-server`; dashboard con **node** + **`vite/bin/vite.js`** resuelto vía `createRequire` desde `artifacts/mapazapp` (**sin** `pnpm.cmd` como dueño del LISTEN). **D13.4** sigue siendo la fuente de diseño; el código cumple §3–§11 salvo donde el ticket de implementación refine detalles.
 
 **Relacionado:** [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md), [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md), [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md), [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
 
@@ -10,9 +10,9 @@
 
 - **D13.2** demostró un **supervisor API-only** funcional: preflight, start controlado, health + runtime safety, cleanup del hijo propio, salida JSON segura.
 - **D13.3** archivó la **evidencia** de ese run (incluida la lección **wrapper vs listener**: **`node` directo** sobre `artifacts/api-server`, no **`pnpm.cmd` + shell** como proceso “dueño” del **LISTEN** en **3001**).
-- **D13.4** (**este documento**) **diseña** el siguiente salto: supervisor **API + dashboard** (dos hijos, dos puertos, verificación HTTP del front y **CORS** hacia la API), **sin** escribir código ni ejecutar servicios.
-- **D13.5** (futuro) podría **implementar** y, con **aprobación explícita**, ejecutar un **run real** bajo ese diseño.
-- **D13.6** (futuro) archivaría **evidencia** del run bajo supervisor API+dashboard (análogo **D13.3**).
+- **D13.4** (**este documento**) **diseña** el supervisor **API + dashboard** (dos hijos, dos puertos, verificación HTTP del front y **CORS** hacia la API).
+- **D13.5** **implementa** el prototipo y permite **run real** controlado con **aprobación explícita**; comando: `pnpm --filter @workspace/scripts mapazapp:api-dashboard-supervisor` (opciones `--help`, `--json`, `--skip-build`, `--max-wait-ms`, `--api-host`, `--api-port`, `--dashboard-host`, `--dashboard-port`).
+- **D13.6** (siguiente) archivará **evidencia** formal del run bajo supervisor API+dashboard (análogo **D13.3**).
 - **D13.7** (futuro) sería una **compuerta de decisión** packaging/runtime (sin mezclarla con la implementación de **D13.5**).
 
 ---
@@ -235,7 +235,7 @@ Antes de declarar **D13.5** mergeable / run aprobado, debe existir cobertura (te
 | **D13.2** | Implementación + run **API-only**. |
 | **D13.3** | Evidencia run API-only ([`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md)). |
 | **D13.4** | **Este documento** — diseño supervisor **API + dashboard**, **sin** implementación. |
-| **D13.5** | Implementación + run real **API + dashboard** bajo supervisor; **aprobación explícita**. |
+| **D13.5** | **Implementado** — `mapazapp:api-dashboard-supervisor` (`mapazapp-api-dashboard-supervisor.ts`); run real bajo **aprobación explícita** y criterios §11. |
 | **D13.6** | Evidencia archivada del run **D13.5** (hashes, health, CORS, HTTP dashboard, cleanup doble). |
 | **D13.7** | **Compuerta** packaging / runtime decisión (sin conflar con implementación **D13.5**). |
 
