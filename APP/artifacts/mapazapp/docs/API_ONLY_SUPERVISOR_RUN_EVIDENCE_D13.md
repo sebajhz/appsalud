@@ -8,6 +8,7 @@ Aclaraciones:
 
 - **D13.2** implementó el supervisor, ejecutó el run real controlado y cerró con tests y validaciones acordadas.
 - **D13.3** (este documento) **solo archiva evidencia** en el repositorio; **no** ejecuta API, dashboard, supervisor, MT5 ni ningún otro proceso.
+- **D13.5** / **D13.6** (supervisor y evidencia **API + dashboard**): diseño [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), run archivado [`API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md).
 
 ---
 
