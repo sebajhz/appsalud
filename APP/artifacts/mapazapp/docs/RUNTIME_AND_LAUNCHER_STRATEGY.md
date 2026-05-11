@@ -75,6 +75,8 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D11.7 (solo documentación):** [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md) — opciones de prototipo supervisado (API-only preferido para el primer run); **sin** implementación.
 - **D11.8 (solo documentación):** [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) — checklist/compuerta humana antes del primer run real; **sin** ejecutar servicios dentro del doc.
 - **D11.9 (solo documentación):** [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) — plan del primer prototipo **API-only** supervisado (comandos candidatos, evidencia, teardown); **sin** ejecutar el run en ese checkpoint.
+- **D12.0 (ejecución aprobada, fuera de este doc):** primer run local **API-only** en loopback **3001** según plan D11.9 — **sin** dashboard/MT5 en alcance.
+- **D12.1 (solo documentación):** [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) — evidencia formal del run D12.0.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

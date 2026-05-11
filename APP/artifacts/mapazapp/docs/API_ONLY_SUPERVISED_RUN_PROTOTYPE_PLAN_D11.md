@@ -2,7 +2,9 @@
 
 **Checkpoint D11.9 — solo documentación.** Define el **plan exacto** para el **primer run local real** limitado al **`@workspace/api-server`** (sin dashboard, sin MT5, sin watcher). **Este checkpoint no ejecuta nada:** no `pnpm start`, no `spawn`, no procesos, no `fetch` automatizado desde tooling del repo para este documento.
 
-**Relacionado:** [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md) (**D11.7**), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md) (**D11.6**), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md) (**D11.3**), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md) (**D11.2**).
+**Relacionado:** [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md) (**D11.7**), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md) (**D11.6**), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md) (**D11.3**), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md) (**D11.2**), [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) (**D12.1** — evidencia del run **D12.0** ejecutado OK).
+
+**Estado D12.0:** el primer run **API-only** acorde a este plan se **ejecutó correctamente**; detalle en [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md). Este archivo sigue siendo plan de referencia; **no** re-ejecutar el run desde el propio doc.
 
 ---
 
@@ -160,4 +162,4 @@ pnpm --filter @workspace/api-server start
 
 ## 11. Conclusión
 
-**D11.9** fija el **contrato operativo** del primer run **API-only** sin ejecutarlo. La **autorización de ejecución** sigue siendo exclusivamente humana (**D11.8** + **D12.0** o ID equivalente acordado por el equipo).
+**D11.9** fija el **contrato operativo** del primer run **API-only**. La **autorización de ejecución** fue humana (**D11.8** + **D12.0**). La evidencia archivada del run está en [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) (**D12.1**).

@@ -48,6 +48,7 @@
 - **D11.3–D11.5:** **`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`** — D11.3 plan primer run local (**sin** ejecución en ese checkpoint); **`mapazapp-launcher-process-lifecycle.ts`** — D11.4 ciclo de vida hijo declarativo (**sin** APIs de proceso); **`mapazapp-launcher-ownership-model.ts`** — D11.5 instancia/puertos declarativo (**sin** lockfile/bind real). Sigue **no operacional**.
 - **D11.6–D11.8 (solo documentación):** **`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`** — política start/stop seguro futuro; **`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`** — decisión de prototipo supervisado (API-only preferido); **`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`** — compuerta/checklist antes del primer run real. **Sin** launcher `.exe`, **sin** `spawn` nuevo, **sin** ejecutar el primer run dentro de estos checkpoints.
 - **D11.9 (solo documentación):** **`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`** — plan operativo del primer run **API-only** (sin dashboard); **sin** ejecutar procesos en ese checkpoint; ejecución material → **D12.0** (o equivalente) tras aprobación explícita.
+- **D12.0–D12.1:** primer run **API-only** supervisado ejecutado **OK** sobre commit **`b267b70`**; evidencia documental **`API_ONLY_RUN_EVIDENCE_D12.md`** (D12.1). Siguiente plan documental típico: **D12.2** (API+dashboard supervisado, sin ejecución) con **nueva** aprobación.
 
 ## V2-16 handoff update
 
