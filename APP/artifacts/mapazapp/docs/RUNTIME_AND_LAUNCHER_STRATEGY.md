@@ -82,7 +82,8 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D12.5 (solo documentación):** [`DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md) — plan de verificación **visual/humana** post-D12.3 (**sin** ejecutar API/dashboard en D12.5); ejecución acotada ⇒ **D12.6** aprobada.
 - **D12.6–D12.7:** run de verificación dashboard **limitado por entorno** sobre **`955f41a`** (HTTP/logs/CORS **OK**; sin DOM/consola humana); evidencia [`DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.7**).
 - **D12.8–D12.9:** segundo run con el mismo patrón sobre **`0f1362a`**; evidencia parcial del agente [`DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md) (**D12.9**).
-- **D12.10–D12.11:** verificación visual **humana OK** (operador) + archivo de evidencia [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.11**); siguiente compuerta documental sugerida **D13.0** (expansión runtime sin asumir MT5/trading).
+- **D12.10–D12.11:** verificación visual **humana OK** (operador) + archivo de evidencia [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.11**); serie **D12** cerrada con evidencia técnica y humana completa.
+- **D13.0 (solo documentación):** [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md) — **compuerta de decisión** post-D12 para el **siguiente salto** de runtime/producto; evalúa candidatos (launcher/supervisor, packaging, MT5 read-only, transporte, UX, persistencia); **sin** implementación, **sin** asumir MT5/trading; siguiente diseño recomendado **D13.1** (prototype design API-only).
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
