@@ -4,6 +4,8 @@
 
 **Plan de referencia:** [`DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md) (**D12.5**). **Evidencia de intento anterior (D12.6, commit `955f41a`):** [`DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.7**).
 
+**Cierre con operador humano (D12.10 / D12.11):** sobre el mismo hilo técnico en **`0f1362a`**, el run **D12.10** incorporó **confirmación visual humana** (checklist A–E **OK** según operador); evidencia consolidada en [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.11**). Las secciones **§1–§7** de **este** archivo describen el estado **al archivar D12.9** (evidencia **parcial** solo por agente/HTTP).
+
 ---
 
 ## 1. Purpose
@@ -12,8 +14,8 @@ Documentar la evidencia archivada del checkpoint **D12.8** (dashboard visual ver
 
 - **D12.8** ejecutó **API + dashboard** en loopback.
 - Se verificó **API**, **dashboard HTTP**, **CORS**, **logs** y **cleanup** en el tramo documentado.
-- **No** hubo **verificación visual humana real** completada por el agente (sin navegador interactivo ni inspección DOM).
-- La **UI renderizada** sigue **pendiente** de validación por **operador humano**.
+- **No** hubo **verificación visual humana real** completada por el **agente** en el tramo D12.8/D12.9 (sin navegador interactivo ni inspección DOM).
+- La **validación visual humana** del mismo plan sobre commit **`0f1362a`** quedó **cerrada** en **D12.10** + **D12.11** (ver encabezado y [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md)).
 - **No** debe interpretarse un **HTTP 200** en **`/config`** como **UI visualmente validada** (el shell HTML de la SPA no prueba hidratación ni paneles React en pantalla).
 
 ---

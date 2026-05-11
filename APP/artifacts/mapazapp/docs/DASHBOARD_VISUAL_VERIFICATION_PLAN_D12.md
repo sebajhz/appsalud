@@ -2,11 +2,13 @@
 
 **Checkpoint D12.5 — solo planificación y documentación.** Este archivo **no** ordena ejecución: **no** arrancar API, **no** arrancar dashboard, **no** ejecutar `mapazapp:dev-start`, **no** MT5, **no** abrir navegador desde automatización.
 
-**Contexto:** el run **D12.3** validó **API + dashboard** principalmente por **HTTP** y **CORS**; la evidencia está en [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**). Falta una **verificación visual/humana profunda** del dashboard en navegador. **D12.5** define ese alcance.
+**Contexto:** el run **D12.3** validó **API + dashboard** principalmente por **HTTP** y **CORS**; la evidencia está en [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**). **D12.5** define el alcance de verificación visual/humana. **Cierre humano (commit `0f1362a`):** **D12.10** ejecutado con checklist **OK** reportada por operador; evidencia [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.11**). Ante **cambios sustanciales de UI**, conviene **re-ejecutar** el mismo tipo de revisión humana.
 
 **Estado D12.6:** el run de verificación acotado al plan se **ejecutó** con evidencia **parcial** (HTTP/logs/CORS **OK**; sin navegador interactivo del entorno de ejecución para DOM/consola/screenshot). Evidencia formal: [`DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md) (**D12.7**).
 
-**Estado D12.8:** segundo run autorizado con el mismo límite de entorno para el agente; evidencia **parcial** archivada en [`DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md) (**D12.9**). Cierre visual humano ⇒ **D12.10** (§8).
+**Estado D12.8:** segundo run autorizado con el mismo límite de entorno para el agente; evidencia **parcial** archivada en [`DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md) (**D12.9**).
+
+**Estado D12.10:** run **human dashboard visual verification** ejecutado; verificación visual **OK** según operador humano; evidencia formal **D12.11** en [`HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md). Siguiente compuerta documental sugerida para expansión de runtime: **D13.0** (§8).
 
 **Planes relacionados:** [`API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md`](./API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md) (**D12.2**), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**).
 
@@ -16,8 +18,8 @@
 
 - **D12.3** comprobó **API + dashboard** con cargas HTTP, GET a la API y prueba de **CORS** desde origen de desarrollo.
 - **D12.4** archivó la **evidencia** de ese run en el repo.
-- **Falta** la **verificación visual/humana** en el navegador (DOM renderizado, copys en pantalla, consola del browser, impresión de riesgo para el operador).
-- **D12.5** **planifica** esa verificación; **no** la ejecuta como parte del cierre de D12.5.
+- Para el mock local en **`0f1362a`**, la **verificación visual/humana** en navegador quedó **cerrada** con **D12.10–D12.11** (operador humano + evidencia en repo).
+- **D12.5** **planifica** criterios y checks; **no** los ejecuta como parte del cierre del **solo** documento D12.5.
 
 ---
 
@@ -27,7 +29,7 @@
 
 - **API** en **`127.0.0.1:3001`** (mismo criterio que D12.2/D12.3).
 - **Dashboard** dev en **`127.0.0.1:5173`** (o `localhost:5173` si se acuerda y CORS coincide).
-- **Abrir el dashboard manualmente** en navegador solo si un responsable **autoriza** esa fase en el checkpoint de ejecución (p. ej. **D12.10** para cierre visual humano completo).
+- **Abrir el dashboard manualmente** en navegador solo si un responsable **autoriza** esa fase en el checkpoint de ejecución (p. ej. **nuevo** run de verificación humana tras **cambios sustanciales** de UI).
 - Revisar **`ConfigPage`** (`/config`), **`RuntimeStatusPanel`** (vía `RuntimeStatusPanelContainer`), **`Mt5ConfigStatusPanel`**.
 - **Capturar screenshot** solo si la política de producto/datos lo **autoriza**.
 - **Capturar logs sanitizados** (terminal API/Vite + consola del navegador, sin secretos ni rutas privadas).
@@ -45,7 +47,7 @@
 
 ## 3. Preconditions for future visual run
 
-Antes de aprobar la **D12.10** (o equivalente) de **verificación visual humana completa**:
+Antes de aprobar un **nuevo** checkpoint de **verificación visual humana completa** (p. ej. tras **cambios sustanciales** de UI o de riesgo de producto):
 
 - [ ] Evidencia **D12.4** leída y entendida.
 - [ ] **`git status`** limpio en el commit base acordado.
@@ -111,7 +113,7 @@ Alineado a [`mt5ConfigStatusPresenter.ts`](../src/components/mt5ConfigStatusPres
 
 ## 5. Evidence to capture
 
-En el checkpoint de **ejecución futura** con navegador humano (p. ej. **D12.10**), archivar como mínimo:
+En el checkpoint de **ejecución futura** con navegador humano (p. ej. **re-verificación** tras cambio UI), archivar como mínimo:
 
 - **Hash de commit** base.
 - **Hora inicio / fin** (local, ISO-8601 recomendado).
@@ -157,11 +159,13 @@ En todos los casos: **capturar evidencia**, **frenar**, **no ampliar alcance**, 
 
 **D12.6** (ejecutado fuera de este archivo, con aprobación explícita de sesión) cubrió **API + dashboard** y checks **HTTP/CORS/logs** sobre commit **`955f41a`**; la evidencia y la tabla de “no verificado visualmente” están en [**D12.7** — `DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md).
 
-**D12.8** repitió el mismo alcance automatizable sobre commit **`0f1362a`**; la evidencia parcial y la checklist humana pendiente están en [**D12.9** — `DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md).
+**D12.8** repitió el mismo alcance automatizable sobre commit **`0f1362a`**; la evidencia parcial del agente está en [**D12.9** — `DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_RUN_EVIDENCE_D12.md).
 
-La **verificación visual humana profunda** en navegador (DOM, paneles, consola, capturas) requiere un **checkpoint nuevo**, por ejemplo:
+**D12.10** completó la **verificación visual humana** en navegador sobre **`23596a9`** / línea **`0f1362a`**; la evidencia consolidada (humano + técnico + cleanup) está en [**D12.11** — `HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md`](./HUMAN_DASHBOARD_VISUAL_VERIFICATION_EVIDENCE_D12.md).
 
-**D12.10 — Human dashboard visual verification run, explicit approval required**
+Para **nuevas** expansiones de runtime o UI sustancialmente distinta, se requiere **nueva** aprobación y, si aplica, **nuevo** ciclo de verificación acorde a riesgo. **Checkpoint sugerido:**
+
+**D13.0 — Next runtime expansion gate, explicit approval required**
 
 ---
 
