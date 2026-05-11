@@ -2,7 +2,7 @@
 
 **Checkpoint D12.1 — solo documentación.** Registro histórico del primer run real controlado **API-only** (**D12.0**). **No** es una orden de re-ejecución: no arrancar API, dashboard ni MT5 desde este archivo.
 
-**Plan de referencia:** [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) (**D11.9**). **Compuerta:** [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**).
+**Plan de referencia:** [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) (**D11.9**). **Compuerta:** [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**). **Siguiente plan (solo documentación, sin ejecución en D12.2):** [`API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md`](./API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md) (**D12.2**).
 
 ---
 
@@ -118,5 +118,5 @@ Documentar la evidencia del primer run real API-only controlado.
 
 ## 9. Recommendation
 
-- **D12.2 — API + dashboard supervised run plan, no execution:** siguiente paso documental para definir alcance, comandos candidatos, compuerta y evidencia **sin** ejecutar dashboard hasta aprobación explícita.
+- **D12.2 — API + dashboard supervised run plan, no execution:** plan documental publicado en [`API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md`](./API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md) — alcance, comandos candidatos, puertos, pre-run, runtime checks, evidencia, cleanup, fallos y compuerta **sin** ejecutar API/dashboard en el cierre de D12.2.
 - **No** levantar el dashboard de forma ad-hoc sin plan y sin nueva aprobación.

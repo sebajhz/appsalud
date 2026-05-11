@@ -4,7 +4,7 @@
 
 **Relacionado:** [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md), [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md), [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md).
 
-**Seguimiento D12:** el run **D12.0** (API-only supervisado) quedó **completado OK**; evidencia en [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md). Cualquier **ampliación** (p. ej. API+dashboard u otros procesos) requiere **nueva aprobación explícita**; esta compuerta **no** autoriza automáticamente fases posteriores.
+**Seguimiento D12:** el run **D12.0** (API-only supervisado) quedó **completado OK**; evidencia en [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) (**API-only cerrado**). El salto **API + dashboard** (dos procesos locales) **no** queda cubierto por esa aprobación histórica: requiere **nueva aprobación explícita** y plan operativo acorde (ver [`API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md`](./API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md) — **D12.2**, plan sin ejecución). Esta compuerta **no** autoriza automáticamente fases posteriores.
 
 ---
 
