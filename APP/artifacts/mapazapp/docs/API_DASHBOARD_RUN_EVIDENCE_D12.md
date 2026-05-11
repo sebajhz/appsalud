@@ -190,4 +190,4 @@ Opciones de seguimiento documental:
 - **D12.5 — Supervised dashboard visual verification plan** (revisión visual humana de `ConfigPage`, `RuntimeStatusPanel`, `Mt5ConfigStatusPanel`, sin ampliar backend/runtime).
 - **D12.5 — API + dashboard run evidence review and next gate** (revisión de compuerta y próximo salto si el producto lo requiere).
 
-**Recomendación del mantenedor de esta evidencia:** **D12.5 — Dashboard visual verification plan**, **sin** nueva expansión de backend ni runtime más allá de lo ya probado por HTTP en D12.3.
+**Recomendación del mantenedor de esta evidencia:** **D12.5 — Dashboard visual verification plan**, **sin** nueva expansión de backend ni runtime más allá de lo ya probado por HTTP en D12.3 — plan publicado en [`DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md) (**solo documentación**; ejecución visual ⇒ **D12.6** con aprobación explícita).

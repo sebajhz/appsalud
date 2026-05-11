@@ -2,7 +2,7 @@
 
 **Checkpoint D12.2 — solo planificación y documentación.** Este archivo **no** ordena ejecución: **no** arrancar API, **no** arrancar dashboard, **no** ejecutar `mapazapp:dev-start`, **no** MT5, **no** watcher.
 
-**Ejecución D12.3:** el primer run real **API + dashboard** supervisado se ejecutó **OK**; evidencia formal en [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**). Este documento sigue siendo la referencia operativa (alcance, comandos, puertos, cleanup); **no** re-ejecutar procesos desde aquí.
+**Ejecución D12.3:** el primer run real **API + dashboard** supervisado se ejecutó **OK**; evidencia formal en [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**). **D12.5** planifica la **verificación visual/humana** posterior (sin ejecutarla en ese checkpoint): [`DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md`](./DASHBOARD_VISUAL_VERIFICATION_PLAN_D12.md). Este documento sigue siendo la referencia operativa (alcance, comandos, puertos, cleanup); **no** re-ejecutar procesos desde aquí.
 
 **Contexto:** el primer run real **API-only** (**D12.0**) finalizó **OK**; la evidencia está en [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) (**D12.1**). El plan D12.2 cubrió el salto **API + dashboard**; la materialización controlada fue **D12.3** con registro **D12.4**.
 
