@@ -135,19 +135,14 @@ Confirmado para este run y alcance **D13.2**:
 
 ## 10. Recommendation
 
-Opciones de siguiente checkpoint (solo recomendación; **sin** implementación aquí):
-
-1. **D13.4 — API-only supervisor evidence review and next gate** (revisión formal de esta evidencia y compuerta siguiente), **o**
-2. **D13.4 — API + dashboard supervisor design, no implementation** (diseño del supervisor con **dos** procesos: API + dashboard, orden start/stop, health dual, cleanup doble).
-
-**Recomendación preferida:** **D13.4 — API + dashboard supervisor design, no implementation.**
-
-**Justificación:** el supervisor **API-only** ya fue **implementado y probado** con run real; el salto lógico siguiente es **diseñar** cómo supervisar **API + dashboard** **antes** de codificar, definiendo con claridad **ownership de dos procesos** y **cleanup doble** sin ambigüedad de wrappers.
+- **D13.4 — API + dashboard supervisor design (sin implementación)** quedó especificado en [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (preflight doble puerto, start API con patrón **node** listener, estrategias de start dashboard §7, checks HTTP + CORS, cleanup dashboard→API, tests y compuerta **D13.5**).
+- **Siguiente paso recomendado:** **D13.5 — API + dashboard supervisor prototype implementation/run, explicit approval required** (solo tras aceptar **D13.4** y resolver ownership del listener en **5173** según ese diseño).
 
 ---
 
 ## Relacionado
 
 - [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) — diseño **D13.1** y referencia **D13.2**
+- [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) — diseño **D13.4** supervisor API + dashboard
 - [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md) — compuerta **D13.0** y secuencia recomendada
 - [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md) — línea de estrategia runtime/launcher

@@ -87,6 +87,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D13.1 (solo documentación):** [`LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./LAUNCHER_API_ONLY_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) — diseño del **supervisor API-only** (preflight, build, start, health, runtime safety, ownership/puerto, stop, evidencia, tests, compuerta **D13.2**); **sin** `spawn` en este checkpoint; secuencia **D13.2–D13.5** en §11 de ese doc.
 - **D13.2 (`@workspace/scripts`):** `mapazapp:api-only-supervisor` — prototipo **API-only** con `spawn` confinado a `mapazapp-api-only-supervisor.ts`; build + start `api-server` en loopback; health + runtime safety; stop solo hijo propio; **sin** dashboard/MT5/`POST`/`.exe` en alcance; **run real OK** sobre commit **`b4189a6`** (listener vía **node** directo sobre `artifacts/api-server`, no wrapper `pnpm` huérfano).
 - **D13.3 (solo documentación):** [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) — evidencia formal del primer run exitoso bajo supervisor D13.2; **sin** ejecutar procesos al archivar el doc.
+- **D13.4 (solo documentación):** [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) — diseño supervisor **API + dashboard** (preflight **3001**/**5173**, ownership listener dashboard, HTTP + CORS, cleanup dashboard→API, tests y gate **D13.5**); **sin** código ni `spawn` en este checkpoint.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
