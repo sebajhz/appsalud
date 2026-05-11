@@ -77,7 +77,8 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D11.9 (solo documentación):** [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) — plan del primer prototipo **API-only** supervisado (comandos candidatos, evidencia, teardown); **sin** ejecutar el run en ese checkpoint.
 - **D12.0 (ejecución aprobada, fuera de este doc):** primer run local **API-only** en loopback **3001** según plan D11.9 — **sin** dashboard/MT5 en alcance.
 - **D12.1 (solo documentación):** [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) — evidencia formal del run D12.0.
-- **D12.2 (solo documentación):** [`API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md`](./API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md) — plan del **futuro** run supervisado **API + dashboard** (puertos 3001/5173, pre-run, evidencia, cleanup); **sin** ejecutar procesos en D12.2.
+- **D12.2 (solo documentación):** [`API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md`](./API_DASHBOARD_SUPERVISED_RUN_PLAN_D12.md) — plan del run supervisado **API + dashboard** (puertos 3001/5173, pre-run, evidencia, cleanup); **sin** ejecutar procesos en el cierre de D12.2.
+- **D12.3–D12.4:** primer run real **API + dashboard** supervisado **OK** sobre commit **`63f39eb`**; evidencia [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**).
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

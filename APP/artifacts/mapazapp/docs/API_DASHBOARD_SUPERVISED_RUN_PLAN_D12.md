@@ -2,7 +2,9 @@
 
 **Checkpoint D12.2 — solo planificación y documentación.** Este archivo **no** ordena ejecución: **no** arrancar API, **no** arrancar dashboard, **no** ejecutar `mapazapp:dev-start`, **no** MT5, **no** watcher.
 
-**Contexto:** el primer run real **API-only** (**D12.0**) finalizó **OK**; la evidencia está en [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) (**D12.1**). El **siguiente salto controlado** planificado aquí es **API + dashboard** en una fase futura, **tras** nueva aprobación explícita (ver §10).
+**Ejecución D12.3:** el primer run real **API + dashboard** supervisado se ejecutó **OK**; evidencia formal en [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**). Este documento sigue siendo la referencia operativa (alcance, comandos, puertos, cleanup); **no** re-ejecutar procesos desde aquí.
+
+**Contexto:** el primer run real **API-only** (**D12.0**) finalizó **OK**; la evidencia está en [`API_ONLY_RUN_EVIDENCE_D12.md`](./API_ONLY_RUN_EVIDENCE_D12.md) (**D12.1**). El plan D12.2 cubrió el salto **API + dashboard**; la materialización controlada fue **D12.3** con registro **D12.4**.
 
 **Planes y compuertas relacionados:** [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) (**D11.9**), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
 
@@ -10,7 +12,7 @@
 
 ## 1. Purpose
 
-Planificar un **futuro** run supervisado de **API + dashboard** (dos procesos locales: `api-server` + Vite dev del paquete `mapazapp`).
+Planificar un run supervisado de **API + dashboard** (dos procesos locales: `api-server` + Vite dev del paquete `mapazapp`). La **primera ejecución** material acordada (**D12.3**) quedó **OK**; evidencia en [`API_DASHBOARD_RUN_EVIDENCE_D12.md`](./API_DASHBOARD_RUN_EVIDENCE_D12.md) (**D12.4**). Este §1 conserva el marco para **re-ejecuciones futuras** solo bajo nueva aprobación.
 
 Aclaraciones:
 
