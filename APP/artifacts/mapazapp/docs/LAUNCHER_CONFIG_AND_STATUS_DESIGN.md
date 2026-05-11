@@ -2,7 +2,7 @@
 
 Documento **D2**: diseño formal **solo documentación**. No implementa launcher, código, endpoints ni scripts.
 
-**Relacionado:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (**D4.1**) — cableado futuro de acciones dashboard/runtime respecto de preflight, dev-start, validador de import y modelo de estado; **sin** botones ni TSX en ese checkpoint. **D8.1:** [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) — prototipo de launcher + puente launcher-side (**solo documentación**).
+**Relacionado:** [`DASHBOARD_RUNTIME_ACTIONS_DESIGN.md`](./DASHBOARD_RUNTIME_ACTIONS_DESIGN.md) (**D4.1**) — cableado futuro de acciones dashboard/runtime respecto de preflight, dev-start, validador de import y modelo de estado; **sin** botones ni TSX en ese checkpoint. **D8.1:** [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md) — prototipo de launcher + puente launcher-side (**solo documentación**). **D11.1:** modelo TS **`mapazapp-launcher-config-model.ts`** (config archivo local futura, **sin** persistencia real) — ver [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md).
 
 ---
 

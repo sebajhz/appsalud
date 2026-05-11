@@ -65,6 +65,9 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D10.8 (`@workspace/scripts`):** **`mapazapp-bridge-sample-metadata.ts`** + tests — metadata read-only de muestras BridgeEA/TestEA (**sin** `fs`, **sin** watcher); rechaza tokens de API de trading y riesgos de command files en snippets **opcionales**.
 - **D10.9 (`@workspace/mapazapp`):** copy/presentación **`Mt5ConfigStatusPanel`** — fortalece disclaimers obligatorios; **sin** acciones nuevas.
 - **D10.10 (solo documentación):** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md) — readiness consolidado antes de runtime live; propone **D11.0–D11.3**.
+- **D11.0 (solo documentación):** [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) — brechas packaging / supervisor / logs / MT5 / Windows; **sin** `.exe`, **sin** implementación runtime.
+- **D11.1 (`@workspace/scripts`, modelo TS puro):** **`mapazapp-launcher-config-model.ts`** + tests — config local futura (`schemaVersion`, host/puertos, flags `unsafe`, anidado **`Mt5Config`** + **`Mt5BridgeReadinessConfig`**); **sin** lectura/escritura de archivo real, **sin** `spawn`.
+- **D11.2 (`@workspace/scripts`):** **`mapazapp-e2e-dry-run.ts`** + tests + script **`mapazapp:e2e-dry-run`**; plan declarativo + validación de defaults + presencia de scripts en `package.json` (solo lectura); [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md) — **sin** `dev-start`, **sin** abrir servicios.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
