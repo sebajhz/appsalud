@@ -71,6 +71,9 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D11.3 (solo documentación):** [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md) — secuencia del primer run local controlado (**plan**; comandos **no ejecutar** en D11.3); **sin** MT5, **sin** `POST` de acciones.
 - **D11.4 (`@workspace/scripts`, modelo TS puro):** **`mapazapp-launcher-process-lifecycle.ts`** + tests — ciclo de vida hijo declarativo (`commandLabel` seguro); **sin** `spawn` / `child_process` / `taskkill`.
 - **D11.5 (`@workspace/scripts`, modelo TS puro):** **`mapazapp-launcher-ownership-model.ts`** + tests — instancia y ownership de puertos vía deps; **sin** lockfile real, **sin** bind de red.
+- **D11.6 (solo documentación):** [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md) — política de arranque/parada seguros del launcher futuro; **sin** `spawn` / `child_process` / `taskkill`.
+- **D11.7 (solo documentación):** [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md) — opciones de prototipo supervisado (API-only preferido para el primer run); **sin** implementación.
+- **D11.8 (solo documentación):** [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) — checklist/compuerta humana antes del primer run real; **sin** ejecutar servicios dentro del doc.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

@@ -2,7 +2,7 @@
 
 **Checkpoint D11.0 — solo documentación.** Audita el salto desde **scripts de desarrollo** y **modelos TS puros** hacia un **launcher productivo empaquetable**, **sin** implementar ejecutable, **sin** `spawn` / `child_process` en el alcance de este documento, **sin** lanzar MT5 y **sin** generar `.exe` o instalador.
 
-**Relacionado:** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md).
+**Relacionado:** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`LAUNCHER_PROTOTYPE_DESIGN_D8.md`](./LAUNCHER_PROTOTYPE_DESIGN_D8.md), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md).
 
 **Declaración explícita (D11.0):** este documento **no** genera `.exe`, **no** lanza procesos del SO, **no** usa `spawn`, **no** abre ni controla MT5, **no** define instalador ni firma de binarios.
 
@@ -149,14 +149,17 @@
 
 ## 17. Conclusión
 
-El repositorio dispone de **cimientos sólidos en modelos y scripts de desarrollo**, pero el **launcher empaquetable** sigue siendo trabajo **posterior** y **gobernado**: D11.0 deja trazada la brecha sin ejecutar runtime real. **D11.1–D11.2** añaden modelo de config local y dry-run **no operacional**. **D11.3** documenta el primer run local controlado (**plan**, sin ejecución en ese checkpoint). **D11.4–D11.5** añaden modelos TS de ciclo de vida e instancia/puertos **sin** `spawn`, lockfile real ni bind.
+El repositorio dispone de **cimientos sólidos en modelos y scripts de desarrollo**, pero el **launcher empaquetable** sigue siendo trabajo **posterior** y **gobernado**: D11.0 deja trazada la brecha sin ejecutar runtime real. **D11.1–D11.2** añaden modelo de config local y dry-run **no operacional**. **D11.3** documenta el primer run local controlado (**plan**, sin ejecución en ese checkpoint). **D11.4–D11.5** añaden modelos TS de ciclo de vida e instancia/puertos **sin** `spawn`, lockfile real ni bind. **D11.6–D11.8** cierran diseño de start/stop, decisión de prototipo supervisado y **compuerta** antes del primer run real — todo **documentación únicamente**.
 
 ---
 
-## 18. Seguimiento D11.3–D11.5
+## 18. Seguimiento D11.3–D11.8
 
 | ID | Entrega |
 |----|---------|
 | **D11.3** | [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md) — orden y criterios del primer run; comandos marcados como **no ejecutar** en D11.3. |
 | **D11.4** | `APP/scripts/src/mapazapp-launcher-process-lifecycle.ts` + tests — transiciones declarativas; `commandLabel` solo etiqueta segura. |
 | **D11.5** | `APP/scripts/src/mapazapp-launcher-ownership-model.ts` + tests — `evaluatePortOwnership` / `evaluateSingleInstance` con deps inyectadas; sin I/O de lock ni red real. |
+| **D11.6** | [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md) — política start/stop seguro futuro; **sin** implementación. |
+| **D11.7** | [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md) — decisión de prototipo supervisado (API-only preferido); **sin** código. |
+| **D11.8** | [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) — compuerta/checklist antes del primer run real; **sin** ejecución. |

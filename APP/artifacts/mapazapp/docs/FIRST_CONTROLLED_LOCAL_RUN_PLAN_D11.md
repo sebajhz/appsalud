@@ -2,7 +2,7 @@
 
 **Checkpoint D11.3 — solo documentación.** Define **cómo** se ejecutará, en una **fase futura aprobada**, el **primer arranque local controlado** del workspace Mapazapp. **Este documento no ejecuta nada:** no sustituye a `mapazapp:dev-start`, no abre MT5, no habilita trading ni transporte de acciones.
 
-**Relacionado:** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
+**Relacionado:** [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md).
 
 **Declaración explícita:** **D11.3 es plan, no ejecución.** Quien siga estos pasos en el futuro debe hacerlo **voluntariamente** y fuera del alcance de este checkpoint.
 
@@ -129,4 +129,4 @@ pnpm --filter @workspace/scripts mapazapp:dev-preflight
 
 ## 14. Conclusión
 
-D11.3 fija **disciplina y orden** para un primer run local **posterior**; los modelos **D11.4–D11.5** describen ciclo de vida e instancia/puertos **solo en tipos**, sin runtime real. La ejecución material queda **fuera** de este checkpoint.
+D11.3 fija **disciplina y orden** para un primer run local **posterior**; los modelos **D11.4–D11.5** describen ciclo de vida e instancia/puertos **solo en tipos**, sin runtime real. **D11.6** documenta start/stop seguro futuro del launcher; **D11.7** elige API-only como primer prototipo supervisado preferido; **D11.8** es la **compuerta humana** antes del primer run real. La ejecución material queda **fuera** de D11.3 y **fuera** de D11.8 hasta checklist firmado.
