@@ -91,6 +91,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D13.5 (`@workspace/scripts`):** `mapazapp:api-dashboard-supervisor` — prototipo **API + dashboard**; `spawn` confinado a `mapazapp-api-dashboard-supervisor.ts`; API **node** + `artifacts/api-server`; dashboard **node** al CLI de Vite resuelto vía `vite/package.json` → `bin/vite.js` bajo `artifacts/mapazapp` (`--strictPort`); **run real OK** sobre commit **`64f06f9`**; **sin** MT5/`POST`/`.exe` en alcance.
 - **D13.6 (solo documentación):** [`API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md) — evidencia formal del primer run API+dashboard bajo supervisor; **sin** ejecutar procesos al archivar el doc.
 - **D13.7 (solo documentación):** [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) — compuerta **packaging / runtime** tras supervisores D13; opciones, checklist ejecutable y secuencia recomendada **D13.8 → D13.9 → D14.0**; **sin** `.exe` ni código en ese checkpoint.
+- **D13.8 (solo documentación):** [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) — plan de hardening / evidence polish de supervisores **antes** de diseño packaging **D13.9**; **sin** implementación en ese checkpoint.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

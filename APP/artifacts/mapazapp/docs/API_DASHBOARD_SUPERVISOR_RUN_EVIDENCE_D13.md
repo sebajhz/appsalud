@@ -9,7 +9,7 @@ Aclaraciones:
 - **D13.5** implementó y ejecutó el supervisor de **dos procesos** (API en **3001**, dashboard Vite en **5173**), con preflight, builds, comprobaciones HTTP/CORS, cleanup ordenado y salida JSON segura.
 - **D13.6** (este documento) **solo archiva evidencia** en el repositorio; **no** ejecuta API, dashboard, supervisor, MT5 ni ningún otro proceso.
 
-**Relacionado:** [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.4** diseño / **D13.5** implementación), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3** — patrón API-only y lección de ownership), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7** — compuerta siguiente **packaging / runtime**).
+**Relacionado:** [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.4** diseño / **D13.5** implementación), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3** — patrón API-only y lección de ownership), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7** — compuerta **packaging / runtime**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8** — plan hardening / evidence polish **antes** de diseño packaging).
 
 ---
 
@@ -139,7 +139,9 @@ En el alcance de este run y de **D13.5**/**D13.6**:
 
 **D13.7** quedó documentado en [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) — **compuerta de decisión** packaging/runtime **sin** implementación ni procesos en ese checkpoint.
 
-**Siguiente recomendado:** **D13.8 — Supervisor hardening / evidence polish plan, no implementation** (plan explícito de logs, timeouts, envelopes, JSON de evidencia y criterios de aceptación **antes** de diseño de empaquetado **D13.9**).
+**D13.8** quedó documentado en [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) — plan de **hardening** y **evidence polish** (áreas A–N, propuesta de schema, CLI, tests futuros, decisión **D13.8.1** opcional); **sin** implementación en ese checkpoint.
+
+**Siguiente recomendado:** **D13.9 — Packaging design for local launcher, no executable**; **opcional** antes o en paralelo según revisión: **D13.8.1** — implementación acotada de polish de evidencia/salida (ver §8 del plan **D13.8**).
 
 **Justificación breve (contexto D13.6 → D13.7):**
 

@@ -8,7 +8,7 @@
 - **D13.7** (**este documento**) es una **compuerta de decisión**: fija **opciones** para el **próximo salto**, criterios de **empaquetado / runtime** y una **secuencia recomendada** antes de producto.
 - **D13.7** **no** implementa código, **no** ejecuta API, dashboard, supervisores, **no** genera `.exe` ni instalador, **no** asume MT5, trading, **`POST`** ni empaquetado real.
 
-**Relacionado:** [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md) (**D13.0**), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.6**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.4–D13.5**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8** — plan hardening/evidencia **antes** de packaging), [`NEXT_RUNTIME_EXPANSION_GATE_D13.md`](./NEXT_RUNTIME_EXPANSION_GATE_D13.md) (**D13.0**), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.6**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.4–D13.5**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -160,7 +160,7 @@ Para cada opción: *qué aporta*, *archivos probables*, *riesgos*, *complejidad*
 
 **Secuencia recomendada** (alineada a riesgo y a la auditoría **D11.0**, ahora **informada** por evidencia real **D13.3** / **D13.6**):
 
-1. **D13.8 — Supervisor hardening / evidence polish plan** (**sin** implementación en el propio ticket si se define como doc-only: plan de logs, timeouts, envelopes, JSON de evidencia, UX CLI — criterios de aceptación y archivos tocados **futuros** listados explícitamente).
+1. **D13.8 — Supervisor hardening / evidence polish plan** — **documentado** en [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**sin** implementación en ese checkpoint: taxonomía de errores, schema JSON, redacción, timeouts, CLI, tests futuros, decisión **D13.8.1** opcional).
 2. **D13.9 — Packaging design for local launcher** (**sin** ejecutable): layout, Node embebido vs runtime del sistema, **dashboard dev vs build estático**, política de logs, actualizaciones, **Windows paths**, supuestos `pnpm`/workspace vs artefacto autocontenido.
 3. **D14.0 — Local launcher executable prototype gate**: checklist **§7** + aprobación explícita antes del primer `.exe` o bundle instalable.
 
@@ -242,4 +242,4 @@ Antes del **primer** prototipo **`.exe`** o instalador **aprobado**:
 
 ## 9. Summary
 
-**D13.7** formaliza que el **próximo salto** principal después de la supervisión **D13** debe ser **planificación de endurecimiento** (**D13.8**) y **diseño de packaging** (**D13.9**), y **solo entonces** la **compuerta** de un **launcher ejecutable** (**D14.0**). **MT5** (**F**) y **transporte de acciones** (**G**) quedan como **candidatos secundarios** que requieren **gates propios** y **no** deben adelantarse sin el diseño de runtime local cerrado.
+**D13.7** formaliza que el **próximo salto** principal después de la supervisión **D13** debe ser **planificación de endurecimiento** (**D13.8**, ahora en [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md)) y **diseño de packaging** (**D13.9**), y **solo entonces** la **compuerta** de un **launcher ejecutable** (**D14.0**). **MT5** (**F**) y **transporte de acciones** (**G**) quedan como **candidatos secundarios** que requieren **gates propios** y **no** deben adelantarse sin el diseño de runtime local cerrado.
