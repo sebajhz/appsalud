@@ -2,7 +2,7 @@
 
 **Checkpoint D11.7 — solo documentación.** Evalúa **opciones** para el **primer prototipo** de “run supervisado” (levantar servicios locales bajo control explícito), **sin implementar** nada en este commit: no `spawn`, no `child_process`, no nuevas rutas `POST`, no botones dashboard, no launcher `.exe`.
 
-**Relacionado:** [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
+**Relacionado:** [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) (**D11.9** — plan detallado API-only, sin ejecución en ese checkpoint), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md).
 
 **Preferencia declarada por el equipo (D11.7):** cuando se apruebe el **primer run real**, el prototipo debería ser **API-only supervised run** (menos procesos, teardown más simple); el dashboard queda para un **segundo paso** explícito.
 
@@ -103,3 +103,5 @@ Para cada opción se resume: **valor entregado**, **archivos probables**, **test
 5. **Opción E** queda fuera del “primer prototipo” inmediato post-D11.8.
 
 **No implementación en D11.7:** la siguiente pieza de código corresponde a un checkpoint futuro explícito, **después** de cumplir [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md).
+
+**Plan API-only (D11.9):** [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) detalla comandos candidatos, precondiciones, evidencia y teardown — **sin ejecutar** el run en ese checkpoint.

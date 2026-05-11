@@ -2,7 +2,7 @@
 
 **Checkpoint D11.8 — solo documentación / checklist.** Establece la **aprobación formal obligatoria** antes de permitir **por primera vez** un **run local real** (procesos distintos del dry-run declarativo). **Este documento no ejecuta nada** y **no** autoriza `mapazapp:dev-start`, API, dashboard ni MT5 por sí mismo.
 
-**Relacionado:** [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md).
+**Relacionado:** [`FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md`](./FIRST_CONTROLLED_LOCAL_RUN_PLAN_D11.md), [`DEVELOPER_E2E_DRY_RUN_PLAN_D11.md`](./DEVELOPER_E2E_DRY_RUN_PLAN_D11.md), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md), [`END_TO_END_READINESS_AUDIT_D10.md`](./END_TO_END_READINESS_AUDIT_D10.md).
 
 ---
 
@@ -12,7 +12,7 @@
 |-----------|-------------|
 | **No aprobado** | Falta al menos un ítem obligatorio del §2 o se viola un límite del §3; **no** se ejecuta run real. |
 | **Aprobado** | Responsable humano firma §2.12; se permite **solo** el comando exacto listado en §2.9, dentro de duración §2.8 y con teardown §2.7. |
-| **Si aprobado — próximo checkpoint** | Registrar evidencia y cerrar **D11.9** (run real API-only supervisado **implementado/ejecutado** según plan) **o** salto de documentación **D12.0** si el equipo renombra la numeración — **a definir en el PR/commit de aprobación**; D11.8 solo habilita la transición, no la ejecuta. |
+| **Si aprobado — próximo checkpoint** | Seguir el plan **D11.9** [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) (**solo texto**). La **ejecución material** del primer run API-only corresponde a **D12.0** (o ID equivalente) con **aprobación explícita** posterior — no confundir **D11.9** (plan) con el run real. D11.8 solo habilita la transición, no ejecuta. |
 
 ---
 
@@ -63,9 +63,9 @@
 
 ## 5. Si **aprobado**
 
-- Ejecutar **solo** el comando §2.9 dentro de la ventana §2.8.
-- Archivar evidencia §2.11.
-- Abrir **D11.9** (o ID acordado) para la **ejecución material** y posibles cambios de código supervisados.
+- Usar [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) (**D11.9**) como plan operativo; **D11.9** no ejecuta el run por sí mismo.
+- En el checkpoint de **ejecución** acordado (p. ej. **D12.0**), ejecutar **solo** el comando §2.9 dentro de la ventana §2.8 y las salvaguardas del plan **D11.9**.
+- Archivar evidencia §2.11 (y la lista §5 de **D11.9** cuando aplique) al cerrar el run.
 
 ---
 

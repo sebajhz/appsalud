@@ -74,6 +74,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D11.6 (solo documentación):** [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md) — política de arranque/parada seguros del launcher futuro; **sin** `spawn` / `child_process` / `taskkill`.
 - **D11.7 (solo documentación):** [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md) — opciones de prototipo supervisado (API-only preferido para el primer run); **sin** implementación.
 - **D11.8 (solo documentación):** [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) — checklist/compuerta humana antes del primer run real; **sin** ejecutar servicios dentro del doc.
+- **D11.9 (solo documentación):** [`API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md`](./API_ONLY_SUPERVISED_RUN_PROTOTYPE_PLAN_D11.md) — plan del primer prototipo **API-only** supervisado (comandos candidatos, evidencia, teardown); **sin** ejecutar el run en ese checkpoint.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
