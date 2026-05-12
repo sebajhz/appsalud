@@ -28,6 +28,7 @@ MT5 Strategy Tester
 
 - **MT5** aporta **datos históricos del tester**, **motor de simulación** y **entorno controlado** del backtest.
 - El **EA** implementa detección de **Setup V1**, **Daily Bias** y reglas de dirección; produce trazas y archivos de evidencia.
+- **E3.3 (repo):** esqueleto inicial **`Mapazapp_BacktestEA`** en `APP/artifacts/mt5/experts/Mapazapp_BacktestEA/` — guard tester-only, exports mínimos (`backtest_trades.csv` solo cabecera, `backtest_events.csv`, `backtest_summary.json`); sin lógica IFVG/bias real todavía.
 - **Mapazapp** (TypeScript) **analiza y visualiza** resultados importados; no reemplaza al Strategy Tester en esta fase.
 
 ---

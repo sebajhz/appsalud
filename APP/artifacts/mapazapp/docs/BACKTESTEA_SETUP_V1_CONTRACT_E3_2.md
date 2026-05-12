@@ -34,6 +34,16 @@
 
 **Conclusión:** **TestEA actual** es una **base sólida de seguridad + export + paths**, pero **no** es aún el **BacktestEA real** del Setup V1. E3.2 define el contrato al que debe **evolucionar** (o del que debe **heredar**) ese artefacto.
 
+### 2.3 Mapazapp_BacktestEA (`Mapazapp_BacktestEA.mq5`, E3.3)
+
+| Aspecto | Estado (E3.3) |
+|---------|----------------|
+| Ruta en repo | `APP/artifacts/mt5/experts/Mapazapp_BacktestEA/` (separado de TestEA). |
+| Entorno | **Solo Strategy Tester** (`MQL_TESTER`); fuera → `INIT_FAILED`. |
+| Trading | **Sin** ejecución de órdenes; modo virtual documentado; sin imports de trading del terminal. |
+| Export | `backtest_trades.csv` (cabecera solamente), `backtest_events.csv`, `backtest_summary.json` bajo `MQL5\Files\<InpExportRoot>\<run_id>\`. |
+| Lógica | **Esqueleto** — bias/setup placeholder; **E3.4** bias real; **E3.5** IFVG real. |
+
 ---
 
 ## 3. BacktestEA identity
@@ -229,7 +239,7 @@ Orden sugerido (compatible con ampliar CP14 actual):
 
 | ID | Entrega |
 |----|---------|
-| **E3.3** | Esqueleto BacktestEA + guard tester-only + wiring de inputs y exports vacíos/ampliados. |
+| **E3.3** | Esqueleto BacktestEA + guard tester-only + wiring de inputs y exports vacíos/ampliados. **Implementado** como artefacto separado: `APP/artifacts/mt5/experts/Mapazapp_BacktestEA/Mapazapp_BacktestEA.mq5` + `README.md` (Mapazapp_TestEA se conserva como placeholder CP14). |
 | **E3.4** | Daily Bias V1 en EA + contadores §7.4 en summary/eventos. |
 | **E3.5** | Detección Setup V1 IFVG en EA + entradas/salidas virtuales o tester_orders según §5. |
 | **E3.6** | Esquema de evidencia versionado (`MZP_BACKTESTEA_V1`), compatibilidad import TS. |
