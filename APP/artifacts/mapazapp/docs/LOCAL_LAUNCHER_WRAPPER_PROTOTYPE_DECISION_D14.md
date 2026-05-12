@@ -7,6 +7,7 @@
 - **D14.2** ([`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md)) definió el **contrato declarativo** del manifest dry-run (artefactos, exclusiones, validaciones futuras).
 - **D14.3** (**este documento**) **decide y documenta** si y cómo se autorizaría un **futuro prototipo de wrapper local** del launcher, **sin implementar código** en este checkpoint.
 - **D14.4** — modelo TypeScript puro del wrapper local: [`mapazapp-local-launcher-wrapper-model.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-model.ts) + tests asociados (**sin** arranque de procesos, **sin** I/O a disco).
+- **D14.5** — CLI dry-run del wrapper: [`mapazapp-local-launcher-wrapper-dry-run.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-dry-run.ts) + tests; script `pnpm --filter @workspace/scripts mapazapp:launcher-wrapper-dry-run` (**sin** start de procesos, **sin** escritura a disco).
 - **D14.3 no implementa** TypeScript nuevo, scripts nuevos ni cambios en supervisores.
 - **D14.3 no genera `.exe`**, **no** instalador y **no** empaquetado real.
 - **D14.3 no ejecuta procesos** (sin API, dashboard, supervisor, MT5, watcher, `mapazapp:dev-start`).
@@ -163,19 +164,19 @@ Checklist **mínimo** (ampliación de **D14.0** §6):
 
 ## 11. Proposed future files if implemented later
 
-**No se crean en D14.3.** Lista de nombres candidatos bajo `APP/scripts/src/`:
+**No se crean en D14.3.** Lista de nombres bajo `APP/scripts/src/` (estado **D14.5**):
 
-- `mapazapp-local-launcher-wrapper-model.ts`
-- `mapazapp-local-launcher-wrapper-dry-run.ts`
-- `mapazapp-local-launcher-wrapper.ts`
-- `mapazapp-local-launcher-wrapper.test.ts`
+- `mapazapp-local-launcher-wrapper-model.ts` — **D14.4** ✅
+- `mapazapp-local-launcher-wrapper-dry-run.ts` — **D14.5** ✅ ([`mapazapp-local-launcher-wrapper-dry-run.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-dry-run.ts))
+- `mapazapp-local-launcher-wrapper.ts` — futuro (no **D14.5**)
+- `mapazapp-local-launcher-wrapper.test.ts` — nombre candidato alternativo
 
-**Scripts `package.json` candidatos** (futuros):
+**Scripts `package.json`:**
 
-- `mapazapp:launcher-wrapper-dry-run`
-- `mapazapp:launcher-wrapper`
+- `mapazapp:launcher-wrapper-dry-run` — **D14.5** ✅ (**sin** `mapazapp:launcher-wrapper` todavía)
+- `mapazapp:launcher-wrapper` — futuro
 
-**D14.3 no añade** estos archivos ni entradas en `package.json`.
+**D14.3 no añade** archivos ni entradas en `package.json`; **D14.4**/**D14.5** añaden modelo + CLI dry-run según gates posteriores.
 
 ---
 
