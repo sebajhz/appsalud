@@ -61,6 +61,7 @@
 - **Prioridad actual (pausa expansión runtime):** demostrar **validez del setup y del motor** sobre datos históricos reproducibles (**daily bias**, backtest, evidencia) **antes** de retomar expansión de launcher/packaging/MT5 live.
 - **Plan maestro:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md) (**E1**) — hipótesis de bias, Setup V1 canónico, fuentes de datos, campaña de métricas, formato de evidencia y secuencia **E2–E10**; alineado con docs V2-04 … V2-15 y con **TESTING_AND_VALIDATION_STRATEGY.md**.
 - **Auditoría E2:** [`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md) — inventario motor, contratos Setup V1 / Daily Bias V1, gaps de campaña vs bias HTF; siguiente paso operativo **E3** (y **E3.5** si hace falta cablear bias antes de **E4**).
+- **E3 — Dataset / data health XAUUSD (documentación):** [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md) — contrato de entrega, formatos CSV soportados por el importador actual, checklist de importación, plantilla de informe de salud de datos, requisitos multi-timeframe para bias, relación con **E3.5**; sin baseline de rentabilidad ni cambios de setup en el alcance E3.
 - **Regla de foco:** la siguiente prueba decisiva es de **estrategia**, no de **runtime** — coherente con la frase en **E1 §2**.
 
 ---
