@@ -11,7 +11,7 @@
 
 **Aclaración:** **D14.2 no produce** un archivo **`manifest.json`** (ni otro JSON) **consumible en runtime** fuera de este árbol de documentación. **Sí documenta** el contrato que una herramienta **`dry-run`** posterior podría implementar (p. ej. **D14.2.2** opcional).
 
-**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) (**D13.9**), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**), [`LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md`](./LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md) (**D14.3** — decisión de wrapper local, secuencia **D14.4–D14.6**; **sin** código en ese checkpoint), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) (**D13.9**), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -271,9 +271,9 @@ Un **dry-run** futuro debe **fallar de forma explícita** (código de error / in
 ## 17. Relationship with D14.3
 
 - **D14.2 no autoriza** un **wrapper** real ni **`spawn`**.
-- **D14.3** — *Local launcher wrapper prototype decision* — decidirá si se permite **código** de envoltorio y run bajo **D14.0 §6**.
-- **D14.3 debe consumir** este manifiesto como **lista de verdad** para qué empaquetar y qué validar antes de arrancar.
-- **D14.3 no debe saltar** a **`.exe` firmado`**, **installer**, ni **auto-update** — esos quedan en gates posteriores explícitos.
+- **D14.3** — [`LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md`](./LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md) — **decisión** de prototipo de wrapper local (opciones A–F, secuencia **D14.4–D14.6**, dependencia **D13.9.1**); **docs-only**, **sin** código en ese checkpoint.
+- **D14.3** debe **consumir** este manifiesto como **lista de verdad** para empaquetado y validaciones antes de arrancar implementación ejecutable.
+- **D14.3 / D14.4 / D14.5** **no** sustituyen un **`.exe` firmado**, **installer**, ni **auto-update** — gates posteriores explícitos.
 
 ---
 
@@ -295,11 +295,14 @@ Un **dry-run** futuro debe **fallar de forma explícita** (código de error / in
 
 | ID | Contenido |
 |----|-----------|
-| **D14.2** | **Packaging dry-run manifest** (este doc) — **sin ejecutable**, **sin** I/O. |
-| **D13.9.1** | Decisión de servido estático del dashboard — **si** bloquea enumeración concreta de artefactos o implementación. |
+| **D14.2** | **Packaging dry-run manifest** (este doc) — **cerrado (docs-only)**; **sin ejecutable**, **sin** I/O. |
+| **D14.3** | **Local launcher wrapper prototype decision** — [`LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md`](./LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md); **sin** implementación. |
+| **D14.4** | **TS pure local launcher wrapper model**, **no process start**. |
+| **D14.5** | **Launcher wrapper dry-run CLI**, **no process start**. |
+| **D14.6** | **Real wrapper prototype gate** (start/stop bajo precondiciones). |
+| **D13.9.1** | Decisión de servido estático del dashboard — **si** bloquea enumeración concreta de artefactos o implementación “producto”. |
 | **D14.2.1** | Modelo TS puro del manifiesto — **sin** escrituras a filesystem (opcional). |
 | **D14.2.2** | Validador dry-run — **solo lectura**, sin copiar (opcional). |
-| **D14.3** | Decisión / prototipo **wrapper** launcher local — tras **D14.2** y precondiciones **D14.0 §6**. |
 
 ---
 

@@ -11,8 +11,9 @@
 - **Siguiente gate:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**) — compuerta formal del **prototipo launcher local** (opciones, preconditions, allowed scope, layout/manifest/wrapper gates, riesgos y secuencia **D14.1–D14.3**); sigue **sin** `.exe` ni código.
 - **Layout runtime (detalle D14.1):** [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md) — carpetas top-level, políticas **`.gitignore`**, paths, validación conceptual y enlace a **D14.2** manifest; **sin** escritura a disco.
 - **Manifest dry-run (detalle D14.2):** [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) — contrato declarativo (incluidos/excluidos, validaciones futuras, dashboard A–E); **sin** copiar archivos ni `.exe`.
+- **Wrapper prototype decision (detalle D14.3):** [`LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md`](./LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md) — si y cómo un wrapper local futuro; secuencia **D14.4–D14.6**; **sin** código en ese checkpoint.
 
-**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**), [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md) (**D14.1**), [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) (**D14.2** — contrato manifest dry-run, artefactos requeridos/opcionales, exclusiones, validaciones futuras; **sin** I/O), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**), [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md) (**D14.1**), [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) (**D14.2** — contrato manifest dry-run, artefactos requeridos/opcionales, exclusiones, validaciones futuras; **sin** I/O), [`LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md`](./LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md) (**D14.3** — decisión wrapper local, secuencia **D14.4–D14.6**), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -145,7 +146,7 @@ Queda **fuera** del alcance del launcher/packaging **descrito aquí** en la fase
 2. **D14.0** — **gate** de prototipo launcher local (aprobación + checklist §14).
 3. **D14.1** — modelo de layout en disco **sin** escritura real de producto (solo TS/docs/tests de rutas virtuales si aplica).
 4. **D14.2** — **manifest** / dry-run de empaquetado (**sin** `.exe`): lista de archivos, versiones, hashes opcionales — doc canónico [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md).
-5. **D14.3** — **decisión** o prototipo de **wrapper** launcher **no firmado** **solo** si **D14.0** aprueba explícitamente.
+5. **D14.3** — **decisión** de wrapper launcher ([`LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md`](./LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md)); prototipo Node **no firmado** solo tras **D14.4–D14.6** y si **D14.0** aprueba explícitamente.
 
 **Justificación:**
 
@@ -328,11 +329,11 @@ Antes de **cualquier** **`.exe`** o instalador (refuerzo de **D13.7** §7):
 | Checkpoint | Contenido |
 |------------|-----------|
 | **D13.9** | **Este documento** — diseño packaging local **sin** ejecutable. |
-| **D13.9.1** (opcional) | **Decisión** estrategia de **servido del dashboard** (estático / preview / embebido). **D14.0** ([`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) §5) la deja **abierta** para **D14.1** y **bloqueante** antes de **D14.2**/`.exe`. |
+| **D13.9.1** (opcional) | **Decisión** estrategia de **servido del dashboard** (estático / preview / embebido). **D14.0** ([`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) §5) la deja **abierta** para layout/manifest declarativo; **bloqueante** antes de **packaging real**, run **D14.6** “producto” o **`.exe`**. |
 | **D14.0** | **Local launcher prototype gate** — aprobación + checklist §14; documentado en [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md). |
-| **D14.1** | **Modelo de layout** en disco **sin** escrituras reales de producto (o solo tests/fixtures). |
-| **D14.2** | **Packaging dry-run manifest** — lista de artefactos, versiones, **sin** `.exe`. |
-| **D14.3** | **Decisión / prototipo** wrapper launcher **no firmado** **solo** si **D14.0** autoriza. |
+| **D14.1** | **Modelo de layout** — [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md). |
+| **D14.2** | **Packaging dry-run manifest** — [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md); **sin** `.exe`. |
+| **D14.3** | **Decisión** wrapper launcher — [`LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md`](./LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md); prototipo **D14.4–D14.6** solo si **D14.0** autoriza. |
 
 ---
 
