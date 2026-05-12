@@ -9,8 +9,9 @@
 - **D13.9** (**este documento**) **diseña** el **packaging local** y el **launcher futuro** de Mapazapp: **qué** sería, **qué** incluiría, **cómo** se organizaría en disco y **qué** compuertas faltan antes de **D14.0**.
 - **D13.9** **no** implementa código, **no** ejecuta procesos, **no** genera **`.exe`**, **no** crea instalador ni **empaquetado real**.
 - **Siguiente gate:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**) — compuerta formal del **prototipo launcher local** (opciones, preconditions, allowed scope, layout/manifest/wrapper gates, riesgos y secuencia **D14.1–D14.3**); sigue **sin** `.exe` ni código.
+- **Layout runtime (detalle D14.1):** [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md) — carpetas top-level, políticas **`.gitignore`**, paths, validación conceptual y enlace a **D14.2** manifest; **sin** escritura a disco.
 
-**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**), [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md) (**D14.1** — modelo de layout local ampliado, carpeta **`support/`**, políticas path/gitignore/validación; **sin** escritura a disco), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -170,6 +171,7 @@ Mapazapp/
   evidence/          # JSON por run (runId), sanitizado
   runtime/           # estado efímero opcional (pid file propio, lock de instancia — diseño futuro)
   backups/           # copias de config antes de migración schemaVersion
+  support/           # staging de bundle de soporte futuro (exports sanitizados) — ver D14.1
 ```
 
 | Carpeta | Qué va | Qué **no** va |
@@ -182,6 +184,7 @@ Mapazapp/
 | **evidence/** | JSON por **`runId`** (§10) | Payloads HTTP completos, stacks largos por defecto |
 | **runtime/** | Archivos efímeros del launcher (opcional) | Datos de usuario definitivos sin backup |
 | **backups/** | Copias de **`config/`** antes de upgrade | Nada ejecutable |
+| **support/** | Staging de **bundle de soporte** (exports sanitizados); ver [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md) (**D14.1**) | Secretos, repo completo, datos MT5 crudos |
 
 **Fuera del repo Git:** en instalación real, todo el árbol **`Mapazapp/`** (o `%LOCALAPPDATA%\Mapazapp\`) debe estar **ignorado** por Git del desarrollador salvo fixtures de test explícitos.
 
