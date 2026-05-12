@@ -5,6 +5,7 @@
 - **D14.4** ([`mapazapp-local-launcher-wrapper-model.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-model.ts)) creó el **modelo TypeScript puro** del wrapper local (modos, layout conceptual, políticas de acción, validación, serialización segura) **sin** I/O ni procesos.
 - **D14.5** ([`mapazapp-local-launcher-wrapper-dry-run.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-dry-run.ts), script `mapazapp:launcher-wrapper-dry-run`) creó el **CLI dry-run** que materializa el modelo en memoria e imprime plan/JSON **sin** arrancar servicios.
 - **D14.6** (**este documento**) es la **compuerta formal** para decidir si se **autoriza** un **wrapper real** con capacidad de **start/stop** de procesos (delegando en la semántica ya probada del supervisor **D13.5**), **qué alcance** tendría, **qué condiciones** deben cumplirse y **qué sigue prohibido**.
+- **D14.7** — **implementación/run autorizado** del wrapper real: [`mapazapp-local-launcher-wrapper.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper.ts), tests, script **`mapazapp:launcher-wrapper`** — **dry-run** por defecto; start real solo con **`--confirm-start`** (run-once vía supervisor **D13.5**); **sin** `.exe`/installer/packaging; evidencia formal → **D14.8**.
 - **D14.6 no implementa código** ni scripts nuevos ejecutables más allá de la documentación.
 - **D14.6 no ejecuta procesos** (sin API, dashboard, supervisor, MT5, watcher, `mapazapp:dev-start`).
 - **D14.6 no genera `.exe`**, **no** instalador y **no** empaquetado real.
@@ -24,7 +25,7 @@
 | **Decisión wrapper D14.3** | **Cerrada** — secuencia **D14.4–D14.6** y opciones A–F. |
 | **Modelo wrapper D14.4** | **OK** — TS puro + tests. |
 | **CLI dry-run D14.5** | **OK** — plan/validación en stdout; sin start real. |
-| **Wrapper real** | **No** — aún no hay CLI que delegue en supervisor con start explícito. |
+| **Wrapper real D14.7** | **Implementado** — [`mapazapp-local-launcher-wrapper.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper.ts), tests, script **`mapazapp:launcher-wrapper`**; dry-run por defecto; `--confirm-start` para run-once vía supervisor **D13.5**; **sin** `.exe`/installer/packaging. |
 | **Launcher `.exe`** | **No**. |
 | **Installer** | **No**. |
 | **MT5 / `POST` / trading / action endpoints** | **No** en el camino feliz acordado para **D14.7** acotado. |
@@ -304,7 +305,8 @@
 - [x] Alcance permitido/prohibido **D14.7** (**§8**).
 - [x] Requisitos de **safety**, **evidencia** y **tests** (**§9–§11**).
 - [x] Manejo de **fallos** (**§12**).
-- [x] **Sin código**, **sin procesos**, **sin `.exe`**, **sin empaquetado** en **D14.6**.
+- [x] **Sin código**, **sin procesos**, **sin `.exe`**, **sin empaquetado** en **D14.6** (el código del wrapper real vive en **D14.7**, no en **D14.6**).
+- [x] **D14.7** — implementación y tests: `mapazapp-local-launcher-wrapper.ts`, `mapazapp-local-launcher-wrapper.test.ts`, script **`mapazapp:launcher-wrapper`** (ver **§2** baseline).
 
 ---
 
