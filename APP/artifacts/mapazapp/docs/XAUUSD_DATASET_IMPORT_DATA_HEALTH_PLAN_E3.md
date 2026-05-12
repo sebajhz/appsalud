@@ -1,14 +1,16 @@
 # Mapazapp — XAUUSD Dataset Import / Data Health Plan E3
 
+> **Corrección E3.1:** el **backtest principal del setup** se ejecuta en **MT5 Strategy Tester** con el futuro EA **`Mapazapp_BacktestEA`**. Este documento describe **salud de datos y contratos de archivos CSV/JSON** como **exportación / evidencia** hacia Mapazapp (validación, import), **no** como sustituto del Strategy Tester. Ver [`MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md`](./MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md).
+
 ## 1. Purpose
 
 - **E1** ([`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md)) fijó el foco en **motor + setup** y la secuencia de prueba (bias, backtest, evidencia) con pausa en expansión de runtime.
-- **E2** ([`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md)) auditó el motor y concluyó que la **prueba de setup “E1-completa”** sigue **parcial** (campaña por defecto sin inyección HTF al replay, política de bias no unificada como gate duro, sin contadores de rechazo por bias en resúmenes).
-- **E3** (este documento) **prepara el primer dataset real de XAUUSD**: contrato de entrega, formato CSV alineado al código actual, checklist de importación y **plantilla de informe de data health**. Sin un dataset **real** y **sano** no hay prueba seria reproducible del motor sobre mercado vivo.
-- **E3 no prueba rentabilidad**, no ejecuta campañas de baseline de producto ni modifica el **Setup V1** congelado en E1/E2.
-- **E3.5** (cableado Daily/HTF Bias como gate duro) queda **fuera del alcance de implementación** de E3; solo se documenta la dependencia (ver §11).
+- **E2** ([`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md)) auditó el motor TypeScript; la **prueba canónica del setup** se reorientó a **MQL5 + Strategy Tester** (**E3.1**).
+- **E3** (este documento) define **contratos y data health** para archivos que **salen de MT5** (export EA, export Bridge, rates CSV auxiliar) o que se **importan en Mapazapp** para análisis: checklist, formatos reconocidos por el importador actual y **plantilla de informe de calidad**. **No** posiciona CSV externo como motor principal del backtest.
+- **E3 no prueba rentabilidad** ni sustituye una corrida oficial en el tester; no modifica el **Setup V1** documental.
+- El **Daily Bias como gate duro principal** para la prueba de setup se implementará en el **EA** (fases **E3.4** / **E3.5** MQL5 según [`MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md`](./MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md) §9), no como hito TypeScript “E3.5” previo.
 
-**Referencias técnicas existentes:** [`V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`](./V2_11_MANUAL_CANDLE_DATASET_IMPORT.md), [`V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`](./V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md), [`V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md`](./V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md), [`V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`](./V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md).
+**Referencias técnicas existentes:** [`MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md`](./MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md), [`V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`](./V2_11_MANUAL_CANDLE_DATASET_IMPORT.md), [`V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`](./V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md), [`V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md`](./V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md), [`V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`](./V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md).
 
 ---
 
@@ -21,7 +23,7 @@
 | **Adaptador campaña** | `createBacktestCampaignDatasetFromManualImport` (mismo archivo) | Construye `BacktestCampaignDataset` con `datasetId` opcional aportado por el llamador; **no** infiere `SymbolMarketSpec` (sigue siendo responsabilidad del llamador). |
 | **CLI read-only** | `APP/scripts/src/mapazapp-import-validate.ts` | `pnpm --filter @workspace/scripts mapazapp:import-validate -- --file … --symbol … --timeframe …` — lee archivo local, delega en `importManualCandleDataset`, imprime resumen humano o `--json`. **Sin** persistencia, **sin** MT5, **sin** ejecución de trading. |
 | **Tests** | `mapazapp-import-validate.test.ts` (scripts), `v2-11-manual-candle-dataset-importer.test.ts`, `b2-mt5-data-format-validation.test.ts`, `c1-mt5-fixture-governance.c1.test.ts`, fixtures bajo `tests/fixtures/mt5/` | Los CSV en repo con nombre `*SYNTHETIC*` son **fixtures sintéticos**; **no** sustituyen evidencia de borde real ni “data health” de mercado. |
-| **Pipeline campaña manual** | `runManualDatasetCampaign` (V2-13) | Orquesta import + validación de bundles + `runBacktestCampaign`; E3 **no** exige ejecutar esta campaña para cerrar el entregable documental. |
+| **Pipeline campaña manual** | `runManualDatasetCampaign` (V2-13) | Orquesta import + validación de bundles + `runBacktestCampaign`; uso **auxiliar** (no motor principal del setup proof; ver **E3.1**). |
 
 **Validaciones que el importer ya realiza (resumen):**
 
@@ -42,21 +44,21 @@
 
 ---
 
-## 3. Required dataset for first proof
+## 3. Required evidence / export quality (XAUUSD)
 
 | Atributo | Requisito |
 |----------|-----------|
-| **symbol** | `XAUUSD` (canónico; alinear `brokerSymbol` si el CSV usa sufijo de broker). |
-| **source** | CSV exportado desde MT5 (histórico / Rates) **o** CSV `candles.csv` estilo BridgeEA (`mapazapp_bridge_candles_v1`), u OHLC genérico si el operador controla el esquema. |
-| **Timeframe de ejecución** | **M15** recomendado para la primera prueba seria de replay/campaña, salvo que el contrato de parámetros fije otro TF explícitamente. |
-| **Contexto HTF / Daily bias** | Para alineación con E1/E2: series **H1, H4, D1** además del TF de ejecución (ver §7). |
-| **Rango mínimo** | **3 a 6 meses** de velas M15 (aprox. orden de magnitud coherente con estadísticas iniciales). |
+| **symbol** | `XAUUSD` (canónico; alinear sufijo de broker en export EA/MT5). |
+| **source** | **Preferente:** export de evidencia desde **`Mapazapp_BacktestEA`** o artefactos Bridge acordados. **Auxiliar:** CSV rates desde MT5 solo para validación de forma / tests, **no** como definición del backtest principal. |
+| **Timeframe de ejecución** | **M15** recomendado para la primera campaña XAUUSD en tester, salvo contrato distinto en **E3.2**. |
+| **Contexto HTF / Daily bias** | En el **EA** el tester provee multi-TF nativo; los CSV de evidencia deben documentar qué TF exporta cada archivo si aplica. |
+| **Rango mínimo** | **3 a 6 meses** de historia en tester (o longitud equivalente en export agregado). |
 | **Rango ideal** | **1 a 2 años**. |
-| **Timezone** | **Declarado por el operador** (offset o convención “velas en UTC / en hora del servidor MT5”); el código MT5-like asume composición UTC en el parseo — cualquier desajuste debe documentarse como **riesgo de bias temporal**. |
-| **OHLC** | Completo y coherente en todas las filas válidas. |
-| **Volumen / spread** | Opcional en CSV genérico y MT5-like; obligatorio en contrato Bridge completo según columnas requeridas. |
-| **Duplicados** | Idealmente **ninguno**; si existen, el core solo **advierte** — el informe de salud debe marcarlo. |
-| **Gaps** | Diagnosticados en el informe E3 (conteo / ventanas grandes); el importer **no** los calcula solo. |
+| **Timezone** | Declarado en el export / runbook; coherente con la sesión del bróker en MT5. |
+| **OHLC** (si el export incluye velas) | Completo y coherente en filas válidas. |
+| **Volumen / spread** | Opcional según export; recomendado si el EA los emite. |
+| **Duplicados** | Idealmente ninguno en series temporales exportadas. |
+| **Gaps** | Diagnosticados en el informe E3; el importer core **no** sustituye al análisis de calidad del run en tester. |
 
 ---
 
@@ -140,18 +142,12 @@ Donde `shortHash` puede ser hash del archivo original (SHA-256 truncado) para de
 
 ---
 
-## 7. Multi-timeframe requirement for bias
+## 7. Multi-timeframe and Daily Bias (EA vs import)
 
-- **E4/E5** alineados a E1 requieren contexto **H1 / H4 / D1** para que `evaluateContextBias` y la política de decisión tengan sentido cuando se cablee `htfCandlesByTimeframe` al replay/campaña (**E3.5** / trabajo post-E2).
-- Si el operador solo entrega **M15**, las opciones son:
-  - **A.** Resample offline (herramienta externa o futura utilidad en core) hacia H1/H4/D1 — debe documentarse el método y riesgos de look-ahead.
-  - **B.** Importar **CSV separados** por TF (recomendado para primera prueba seria): mismo bróker, misma convención de tiempo.
-  - **C.** Posponer el **bias hard gate** y etiquetar cualquier run como **“sin HTF / sin bias gate”** (no baseline E1-completo).
-  - **D.** Tratar **E3.5** como prerequisito si E4 debe llamarse baseline con bias duro.
-
-**Recomendación E3:** para la primera prueba seria, pedir **M15 + H1 + H4 + D1** (cuatro archivos o un paquete equivalente) con la **misma fuente y TZ documentada**. **No** presentar resultados como “Daily Bias audit” si solo hay un TF sin resampleo validado.
-
-**Estado del core:** el importador **no** resamplea; no hay evidencia en E3 de un resample oficial en repo — **B** o **D** son las vías conservadoras.
+- **En MT5 Strategy Tester**, el **`Mapazapp_BacktestEA`** debe obtener **H1 / H4 / D1** (y TF de ejecución) **desde el propio terminal/tester** para Daily Bias y Setup V1; **no** depende de CSV externos como fuente principal.
+- Los archivos CSV/JSON tratados en E3 sirven para **evidencia exportada** o **validación offline** de forma compatible con el importador TypeScript.
+- Si solo se dispusiera de un CSV de velas **sin** corrida en tester, debe etiquetarse como **auxiliar / legacy**, no como baseline oficial del setup (ver **E3.1**).
+- El gate duro de bias en producto **pasa al EA** (fases **E3.4–E3.5** MQL5 en la secuencia **E3.1** §9), no al cableado previo de `runBacktestCampaign`.
 
 ---
 
@@ -164,7 +160,7 @@ Donde `shortHash` puede ser hash del archivo original (SHA-256 truncado) para de
 | **Plantilla de informe data health** | §9. |
 | **Decisión de formato CSV** | Elegir entre Bridge / MT5-like / genérico según origen; si no encaja → convertir offline. |
 | **Lista de archivos que debe proveer el usuario** | §10. |
-| **Gaps para E3.5 / E4** | Sin CSV real en repo: **gap** operativo; sin HTF en campaña: **gap** técnico documentado en E2; sin contadores bias: **gap** E4/E5. |
+| **Gaps para E3.6 / E4** | Sin export de evidencia: **gap** operativo; sin esquema EA acordado: **gap** contrato (**E3.2** / **E3.6**). |
 
 ---
 
@@ -200,31 +196,28 @@ nextAction: ""
 
 ## 10. User-provided files needed
 
-**Opción mínima (solo mecánica de motor, sin HTF completo para bias E1):**
+**Opción mínima (validación de pipeline de import / forma de archivo):**
 
-- `XAUUSD` **M15** CSV válido según §4, **3–6 meses**.
+- Muestra de **export CSV/JSON** desde el futuro **`Mapazapp_BacktestEA`** o CSV rates auxiliar válido según §4, etiquetado como **evidencia**, no como sustituto del tester.
 
-**Opción recomendada (alineada con E1/E2 y futura E3.5):**
+**Opción recomendada (alineada con E3.1):**
 
-- `XAUUSD` **M15**, **H1**, **H4**, **D1** (cuatro datasets).
-- Misma fuente (mismo bróker / mismo export MT5 o mismo Bridge).
-- Misma convención de tiempo documentada.
-- **~1 año** de historia si es posible.
+- Ejecutar (cuando exista EA) **Strategy Tester** en MT5 y conservar **export de evidencia** acordado (trades, bias, métricas).
+- Documentar símbolo, TF, rango y versión del EA en el runbook.
 
 **Opción ideal:**
 
-- **2 años** de datos.
-- Incluir **spread** y **tick volume** cuando el export lo permita (Bridge ya los exige; MT5-like opcional).
+- Campaña de tester con **histórico largo** (1–2 años) y export completo de métricas y **`rejected_by_daily_bias`**.
 
-**Política de repo:** no commitear CSV reales crudos; staging local (p. ej. carpetas ignoradas por `.gitignore` tipo `mt5-history`) según gobernanza existente.
+**Política de repo:** no commitear datos operativos crudos; staging local ignorado por Git.
 
 ---
 
-## 11. Relationship with E3.5
+## 11. Relationship with E3.1 and the new E-phase sequence
 
-- **E3** deja listo el **contrato de datos** y la **salud** esperada del primer dataset real.
-- **E3.5** debe **cablear Daily/HTF Bias como gate duro** en el camino de campaña/replay por defecto (inyección `htfCandlesByTimeframe`, política unificada, contadores tipo `rejected_by_daily_bias` / `skipped_neutral_bias` en resúmenes) si E4 debe cumplir E1 al pie de la letra.
-- **E4** no debe denominarse **“baseline real del setup E1”** hasta que existan **bias gate** uniforme y evidencia de rechazos — puede existir un **E4-pre** mecánico sin bias duro si se etiqueta explícitamente.
+- **E3.1** redefine el **motor de backtest principal** → **MT5 Strategy Tester + `Mapazapp_BacktestEA`** ([`MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md`](./MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md)).
+- **E3** (este doc) sigue aplicando a **calidad de exportes** y validación de CSV/JSON **hacia Mapazapp**.
+- La secuencia **E3.4–E3.6** MQL5 sustituye la antigua expectativa de un **“E3.5” TypeScript** como gate principal de Daily Bias; el trabajo TypeScript opcional queda **auxiliar** (ver E2).
 
 ---
 
@@ -232,10 +225,10 @@ nextAction: ""
 
 | Pregunta | Respuesta |
 |----------|-----------|
-| **¿Estamos listos para importar un dataset real?** | **Sí a nivel de herramientas** (`importManualCandleDataset` + CLI validate). Falta el **archivo real** aportado por el operador y completar el **informe §9** sobre ese archivo. |
-| **¿Qué archivos se necesitan?** | Ver §10; recomendado M15+H1+H4+D1. |
-| **¿Puede correr E4 después de E3?** | **E4-pre (mecánica)** sí, con M15 + perfil de símbolo y consciente de limitaciones E2. **E4 como baseline E1-completo** **no**, sin **E3.5** (y sin HTF inyectado). |
-| **¿Es obligatorio E3.5?** | **Sí**, si la definición de E4 incluye **Daily Bias V1 como gate duro** y métricas de rechazo; **no**, si E4 se acota explícitamente a replay sin bias HTF. |
+| **¿Estamos listos para importar evidencia CSV/JSON?** | **Sí a nivel de herramientas** (`importManualCandleDataset` + CLI) cuando exista **export** desde el EA o Bridge; el **backtest oficial** del setup es en **tester**. |
+| **¿Qué archivos se necesitan?** | Ver §10: prioridad a **exports del BacktestEA** una vez existan (**E3.6**). |
+| **¿Puede correr E4 después de E3?** | **E4** en la nueva secuencia es **primer smoke en Strategy Tester** (**E3.1** §9), no “E4” como campaña TypeScript previa. |
+| **¿Sigue siendo relevante cablear bias en TypeScript?** | Solo como **auxiliar**; el **gate principal** va al **EA** (**E3.4**). |
 
 ---
 

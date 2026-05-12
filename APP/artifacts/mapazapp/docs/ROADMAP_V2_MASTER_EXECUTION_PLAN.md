@@ -58,11 +58,12 @@
 
 ### Engine Setup Proof Phase E
 
-- **Prioridad actual (pausa expansión runtime):** demostrar **validez del setup y del motor** sobre datos históricos reproducibles (**daily bias**, backtest, evidencia) **antes** de retomar expansión de launcher/packaging/MT5 live.
-- **Plan maestro:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md) (**E1**) — hipótesis de bias, Setup V1 canónico, fuentes de datos, campaña de métricas, formato de evidencia y secuencia **E2–E10**; alineado con docs V2-04 … V2-15 y con **TESTING_AND_VALIDATION_STRATEGY.md**.
-- **Auditoría E2:** [`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md) — inventario motor, contratos Setup V1 / Daily Bias V1, gaps de campaña vs bias HTF; siguiente paso operativo **E3** (y **E3.5** si hace falta cablear bias antes de **E4**).
-- **E3 — Dataset / data health XAUUSD (documentación):** [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md) — contrato de entrega, formatos CSV soportados por el importador actual, checklist de importación, plantilla de informe de salud de datos, requisitos multi-timeframe para bias, relación con **E3.5**; sin baseline de rentabilidad ni cambios de setup en el alcance E3.
-- **Regla de foco:** la siguiente prueba decisiva es de **estrategia**, no de **runtime** — coherente con la frase en **E1 §2**.
+- **Prioridad actual (pausa expansión runtime):** demostrar **validez del setup** con **backtest principal en MT5 Strategy Tester** (EA `Mapazapp_BacktestEA`, nombre conceptual), **export de evidencia** y análisis en Mapazapp **antes** de retomar expansión de launcher/packaging/MT5 live.
+- **Plan maestro:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md) (**E1**); **corrección de motor de backtest:** [`MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md`](./MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md) (**E3.1**).
+- **Auditoría E2:** [`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md) — inventario TypeScript como **referencia/auxiliar**; prueba canónica del setup → **MQL5 EA + Strategy Tester**.
+- **E3 — Export / data health XAUUSD (documentación):** [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md) — contratos y salud de **CSV/JSON de evidencia** hacia Mapazapp; **no** sustituye al Strategy Tester.
+- **Secuencia E (actualizada):** **E3.1** alineación tester → **E3.2** contrato Setup V1 EA → **E3.3** esqueleto EA + guard tester-only → **E3.4** Daily Bias en EA → **E3.5** detección Setup V1 en EA → **E3.6** esquema export evidencia → **E4** primer smoke tester → **E5** campaña XAUUSD tester → **E6** import evidencia MT5 en Mapazapp → **E7** diseño dashboard resultados → **E8** compuerta decisión setup.
+- **Regla de foco:** la siguiente prueba decisiva es de **estrategia en MT5 tester**, no de **runtime** — coherente con la frase en **E1 §2**.
 
 ---
 

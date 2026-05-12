@@ -5,10 +5,11 @@
 - **E1** ([`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md)) fijó el **plan maestro** (pausa runtime, foco motor, secuencia **E2–E10**, reglas de bias conceptuales).
 - **E2** (**este documento**) **audita** el motor y la documentación **existentes** y **congela por escrito** el contrato propuesto **Setup V1** y **Daily Bias V1** alineado a lo que el código puede o no soportar hoy.
 - **E2 no implementa** lógica nueva ni modifica core; solo inventario, gaps y contratos para preparar **E3** (datos) y **E4** (baseline de backtest).
-- **E3** queda definido como el **siguiente paso operativo de dataset / data health** para XAUUSD en [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md) (contrato CSV según importador actual, checklist, plantilla de informe, archivos requeridos; sin ejecutar backtest productivo en el propio E3).
+- **E3** cubre **export/evidencia y data health** de archivos (p. ej. CSV/JSON desde MT5) en [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md); el **histórico y el backtest principal del setup** viven en **MT5 Strategy Tester + EA** (ver **E3.1**).
+- **E3.1** ([`MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md`](./MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md)) alinea la fase Engine Setup Proof con **Strategy Tester** y el futuro **`Mapazapp_BacktestEA`**; no implementa código.
 - **Objetivo:** que el equipo sepa **qué existe**, **qué falta** y **qué habría que cablear** antes de una primera prueba seria del setup con histórico real.
 
-**Relacionado:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md) (**E3**), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md`](./V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md), [`V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md`](./V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md), [`V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md`](./V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md), [`V2_08_ENTRY_VARIANT_MODEL.md`](./V2_08_ENTRY_VARIANT_MODEL.md), [`V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md`](./V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md), [`V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md`](./V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md), [`V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`](./V2_11_MANUAL_CANDLE_DATASET_IMPORT.md), [`V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`](./V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md), [`V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`](./V2_14_PARAMETER_SET_GRID_RUNNER_V1.md), [`V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`](./V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md).
+**Relacionado:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md) (**E3**), [`MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md`](./MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md) (**E3.1**), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md`](./V2_04_IFVG_STRATEGY_REPLAY_BACKTEST.md), [`V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md`](./V2_05_DECISION_MODEL_SOFT_SCORE_REDESIGN.md), [`V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md`](./V2_07_HTF_BIAS_CONTEXT_ENGINE_V1.md), [`V2_08_ENTRY_VARIANT_MODEL.md`](./V2_08_ENTRY_VARIANT_MODEL.md), [`V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md`](./V2_09_TARGET_LIQUIDITY_OBJECTIVE_MODEL.md), [`V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md`](./V2_10_SYMBOL_RANKING_BACKTEST_CAMPAIGN_RUNNER.md), [`V2_11_MANUAL_CANDLE_DATASET_IMPORT.md`](./V2_11_MANUAL_CANDLE_DATASET_IMPORT.md), [`V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md`](./V2_13_CAMPAIGN_RUNNER_OVER_MANUAL_DATASETS.md), [`V2_14_PARAMETER_SET_GRID_RUNNER_V1.md`](./V2_14_PARAMETER_SET_GRID_RUNNER_V1.md), [`V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md`](./V2_15_WALK_FORWARD_TRAIN_VALIDATION_FORWARD_EVALUATOR.md).
 
 ---
 
@@ -16,13 +17,15 @@
 
 El **motor técnico** (IFVG, replay, decisión, campañas, grid, walk-forward, import CSV en memoria) está **materialmente avanzado** en `@workspace/mapazapp-core`. Se puede ejecutar (fuera del alcance de este doc) un **replay IFVG** sobre velas de ejecución y obtener **métricas agregadas** (`IfvgReplayBacktestSummary`) y **trazas** por candidato.
 
-Sin embargo, la prueba alineada a **E1** — **Daily Bias V1** como compuerta **dura** (solo long si “bullish”, solo short si “bearish”, neutral → no trade, conteo `rejected_by_daily_bias`) **encima del pipeline de campaña por defecto** — está **solo parcialmente** respaldada hoy:
+**E3.1 — Alineación:** la **prueba principal del setup proof** se hará en **MT5 Strategy Tester** con un **EA** (`Mapazapp_BacktestEA`, nombre conceptual). Este inventario TypeScript es **referencia y auxiliar** (diseño, regresión, ingestión de evidencia exportada), **no** el motor canónico del backtest del setup en la fase actual.
+
+Sin embargo, la prueba alineada a **E1** — **Daily Bias V1** como compuerta **dura** (solo long si “bullish”, solo short si “bearish”, neutral → no trade, conteo `rejected_by_daily_bias`) **encima del pipeline de campaña TypeScript por defecto** — está **solo parcialmente** respaldada hoy (útil como sandbox; el **gate duro principal** pasa al **EA**, ver [`MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md`](./MT5_STRATEGY_TESTER_BACKTEST_ALIGNMENT_E3_1.md) §9):
 
 - Existe **HTF context / bias** (`evaluateContextBias`, `ContextBiasResult`, integración en `evaluateDecisionModel`) con **D1** entre los timeframes soportados, pero **no** hay un módulo separado llamado “dailyBias.ts”; el “daily bias” de negocio se mapea aquí al **resultado HTF** (ver §5).
 - `runIfvgReplayBacktest` **sí** acepta `htfCandlesByTimeframe` y calcula `evaluateContextBias` por candidato cuando hay velas HTF y `symbolProfile` (`ifvg-replay-backtest.ts`).
 - `runBacktestCampaign` (**`backtest-campaign-runner.ts`**) al llamar `runIfvgReplayBacktest` **no** pasa `htfCandlesByTimeframe` ni `contextBiasResultOverride`; por tanto las campañas estándar corren **sin** evaluación HTF salvo overrides de test en el dataset. Esto es un **gap bloqueante** para **E4/E5** tal como los definió **E1** sin trabajo adicional de cableado o contrato explícito en dataset.
 
-**¿Can we run a meaningful first setup proof now?** → **Partial.**
+**¿Can we run a meaningful first setup proof now?** → **Partial** en **TypeScript** (replay/campaña sin sustituir al tester); la prueba **canónica** del setup proof es **Strategy Tester + `Mapazapp_BacktestEA`** (ver **E3.1**), pendiente de contrato e implementación EA (**E3.2+**).
 
 - **Yes (parcial):** se puede correr **baseline de IFVG + replay + métricas** sobre CSV de velas de **ejecución** (M5/M15/…) con `runIfvgReplayBacktest` o `runBacktestCampaign` **sin** gate HTF estricto — útil como **E4-pre** mecánico, **no** como cumplimiento total de **E1 §4–§6**.
 - **No (como E1 full):** no se puede afirmar aún una prueba **E1-canónica** de *daily bias rejection audit* sobre el **mismo** pipeline de campaña sin: (a) suministrar HTF candles al replay, y (b) fijar política `DecisionModelContextBiasIntegration` (hard block / no-trade invalidation) y contadores de rechazo en evidencia.
@@ -31,9 +34,9 @@ Sin embargo, la prueba alineada a **E1** — **Daily Bias V1** como compuerta **
 
 | Pregunta | Respuesta corta |
 |----------|------------------|
-| ¿Listos para **E3** (dataset / data health)? | **Sí**, con matices: el import manual y el CLI de validación existen; falta operador + dataset real + plantilla de informe E3. |
-| ¿Listos para **E4** (baseline canónico **con** Daily Bias V1)? | **Parcial**: hace falta cableado o invocación directa de replay con HTF + política; si **E4** se define sin bias duro, se puede antes. |
-| ¿Listos para **E5** (auditoría rechazo bias)? | **No** sin contadores y sin bias aplicado de forma uniforme en todos los trades candidatos. |
+| ¿Listos para **E3** (export / data health)? | **Sí** para contrato de **evidencia** hacia Mapazapp; el histórico “vivo” del backtest oficial está en **MT5 tester** (**E3.1**). |
+| ¿Listos para **E4** (primer smoke / campaña)? | **E4** en la secuencia nueva = **Strategy Tester** post **E3.2–E3.6**; el pipeline TS-only no sustituye esa compuerta. |
+| ¿Listos para **E5** (auditoría bias)? | Depende de **export EA** con `rejected_by_daily_bias` y reglas en **MQL5** (**E3.4–E3.6**). |
 
 ---
 
