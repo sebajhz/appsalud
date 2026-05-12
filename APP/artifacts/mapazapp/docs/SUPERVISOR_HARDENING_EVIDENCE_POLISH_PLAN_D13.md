@@ -310,7 +310,7 @@ Convención de columnas: **código** = cambios TS en supervisores/helpers; **run
 ## 9. Recommended next checkpoints
 
 1. **D13.8** (**este documento**) — plan de hardening / polish, **sin** implementación.
-2. **D13.9** — **Packaging design for local launcher**, **sin** ejecutable.
+2. **D13.9** — **Packaging design for local launcher**, **sin** ejecutable — **documentado** en [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md).
 3. **Opcional — D13.8.1** — implementación acotada de evidencia/salida (si brecha justificada).
 4. **Opcional — D13.8.2** — run de evidencia **después** de polish (archivo tipo **D13.6**).
 5. **D14.0** — **Local launcher executable prototype gate** (aprobación + checklist **D13.7** §7).

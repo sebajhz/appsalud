@@ -92,6 +92,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D13.6 (solo documentación):** [`API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md) — evidencia formal del primer run API+dashboard bajo supervisor; **sin** ejecutar procesos al archivar el doc.
 - **D13.7 (solo documentación):** [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) — compuerta **packaging / runtime** tras supervisores D13; opciones, checklist ejecutable y secuencia recomendada **D13.8 → D13.9 → D14.0**; **sin** `.exe` ni código en ese checkpoint.
 - **D13.8 (solo documentación):** [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) — plan de hardening / evidence polish de supervisores **antes** de diseño packaging **D13.9**; **sin** implementación en ese checkpoint.
+- **D13.9 (solo documentación):** [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) — diseño packaging launcher local (layout, assets, config, logs, supervision empaquetada, Windows, gates); **sin** `.exe` ni código en ese checkpoint.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
