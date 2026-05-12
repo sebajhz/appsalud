@@ -99,6 +99,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D14.3 (solo documentación):** [`LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md`](./LOCAL_LAUNCHER_WRAPPER_PROTOTYPE_DECISION_D14.md) — **decisión** de prototipo de **wrapper** launcher local (alcances A–F, secuencia **D14.4–D14.6**, dependencia **D13.9.1**, responsabilidades, checklist pre-run); **sin** código, **sin** procesos, **sin** `.exe`.
 - **D14.4 (`@workspace/scripts`, modelo TS puro):** [`mapazapp-local-launcher-wrapper-model.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-model.ts) + tests — modelo declarativo del **wrapper** local (modos, layout **D14.1**, políticas de acción, validación, snapshot JSON); **sin** `spawn`/`child_process`, **sin** escritura a disco, **sin** MT5/trading; base para **D14.5** CLI dry-run.
 - **D14.5 (`@workspace/scripts`, CLI dry-run):** [`mapazapp-local-launcher-wrapper-dry-run.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-dry-run.ts) + tests + script **`mapazapp:launcher-wrapper-dry-run`** — imprime plan/validación JSON o humana sobre el modelo **D14.4**; **sin** arranque de servicios, **sin** escritura a disco; prepara compuerta **D14.6**.
+- **D14.6 (solo documentación):** [`REAL_WRAPPER_PROTOTYPE_GATE_D14.md`](./REAL_WRAPPER_PROTOTYPE_GATE_D14.md) — compuerta formal del **wrapper real** con start/stop (**sin** código en **D14.6**); siguiente implementación **D14.7** con aprobación explícita.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 

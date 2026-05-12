@@ -8,11 +8,12 @@
 - **D14.3** (**este documento**) **decide y documenta** si y cómo se autorizaría un **futuro prototipo de wrapper local** del launcher, **sin implementar código** en este checkpoint.
 - **D14.4** — modelo TypeScript puro del wrapper local: [`mapazapp-local-launcher-wrapper-model.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-model.ts) + tests asociados (**sin** arranque de procesos, **sin** I/O a disco).
 - **D14.5** — CLI dry-run del wrapper: [`mapazapp-local-launcher-wrapper-dry-run.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-dry-run.ts) + tests; script `pnpm --filter @workspace/scripts mapazapp:launcher-wrapper-dry-run` (**sin** start de procesos, **sin** escritura a disco).
+- **D14.6** — compuerta del **wrapper real** (autorización y límites antes de start/stop en código): [`REAL_WRAPPER_PROTOTYPE_GATE_D14.md`](./REAL_WRAPPER_PROTOTYPE_GATE_D14.md) — **solo** documentación; **sin** código ni procesos en ese checkpoint.
 - **D14.3 no implementa** TypeScript nuevo, scripts nuevos ni cambios en supervisores.
 - **D14.3 no genera `.exe`**, **no** instalador y **no** empaquetado real.
 - **D14.3 no ejecuta procesos** (sin API, dashboard, supervisor, MT5, watcher, `mapazapp:dev-start`).
 
-**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) (**D13.9**), [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) (**D14.2**), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) (**D13.9**), [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) (**D14.2**), [`REAL_WRAPPER_PROTOTYPE_GATE_D14.md`](./REAL_WRAPPER_PROTOTYPE_GATE_D14.md) (**D14.6**), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -201,7 +202,7 @@ Checklist **mínimo** (ampliación de **D14.0** §6):
 | **D14.3** | **Local launcher wrapper prototype decision** (este doc) — **sin implementación**. |
 | **D14.4** | **TS pure local launcher wrapper model**, **no process start**. |
 | **D14.5** | **Launcher wrapper dry-run CLI**, **no process start**. |
-| **D14.6** | **Real wrapper prototype gate** (start/stop bajo precondiciones **§10**). |
+| **D14.6** | **Real wrapper prototype gate** — [`REAL_WRAPPER_PROTOTYPE_GATE_D14.md`](./REAL_WRAPPER_PROTOTYPE_GATE_D14.md) (start/stop bajo precondiciones **§10** de este doc / **§7** del gate **D14.6**). |
 
 **Opcional:**
 
