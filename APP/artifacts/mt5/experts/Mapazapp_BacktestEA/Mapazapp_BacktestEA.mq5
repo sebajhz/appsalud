@@ -1,45 +1,74 @@
 //+------------------------------------------------------------------+
 //| Mapazapp_BacktestEA.mq5                                          |
-//| Mapazapp — E3.3: Strategy Tester skeleton (Setup V1 path)       |
-//| Virtual mode only: CSV/JSON under MQL5/Files/<export>/<run>/    |
-//| No broker execution imports; no live chart operation.            |
+//| Mapazapp — E3.4: Strategy Tester + Daily Bias V1 (Setup path)    |
+//| Virtual mode: CSV/JSON under MQL5/Files/<export>/<run>/        |
+//| No broker execution imports; tester chart outside tester fails.  |
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.00"
-#property description "Strategy Tester only: BacktestEA skeleton export (E3.3). No live trading."
+#property version   "1.01"
+#property description "Strategy Tester only: BacktestEA with Daily Bias V1 (E3.4). No IFVG yet."
 #property strict
 
-input string            InpSchemaVersion        = "backtest_ea_v1";
-input string            InpStrategyId           = "IFVG_XAUUSD_V1";
-input string            InpParameterSetId       = "default";
-input string            InpCanonicalSymbol      = "XAUUSD";
-input string            InpRunId                = "";
-input string            InpExportRoot           = "Mapazapp\\BacktestEA";
-input ENUM_TIMEFRAMES   InpExecutionTimeframe   = PERIOD_M15;
-input ENUM_TIMEFRAMES   InpDailyBiasTimeframe   = PERIOD_D1;
-input bool              InpUseH4Context         = true;
-input bool              InpUseH1Context         = true;
-input string            InpBacktestMode         = "virtual";
-input bool              InpWriteTradesCsv       = true;
-input bool              InpWriteEventsCsv       = true;
-input bool              InpWriteSummaryJson     = true;
+input string            InpSchemaVersion           = "backtest_ea_v1";
+input string            InpStrategyId              = "IFVG_XAUUSD_V1";
+input string            InpParameterSetId          = "default";
+input string            InpCanonicalSymbol         = "XAUUSD";
+input string            InpRunId                   = "";
+input string            InpExportRoot              = "Mapazapp\\BacktestEA";
+input ENUM_TIMEFRAMES   InpExecutionTimeframe      = PERIOD_M15;
+input ENUM_TIMEFRAMES   InpDailyBiasTimeframe      = PERIOD_D1;
+input int               InpDailyBiasMinBodyPoints  = 0;
+input bool              InpUseH4Context            = true;
+input bool              InpUseH1Context            = true;
+input string            InpBacktestMode            = "virtual";
+input bool              InpWriteTradesCsv          = true;
+input bool              InpWriteEventsCsv         = true;
+input bool              InpWriteSummaryJson       = true;
 
-#define BACKTESTEA_BUILD "MZP_BacktestEA_E3_3"
+#define BACKTESTEA_BUILD        "MZP_BacktestEA_E3_4"
+#define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
+#define REASON_BULL_BODY        "previous_daily_close_above_open"
+#define REASON_BEAR_BODY        "previous_daily_close_below_open"
+#define REASON_BODY_SMALL       "previous_daily_body_too_small"
+#define REASON_DOJI             "previous_daily_close_equals_open"
+#define REASON_MISSING_DAILY    "missing_daily_bias_data"
 
-bool     g_testerOk = false;
-bool     g_initOk = false;
-string   g_runId = "";
-string   g_baseRelPath = "";
-string   g_brokerSymbol = "";
-string   g_eventsDataLines = "";
-int      g_nextEventId = 1;
-string   g_exportNotes = "";
+enum ENUM_MAPZ_BIAS
+  {
+   MAPZ_BIAS_UNKNOWN = 0,
+   MAPZ_BIAS_BULLISH = 1,
+   MAPZ_BIAS_BEARISH = 2,
+   MAPZ_BIAS_NEUTRAL = 3
+  };
+
+bool            g_testerOk = false;
+bool            g_initOk = false;
+string          g_runId = "";
+string          g_baseRelPath = "";
+string          g_brokerSymbol = "";
+string          g_eventsDataLines = "";
+int             g_nextEventId = 1;
+string          g_exportNotes = "";
+
+datetime        g_lastClosedBiasBarTime = 0;
+ENUM_MAPZ_BIAS  g_lastBiasEnum = MAPZ_BIAS_UNKNOWN;
+string          g_lastBiasReason = "";
+
+long            g_totalBiasEvaluated = 0;
+long            g_bullishBiasCount = 0;
+long            g_bearishBiasCount = 0;
+long            g_neutralBiasCount = 0;
+long            g_unknownBiasCount = 0;
+long            g_missingBiasContextCount = 0;
+const long      g_rejectedByDailyBias = 0;
+const long      g_skippedNeutralBias = 0;
+
+bool            g_missingDataEventEmitted = false;
 
 //+------------------------------------------------------------------+
-//| E3.4 will implement Daily Bias V1 (real logic).                  |
-//| E3.5 will implement Setup V1 IFVG detection (real logic).        |
-//| E3.3: bias/setup are placeholders only — no IFVG engine yet.     |
+//| E3.5 will add Setup V1 IFVG detection (real logic).              |
+//| E3.4: Daily Bias V1 from last closed bar on bias timeframe.      |
 //+------------------------------------------------------------------+
 
 //+------------------------------------------------------------------+
@@ -259,27 +288,131 @@ bool EnsureTesterOnly(void)
   }
 
 //+------------------------------------------------------------------+
-string GetBiasDirectionPlaceholder(void)
+string BiasDirectionToString(const ENUM_MAPZ_BIAS b)
   {
+   if(b == MAPZ_BIAS_BULLISH)
+      return "bullish";
+   if(b == MAPZ_BIAS_BEARISH)
+      return "bearish";
+   if(b == MAPZ_BIAS_NEUTRAL)
+      return "neutral";
    return "unknown";
   }
 
 //+------------------------------------------------------------------+
-string DetectSetupPlaceholder(void)
+string BuildBiasReason(const ENUM_MAPZ_BIAS b, const string primaryTag)
   {
-   return "none";
+   if(StringLen(primaryTag) > 0)
+      return primaryTag;
+   return BiasDirectionToString(b);
   }
 
 //+------------------------------------------------------------------+
-string WriteTradesHeader(void)
+void IncrementBiasOutcomeCounters(const ENUM_MAPZ_BIAS b, const bool missingContext)
   {
-   return "run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason";
+   g_totalBiasEvaluated++;
+   if(missingContext)
+      g_missingBiasContextCount++;
+   if(b == MAPZ_BIAS_BULLISH)
+      g_bullishBiasCount++;
+   else if(b == MAPZ_BIAS_BEARISH)
+      g_bearishBiasCount++;
+   else if(b == MAPZ_BIAS_NEUTRAL)
+      g_neutralBiasCount++;
+   else
+      g_unknownBiasCount++;
   }
 
 //+------------------------------------------------------------------+
-string WriteEventsHeader(void)
+//| Daily Bias V1 — last fully closed bar on InpDailyBiasTimeframe.  |
+//| close>open bullish; close<open bearish; close==open neutral;     |
+//| optional min body filter → neutral + small-body reason.          |
+//+------------------------------------------------------------------+
+bool EvaluateDailyBiasV1(const datetime closedBarTime,
+                           const double openPrice,
+                           const double closePrice,
+                           ENUM_MAPZ_BIAS &outBias,
+                           string &outReason)
   {
-   return "run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details";
+   outBias = MAPZ_BIAS_UNKNOWN;
+   outReason = REASON_MISSING_DAILY;
+
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   if(pt <= 0.0)
+     {
+      outReason = REASON_MISSING_DAILY;
+      return false;
+     }
+
+   if(closedBarTime == 0)
+     {
+      outReason = REASON_MISSING_DAILY;
+      return false;
+     }
+
+   const double body = MathAbs(closePrice - openPrice);
+   const int bodyPts = (int)MathRound(body / pt);
+
+   if(InpDailyBiasMinBodyPoints > 0 && bodyPts < InpDailyBiasMinBodyPoints)
+     {
+      outBias = MAPZ_BIAS_NEUTRAL;
+      outReason = REASON_BODY_SMALL;
+      return true;
+     }
+
+   if(closePrice > openPrice)
+     {
+      outBias = MAPZ_BIAS_BULLISH;
+      outReason = REASON_BULL_BODY;
+      return true;
+     }
+   if(closePrice < openPrice)
+     {
+      outBias = MAPZ_BIAS_BEARISH;
+      outReason = REASON_BEAR_BODY;
+      return true;
+     }
+
+   outBias = MAPZ_BIAS_NEUTRAL;
+   outReason = REASON_DOJI;
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+void AppendEventRow(const string eventType,
+                     const string biasWire,
+                     const string setupWire,
+                     const string decision,
+                     const string reason,
+                     const string details)
+  {
+   if(!g_initOk || !InpWriteEventsCsv)
+      return;
+   const string ts = NowUtcIso();
+   const string evId = StringFormat("EVT_%06d", g_nextEventId++);
+   string row = g_runId + "," + evId + "," + ts + "," + InpCanonicalSymbol + ","
+                + eventType + "," + biasWire + "," + setupWire + ","
+                + decision + "," + JsonStringEscape(reason) + "," + JsonStringEscape(details);
+   if(StringLen(g_eventsDataLines) > 0)
+      g_eventsDataLines += "\r\n";
+   g_eventsDataLines += row;
+  }
+
+//+------------------------------------------------------------------+
+void ExportDailyBiasEvent(const ENUM_MAPZ_BIAS biasEnum,
+                          const string reasonTag,
+                          const datetime closedBarTime,
+                          const int bodyPoints)
+  {
+   const string biasW = BiasDirectionToString(biasEnum);
+   const string reasonWire = BuildBiasReason(biasEnum, reasonTag);
+   const string tiso = (closedBarTime > 0 ? TimeUtcIso(closedBarTime) : "none");
+   const string details = StringFormat("bias_tf=%s closed_bar_time=%s body_points=%d reason=%s",
+                                       TfToWire(InpDailyBiasTimeframe),
+                                       tiso,
+                                       bodyPoints,
+                                       reasonWire);
+   AppendEventRow(EVT_DAILY_BIAS_EVAL, biasW, "none", "bias_recorded", reasonWire, details);
   }
 
 //+------------------------------------------------------------------+
@@ -290,29 +423,93 @@ void ExportLifecycleEvent(const string eventType,
   {
    if(!g_initOk)
       return;
-   const string ts = NowUtcIso();
-   const string evId = StringFormat("EVT_%06d", g_nextEventId++);
-   const string bias = GetBiasDirectionPlaceholder();
-   const string setupDir = DetectSetupPlaceholder();
-   string row = g_runId + "," + evId + "," + ts + "," + InpCanonicalSymbol + ","
-                + eventType + "," + bias + "," + setupDir + ","
-                + decision + "," + JsonStringEscape(reason) + "," + JsonStringEscape(details);
-   if(StringLen(g_eventsDataLines) > 0)
-      g_eventsDataLines += "\r\n";
-   g_eventsDataLines += row;
+   const string biasW = BiasDirectionToString(g_lastBiasEnum);
+   AppendEventRow(eventType, biasW, "none", decision, reason, details);
   }
 
 //+------------------------------------------------------------------+
-void ExportPlaceholderSummary(void)
+//| Gate helper for E3.5: maps bias vs setup direction (wire tags).  |
+//+------------------------------------------------------------------+
+string ApplyDailyBiasGatePlaceholder(const string setupDirection)
   {
-   g_exportNotes =
-      "E3.3 skeleton: no real IFVG, no real daily bias, no virtual trades emitted; counters are zero by design.";
+   const string s = Trim(setupDirection);
+   if(StringLen(s) == 0 || s == "none")
+      return "allowed";
+   if(g_lastBiasEnum == MAPZ_BIAS_UNKNOWN)
+      return "missing_bias_context";
+   if(g_lastBiasEnum == MAPZ_BIAS_NEUTRAL)
+      return "skipped_neutral_bias";
+   if(s == "long" && g_lastBiasEnum == MAPZ_BIAS_BEARISH)
+      return "rejected_by_daily_bias";
+   if(s == "short" && g_lastBiasEnum == MAPZ_BIAS_BULLISH)
+      return "rejected_by_daily_bias";
+   return "allowed";
+  }
+
+//+------------------------------------------------------------------+
+void TryEmitDailyBiasOnNewClosedBar(void)
+  {
+   if(!g_initOk)
+      return;
+
+   const datetime tClosed = iTime(g_brokerSymbol, InpDailyBiasTimeframe, 1);
+   if(tClosed == 0)
+     {
+      if(!g_missingDataEventEmitted)
+        {
+         g_missingDataEventEmitted = true;
+         g_lastBiasEnum = MAPZ_BIAS_UNKNOWN;
+         g_lastBiasReason = REASON_MISSING_DAILY;
+         IncrementBiasOutcomeCounters(MAPZ_BIAS_UNKNOWN, true);
+         ExportDailyBiasEvent(MAPZ_BIAS_UNKNOWN, REASON_MISSING_DAILY, 0, 0);
+        }
+      return;
+     }
+
+   g_missingDataEventEmitted = false;
+
+   if(tClosed == g_lastClosedBiasBarTime)
+      return;
+
+   const double o = iOpen(g_brokerSymbol, InpDailyBiasTimeframe, 1);
+   const double c = iClose(g_brokerSymbol, InpDailyBiasTimeframe, 1);
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   int bodyPts = 0;
+   if(pt > 0.0)
+      bodyPts = (int)MathRound(MathAbs(c - o) / pt);
+
+   ENUM_MAPZ_BIAS bias = MAPZ_BIAS_UNKNOWN;
+   string rsn = "";
+   const bool evalOk = EvaluateDailyBiasV1(tClosed, o, c, bias, rsn);
+   if(!evalOk)
+     {
+      bias = MAPZ_BIAS_UNKNOWN;
+      rsn = REASON_MISSING_DAILY;
+     }
+
+   g_lastClosedBiasBarTime = tClosed;
+   g_lastBiasEnum = bias;
+   g_lastBiasReason = rsn;
+
+   IncrementBiasOutcomeCounters(bias, !evalOk);
+   ExportDailyBiasEvent(bias, rsn, tClosed, bodyPts);
+  }
+
+//+------------------------------------------------------------------+
+void RefreshExportNotes(void)
+  {
+   const string gateNone = ApplyDailyBiasGatePlaceholder("none");
+   g_exportNotes = StringFormat(
+                       "E3.4 Daily Bias V1 on %s; last=%s; gate_none=%s; IFVG deferred to E3.5; no virtual trades.",
+                       TfToWire(InpDailyBiasTimeframe),
+                       BiasDirectionToString(g_lastBiasEnum),
+                       gateNone);
   }
 
 //+------------------------------------------------------------------+
 string WriteSummaryJson(void)
   {
-   ExportPlaceholderSummary();
+   RefreshExportNotes();
    const string execTf = TfToWire(InpExecutionTimeframe);
    const string biasTf = TfToWire(InpDailyBiasTimeframe);
    const string exportedAt = NowUtcIso();
@@ -331,11 +528,17 @@ string WriteSummaryJson(void)
    json += "  \"backtest_mode\": \"" + JsonStringEscape(Trim(InpBacktestMode)) + "\",\r\n";
    json += "  \"tester_only\": true,\r\n";
    json += "  \"has_real_ifvg_logic\": false,\r\n";
-   json += "  \"has_real_daily_bias_logic\": false,\r\n";
+   json += "  \"has_real_daily_bias_logic\": true,\r\n";
    json += "  \"has_real_trading_orders\": false,\r\n";
    json += "  \"trade_count\": 0,\r\n";
-   json += "  \"rejected_by_daily_bias\": 0,\r\n";
-   json += "  \"skipped_neutral_bias\": 0,\r\n";
+   json += StringFormat("  \"total_bias_evaluated\": %I64d,\r\n", g_totalBiasEvaluated);
+   json += StringFormat("  \"bullish_bias_count\": %I64d,\r\n", g_bullishBiasCount);
+   json += StringFormat("  \"bearish_bias_count\": %I64d,\r\n", g_bearishBiasCount);
+   json += StringFormat("  \"neutral_bias_count\": %I64d,\r\n", g_neutralBiasCount);
+   json += StringFormat("  \"unknown_bias_count\": %I64d,\r\n", g_unknownBiasCount);
+   json += StringFormat("  \"rejected_by_daily_bias\": %I64d,\r\n", g_rejectedByDailyBias);
+   json += StringFormat("  \"skipped_neutral_bias\": %I64d,\r\n", g_skippedNeutralBias);
+   json += StringFormat("  \"missing_bias_context\": %I64d,\r\n", g_missingBiasContextCount);
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
    json += "}\r\n";
@@ -372,6 +575,18 @@ void WriteAllExports(const int deinitReason)
   }
 
 //+------------------------------------------------------------------+
+string WriteTradesHeader(void)
+  {
+   return "run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason";
+  }
+
+//+------------------------------------------------------------------+
+string WriteEventsHeader(void)
+  {
+   return "run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details";
+  }
+
+//+------------------------------------------------------------------+
 int OnInit()
   {
    g_testerOk = EnsureTesterOnly();
@@ -396,13 +611,21 @@ int OnInit()
      }
 
    g_initOk = true;
-   Print("Mapazapp_BacktestEA: tester-only skeleton; outputs under MQL5\\Files\\", g_baseRelPath);
+   Print("Mapazapp_BacktestEA: tester-only; Daily Bias V1; outputs under MQL5\\Files\\", g_baseRelPath);
 
    ExportLifecycleEvent("lifecycle_init", "ok", "OnInit", "paths_ready");
-   ExportLifecycleEvent("skeleton_ready", "noop", "E3.3_placeholder",
-                        "awaiting E3.4 bias and E3.5 setup detection");
+   ExportLifecycleEvent("skeleton_ready", "noop", "E3.4_bias_v1",
+                       "IFVG detection pending E3.5");
+
+   TryEmitDailyBiasOnNewClosedBar();
 
    return INIT_SUCCEEDED;
+  }
+
+//+------------------------------------------------------------------+
+void OnTick()
+  {
+   TryEmitDailyBiasOnNewClosedBar();
   }
 
 //+------------------------------------------------------------------+

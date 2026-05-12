@@ -1,5 +1,5 @@
 /**
- * E3.3 — Static safety checks for Mapazapp_BacktestEA.mq5 (no MetaEditor; repo text only).
+ * E3.3 / E3.4 — Static safety and Daily Bias V1 markers for Mapazapp_BacktestEA.mq5 (no MetaEditor).
  */
 
 import assert from "node:assert/strict";
@@ -18,6 +18,7 @@ const FORBIDDEN_SUBSTRINGS = [
   "PositionOpen",
   "WebRequest",
   "socket",
+  "terminal64.exe",
 ] as const;
 
 test("A — Mapazapp_BacktestEA.mq5 exists", () => {
@@ -55,17 +56,46 @@ test("E — expected export filenames referenced", () => {
   assert.match(src, /backtest_summary\.json/);
 });
 
-test("F — summary honesty flags for E3.3", () => {
+test("F — summary flags: IFVG and tester orders off; daily bias on", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /"has_real_ifvg_logic"\s*:\s*false/);
-  assert.match(src, /"has_real_daily_bias_logic"\s*:\s*false/);
+  assert.match(src, /"has_real_daily_bias_logic"\s*:\s*true/);
   assert.match(src, /"has_real_trading_orders"\s*:\s*false/);
 });
 
-test("G — README exists and states tester-only posture", () => {
+test("G — Daily Bias V1 implementation markers", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /EvaluateDailyBiasV1/);
+  assert.match(src, /daily_bias_evaluated/);
+  assert.match(src, /ApplyDailyBiasGatePlaceholder/);
+});
+
+test("H — summary bias counters present", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /total_bias_evaluated/);
+  assert.match(src, /bullish_bias_count/);
+  assert.match(src, /bearish_bias_count/);
+  assert.match(src, /neutral_bias_count/);
+  assert.match(src, /unknown_bias_count/);
+  assert.match(src, /rejected_by_daily_bias/);
+  assert.match(src, /skipped_neutral_bias/);
+  assert.match(src, /missing_bias_context/);
+});
+
+test("I — wire bias direction tokens present", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /"bullish"/);
+  assert.match(src, /"bearish"/);
+  assert.match(src, /"neutral"/);
+  assert.match(src, /"unknown"/);
+});
+
+test("J — README declares Daily Bias V1 and tester-only posture", () => {
   assert.ok(existsSync(README_PATH));
   const readme = readFileSync(README_PATH, "utf8");
   const lower = readme.toLowerCase();
+  assert.ok(lower.includes("daily bias"));
+  assert.ok(lower.includes("v1") || lower.includes("e3.4"));
   assert.ok(lower.includes("strategy tester") || lower.includes("solo strategy tester"));
   assert.ok(lower.includes("live") && (lower.includes("no ") || lower.includes("not ")));
 });

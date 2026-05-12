@@ -29,6 +29,7 @@ MT5 Strategy Tester
 - **MT5** aporta **datos históricos del tester**, **motor de simulación** y **entorno controlado** del backtest.
 - El **EA** implementa detección de **Setup V1**, **Daily Bias** y reglas de dirección; produce trazas y archivos de evidencia.
 - **E3.3 (repo):** esqueleto inicial **`Mapazapp_BacktestEA`** en `APP/artifacts/mt5/experts/Mapazapp_BacktestEA/` — guard tester-only, exports mínimos (`backtest_trades.csv` solo cabecera, `backtest_events.csv`, `backtest_summary.json`); sin lógica IFVG/bias real todavía.
+- **E3.4 (repo):** Daily Bias V1 en el mismo EA — vela cerrada previa en `InpDailyBiasTimeframe`, evento `daily_bias_evaluated`, summary con `has_real_daily_bias_logic: true`; detalle en [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md). IFVG sigue fuera de alcance hasta **E3.5**.
 - **Mapazapp** (TypeScript) **analiza y visualiza** resultados importados; no reemplaza al Strategy Tester en esta fase.
 
 ---
@@ -151,7 +152,7 @@ Secuencia **Engine Setup Proof** actualizada (reemplaza la numeración E3→E4 p
 | **E3.1** | MT5 Strategy Tester Backtest Alignment (**este documento**) |
 | **E3.2** | BacktestEA Setup V1 contract |
 | **E3.3** | BacktestEA skeleton with tester-only guard |
-| **E3.4** | Daily Bias V1 in BacktestEA |
+| **E3.4** | Daily Bias V1 in BacktestEA (implementado; ver [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md)) |
 | **E3.5** | Setup V1 detection in BacktestEA |
 | **E3.6** | BacktestEA evidence export schema |
 | **E4** | First MT5 Strategy Tester smoke backtest |
