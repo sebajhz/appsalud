@@ -8,8 +8,9 @@
 - **D13.8** ([`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md)) definió **hardening** y **evidence polish** del supervisor como plan (sin implementación en ese checkpoint).
 - **D13.9** (**este documento**) **diseña** el **packaging local** y el **launcher futuro** de Mapazapp: **qué** sería, **qué** incluiría, **cómo** se organizaría en disco y **qué** compuertas faltan antes de **D14.0**.
 - **D13.9** **no** implementa código, **no** ejecuta procesos, **no** genera **`.exe`**, **no** crea instalador ni **empaquetado real**.
+- **Siguiente gate:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**) — compuerta formal del **prototipo launcher local** (opciones, preconditions, allowed scope, layout/manifest/wrapper gates, riesgos y secuencia **D14.1–D14.3**); sigue **sin** `.exe` ni código.
 
-**Relacionado:** [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -323,8 +324,8 @@ Antes de **cualquier** **`.exe`** o instalador (refuerzo de **D13.7** §7):
 | Checkpoint | Contenido |
 |------------|-----------|
 | **D13.9** | **Este documento** — diseño packaging local **sin** ejecutable. |
-| **D13.9.1** (opcional) | **Decisión** estrategia de **servido del dashboard** (estático / preview / embebido). |
-| **D14.0** | **Local launcher prototype gate** — aprobación + checklist §14. |
+| **D13.9.1** (opcional) | **Decisión** estrategia de **servido del dashboard** (estático / preview / embebido). **D14.0** ([`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) §5) la deja **abierta** para **D14.1** y **bloqueante** antes de **D14.2**/`.exe`. |
+| **D14.0** | **Local launcher prototype gate** — aprobación + checklist §14; documentado en [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md). |
 | **D14.1** | **Modelo de layout** en disco **sin** escrituras reales de producto (o solo tests/fixtures). |
 | **D14.2** | **Packaging dry-run manifest** — lista de artefactos, versiones, **sin** `.exe`. |
 | **D14.3** | **Decisión / prototipo** wrapper launcher **no firmado** **solo** si **D14.0** autoriza. |

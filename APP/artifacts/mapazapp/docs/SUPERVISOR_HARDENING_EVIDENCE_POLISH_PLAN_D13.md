@@ -8,7 +8,9 @@
 - **D13.8** (**este documento**) define **qué** endurecer y **cómo** pulir la **evidencia** y la **salida** de los supervisores **antes** del **diseño de packaging** (**D13.9**).
 - **D13.8** es **solo** documentación y análisis: **no** implementa código, **no** ejecuta procesos, **no** modifica scripts.
 
-**Relacionado:** [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Update D14.0:** la compuerta **D14.0** ([`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md)) **no quedó bloqueada por D13.8** — la **Opción 1** (docs-only → **D13.9** → **D14.0**) se mantuvo y **D13.8.1** sigue **opcional**: solo se abre si una **brecha concreta** (p. ej. path leak, necesidad de `runId` antes de congelar contrato) lo justifica antes de **D14.1** o de cualquier `.exe`.
+
+**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) (**D14.0**), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) (**D13.9**), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -313,7 +315,7 @@ Convención de columnas: **código** = cambios TS en supervisores/helpers; **run
 2. **D13.9** — **Packaging design for local launcher**, **sin** ejecutable — **documentado** en [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md).
 3. **Opcional — D13.8.1** — implementación acotada de evidencia/salida (si brecha justificada).
 4. **Opcional — D13.8.2** — run de evidencia **después** de polish (archivo tipo **D13.6**).
-5. **D14.0** — **Local launcher executable prototype gate** (aprobación + checklist **D13.7** §7).
+5. **D14.0** — **Local launcher prototype gate** — documentado en [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md); abre la secuencia **D14.1 → D14.2 → D14.3** (layout model → packaging dry-run manifest → wrapper prototype decision); **sin** `.exe` en sí mismo. **D13.8 no bloqueó D14.0**; **D13.8.1** queda **opcional**.
 
 ---
 

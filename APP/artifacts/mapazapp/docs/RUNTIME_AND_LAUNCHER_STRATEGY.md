@@ -93,6 +93,7 @@ Comandos actuales (referencia cruzada con manual MT5 y estrategia de testing):
 - **D13.7 (solo documentación):** [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) — compuerta **packaging / runtime** tras supervisores D13; opciones, checklist ejecutable y secuencia recomendada **D13.8 → D13.9 → D14.0**; **sin** `.exe` ni código en ese checkpoint.
 - **D13.8 (solo documentación):** [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) — plan de hardening / evidence polish de supervisores **antes** de diseño packaging **D13.9**; **sin** implementación en ese checkpoint.
 - **D13.9 (solo documentación):** [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) — diseño packaging launcher local (layout, assets, config, logs, supervision empaquetada, Windows, gates); **sin** `.exe` ni código en ese checkpoint.
+- **D14.0 (solo documentación):** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) — compuerta formal del **prototipo launcher local** tras packaging design **D13.9** (opciones, decisión sobre **D13.9.1** static dashboard, preconditions, allowed scope, layout/manifest/wrapper gates **D14.1–D14.3**, riesgos); **D13.8 no bloqueó D14.0**; **D13.8.1** opcional; **sin** `.exe`, **sin** código, **sin** ejecución.
 
 Modo desarrollo permanece válido para contribuidores; el launcher futuro **no** lo reemplaza, lo complementa.
 
