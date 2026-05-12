@@ -6,6 +6,7 @@
 - **D14.1** ([`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md)) definió el **layout local** conceptual bajo **`Mapazapp/`**.
 - **D14.2** ([`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md)) definió el **contrato declarativo** del manifest dry-run (artefactos, exclusiones, validaciones futuras).
 - **D14.3** (**este documento**) **decide y documenta** si y cómo se autorizaría un **futuro prototipo de wrapper local** del launcher, **sin implementar código** en este checkpoint.
+- **D14.4** — modelo TypeScript puro del wrapper local: [`mapazapp-local-launcher-wrapper-model.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-model.ts) + tests asociados (**sin** arranque de procesos, **sin** I/O a disco).
 - **D14.3 no implementa** TypeScript nuevo, scripts nuevos ni cambios en supervisores.
 - **D14.3 no genera `.exe`**, **no** instalador y **no** empaquetado real.
 - **D14.3 no ejecuta procesos** (sin API, dashboard, supervisor, MT5, watcher, `mapazapp:dev-start`).
@@ -73,7 +74,7 @@
 | ID | Contenido |
 |----|-----------|
 | **D14.3** | **Decisión** (este doc) — **sin implementación**. |
-| **D14.4** | **Modelo TS puro** de wrapper local — **sin** arranque de procesos, **sin** `spawn`. |
+| **D14.4** | **Modelo TS puro** de wrapper local — **sin** arranque de procesos, **sin** `spawn`. Implementado en [`mapazapp-local-launcher-wrapper-model.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-model.ts). |
 | **D14.5** | **CLI dry-run** del wrapper — validaciones read-only / impresión de plan — **sin** start. |
 | **D14.6** | **Gate** explícito para **prototipo real** start/stop (precondiciones **§10**, aprobación **D11.8**-style, evidencia). |
 
@@ -215,7 +216,7 @@ Checklist **mínimo** (ampliación de **D14.0** §6):
 - [x] **Decisión recomendada** y secuencia **D14.4–D14.6** (**§5**).
 - [x] Dependencia **D13.9.1** definida (**§6**).
 - [x] **Próximos checkpoints** propuestos (**§13**).
-- [x] **Sin código**, **sin procesos**, **sin `.exe`**, **sin empaquetado**.
+- [x] **D14.3** cerró **sin** código ejecutable, **sin** procesos, **sin `.exe`**, **sin empaquetado** (el modelo TS de **D14.4** es posterior y enlazado en **§1**).
 
 ---
 

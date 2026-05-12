@@ -10,7 +10,7 @@
 - **D14.1 no empaqueta** (sin zip, sin copia de artefactos, sin firma).
 - **D14.1 no ejecuta procesos** (sin API, dashboard, supervisor, MT5, watcher ni launcher).
 
-**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md), [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) (**D14.2**), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (**D2**), [`mapazapp-launcher-config-model.ts`](../../../scripts/src/mapazapp-launcher-config-model.ts) (**D11.1**, solo referencia; **no** se modifica en **D14.1**).
+**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md), [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) (**D14.2**), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (**D2**), [`mapazapp-launcher-config-model.ts`](../../../scripts/src/mapazapp-launcher-config-model.ts) (**D11.1**, solo referencia; **no** se modifica en **D14.1**). **D14.4** modela el mismo árbol vía `LocalLauncherWrapperLayoutRef` en [`mapazapp-local-launcher-wrapper-model.ts`](../../../scripts/src/mapazapp-local-launcher-wrapper-model.ts).
 
 ---
 
