@@ -56,6 +56,12 @@
 - Ultimo commit de capa evidencia dashboard/API (V2-16): **`0082e26`** — `feat(dashboard+api): V2-16 mock engine evidence GET routes and UI summaries`.
 - **Fase A1 (documentacion):** estrategia de testing/validacion, manual MT5, runtime/launcher, integracion MT5 y auditoria `AUDIT_TESTING_MT5_LAUNCHER_A1.md`. La implementacion de launcher, ingesta MT5 runtime, watcher, DB, WebSocket live y ejecucion real **no** forma parte de A1 y requiere aprobacion aparte.
 
+### Engine Setup Proof Phase E
+
+- **Prioridad actual (pausa expansión runtime):** demostrar **validez del setup y del motor** sobre datos históricos reproducibles (**daily bias**, backtest, evidencia) **antes** de retomar expansión de launcher/packaging/MT5 live.
+- **Plan maestro:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md) (**E1**) — hipótesis de bias, Setup V1 canónico, fuentes de datos, campaña de métricas, formato de evidencia y secuencia **E2–E10**; alineado con docs V2-04 … V2-15 y con **TESTING_AND_VALIDATION_STRATEGY.md**.
+- **Regla de foco:** la siguiente prueba decisiva es de **estrategia**, no de **runtime** — coherente con la frase en **E1 §2**.
+
 ---
 
 ## 2) Product objective
