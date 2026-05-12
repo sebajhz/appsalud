@@ -8,7 +8,7 @@
 - **D14.0 no asume MT5**, **no** asume **`POST`**, **no** asume **action endpoints**, **no** asume **trading**.
 - **D14.0** es **solo documentación / análisis**.
 
-**Relacionado:** [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) (**D13.9**), [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md) (**D14.1**), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8**), [`API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.6**), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.4**/**D13.5**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (**D2**), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md) (**D11.6**), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md) (**D11.7**), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md) (**D13.9**), [`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md) (**D14.1**), [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) (**D14.2**), [`PACKAGING_RUNTIME_DECISION_GATE_D13.md`](./PACKAGING_RUNTIME_DECISION_GATE_D13.md) (**D13.7**), [`SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md`](./SUPERVISOR_HARDENING_EVIDENCE_POLISH_PLAN_D13.md) (**D13.8**), [`API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_DASHBOARD_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.6**), [`API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md`](./API_ONLY_SUPERVISOR_RUN_EVIDENCE_D13.md) (**D13.3**), [`API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md`](./API_DASHBOARD_SUPERVISOR_PROTOTYPE_DESIGN_D13.md) (**D13.4**/**D13.5**), [`LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md`](./LAUNCHER_RUNTIME_PACKAGING_AUDIT_D11.md) (**D11.0**), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (**D2**), [`LAUNCHER_SAFE_START_STOP_DESIGN_D11.md`](./LAUNCHER_SAFE_START_STOP_DESIGN_D11.md) (**D11.6**), [`SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md`](./SUPERVISED_RUN_PROTOTYPE_DECISION_D11.md) (**D11.7**), [`FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md`](./FIRST_REAL_LOCAL_RUN_APPROVAL_GATE_D11.md) (**D11.8**), [`RUNTIME_AND_LAUNCHER_STRATEGY.md`](./RUNTIME_AND_LAUNCHER_STRATEGY.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
 
 ---
 
@@ -260,6 +260,8 @@ Antes de **empaquetar** o aproximarse a un binario debe existir:
 
 ### D14.2 — Packaging dry-run manifest, no executable
 
+**Documento canónico:** [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md).
+
 Debe cubrir, alineado con **D13.9 §7–§8**:
 
 - **Lista de archivos** que entrarían (api-server `dist`, dashboard `dist`, scripts launcher, `config/` plantilla, `launcher/manifest.json` conceptual).
@@ -318,14 +320,14 @@ Secuencia **propuesta** y **gobernada**:
 | **D13.9** | Diseño packaging local (layout, assets, config, logs, gates) **sin** ejecutable. | **Cerrado**. |
 | **D14.0** | **Local launcher prototype gate** (este doc). | **Cerrado** con la apertura de este documento. |
 | **D14.1** | **Local runtime folder layout model** ([`LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md`](./LOCAL_RUNTIME_FOLDER_LAYOUT_MODEL_D14.md)), **sin filesystem writes**. | **Cerrado (docs-only)**. |
-| **D14.2** | **Packaging dry-run manifest**, **sin executable**. | **Siguiente recomendado** (tras **D14.1**). |
-| **D14.3** | **Local launcher wrapper prototype decision** (y, si aprueba, prototipo Node **no firmado**). | Tras **D14.2** y §6 cumplido. |
+| **D14.2** | **Packaging dry-run manifest** ([`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md)), **sin executable**. | **Cerrado (docs-only)**. |
+| **D14.3** | **Local launcher wrapper prototype decision** (y, si aprueba, prototipo Node **no firmado**). | **Siguiente recomendado** (tras **D14.2** y §6 cumplido). |
 
 **Opcional, paralelo o intercalado:**
 
 | ID | Contenido | Cuándo abrir |
 |----|-----------|--------------|
-| **D13.9.1** | Static dashboard serving strategy decision. | **Antes de D14.1** si se considera **bloqueante** del modelo de layout; si no, **antes de D14.2**. |
+| **D13.9.1** | Static dashboard serving strategy decision. | **Antes de D14.1** si se considera **bloqueante** del modelo de layout; si no, **antes de packaging real**, **D14.3** o **`.exe`** (o si el manifest implementado no puede enumerar artefactos dashboard — ver [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) §13). |
 | **D13.8.1** | Implementación acotada de hardening / evidence polish. | Solo si una **brecha concreta** lo justifica (no abierto por defecto). |
 
 **No pasar todavía** (sin nuevos gates explícitos):

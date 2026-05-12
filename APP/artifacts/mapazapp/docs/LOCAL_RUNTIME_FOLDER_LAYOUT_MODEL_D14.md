@@ -10,7 +10,7 @@
 - **D14.1 no empaqueta** (sin zip, sin copia de artefactos, sin firma).
 - **D14.1 no ejecuta procesos** (sin API, dashboard, supervisor, MT5, watcher ni launcher).
 
-**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (**D2**), [`mapazapp-launcher-config-model.ts`](../../../scripts/src/mapazapp-launcher-config-model.ts) (**D11.1**, solo referencia; **no** se modifica en **D14.1**).
+**Relacionado:** [`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md), [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) (**D14.2**), [`LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md`](./LOCAL_LAUNCHER_PACKAGING_DESIGN_D13.md), [`LAUNCHER_CONFIG_AND_STATUS_DESIGN.md`](./LAUNCHER_CONFIG_AND_STATUS_DESIGN.md) (**D2**), [`mapazapp-launcher-config-model.ts`](../../../scripts/src/mapazapp-launcher-config-model.ts) (**D11.1**, solo referencia; **no** se modifica en **D14.1**).
 
 ---
 
@@ -264,14 +264,9 @@ Si el desarrollador monta un layout **`Mapazapp/`** dentro o junto al clone, **d
 
 ## 16. Relationship with D14.2
 
-**D14.2 — Packaging dry-run manifest** consumirá este modelo para producir un **manifiesto declarativo** (texto/JSON documental):
+**D14.2 — Packaging dry-run manifest** quedó especificado en **[`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md)** (contrato declarativo **docs-only**): secciones del manifiesto, artefactos fuente, mapeo a este layout **§3**, archivos requeridos/opcionales/excluidos, políticas, validaciones futuras, flags de seguridad y manejo de fallos — **sin** copiar archivos, **sin** JSON ejecutable fuera de docs, **sin** `.exe`.
 
-- **Lista de archivos esperados** — p. ej. entradas bajo `api-server/dist/`, `dashboard/dist/`, archivos en `launcher/`.
-- **Lista de carpetas esperadas** — las de **§3**.
-- **Qué incluir** — artefactos de build y metadatos mínimos.
-- **Qué excluir** — fuentes TS, tests, `.git`, `node_modules` dev completos, secretos, evidencias viejas.
-- **Sin copiar archivos reales** en el dry-run — solo enumeración y reglas.
-- **Sin `.exe`** — el manifiesto no implica binario ni installer.
+**Siguiente recomendado en la cadena D14.x:** **D14.3** — decisión / prototipo de **wrapper** launcher local ([`LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md`](./LOCAL_LAUNCHER_PROTOTYPE_GATE_D14.md) §10).
 
 ---
 
@@ -283,22 +278,24 @@ Si el desarrollador monta un layout **`Mapazapp/`** dentro o junto al clone, **d
 - **Tamaño máximo** de rotación de `logs/`.
 - **Comportamiento exacto** de backup de config (automático vs solo manual).
 - **Formato** del bundle **`support/`** (zip vs directorio).
-- **¿Introducir módulo TS puro** de layout (`mapazapp-launcher-layout-model.ts`) en **D14.1.1** o en **D14.2** — solo si el manifiesto o tests lo exigen; **D14.1** quedó **docs-only** por decisión de checkpoint.
+- **¿Introducir módulo TS puro** de layout (`mapazapp-launcher-layout-model.ts`) en **D14.1.1** — solo si el manifiesto o tests lo exigen; **D14.1** quedó **docs-only** por decisión de checkpoint.
+- **¿Modelo TS del manifiesto (**D14.2.1**) o validador read-only (**D14.2.2**)?** — opcionales; ver [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) §18–§19.
 
 ---
 
 ## 18. Recommended next checkpoints
 
-| ID | Contenido |
-|----|-----------|
-| **D14.1** | **Layout model** (este doc) — **sin escrituras** a filesystem. |
-| **D14.2** | **Packaging dry-run manifest** — sin ejecutable; lista incluidos/excluidos. |
-| **D14.3** | **Decisión / prototipo wrapper** launcher local — solo tras gates y aprobación explícita. |
+| ID | Contenido | Estado |
+|----|-----------|--------|
+| **D14.1** | **Layout model** (este doc) — **sin escrituras** a filesystem. | **Cerrado (docs-only)**. |
+| **D14.2** | **Packaging dry-run manifest** — [`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md); sin ejecutable; lista incluidos/excluidos. | **Cerrado (docs-only)**. |
+| **D14.3** | **Decisión / prototipo wrapper** launcher local — solo tras gates y aprobación explícita. | **Siguiente recomendado**. |
 
 **Opcional:**
 
-- **D13.9.1** — Decisión de servido estático del dashboard **antes de D14.2** si bloquea el manifiesto.
+- **D13.9.1** — Decisión de servido estático del dashboard si bloquea enumeración concreta de artefactos o implementación (**D14.2** §13).
 - **D14.1.1** — Modelo TS puro de layout (sin writes) si la documentación sola genera **drift**.
+- **D14.2.1** / **D14.2.2** — Modelo TS del manifiesto o validador dry-run read-only ([`PACKAGING_DRY_RUN_MANIFEST_D14.md`](./PACKAGING_DRY_RUN_MANIFEST_D14.md) §19).
 
 ---
 
