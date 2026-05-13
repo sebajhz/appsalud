@@ -1,136 +1,156 @@
-# Mapazapp_TestEA — export contract
+# Mapazapp_TestEA — export contract (E3.6)
 
-> **E3.5:** el EA oficial de Strategy Tester es **`Mapazapp_TestEA.mq5`**. El summary por defecto usa **`schema_version: backtest_ea_v1`** (`official_ea: Mapazapp_TestEA`, `backtest_role: true`, `has_real_ifvg_logic: true` para detección candidata FVG). Los fixtures y herramientas del core pueden seguir usando el esquema legacy **`MZP_TESTEA_V1`** para compatibilidad de importación.
+> **Schema freeze (E3.6):** contrato de evidencia para **`Mapazapp_TestEA.mq5`** antes del primer smoke Strategy Tester (**E4**). Resumen de mapa: [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](../../../mapazapp/docs/BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
 
-## `MZP_TESTEA_V1` (Checkpoint 14 — legacy)
+## Roles
+
+| Componente | Rol |
+|--------------|-----|
+| **`Mapazapp_TestEA`** | **Único EA oficial** del MetaTrader 5 **Strategy Tester** para setup proof / exports de backtest en esta fase. |
+| **`Mapazapp_BridgeEA`** | **Separado**: export read-only en terminal live (`MZP_BRIDGE_V1`); **no** sustituye al TestEA. |
+
+**No hay órdenes:** sin `OrderSend`, sin `CTrade`, sin filas de trade inventadas. **`trade_count`** permanece **0** hasta una fase explícita de simulación u órdenes en tester.
+
+## Versión de schema
+
+| Campo JSON | Valor |
+|------------|--------|
+| `schema_version` | **`backtest_ea_v1`** (default `InpSchemaVersion`) |
+
+Fixtures históricos y herramientas pueden seguir usando **`MZP_TESTEA_V1`** (Checkpoint 14) para compatibilidad de importación; el EA actual escribe **`backtest_ea_v1`**.
 
 ---
 
 ## 1. Sandbox root
 
-All paths are relative to the active terminal **`MQL5\Files\`** profile (same discipline as BridgeEA).
-
-Suggested layout after export:
+Todas las rutas son relativas al perfil activo **`MQL5\Files\`**.
 
 ```text
 MQL5\Files\<InpExportRoot>\<run_id>\
 ```
 
-Default `InpExportRoot` (**E3.4.2**): `Mapazapp\TestEA` → example:
-
-```text
-MQL5\Files\Mapazapp\TestEA\TESTEA_XAUUSD_20260105_123456_12345\
-```
+Por defecto `InpExportRoot` = `Mapazapp\TestEA`.
 
 ---
 
-## 2. `backtest_trades.csv`
+## 2. `backtest_events.csv` (E3.6)
 
-- **Encoding:** ANSI (`FILE_ANSI`), ASCII-safe content.
-- **Header required.** Column names are **snake_case** (importer normalizes case / minor aliases).
-- **Row count:** zero data rows is valid (header only) when no placeholder trade is emitted.
-- **Direction:** `BUY` or `SELL` (also accepts `LONG` / `SHORT` in TypeScript importer).
+- **Encoding:** ANSI (`FILE_ANSI`), contenido ASCII-safe.
+- **Cabecera obligatoria (orden recomendado):**  
+  `run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details`
 
-### 2.1 Column order (recommended)
+### 2.1 Campos
 
-| Column | Required by TS importer | Notes |
-|--------|-------------------------|--------|
-| `run_id` | No (optional per row; falls back to import options) | Should match folder / summary when possible. |
-| `trade_id` | **Yes** | Stable id within run. |
-| `strategy_id` | Per-row optional | Defaults to import options. |
-| `parameter_set_id` | Per-row optional | Defaults to import options. |
-| `symbol` | Per-row optional | Canonical symbol; defaults to import options. |
-| `broker_symbol` | No | Tester symbol string; defaults to import options. |
-| `account_id` | No | Tester metadata (e.g. `TESTER_ACCOUNT`); **not** a live login claim. |
-| `direction` | **Yes** | `BUY` / `SELL`. |
-| `entry_time` | **Yes** | ISO UTC `…Z` recommended. |
-| `exit_time` | **Yes** | ISO UTC `…Z` recommended. |
-| `entry_price` | **Yes** | Numeric. |
-| `exit_price` | **Yes** | Numeric. |
-| `sl` | No | Stop loss (virtual). |
-| `tp` | No | Take profit (virtual). |
-| `result_money` | No | Warning if missing (defaults to `0` in importer). |
-| `result_r` | **Yes** | R-multiple (virtual skeleton uses price vs fixed risk distance). |
-| `commission` | No | Parsed into `BacktestTrade.commission` when present (CP14+ importer). |
-| `swap` | No | Parsed into `BacktestTrade.swap`. |
-| `spread_at_entry` | No | Parsed into `BacktestTrade.spreadAtEntry`. |
-| `score_total` | No | Parsed into `BacktestTrade.scoreTotal`. |
-| `zone_id` | No | Optional opaque id. |
-| `exit_reason` | No | e.g. placeholder reason codes — **not** proof of live behaviour. |
+| Columna | Obligatorio | Significado |
+|---------|-------------|-------------|
+| `run_id` | Sí | Identificador de corrida (coherente con carpeta / summary). |
+| `event_id` | Sí | Id estable por evento (p. ej. `EVT_000001`). |
+| `timestamp` | Sí | ISO UTC recomendado (`…Z`). |
+| `symbol` | Sí | Símbolo canónico de trabajo (p. ej. `XAUUSD`). |
+| `event_type` | Sí | Tipo de evento (catálogo congelado abajo). |
+| `bias_direction` | Sí | `bullish` \| `bearish` \| `neutral` \| `unknown` (y `none` donde aplique en wire legacy). |
+| `setup_direction` | Sí | `long` \| `short` \| `none`. |
+| `decision` | Sí | Resultado lógico del paso (catálogo congelado abajo). |
+| `reason` | Sí | Etiqueta corta legible / código de razón. |
+| `details` | Sí | Texto sanitizado; puede incluir `fvg_low`, `fvg_high`, `fvg_points`, `candle_time`, `gate_result`, etc. **No** rutas privadas ni secretos. |
 
-Checkpoint 8 TypeScript entry point: **`importBacktestTradesFromCsv`** (`APP/lib/mapazapp-core/src/backtest-importer.ts`).
+### 2.2 `event_type` soportados (E3.6)
 
----
+- `lifecycle_init`
+- `skeleton_ready`
+- `daily_bias_evaluated`
+- `setup_detected`
+- `setup_allowed`
+- `setup_rejected`
+- `setup_skipped`
+- `lifecycle_deinit`
 
-### 2.2 E3.4.2 — expanded trades header (`backtest_ea_v1`)
+### 2.3 `decision` soportados (validación TypeScript E3.6)
 
-When using the default **E3.4.2** EA build, `backtest_trades.csv` uses this **header** (data rows intentionally empty until IFVG/trades exist):
-
-`run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason`
-
-`importBacktestTradesFromCsv` returns **zero trades** with warning **`CSV_HEADER_ONLY_NO_TRADE_ROWS`** for header-only files.
-
-For **data rows** later, the TypeScript importer maps this compact header onto the canonical columns: `timestamp` → `entry_time`; `entry` → `entry_price`; and, only when the CSV has no literal `exit_time` / `exit_price` columns but does include `timestamp` / `entry`, it reuses the same cell index for `exit_time` / `exit_price` so required columns resolve (see `resolveHeaderIndex` in `backtest-importer.ts`).
+Incluye (lista congelada en `parseBacktestEventsCsv`):  
+`bias_recorded`, `setup_candidate_allowed`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `setup_ignored`, `lifecycle`, `detected`, `ok`, `noop`.
 
 ---
 
-## 3. `backtest_events.csv` (E3.4.2+)
+## 3. `backtest_trades.csv`
 
-- **Encoding:** ANSI (`FILE_ANSI`), ASCII-safe content.
-- **Header required** (exact order from EA):
+- **Encoding:** ANSI, ASCII-safe.
+- **Cabecera obligatoria** cuando el EA escribe el archivo (E3.4.2+):  
+  `run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason`
+- **Filas de datos:** **ninguna** en la fase actual — **válido header-only**. **No** crear trades falsos ni `result_r` inventado.
+- **Dirección en filas futuras:** `BUY`/`SELL` o `LONG`/`SHORT` (normaliza el importador TS).
 
-`run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details`
+### 3.1 Importador TypeScript (`importBacktestTradesFromCsv`)
 
-- **E3.5+ event types** (audit trail): `setup_detected`, `setup_allowed`, `setup_rejected`, `setup_skipped` (plus lifecycle and `daily_bias_evaluated`). See [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](../../../mapazapp/docs/BACKTESTEA_IFVG_SETUP_V1_E3_5.md).
+- Con **solo cabecera** (0 filas de datos): **`ok: true`**, `trades: []`, aviso **`CSV_HEADER_ONLY_NO_TRADE_ROWS`**.
+- Con filas en formato compacto: alias `timestamp` → `entry_time`, `entry` → `entry_price`; si faltan columnas literales `exit_time` / `exit_price` pero existen `timestamp` / `entry`, el importador duplica índices según `resolveHeaderIndex` en `backtest-importer.ts`.
+
+### 3.2 Columnas extendidas (metadata futura)
+
+Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas adicionales en el importador (`commission`, `swap`, `zone_id`, …) — **opcionales** salvo las requeridas para filas con trade real.
 
 ---
 
 ## 4. `backtest_summary.json`
 
-### 4.1 Legacy `MZP_TESTEA_V1` (fixtures / CP14-shaped samples)
+### 4.1 Obligatorios (`backtest_ea_v1`)
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `schema_version` | string | `MZP_TESTEA_V1` |
-| `ea_build` | string | EA build tag |
-| `run_id` | string | Matches export folder segment when possible |
-| `strategy_id` | string | Registry-oriented id (metadata) |
-| `parameter_set_id` | string | Registry-oriented id (metadata) |
-| `canonical_symbol` | string | From inputs |
-| `broker_symbol` | string | Tester symbol |
-| `account_id` | string | Tester label |
-| `dataset_split` | string | e.g. `train`, `validation`, `forward`, `full` |
-| `tester_symbol` | string | Redundant with broker symbol for human clarity |
-| `tester_period` | string | Wire timeframe token (`H1`, `M15`, …) |
-| `tester_from` | string or `null` | **Optional.** CP14 always emits **`null`** — Strategy Tester model/date APIs are not called for MetaEditor portability across builds; enrich manually or in a future checkpoint if needed. |
-| `tester_to` | string or `null` | **Optional.** Same as `tester_from` — CP14 always **`null`**. |
-| `exported_at_utc` | string | ISO UTC |
-| `trade_count` | number | Must align with CSV data rows |
-| `notes` | string | Diagnostics / placeholder disclaimers |
-| `execution_mode` | string | `virtual_export_only` |
-| `live_trading_enabled` | boolean | Always `false` for this artifact |
-| `magic_reserved` | number | Input echo; **no** orders placed in CP14 |
-| `fixed_risk_r_meta` | number | Metadata echo only for CP14 placeholder |
-| `rr_target_meta` | number | Metadata echo |
+| Campo | Tipo | Notas |
+|-------|------|--------|
+| `schema_version` | string | `backtest_ea_v1` |
+| `run_id` | string | Coherente con export. |
+| `strategy_id` | string | Metadatos de estrategia (p. ej. `IFVG_XAUUSD_V1`). |
+| `parameter_set_id` | string | Metadatos de set. |
+| `symbol` | string | Canónico. |
+| `execution_timeframe` | string | Wire `M15`, `H1`, … |
+| `daily_bias_timeframe` | string | Wire `D1`, … |
+| `backtest_mode` | string | p. ej. `virtual`. |
+| `tester_only` | boolean | **true** |
+| `official_ea` | string | **`Mapazapp_TestEA`** |
+| `backtest_role` | boolean | **true** |
+| `has_real_daily_bias_logic` | boolean | **true** |
+| `has_real_ifvg_logic` | boolean | **true** — significa **detección FVG / candidato Setup V1 presente**, no pipeline IFVG completo. |
+| `has_full_ifvg_pipeline` | boolean | **false** (E3.6+) — sin conversión FVG→IFVG completa, sin ATR/sweeps/target liquidity del pipeline IFVG en el EA. |
+| `has_real_trading_orders` | boolean | **false** |
+| `trade_count` | number | **0** en fase actual. |
+| Contadores bias | number | `total_bias_evaluated`, `bullish_bias_count`, `bearish_bias_count`, `neutral_bias_count`, `unknown_bias_count`. |
+| Contadores setup | number | `total_setup_candidates`, `bullish_setup_candidates`, `bearish_setup_candidates`, `allowed_setups`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `ignored_small_fvg`. |
+| Último setup | string / number | `last_setup_direction`, `last_setup_decision`, `last_setup_reason`, `last_fvg_points`. |
+| `exported_at_utc` | string | ISO UTC. |
+| `notes` | string | Diagnósticos; debe aclarar limitaciones si aplica. |
 
-### 4.2 Default `backtest_ea_v1` (E3.4.2+ EA build, **E3.5** IFVG flags)
+### 4.2 Opcionales / echo
 
-Key fields (see `WriteSummaryJson` in `Mapazapp_TestEA.mq5`): `schema_version`, `run_id`, `strategy_id`, `parameter_set_id`, `symbol`, `execution_timeframe`, `daily_bias_timeframe`, `backtest_mode`, `tester_only`, `official_ea`, `backtest_role`, `has_real_daily_bias_logic`, **`has_real_ifvg_logic` (true from E3.5 — FVG candidate detection)**, `has_real_trading_orders`, `trade_count`, bias counters, **setup counters** (`total_setup_candidates`, `bullish_setup_candidates`, `bearish_setup_candidates`, `allowed_setups`, `ignored_small_fvg`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `last_setup_*`, `last_fvg_points`), `notes`.
+`ea_build`, `broker_symbol`, `use_h4_context`, `use_h1_context`, etc. — según el EA; no sustituyen campos obligatorios de identidad y flags de seguridad.
+
+### 4.3 Significado de contadores (resumen)
+
+- **Bias:** evaluaciones diarias registradas por outcome (bullish / bearish / neutral / unknown).
+- **Setup:** candidatos FVG detectados; `allowed_setups` = pasaron gate de bias cuando el gate está activo; `rejected_by_daily_bias` / `skipped_neutral_bias` / `missing_bias_context` / `ignored_small_fvg` desglosan otros desenlaces.
+
+### 4.4 Legacy `MZP_TESTEA_V1`
+
+Ver tabla en versiones anteriores de este contrato y en tests `V2_12_TESTEA_BACKTEST_SUMMARY_JSON` — `execution_mode: virtual_export_only`, `live_trading_enabled: false`, etc.
 
 ---
 
-## 5. Explicit non-goals (Checkpoint 14)
+## 5. Limitaciones actuales (no sobreprometer)
 
-- No claim of profitability or production readiness.
-- No automatic registry mutation or parameter-set approval (see **`evaluateBacktestApproval`** — advisory only).
-- No translation of the full IFVG blueprint into MQL5 (future checkpoint).
-- No `OrderSend`, `CTrade`, `WebRequest`, DLL imports, or command files — see **`MANUAL_TEST_CHECKLIST.md`** § safety scan.
-- **E3.5:** FVG detection only — no full IFVG inversion / sweep / displacement pipeline from TypeScript yet; no tester orders; no synthetic trade rows.
+- **No** pipeline IFVG completo en MQL5: **no** FVG→IFVG como en `tryConvertFvgToIfvg`, **no** filtros ATR del pipeline IFVG del core, **no** sweeps, **no** target liquidity, **no** simulación de trades.
+- **Sí** detección **FVG candidata** / **Setup V1 candidato** (tres velas cerradas, geometría alineada con `fvg-detector.ts`) + **Daily Bias gate**.
 
 ---
 
-## 6. Related artifacts
+## 6. Non-goals
 
-- **BridgeEA (CP13):** `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` — live terminal **export-only** bridge files (`MZP_BRIDGE_V1`), separate contract.
-- **Core importer:** `APP/lib/mapazapp-core/src/backtest-importer.ts`
-- **IFVG Setup V1 (E3.5) spec:** `APP/artifacts/mapazapp/docs/BACKTESTEA_IFVG_SETUP_V1_E3_5.md`
+- Rentabilidad, listo para producción, u órdenes live desde estos exportes.
+- Mutación automática de registry o aprobación de parameter sets.
+- Dashboard, API, WebSocket, DB, watcher — fuera de alcance de E3.6.
+- `OrderSend`, `CTrade`, `WebRequest`, DLL arbitrarias, command files — ver **`MANUAL_TEST_CHECKLIST.md`**.
+
+---
+
+## 7. Referencias
+
+- **Core:** `APP/lib/mapazapp-core/src/backtest-importer.ts`, `backtest-events-csv.ts`, `export-sample-validation.ts`.
+- **Setup / bias:** [`BACKTESTEA_SETUP_V1_CONTRACT_E3_2.md`](../../../mapazapp/docs/BACKTESTEA_SETUP_V1_CONTRACT_E3_2.md), [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](../../../mapazapp/docs/BACKTESTEA_IFVG_SETUP_V1_E3_5.md), [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](../../../mapazapp/docs/BACKTESTEA_DAILY_BIAS_V1_E3_4.md).

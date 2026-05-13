@@ -20,6 +20,7 @@ export type ExportSampleFileKind =
   | "deals_history_csv"
   | "bridge_errors_csv"
   | "backtest_trades_csv"
+  | "backtest_events_csv"
   | "backtest_summary_json";
 
 export type ExportSampleValidationStatus =
@@ -93,6 +94,12 @@ export interface TestEaExportValidationResult {
   status: ExportSampleValidationStatus;
   tradesImport: BacktestImportResult | null;
   tradeCount: number;
+  /** Present when `backtest_events.csv` was in the input bundle. */
+  eventsCsvPresent: boolean;
+  /** True after `parseBacktestEventsCsv` ran successfully on the events file. */
+  eventsParseAttempted: boolean;
+  eventsParseOk: boolean;
+  eventsDataRowCount: number;
   summaryParsed: boolean;
   summaryOk: boolean;
   summaryTradeCount: number | null;

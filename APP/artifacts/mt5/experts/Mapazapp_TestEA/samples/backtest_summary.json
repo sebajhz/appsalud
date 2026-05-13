@@ -1,6 +1,6 @@
 {
   "schema_version": "backtest_ea_v1",
-  "ea_build": "MZP_TestEA_E3_5_sample",
+  "ea_build": "MZP_TestEA_E3_6_sample",
   "run_id": "TESTEA_SAMPLE_RUN",
   "strategy_id": "IFVG_XAUUSD_V1",
   "parameter_set_id": "default",
@@ -15,6 +15,7 @@
   "use_h4_context": true,
   "use_h1_context": true,
   "has_real_ifvg_logic": true,
+  "has_full_ifvg_pipeline": false,
   "has_real_daily_bias_logic": true,
   "has_real_trading_orders": false,
   "trade_count": 0,
@@ -36,5 +37,5 @@
   "last_setup_reason": "daily_bias_aligned",
   "last_fvg_points": 110,
   "exported_at_utc": "2026-01-15T10:00:00Z",
-  "notes": "Fictional sample shape for E3.5 — not Strategy Tester output."
+  "notes": "Fictional sample for E3.6 export schema — not Strategy Tester output. FVG/Setup V1 candidate only; not full IFVG pipeline."
 }

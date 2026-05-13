@@ -33,7 +33,7 @@
 | Export | `backtest_trades.csv` (cabecera), `backtest_events.csv`, `backtest_summary.json`; escritura **atómica** (`*.tmp` + `FileMove`). |
 | Daily Bias | **V1 implementado** — ver [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md). |
 | Schema summary | Default **`backtest_ea_v1`** (`official_ea: Mapazapp_TestEA`, `backtest_role: true`, flags `has_real_*`). |
-| IFVG / setup | **E3.5** — detección **candidata FVG** (tres velas cerradas, alineada con `fvg-detector.ts` del core), gate Daily Bias, eventos `setup_*`; sin conversión IFVG completa ni órdenes — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md). |
+| IFVG / setup | **E3.5** — detección **candidata FVG** (tres velas cerradas, alineada con `fvg-detector.ts` del core), gate Daily Bias, eventos `setup_*`; sin conversión IFVG completa ni órdenes — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md). **E3.6** — esquema export/evidencia congelado: [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md), `has_full_ifvg_pipeline: false`. |
 | Import TS | CSV sin filas de datos → `importBacktestTradesFromCsv` devuelve **0 trades** con aviso `CSV_HEADER_ONLY_NO_TRADE_ROWS`; bundles legacy **`MZP_TESTEA_V1`** siguen validándose en fixtures. |
 
 **Conclusión:** **`Mapazapp_TestEA`** es el **único EA físico oficial** del Strategy Tester para el rol BacktestEA / setup proof.

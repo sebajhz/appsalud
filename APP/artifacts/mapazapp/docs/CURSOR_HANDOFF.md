@@ -7,7 +7,9 @@
 
 - **Living project guide:** [`APP/artifacts/mapazapp/docs/MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md) — referencia principal para Cursor y chats futuros: arquitectura aprobada, tres sistemas internos, **dos EAs oficiales MT5** (`Mapazapp_BridgeEA`, `Mapazapp_TestEA`), prioridades 80/10/10, tabla de siguientes pasos, implementation ledger y reglas de trabajo.
 - **Reconciliación de roles EA (E3.4.1):** [`APP/artifacts/mapazapp/docs/MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md).
-- **E3.5 cerrado:** detección **FVG candidata** + gate Daily Bias en **`Mapazapp_TestEA`** — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md). **Siguiente paso canónico:** **E3.6** (cierre esquema export/evidencia) **o** **E4** (primer smoke manual en Strategy Tester) según prioridad del PM.
+- **E3.5 cerrado:** detección **FVG candidata** + gate Daily Bias en **`Mapazapp_TestEA`** — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md).
+- **E3.6 cerrado:** esquema de export / evidencia congelado (`has_full_ifvg_pipeline`, eventos CSV, validadores) — ver [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
+- **Siguiente paso canónico:** **E4** — primer smoke manual en Strategy Tester cuando el operador lo apruebe.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

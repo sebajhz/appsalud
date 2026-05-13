@@ -384,7 +384,7 @@ export function assembleBacktestRunFromImportedTrades(
     summary,
     trades: importResult.trades,
     warnings: importResult.warnings,
-    notes: "Assembled from in-memory CSV import — Mapazapp_TestEA (E3.4.2+) Strategy Tester export; legacy MZP_TESTEA_V1 rows still parse when present.",
+    notes: "Assembled from in-memory CSV import — Mapazapp_TestEA (E3.6+) Strategy Tester export; legacy MZP_TESTEA_V1 rows still parse when present.",
   };
 }
 

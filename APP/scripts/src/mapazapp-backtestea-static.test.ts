@@ -13,6 +13,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const EA_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/Mapazapp_TestEA.mq5");
 const README_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/README.md");
 const EXPORT_CONTRACT_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md");
+const SAMPLE_SUMMARY_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/samples/backtest_summary.json");
+const SAMPLE_EVENTS_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/samples/backtest_events.csv");
+const SAMPLE_TRADES_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/samples/backtest_trades.csv");
 const LEGACY_BACKTEST_EA_DIR = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_BacktestEA");
 
 const FORBIDDEN_SUBSTRINGS = [
@@ -68,9 +71,10 @@ test("F — expected export filenames referenced", () => {
   assert.match(src, /backtest_summary\.json/);
 });
 
-test("G — summary flags: IFVG on; daily bias on; tester orders off", () => {
+test("G — summary flags: IFVG on; daily bias on; tester orders off; pipeline not full", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /\\"has_real_ifvg_logic\\"\s*:\s*true/);
+  assert.match(src, /\\"has_full_ifvg_pipeline\\"\s*:\s*false/);
   assert.match(src, /\\"has_real_daily_bias_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_real_trading_orders\\"\s*:\s*false/);
 });
@@ -151,4 +155,32 @@ test("O — README + EXPORT_CONTRACT declare IFVG candidate detection and no tra
   assert.ok(readme.includes("trade_count") || readme.includes("header-only") || readme.includes("header only"));
   assert.ok(ex.includes("has_real_ifvg_logic") || ex.includes("ifvg"));
   assert.ok(ex.includes("tester") || ex.includes("strategy"));
+});
+
+test("P — EXPORT_CONTRACT documents E3.6 / schema freeze", () => {
+  const ex = readFileSync(EXPORT_CONTRACT_PATH, "utf8");
+  assert.ok(ex.includes("E3.6"));
+  assert.ok(ex.toLowerCase().includes("has_full_ifvg_pipeline"));
+  assert.ok(ex.includes("backtest_events.csv"));
+});
+
+test("Q — samples: summary has_full false; events include setup flow; trades header-only", () => {
+  const summary = JSON.parse(readFileSync(SAMPLE_SUMMARY_PATH, "utf8")) as Record<string, unknown>;
+  assert.equal(summary["has_full_ifvg_pipeline"], false);
+  assert.equal(summary["has_real_ifvg_logic"], true);
+  assert.equal(summary["trade_count"], 0);
+  const events = readFileSync(SAMPLE_EVENTS_PATH, "utf8");
+  assert.match(events, /setup_detected/);
+  assert.match(events, /setup_allowed|setup_rejected|setup_skipped/);
+  const trades = readFileSync(SAMPLE_TRADES_PATH, "utf8").trimEnd().split(/\r?\n/);
+  assert.equal(trades.length, 1, "trades sample must be header-only");
+  assert.ok(trades[0]!.includes("trade_id") && trades[0]!.includes("result_r"));
+});
+
+test("R — README/contract document has_full_ifvg_pipeline false (no full-pipeline claim)", () => {
+  const readme = readFileSync(README_PATH, "utf8").toLowerCase();
+  const ex = readFileSync(EXPORT_CONTRACT_PATH, "utf8").toLowerCase();
+  assert.ok(readme.includes("has_full_ifvg_pipeline"));
+  assert.ok(readme.includes("false"));
+  assert.ok(ex.includes("has_full_ifvg_pipeline"));
 });

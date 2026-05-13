@@ -126,14 +126,23 @@ export const V2_12_TESTEA_SUMMARY_UNSAFE_LIVE_JSON = V2_12_TESTEA_BACKTEST_SUMMA
   '"live_trading_enabled": true',
 );
 
-/** E3.5 — official TestEA: `backtest_ea_v1` summary + header-only trades CSV (no data rows). */
+/** E3.6 — official TestEA: `backtest_ea_v1` summary + header-only trades + events CSV. */
+export const V2_12_TESTEA_E342_EVENTS_CSV = [
+  "run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details",
+  "V212_E342_RUN,EVT_000001,2026-05-07T12:00:00Z,XAUUSD,lifecycle_init,bullish,none,ok,OnInit,paths_ready",
+  "V212_E342_RUN,EVT_000002,2026-05-07T12:00:01Z,XAUUSD,skeleton_ready,bullish,none,noop,E3.6,skeleton",
+  "V212_E342_RUN,EVT_000003,2026-05-07T12:00:02Z,XAUUSD,daily_bias_evaluated,bullish,none,bias_recorded,previous_daily_close_above_open,bias_tf=D1",
+  "V212_E342_RUN,EVT_000004,2026-05-07T12:00:03Z,XAUUSD,setup_detected,bullish,long,detected,bullish_fvg_C_low_above_A_high,fvg_low=2000 fvg_high=2005",
+  "V212_E342_RUN,EVT_000005,2026-05-07T12:00:04Z,XAUUSD,setup_allowed,bullish,long,setup_candidate_allowed,daily_bias_aligned,gate_result=setup_candidate_allowed",
+].join("\n");
+
 export const V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV = [
   "run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason",
 ].join("\n");
 
 export const V2_12_TESTEA_E342_SUMMARY_JSON = `{
   "schema_version": "backtest_ea_v1",
-  "ea_build": "MZP_TestEA_E3_5_fixture",
+  "ea_build": "MZP_TestEA_E3_6_fixture",
   "run_id": "V212_E342_RUN",
   "strategy_id": "IFVG_XAUUSD_V1",
   "parameter_set_id": "default",
@@ -148,6 +157,7 @@ export const V2_12_TESTEA_E342_SUMMARY_JSON = `{
   "use_h4_context": true,
   "use_h1_context": true,
   "has_real_ifvg_logic": true,
+  "has_full_ifvg_pipeline": false,
   "has_real_daily_bias_logic": true,
   "has_real_trading_orders": false,
   "trade_count": 0,
@@ -169,12 +179,13 @@ export const V2_12_TESTEA_E342_SUMMARY_JSON = `{
   "last_setup_reason": "",
   "last_fvg_points": 0,
   "exported_at_utc": "2026-05-07T12:00:00Z",
-  "notes": "synthetic fixture E3.5"
+  "notes": "synthetic fixture E3.6 export schema"
 }`;
 
 export function v212E342TestEaBundleFiles(): ExportSampleFileText[] {
   return [
     { fileName: "backtest_trades.csv", text: V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV },
+    { fileName: "backtest_events.csv", text: V2_12_TESTEA_E342_EVENTS_CSV },
     { fileName: "backtest_summary.json", text: V2_12_TESTEA_E342_SUMMARY_JSON },
   ];
 }

@@ -1,4 +1,5 @@
 import type { BacktestCampaignDataset } from "./backtest-campaign-types";
+import { parseBacktestEventsCsv } from "./backtest-events-csv";
 import { importBacktestTradesFromCsv } from "./backtest-importer";
 import type { BacktestImportResult, ImportBacktestCsvOptions } from "./backtest-types";
 import {
@@ -39,6 +40,7 @@ const FILE_NAME_TO_KIND: Record<string, ExportSampleFileKind> = {
   "deals_history.csv": "deals_history_csv",
   "bridge_errors.csv": "bridge_errors_csv",
   "backtest_trades.csv": "backtest_trades_csv",
+  "backtest_events.csv": "backtest_events_csv",
   "backtest_summary.json": "backtest_summary_json",
 };
 
@@ -58,12 +60,13 @@ function isBridgeKind(k: ExportSampleFileKind | undefined): boolean {
   if (!k) return false;
   return (
     k !== "backtest_trades_csv" &&
+    k !== "backtest_events_csv" &&
     k !== "backtest_summary_json"
   );
 }
 
 function isTestEaKind(k: ExportSampleFileKind | undefined): boolean {
-  return k === "backtest_trades_csv" || k === "backtest_summary_json";
+  return k === "backtest_trades_csv" || k === "backtest_events_csv" || k === "backtest_summary_json";
 }
 
 /** Privacy heuristics for sanitized samples — conservative; no disk access. */
@@ -363,6 +366,11 @@ export function validateTestEaExportSample(
   const diagnostics: ExportSampleValidationDiagnostic[] = [];
   let status: ExportSampleValidationStatus = "valid";
 
+  let eventsCsvPresent = false;
+  let eventsParseAttempted = false;
+  let eventsParseOk = false;
+  let eventsDataRowCount = 0;
+
   const files = resolveFileKinds(input.files.filter((f) => isTestEaKind(f.fileKind ?? inferExportSampleFileKind(f.fileName))));
   const byKind = new Map<ExportSampleFileKind, ExportSampleFileText>();
   for (const f of files) {
@@ -392,6 +400,35 @@ export function validateTestEaExportSample(
     for (const w of tradesImport.warnings) {
       diagnostics.push(
         exportSampleDiagnostic("warning", w.code, w.message, { fileName: tr.fileName, detail: "row" in w ? String((w as { row?: number }).row) : undefined }),
+      );
+      status = bumpStatus(status, "valid_with_warnings");
+    }
+  }
+
+  const ev = byKind.get("backtest_events_csv");
+  if (ev) {
+    eventsCsvPresent = true;
+    eventsParseAttempted = true;
+    const pr = parseBacktestEventsCsv(ev.text);
+    eventsDataRowCount = pr.rowCount;
+    eventsParseOk = pr.ok;
+    if (!pr.ok) {
+      status = bumpStatus(status, "invalid");
+      for (const e of pr.errors) {
+        diagnostics.push(
+          exportSampleDiagnostic("error", e.code, e.message, {
+            fileName: ev.fileName,
+            detail: e.row !== undefined ? String(e.row) : undefined,
+          }),
+        );
+      }
+    }
+    for (const w of pr.warnings) {
+      diagnostics.push(
+        exportSampleDiagnostic("warning", w.code, w.message, {
+          fileName: ev.fileName,
+          detail: w.row !== undefined ? String(w.row) : undefined,
+        }),
       );
       status = bumpStatus(status, "valid_with_warnings");
     }
@@ -504,7 +541,7 @@ export function validateTestEaExportSample(
             exportSampleDiagnostic(
               "error",
               "TESTEA_SUMMARY_IFVG_FLAG",
-              "has_real_ifvg_logic must be true for backtest_ea_v1 samples (E3.5+ IFVG candidate detection)",
+              "has_real_ifvg_logic must be true for backtest_ea_v1 samples (FVG / Setup V1 candidate detection; see has_full_ifvg_pipeline)",
               { fileName: sj.fileName, detail: String(summaryJson["has_real_ifvg_logic"]) },
             ),
           );
@@ -520,6 +557,29 @@ export function validateTestEaExportSample(
             ),
           );
           status = bumpStatus(status, "invalid");
+        }
+        const pipe = summaryJson["has_full_ifvg_pipeline"];
+        if (pipe !== false) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_PIPELINE_FALSE",
+              "has_full_ifvg_pipeline must be false for backtest_ea_v1 (E3.6: FVG/setup candidate detection only; not full IFVG pipeline)",
+              { fileName: sj.fileName, detail: String(pipe) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+        if (!byKind.has("backtest_events_csv")) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "warning",
+              "TESTEA_EVENTS_RECOMMENDED",
+              "backtest_events.csv missing — E3.6 recommends including events for TestEA evidence bundles",
+              { fileName: sj.fileName },
+            ),
+          );
+          status = bumpStatus(status, "valid_with_warnings");
         }
       } else {
         diagnostics.push(
@@ -563,6 +623,22 @@ export function validateTestEaExportSample(
           );
           status = bumpStatus(status, "invalid");
         }
+        const forbiddenProfitKeys = ["total_profit", "profit_factor", "net_profit", "gross_profit", "win_rate_pct"];
+        if (typeof tc === "number" && tc === 0) {
+          for (const key of forbiddenProfitKeys) {
+            if (key in summaryJson && summaryJson[key] != null) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "warning",
+                  "TESTEA_SUMMARY_PROFIT_KEYS_WITH_ZERO_TRADES",
+                  `trade_count is 0 but summary contains "${key}" — remove profit-style metrics until trades exist`,
+                  { fileName: sj.fileName, detail: String(summaryJson[key]) },
+                ),
+              );
+              status = bumpStatus(status, "valid_with_warnings");
+            }
+          }
+        }
       }
     }
   }
@@ -589,7 +665,9 @@ export function validateTestEaExportSample(
         summaryJson["backtest_role"] === true &&
         summaryJson["has_real_daily_bias_logic"] === true &&
         summaryJson["has_real_ifvg_logic"] === true &&
-        summaryJson["has_real_trading_orders"] === false;
+        summaryJson["has_real_trading_orders"] === false &&
+        summaryJson["has_full_ifvg_pipeline"] === false &&
+        (!eventsCsvPresent || eventsParseOk);
     } else {
       summaryOk = false;
     }
@@ -605,6 +683,10 @@ export function validateTestEaExportSample(
     status,
     tradesImport,
     tradeCount,
+    eventsCsvPresent,
+    eventsParseAttempted,
+    eventsParseOk,
+    eventsDataRowCount,
     summaryParsed,
     summaryOk,
     summaryTradeCount,

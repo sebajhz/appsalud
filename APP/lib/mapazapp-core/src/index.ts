@@ -65,6 +65,7 @@ export * from "./backtest-settings";
 export * from "./backtest-metrics";
 export * from "./backtest-reasons";
 export * from "./backtest-importer";
+export * from "./backtest-events-csv";
 export * from "./backtest-approval";
 export * from "./backtest-fixtures";
 export * from "./backtest-evidence-types";

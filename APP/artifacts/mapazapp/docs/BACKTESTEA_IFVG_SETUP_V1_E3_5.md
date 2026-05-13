@@ -37,7 +37,7 @@ El campo **`details`** incluye `fvg_low`, `fvg_high`, `fvg_points`, `candle_time
 
 ## 5. Summary (`backtest_summary.json`)
 
-- **`has_real_ifvg_logic`: `true`** (detección FVG/candidato); **`has_real_trading_orders`: `false`**.
+- **`has_real_ifvg_logic`: `true`** — hay **detección FVG / candidato Setup V1** (geometría de tres velas); **`has_full_ifvg_pipeline`: `false`** (E3.6) — **no** pipeline IFVG completo en el EA; **`has_real_trading_orders`: `false`**.
 - Contadores de setup: `total_setup_candidates`, `bullish_setup_candidates`, `bearish_setup_candidates`, `allowed_setups`, `ignored_small_fvg`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, más `last_setup_*` y `last_fvg_points`.
 - **`trade_count`** sigue en **0**; no hay métricas de profit ni winrate.
 

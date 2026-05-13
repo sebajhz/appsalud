@@ -15,6 +15,9 @@ import {
   V2_12_BRIDGE_MARKET_SNAPSHOT_CSV,
   V2_12_PRIVACY_UNSAFE_STATUS_JSON,
   V2_12_TESTEA_BACKTEST_TRADES_CSV,
+  V2_12_TESTEA_E342_EVENTS_CSV,
+  V2_12_TESTEA_E342_SUMMARY_JSON,
+  V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV,
   V2_12_TESTEA_SUMMARY_UNSAFE_LIVE_JSON,
 } from "../src/export-sample-validation-fixtures";
 import { V1_TEST_SYMBOL_PROFILES } from "./test-symbol-profiles";
@@ -109,7 +112,7 @@ describe("V2-12 export sample validation", () => {
     expect(r.summaryJson?.["live_trading_enabled"]).toBe(false);
   });
 
-  it("D2. TestEA E3.5 — backtest_ea_v1 bundle (header-only trades + summary)", () => {
+  it("D2. TestEA E3.6 — backtest_ea_v1 bundle (trades header + events + summary)", () => {
     const r = validateTestEaExportSample(
       {
         bundleKind: "testea_export_bundle",
@@ -120,9 +123,71 @@ describe("V2-12 export sample validation", () => {
     );
     expect(r.tradesImport?.ok).toBe(true);
     expect(r.tradeCount).toBe(0);
+    expect(r.eventsCsvPresent).toBe(true);
+    expect(r.eventsParseOk).toBe(true);
+    expect(r.eventsDataRowCount).toBeGreaterThan(0);
     expect(r.summaryOk).toBe(true);
     expect(r.summaryJson?.["schema_version"]).toBe("backtest_ea_v1");
     expect(r.summaryJson?.["official_ea"]).toBe("Mapazapp_TestEA");
+    expect(r.summaryJson?.["has_real_ifvg_logic"]).toBe(true);
+    expect(r.summaryJson?.["has_full_ifvg_pipeline"]).toBe(false);
+    expect(r.diagnostics.some((d) => d.code === "TESTEA_EVENTS_RECOMMENDED")).toBe(false);
+  });
+
+  it("D3. backtest_ea_v1 summary missing has_full_ifvg_pipeline fails validation", () => {
+    const minimalSummary = {
+      schema_version: "backtest_ea_v1",
+      ea_build: "x",
+      run_id: "R_BAD",
+      strategy_id: "IFVG_XAUUSD_V1",
+      parameter_set_id: "default",
+      symbol: "XAUUSD",
+      broker_symbol: "XAUUSD",
+      execution_timeframe: "M15",
+      daily_bias_timeframe: "D1",
+      backtest_mode: "virtual",
+      tester_only: true,
+      official_ea: "Mapazapp_TestEA",
+      backtest_role: true,
+      has_real_daily_bias_logic: true,
+      has_real_ifvg_logic: true,
+      has_real_trading_orders: false,
+      trade_count: 0,
+    };
+    const r = validateTestEaExportSample(
+      {
+        bundleKind: "testea_export_bundle",
+        files: [
+          { fileName: "backtest_trades.csv", text: V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV },
+          { fileName: "backtest_events.csv", text: V2_12_TESTEA_E342_EVENTS_CSV },
+          { fileName: "backtest_summary.json", text: JSON.stringify(minimalSummary) },
+        ],
+        privacyMode: "relaxed",
+      },
+      testEaImportOpts,
+    );
+    expect(r.status).toBe("invalid");
+    expect(r.summaryOk).toBe(false);
+    expect(r.diagnostics.some((d) => d.code === "TESTEA_SUMMARY_PIPELINE_FALSE")).toBe(true);
+  });
+
+  it("D4. backtest_ea_v1 summary has_full_ifvg_pipeline true fails validation", () => {
+    const bad = JSON.parse(V2_12_TESTEA_E342_SUMMARY_JSON) as Record<string, unknown>;
+    bad.has_full_ifvg_pipeline = true;
+    const r = validateTestEaExportSample(
+      {
+        bundleKind: "testea_export_bundle",
+        files: [
+          { fileName: "backtest_trades.csv", text: V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV },
+          { fileName: "backtest_events.csv", text: V2_12_TESTEA_E342_EVENTS_CSV },
+          { fileName: "backtest_summary.json", text: JSON.stringify(bad) },
+        ],
+        privacyMode: "relaxed",
+      },
+      testEaImportOpts,
+    );
+    expect(r.status).toBe("invalid");
+    expect(r.diagnostics.some((d) => d.code === "TESTEA_SUMMARY_PIPELINE_FALSE")).toBe(true);
   });
 
   it("E. TestEA unsafe summary — live_trading_enabled true fails", () => {
@@ -178,6 +243,7 @@ describe("V2-12 export sample validation", () => {
 
   it("H. No filesystem — infer kind + validate from strings only", () => {
     expect(inferExportSampleFileKind("candles.csv")).toBe("candles_csv");
+    expect(inferExportSampleFileKind("backtest_events.csv")).toBe("backtest_events_csv");
     const r = validateExportSampleBundle(
       {
         bundleKind: "unknown",

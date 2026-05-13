@@ -1,13 +1,13 @@
 //+------------------------------------------------------------------+
 //| Mapazapp_TestEA.mq5                                              |
-//| Mapazapp — E3.5: Official Strategy Tester EA / Backtest role   |
-//| Daily Bias V1 + IFVG Setup V1 (FVG geometry, core-aligned);    |
+//| Mapazapp — E3.6: Official Strategy Tester EA / Backtest role   |
+//| Daily Bias V1 + Setup V1 FVG candidate (core geometry);        |
 //| CSV/JSON under MQL5/Files/<export>; no broker execution.        |
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.03"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + IFVG Setup V1 candidate (FVG) detection. No orders."
+#property version   "1.04"
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 candidate detection (not full IFVG pipeline). No orders."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -31,7 +31,7 @@ input int               InpMinFvgPoints            = 0;
 input int               InpMaxSetupAgeBars        = 20;
 input bool              InpRequireDailyBiasAlignment = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E3_5"
+#define TESTEA_BUILD            "MZP_TestEA_E3_6"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -99,7 +99,7 @@ long            g_lastFvgPoints = 0;
 //| Bullish: C.low > A.high → zone [A.high, C.low] → setup long.     |
 //| Bearish: C.high < A.low → zone [C.high, A.low] → setup short.    |
 //| Core uses array A=i-1,B=i,C=i+1 — same chronological order.      |
-//| IFVG inversion / ATR filters are NOT in E3.5 (detection only).     |
+//| IFVG inversion / ATR filters are NOT implemented (E3.6: FVG candidate only). |
 //+------------------------------------------------------------------+
 
 //+------------------------------------------------------------------+
@@ -783,7 +783,7 @@ void RefreshSetupSummaryNotes(void)
   {
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    g_exportNotes = StringFormat(
-                       "E3.5 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); IFVG Setup V1 = FVG detection on %s (core fvg-detector geometry); gate_placeholder=%s; "
+                       "E3.6 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 = FVG candidate detection on %s (core fvg-detector geometry; not full IFVG pipeline); gate_placeholder=%s; "
                        "setup_inputs: enable=%s min_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=0 (no orders).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
@@ -825,6 +825,7 @@ string WriteSummaryJson(void)
    json += "  \"use_h4_context\": " + (InpUseH4Context ? "true" : "false") + ",\r\n";
    json += "  \"use_h1_context\": " + (InpUseH1Context ? "true" : "false") + ",\r\n";
    json += "  \"has_real_ifvg_logic\": true,\r\n";
+   json += "  \"has_full_ifvg_pipeline\": false,\r\n";
    json += "  \"has_real_daily_bias_logic\": true,\r\n";
    json += "  \"has_real_trading_orders\": false,\r\n";
    json += "  \"trade_count\": 0,\r\n";
@@ -917,11 +918,11 @@ int OnInit()
      }
 
    g_initOk = true;
-   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + IFVG Setup V1 (FVG); outputs under MQL5\\Files\\", g_baseRelPath);
+   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 candidate (not full IFVG pipeline); outputs under MQL5\\Files\\", g_baseRelPath);
 
    ExportLifecycleEvent("lifecycle_init", "ok", "OnInit", "paths_ready");
-   ExportLifecycleEvent("skeleton_ready", "noop", "E3.5",
-                       "IFVG Setup V1 candidate detection (FVG geometry); no trades; trades CSV header-only.");
+   ExportLifecycleEvent("skeleton_ready", "noop", "E3.6",
+                       "FVG/Setup V1 candidate detection (geometry only); has_full_ifvg_pipeline=false; no trades; trades CSV header-only.");
 
    TryEmitDailyBiasOnNewClosedBar();
    TryDetectIfvgOnNewExecClosedBar();
