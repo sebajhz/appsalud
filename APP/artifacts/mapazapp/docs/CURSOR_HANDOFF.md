@@ -12,7 +12,8 @@
 - **E4 cerrado (smoke real MT5):** plan [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md); evidencia **OK with observations** [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md).
 - **E4.1 cerrado:** CLI `mapazapp:testea-export-validate` + `validateTestEaExportBundleTexts` — [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md).
 - **E5 cerrado (diseño docs-only):** campaña XAUUSD tester — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md); separa Phase A (sin rentabilidad) de Phase B (outcome); **no** ejecuta MT5 en E5.
-- **Siguiente paso canónico:** **E5.1** — decisión formal del **modo de outcome** de trades en TestEA (**simulación virtual** vs **tester_orders**, o secuencia); prerequisito antes de métricas de edge/rentabilidad.
+- **E5.1 cerrado (decisión docs-only):** modo outcome — [`TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md): **virtual dentro de `Mapazapp_TestEA` + Strategy Tester primero**; `tester_orders` solo tras gate opcional **E5.6**.
+- **Siguiente paso canónico:** **E5.2** — contrato formal de **simulación virtual de trades** (CSV/summary, reglas de fill y ambigüedad); **sin** implementar MQL5 en E5.2 salvo decisión explícita de alcance.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

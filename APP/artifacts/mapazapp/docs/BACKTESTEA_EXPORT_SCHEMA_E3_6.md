@@ -40,6 +40,7 @@ Bajo `MQL5\Files\<InpExportRoot>\<run_id>\` (por defecto `Mapazapp\TestEA\<run_i
   `run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason`
 - **Sin filas de datos** hasta una fase aprobada de simulación de trades u órdenes en tester.
 - El importador TypeScript (`importBacktestTradesFromCsv`) acepta **solo cabecera** con aviso `CSV_HEADER_ONLY_NO_TRADE_ROWS`.
+- **Impacto futuro (E5.2+ / virtual outcome):** cuando exista simulación virtual en **`Mapazapp_TestEA`**, se esperan **filas de datos** y posible **ampliación o versionado de columnas** (p. ej. `setup_event_id`, `outcome`, `entry_time`/`exit_time`, `bars_held`, métricas R agregadas en summary). **E3.6** documenta el baseline pre-outcome; **E5.2** y `EXPORT_CONTRACT.md` coordinan el contrato revisado y los validadores TS.
 
 ## 6. `backtest_summary.json`
 
@@ -67,6 +68,8 @@ Campos clave además de identidad (`run_id`, `strategy_id`, `symbol`, timeframes
 
 - **E4 — First MT5 Strategy Tester smoke run** (manual): [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md).
 - **E4.1 — Validación bundle exportado** (read-only, sin MT5): [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md).
-- **E5 — Campaña XAUUSD** en Strategy Tester (diseño y acumulación de bundles validados con E4.1).
+- **E5 — Campaña XAUUSD** (diseño): [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md).
+- **E5.1 — Decisión modo outcome:** [`TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md) — virtual en TestEA primero.
+- **E5.2 — Contrato simulación virtual** (próximo): extensión acordada de trades/summary (ver §5 impacto futuro).
 
 **Referencia detallada de columnas opcionales/obligatorias:** [`../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md`](../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md).

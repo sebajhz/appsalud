@@ -129,7 +129,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E3.5** añade **detección candidata FVG** (setup long/short), gate Daily Bias y eventos `setup_*` en **`Mapazapp_TestEA.mq5`** — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md).
 - **E3.6** congela el **esquema de export / evidencia** (CSV/JSON, samples, validadores TS) — ver [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
 - **E4.1** — **CLI + core** validación bundle TestEA en disco (`mapazapp:testea-export-validate`, `validateTestEaExportBundleTexts`) — ver [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md). **No** MT5.
-- **E5** — **diseño (docs-only)** campaña XAUUSD Strategy Tester — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md): Phase A (candidato/compuerta) vs Phase B (outcome); sin métricas de rentabilidad hasta **E5.1+**. **Siguiente:** **E5.1** decisión modo outcome (virtual vs tester_orders).
+- **E5** — **diseño (docs-only)** campaña XAUUSD Strategy Tester — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md): Phase A (candidato/compuerta) vs Phase B (outcome); sin métricas de rentabilidad hasta implementación acordada.
+- **E5.1** — **decisión modo outcome (docs-only)** — [`TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md): **simulación virtual dentro de `Mapazapp_TestEA` en MT5 Strategy Tester primero**; `tester_orders` pospuesto a gate opcional **E5.6**. **Siguiente:** **E5.2** contrato de simulación virtual.
 
 ---
 
@@ -166,7 +167,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E4 | First MT5 Strategy Tester smoke run (post-merge) | **completed** | Operator + Cursor | Smoke real OK — [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md); sin automatizar MT5 desde dashboard. | **E4.1** |
 | E4.1 | TestEA export bundle validation (CLI + core) | **completed** | Cursor + PM | `mapazapp:testea-export-validate`, `validateTestEaExportBundleTexts`, [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md); read-only; sin MT5. | **E5** |
 | E5 | XAUUSD Strategy Tester **campaign design** | **completed (docs)** | PM + Cursor | Phase A vs B, parámetros, naming, evidencia, E4.1 por run — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md). **No** ejecuta campaña en E5. | **E5.1** |
-| E5.1 | TestEA trade **outcome mode** decision | pending | PM + Cursor | Virtual sim vs `tester_orders` (o secuencia); antes de métricas rentabilidad. | **E5.2**+ o ejecución Phase A |
+| E5.1 | TestEA trade **outcome mode** decision | **completed (docs)** | PM + Cursor | Opción C: virtual en TestEA+tester primero; `tester_orders` → E5.6 opcional — [`TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md). | **E5.2** |
+| E5.2 | Virtual trade simulation **contract** | pending | PM + Cursor | CSV/summary/eventos; fill/ambigüedad; sin MQL5 hasta E5.3. | **E5.3** |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |
@@ -192,6 +194,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E4 (evidence) | First MT5 Strategy Tester smoke — real run archived | `FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`, refs en plan E4 / guía / handoff / roadmap | Compilación 0/0; tester completó; 3 exports; summary `backtest_ea_v1`; `trade_count` 0; eventos bias + setup | **E4.1** bundle CLI |
 | E4.1 | TestEA export bundle validation — CLI + core | `mapazapp-testea-export-validate.ts`, `testea-export-bundle-validate.ts`, tests, `TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`, `export-sample-validation.ts`, `backtest-events-csv.ts`, fixture E342 +1 fila `lifecycle_deinit` | Validación read-only carpetas run; `bundleContract` eventos; opciones `zeroTradeCountMismatchAsWarning`, `eventsParseOptions` | **E5** campaña |
 | E5 | XAUUSD Strategy Tester campaign **design** (docs-only) | `XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`, refs guía / handoff / roadmap / E4 evidence / E4.1 | Phase A candidato+gate vs Phase B outcome; parámetros y naming; política evidencia; cadena E5.1–E5.5 | **E5.1** decisión outcome |
+| E5.1 | TestEA trade outcome **mode decision** (docs-only) | `TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`, refs E5 / guía / roadmap | Virtual primero en TestEA+tester; tester_orders opcional E5.6 | **E5.2** contrato virtual |
 
 ## 10. Cursor working rules
 

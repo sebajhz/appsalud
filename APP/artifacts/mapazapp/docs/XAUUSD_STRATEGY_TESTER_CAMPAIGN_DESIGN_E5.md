@@ -5,10 +5,10 @@
 - **E5** documenta el **diseño** de la campaña de prueba del setup **IFVG_XAUUSD_V1** en **MetaTrader 5 Strategy Tester**, centrada en **XAUUSD**, usando el EA oficial **`Mapazapp_TestEA`**.
 - **MT5 Strategy Tester** es el **motor oficial** del backtest del setup; **Mapazapp** (core, dashboard, scripts) **no** reemplaza al Strategy Tester como motor canónico.
 - **E5 no ejecuta** ninguna campaña en este checkpoint: es **solo documentación**. No se lanza MT5 ni se automatiza el tester desde el repo.
-- **E5 no mide rentabilidad todavía**: el EA actual exporta candidatos y compuertas, pero **`trade_count = 0`**, **`has_real_trading_orders: false`**, y el CSV de trades permanece **solo cabecera** hasta existir un **motor de outcome** (decisión **E5.1** y fases posteriores).
+- **E5 no mide rentabilidad todavía**: el EA actual exporta candidatos y compuertas, pero **`trade_count = 0`**, **`has_real_trading_orders: false`**, y el CSV de trades permanece **solo cabecera** hasta existir un **motor de outcome** implementado según la decisión formal [**E5.1**](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md) y los contratos **E5.2+**.
 - **E5 prepara** parámetros, naming, evidencia, validación con **E4.1** y la **decisión obligatoria** sobre cómo medir resultados de trades, para que las métricas de edge no se **falseen** interpretando señales como si fueran trades cerrados.
 
-**Relacionado:** [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md), [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md), [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
+**Relacionado:** [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md), [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md), [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md), [**E5.1 — decisión modo outcome (virtual primero)**](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md).
 
 ---
 
@@ -206,11 +206,15 @@ Plantilla mínima de contenido cuando existan runs consolidados:
 
 ### E5.1 — TestEA trade outcome mode decision
 
+**Estado:** **cerrado (docs-only)** — ver [**TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md**](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md).
+
 Decidir **una** o **secuencia** de:
 
 - **Virtual trade simulation** (recomendado como primer eje).
 - **Tester orders** (solo con spec de seguridad y gate).
 - **Ambos** en secuencia (virtual primero; tester_orders si aporta valor).
+
+**Decisión formal (E5.1):** [**TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md**](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md) — camino aprobado: **simulación virtual dentro de `Mapazapp_TestEA` en el Strategy Tester primero**; **tester_orders** pospuesto a **gate opcional E5.6**.
 
 **Cadena sugerida post decisión:**
 
@@ -218,10 +222,11 @@ Decidir **una** o **secuencia** de:
 |----|------------|
 | **E5.2** | Contrato de simulación virtual (campos summary/trades/eventos). |
 | **E5.3** | Implementación MQL5 + ajustes validadores TS si el contrato cambia. |
-| **E5.4** | Primer smoke de outcome en Strategy Tester (evidencia acotada). |
-| **E5.5** | Campaña XAUUSD con **métricas de outcome** (Phase B). |
+| **E5.4** | Primer smoke de outcome virtual en Strategy Tester (evidencia acotada). |
+| **E5.5** | Campaña XAUUSD con **métricas de outcome virtual**. |
+| **E5.6** (opcional) | Gate **tester_orders** + spec de seguridad si hace falta tras la virtual. |
 
-Si en algún momento se elige **tester_orders**: spec aparte de **gate**, documentación **`MQL_TESTER`**, y prohibición explícita de uso en live para este rol.
+Si en algún momento se activa **tester_orders**: spec aparte de **gate**, documentación **`MQL_TESTER`**, y prohibición explícita de uso en live para este rol.
 
 ---
 
@@ -232,7 +237,7 @@ La campaña **Phase A** debe producir lecturas útiles para el trader, no solo c
 - “El bias diario estaba **alcista** y el setup **long** fue **permitido**.”
 - “El setup **short** fue **rechazado** por ir **contra** el bias.”
 - “Hay **demasiados** candidatos; conviene subir **`InpMinFvgPoints`** o revisar sesión.”
-- “Hay muchas señales **permitidas**, pero **aún no sabemos si ganan** hasta definir SL/TP y outcome (**E5.1+**).”
+- “Hay muchas señales **permitidas**, pero **aún no sabemos si ganan** hasta definir SL/TP y outcome (**E5.2–E5.3+**).”
 - “El siguiente paso honesto es **medir resultado** con reglas de salida fijadas en contrato.”
 
 ---
