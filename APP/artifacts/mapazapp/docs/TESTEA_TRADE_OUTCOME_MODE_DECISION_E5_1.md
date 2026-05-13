@@ -197,6 +197,8 @@ Esto alimentará **dashboard** y narrativa del **asistente del trader** sin conf
 - **Primero:** **simulación virtual de trades** **dentro de `Mapazapp_TestEA`** en **MT5 Strategy Tester**.
 - **Tester orders** quedan **pospuestos** a un **gate opcional E5.6** tras campaña de outcome virtual con sentido.
 
+**Contrato de simulación V1 (E5.2):** [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md) — parámetros por defecto aprobados para **E5.3:** entrada `fvg_midpoint`, stop `fvg_boundary_with_buffer` (buffer 0 configurable), **RR 2.0**, expiración entrada **20** barras, máximo **40** barras en trade, ambigüedad **`ambiguous`**, **una** operación virtual activa, sin `OrderSend`/`CTrade`.
+
 ---
 
 ## 13. Non-goals (E5.1)

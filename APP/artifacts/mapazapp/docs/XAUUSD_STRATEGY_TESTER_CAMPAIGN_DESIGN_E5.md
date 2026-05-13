@@ -7,8 +7,9 @@
 - **E5 no ejecuta** ninguna campaña en este checkpoint: es **solo documentación**. No se lanza MT5 ni se automatiza el tester desde el repo.
 - **E5 no mide rentabilidad todavía**: el EA actual exporta candidatos y compuertas, pero **`trade_count = 0`**, **`has_real_trading_orders: false`**, y el CSV de trades permanece **solo cabecera** hasta existir un **motor de outcome** implementado según la decisión formal [**E5.1**](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md) y los contratos **E5.2+**.
 - **E5 prepara** parámetros, naming, evidencia, validación con **E4.1** y la **decisión obligatoria** sobre cómo medir resultados de trades, para que las métricas de edge no se **falseen** interpretando señales como si fueran trades cerrados.
+- **E5.2** fija el **contrato formal** de simulación virtual — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md) (posterior a **E5.1**).
 
-**Relacionado:** [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md), [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md), [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md), [**E5.1 — decisión modo outcome (virtual primero)**](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md).
+**Relacionado:** [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md), [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md), [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md), [**E5.1 — decisión modo outcome (virtual primero)**](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md), [**E5.2 — contrato simulación virtual**](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md).
 
 ---
 
@@ -220,7 +221,7 @@ Decidir **una** o **secuencia** de:
 
 | ID | Contenido |
 |----|------------|
-| **E5.2** | Contrato de simulación virtual (campos summary/trades/eventos). |
+| **E5.2** | Contrato de simulación virtual (cerrado — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md)). |
 | **E5.3** | Implementación MQL5 + ajustes validadores TS si el contrato cambia. |
 | **E5.4** | Primer smoke de outcome virtual en Strategy Tester (evidencia acotada). |
 | **E5.5** | Campaña XAUUSD con **métricas de outcome virtual**. |

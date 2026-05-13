@@ -13,7 +13,8 @@
 - **E4.1 cerrado:** CLI `mapazapp:testea-export-validate` + `validateTestEaExportBundleTexts` — [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md).
 - **E5 cerrado (diseño docs-only):** campaña XAUUSD tester — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md); separa Phase A (sin rentabilidad) de Phase B (outcome); **no** ejecuta MT5 en E5.
 - **E5.1 cerrado (decisión docs-only):** modo outcome — [`TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md): **virtual dentro de `Mapazapp_TestEA` + Strategy Tester primero**; `tester_orders` solo tras gate opcional **E5.6**.
-- **Siguiente paso canónico:** **E5.2** — contrato formal de **simulación virtual de trades** (CSV/summary, reglas de fill y ambigüedad); **sin** implementar MQL5 en E5.2 salvo decisión explícita de alcance.
+- **E5.2 cerrado (contrato docs-only):** simulación virtual V1 — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): fill OHLC, SL/TP/RR, `ambiguous`, una operación activa, schema export documentado.
+- **Siguiente paso canónico:** **E5.3** — **implementación** de la simulación virtual en **`Mapazapp_TestEA.mq5`** + alineación `EXPORT_CONTRACT.md` / validadores TS; **sin** `OrderSend`/`CTrade`.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 
