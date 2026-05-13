@@ -9,6 +9,10 @@
 
 **Límites explícitos:** sin automatizar MT5 desde dashboard, sin launcher, sin `.exe`, sin trading live, sin convertir esta corrida en campaña larga de optimización o medición de rentabilidad.
 
+### Estado de ejecución (E4)
+
+- **Smoke real en MT5 Strategy Tester:** **ejecutado** por operador humano — evidencia formal en [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md).
+
 ---
 
 ## 2. Preconditions
@@ -175,7 +179,7 @@ E4 **no** incluye:
 
 | Resultado | Siguiente paso |
 |-----------|----------------|
-| **E4 OK** | **E5** — diseño / ejecución de **campaña XAUUSD** en Strategy Tester con parámetros y evidencia acotados. |
+| **E4 OK** (evidencia archivada) | **E5** — diseño / ejecución de **campaña XAUUSD** en Strategy Tester con parámetros y evidencia acotados; opcional previo **E4.1** — CLI / workflow de validación del bundle real TestEA. |
 | **E4 falla** (compile, export, schema, path) | **E4.1** — correcciones MQL5 / docs / validadores hasta un smoke repetible. |
 
-Tras un smoke manual exitoso, crear evidencia en **`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`** (commit separado del plan), con los campos de §7 y conclusión explícita.
+La evidencia del smoke exitoso está en [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md).
