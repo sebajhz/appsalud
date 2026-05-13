@@ -8,7 +8,8 @@
 > **Nota E3.4.1–E3.4.2:** E3.4 desarrolló Daily Bias V1 primero en **`Mapazapp_BacktestEA`**; **E3.4.2** migró esa lógica al EA oficial **`Mapazapp_TestEA`** y eliminó la carpeta temporal del árbol activo.
 - Eventos **`daily_bias_evaluated`** en `backtest_events.csv`.
 - **`backtest_summary.json`** con `has_real_daily_bias_logic: true` y contadores de outcome de bias.
-- Función **`ApplyDailyBiasGatePlaceholder`** lista para **E3.5** (dirección de setup `long` / `short` / `none` vs bias); en E3.4 no se incrementan `rejected_by_daily_bias` ni `skipped_neutral_bias` desde setups (no hay IFVG).
+- Función **`ApplyDailyBiasGatePlaceholder`** para notas (`none` → placeholder); **`ApplyDailyBiasGateToSetup`** aplica el gate a direcciones `long`/`short` reales (**E3.5**).
+- En **E3.4** no se incrementaban `rejected_by_daily_bias` / `skipped_neutral_bias` desde setups; **E3.5** sí los usa al evaluar candidatos FVG (ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md)).
 
 ## 2. Regla V1
 
@@ -25,8 +26,8 @@
 ## 3. Limitaciones
 
 - **Sin** fusión H4/H1: los inputs `InpUseH4Context` / `InpUseH1Context` se conservan para fases posteriores.
-- **Sin** IFVG ni trades: `has_real_ifvg_logic` y `has_real_trading_orders` permanecen en `false`.
-- `rejected_by_daily_bias` y `skipped_neutral_bias` en summary siguen en **0** hasta que E3.5 conecte el gate con candidatos de setup.
+- **E3.5+:** `has_real_ifvg_logic` pasa a **`true`** en el EA por detección FVG; **`has_real_trading_orders`** sigue en `false`.
+- Los contadores `rejected_by_daily_bias`, `skipped_neutral_bias` y `missing_bias_context` en summary pueden moverse desde **0** cuando el EA evalúe candidatos de setup (**E3.5**, ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md)).
 
 ## 4. Por qué aún no hay IFVG
 

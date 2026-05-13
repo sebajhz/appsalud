@@ -1,13 +1,13 @@
 //+------------------------------------------------------------------+
 //| Mapazapp_TestEA.mq5                                              |
-//| Mapazapp — E3.4.2: Official Strategy Tester EA / Backtest role |
-//| Daily Bias V1; virtual mode; CSV/JSON under MQL5/Files/<export> |
-//| No broker execution; fail-closed outside Strategy Tester.       |
+//| Mapazapp — E3.5: Official Strategy Tester EA / Backtest role   |
+//| Daily Bias V1 + IFVG Setup V1 (FVG geometry, core-aligned);    |
+//| CSV/JSON under MQL5/Files/<export>; no broker execution.        |
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.02"
-#property description "Strategy Tester only: official TestEA (BacktestEA role). Daily Bias V1. No IFVG yet (E3.5)."
+#property version   "1.03"
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + IFVG Setup V1 candidate (FVG) detection. No orders."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -26,8 +26,17 @@ input bool              InpWriteTradesCsv          = true;
 input bool              InpWriteEventsCsv         = true;
 input bool              InpWriteSummaryJson       = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E3_4_2"
+input bool              InpEnableSetupDetection    = true;
+input int               InpMinFvgPoints            = 0;
+input int               InpMaxSetupAgeBars        = 20;
+input bool              InpRequireDailyBiasAlignment = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E3_5"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
+#define EVT_SETUP_DETECTED      "setup_detected"
+#define EVT_SETUP_ALLOWED       "setup_allowed"
+#define EVT_SETUP_REJECTED      "setup_rejected"
+#define EVT_SETUP_SKIPPED       "setup_skipped"
 #define REASON_BULL_BODY        "previous_daily_close_above_open"
 #define REASON_BEAR_BODY        "previous_daily_close_below_open"
 #define REASON_BODY_SMALL       "previous_daily_body_too_small"
@@ -40,6 +49,13 @@ enum ENUM_MAPZ_BIAS
    MAPZ_BIAS_BULLISH = 1,
    MAPZ_BIAS_BEARISH = 2,
    MAPZ_BIAS_NEUTRAL = 3
+  };
+
+enum ENUM_MAPZ_SETUP_DIR
+  {
+   MAPZ_SETUP_NONE = 0,
+   MAPZ_SETUP_LONG = 1,
+   MAPZ_SETUP_SHORT = 2
   };
 
 bool            g_testerOk = false;
@@ -66,9 +82,24 @@ long            g_skippedNeutralBias = 0;
 
 bool            g_missingDataEventEmitted = false;
 
+datetime        g_lastExecClosedBarProcessed = 0;
+long            g_totalSetupCandidates = 0;
+long            g_bullishSetupCandidates = 0;
+long            g_bearishSetupCandidates = 0;
+long            g_allowedSetups = 0;
+long            g_ignoredSmallFvg = 0;
+string          g_lastSetupDirection = "none";
+string          g_lastSetupDecision = "none";
+string          g_lastSetupReason = "";
+long            g_lastFvgPoints = 0;
+
 //+------------------------------------------------------------------+
-//| E3.5 will add Setup V1 IFVG detection (real logic).              |
-//| E3.4.2: Daily Bias V1 from last closed bar on bias timeframe.    |
+//| FVG geometry matches mapazapp-core `fvg-detector.ts`:            |
+//| A = shift 3, B = shift 2, C = shift 1 (last three closed bars).  |
+//| Bullish: C.low > A.high → zone [A.high, C.low] → setup long.     |
+//| Bearish: C.high < A.low → zone [C.high, A.low] → setup short.    |
+//| Core uses array A=i-1,B=i,C=i+1 — same chronological order.      |
+//| IFVG inversion / ATR filters are NOT in E3.5 (detection only).     |
 //+------------------------------------------------------------------+
 
 //+------------------------------------------------------------------+
@@ -324,8 +355,6 @@ void IncrementBiasOutcomeCounters(const ENUM_MAPZ_BIAS b, const bool missingCont
   }
 
 //+------------------------------------------------------------------+
-//| Daily Bias V1 — last fully closed bar on InpDailyBiasTimeframe.  |
-//+------------------------------------------------------------------+
 bool EvaluateDailyBiasV1(const datetime closedBarTime,
                            const double openPrice,
                            const double closePrice,
@@ -378,11 +407,11 @@ bool EvaluateDailyBiasV1(const datetime closedBarTime,
 
 //+------------------------------------------------------------------+
 void AppendEventRow(const string eventType,
-                     const string biasWire,
-                     const string setupWire,
-                     const string decision,
-                     const string reason,
-                     const string details)
+                    const string biasWire,
+                    const string setupWire,
+                    const string decision,
+                    const string reason,
+                    const string details)
   {
    if(!g_initOk || !InpWriteEventsCsv)
       return;
@@ -426,20 +455,133 @@ void ExportLifecycleEvent(const string eventType,
   }
 
 //+------------------------------------------------------------------+
-string ApplyDailyBiasGatePlaceholder(const string setupDirection)
+string SetupDirectionToString(const ENUM_MAPZ_SETUP_DIR d)
   {
-   const string s = Trim(setupDirection);
+   if(d == MAPZ_SETUP_LONG)
+      return "long";
+   if(d == MAPZ_SETUP_SHORT)
+      return "short";
+   return "none";
+  }
+
+//+------------------------------------------------------------------+
+long CalculateFvgGapPoints(const double fvgLow, const double fvgHigh, const double pt)
+  {
+   if(pt <= 0.0)
+      return 0;
+   return (long)MathRound(MathAbs(fvgHigh - fvgLow) / pt);
+  }
+
+//+------------------------------------------------------------------+
+string BuildIfvgReason(const ENUM_MAPZ_SETUP_DIR d, const string tag)
+  {
+   if(StringLen(Trim(tag)) > 0)
+      return tag;
+   if(d == MAPZ_SETUP_LONG)
+      return "bullish_fvg_C_low_above_A_high";
+   if(d == MAPZ_SETUP_SHORT)
+      return "bearish_fvg_C_high_below_A_low";
+   return "no_fvg_pattern";
+  }
+
+//+------------------------------------------------------------------+
+bool DetectIfvgSetupV1(const string sym,
+                       const ENUM_TIMEFRAMES tf,
+                       bool &outFound,
+                       ENUM_MAPZ_SETUP_DIR &outDir,
+                       double &outFvgLow,
+                       double &outFvgHigh,
+                       long &outGapPts,
+                       datetime &outCandleTime,
+                       string &outReason)
+  {
+   outFound = false;
+   outDir = MAPZ_SETUP_NONE;
+   outFvgLow = 0.0;
+   outFvgHigh = 0.0;
+   outGapPts = 0;
+   outCandleTime = 0;
+   outReason = "no_fvg";
+
+   if(Bars(sym, tf) < 4)
+      return false;
+
+   const double pt = SymbolInfoDouble(sym, SYMBOL_POINT);
+   if(pt <= 0.0)
+      return false;
+
+   const double aHi = iHigh(sym, tf, 3);
+   const double aLo = iLow(sym, tf, 3);
+   const double cHi = iHigh(sym, tf, 1);
+   const double cLo = iLow(sym, tf, 1);
+
+   if(cLo > aHi)
+     {
+      outFound = true;
+      outDir = MAPZ_SETUP_LONG;
+      outFvgLow = aHi;
+      outFvgHigh = cLo;
+     }
+   else if(cHi < aLo)
+     {
+      outFound = true;
+      outDir = MAPZ_SETUP_SHORT;
+      outFvgLow = cHi;
+      outFvgHigh = aLo;
+     }
+   else
+     {
+      outFound = false;
+      return true;
+     }
+
+   outGapPts = CalculateFvgGapPoints(outFvgLow, outFvgHigh, pt);
+   outCandleTime = iTime(sym, tf, 1);
+   outReason = BuildIfvgReason(outDir, "");
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+string ApplyDailyBiasGateToSetup(const string setupWireRaw)
+  {
+   const string s = Trim(setupWireRaw);
    if(StringLen(s) == 0 || s == "none")
-      return "allowed";
+      return "setup_ignored";
+
+   if(!InpRequireDailyBiasAlignment)
+      return "setup_candidate_allowed";
+
    if(g_lastBiasEnum == MAPZ_BIAS_UNKNOWN)
       return "missing_bias_context";
    if(g_lastBiasEnum == MAPZ_BIAS_NEUTRAL)
       return "skipped_neutral_bias";
+
    if(s == "long" && g_lastBiasEnum == MAPZ_BIAS_BEARISH)
       return "rejected_by_daily_bias";
    if(s == "short" && g_lastBiasEnum == MAPZ_BIAS_BULLISH)
       return "rejected_by_daily_bias";
-   return "allowed";
+
+   return "setup_candidate_allowed";
+  }
+
+//+------------------------------------------------------------------+
+string ApplyDailyBiasGatePlaceholder(const string setupDirection)
+  {
+   const string s = Trim(setupDirection);
+   if(StringLen(s) == 0 || s == "none")
+      return "n_a_no_setup_direction";
+   return ApplyDailyBiasGateToSetup(s);
+  }
+
+//+------------------------------------------------------------------+
+void ExportSetupEvent(const string eventType,
+                      const string setupWire,
+                      const string decision,
+                      const string reason,
+                      const string details)
+  {
+   const string biasW = BiasDirectionToString(g_lastBiasEnum);
+   AppendEventRow(eventType, biasW, setupWire, decision, reason, details);
   }
 
 //+------------------------------------------------------------------+
@@ -492,14 +634,171 @@ void TryEmitDailyBiasOnNewClosedBar(void)
   }
 
 //+------------------------------------------------------------------+
-void RefreshExportNotes(void)
+bool SetupBarAgeAllowed(const string sym, const ENUM_TIMEFRAMES tf)
+  {
+   if(InpMaxSetupAgeBars <= 0)
+      return true;
+   const datetime tA = iTime(sym, tf, 3);
+   if(tA == 0)
+      return false;
+   const int sh = iBarShift(sym, tf, tA, false);
+   if(sh < 0)
+      return false;
+   return (sh <= InpMaxSetupAgeBars);
+  }
+
+//+------------------------------------------------------------------+
+void TryDetectIfvgOnNewExecClosedBar(void)
+  {
+   if(!g_initOk || !InpEnableSetupDetection)
+      return;
+
+   const datetime tExec = iTime(g_brokerSymbol, InpExecutionTimeframe, 1);
+   if(tExec == 0)
+      return;
+   if(tExec == g_lastExecClosedBarProcessed)
+      return;
+
+   g_lastExecClosedBarProcessed = tExec;
+
+   if(!SetupBarAgeAllowed(g_brokerSymbol, InpExecutionTimeframe))
+      return;
+
+   bool found = false;
+   ENUM_MAPZ_SETUP_DIR sdir = MAPZ_SETUP_NONE;
+   double fLo = 0.0, fHi = 0.0;
+   long gapPts = 0;
+   datetime cTime = 0;
+   string rsn = "";
+   if(!DetectIfvgSetupV1(g_brokerSymbol, InpExecutionTimeframe, found, sdir, fLo, fHi, gapPts, cTime, rsn))
+      return;
+   if(!found)
+      return;
+
+   const string setupW = SetupDirectionToString(sdir);
+
+   if(InpMinFvgPoints > 0 && gapPts < InpMinFvgPoints)
+     {
+      g_ignoredSmallFvg++;
+      g_lastSetupDirection = setupW;
+      g_lastSetupDecision = "setup_ignored";
+      g_lastSetupReason = "fvg_gap_below_min_points";
+      g_lastFvgPoints = gapPts;
+      const string det = StringFormat(
+                            "fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d candle_time=%s daily_bias_reason=%s gate_result=ignored_small_fvg min_points=%d",
+                            fLo, fHi, gapPts,
+                            TimeUtcIso(cTime),
+                            JsonStringEscape(g_lastBiasReason),
+                            InpMinFvgPoints);
+      ExportSetupEvent(EVT_SETUP_SKIPPED, setupW, "setup_ignored", "fvg_gap_below_min_points", det);
+      return;
+     }
+
+   g_totalSetupCandidates++;
+   if(sdir == MAPZ_SETUP_LONG)
+      g_bullishSetupCandidates++;
+   else if(sdir == MAPZ_SETUP_SHORT)
+      g_bearishSetupCandidates++;
+
+   g_lastSetupDirection = setupW;
+   g_lastFvgPoints = gapPts;
+
+   const string detDetected = StringFormat(
+                                 "fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d candle_time=%s daily_bias_reason=%s gate_result=pending",
+                                 fLo, fHi, gapPts,
+                                 TimeUtcIso(cTime),
+                                 JsonStringEscape(g_lastBiasReason));
+   ExportSetupEvent(EVT_SETUP_DETECTED, setupW, "detected", rsn, detDetected);
+
+   const string gate = ApplyDailyBiasGateToSetup(setupW);
+
+   if(gate == "setup_candidate_allowed")
+     {
+      g_allowedSetups++;
+      g_lastSetupDecision = gate;
+      g_lastSetupReason = "daily_bias_aligned";
+      const string detA = StringFormat(
+                            "fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d candle_time=%s daily_bias_reason=%s gate_result=%s",
+                            fLo, fHi, gapPts,
+                            TimeUtcIso(cTime),
+                            JsonStringEscape(g_lastBiasReason),
+                            gate);
+      ExportSetupEvent(EVT_SETUP_ALLOWED, setupW, gate, "daily_bias_aligned", detA);
+     }
+   else if(gate == "rejected_by_daily_bias")
+     {
+      g_rejectedByDailyBias++;
+      g_lastSetupDecision = gate;
+      g_lastSetupReason = "bias_mismatch";
+      const string detR = StringFormat(
+                            "fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d candle_time=%s daily_bias_reason=%s gate_result=%s",
+                            fLo, fHi, gapPts,
+                            TimeUtcIso(cTime),
+                            JsonStringEscape(g_lastBiasReason),
+                            gate);
+      ExportSetupEvent(EVT_SETUP_REJECTED, setupW, gate, "bias_mismatch", detR);
+     }
+   else if(gate == "skipped_neutral_bias")
+     {
+      g_skippedNeutralBias++;
+      g_lastSetupDecision = gate;
+      g_lastSetupReason = "neutral_bias";
+      const string detN = StringFormat(
+                            "fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d candle_time=%s daily_bias_reason=%s gate_result=%s",
+                            fLo, fHi, gapPts,
+                            TimeUtcIso(cTime),
+                            JsonStringEscape(g_lastBiasReason),
+                            gate);
+      ExportSetupEvent(EVT_SETUP_SKIPPED, setupW, gate, "neutral_bias", detN);
+     }
+   else if(gate == "missing_bias_context")
+     {
+      g_missingBiasContextCount++;
+      g_lastSetupDecision = gate;
+      g_lastSetupReason = "unknown_bias";
+      const string detM = StringFormat(
+                            "fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d candle_time=%s daily_bias_reason=%s gate_result=%s",
+                            fLo, fHi, gapPts,
+                            TimeUtcIso(cTime),
+                            JsonStringEscape(g_lastBiasReason),
+                            gate);
+      ExportSetupEvent(EVT_SETUP_SKIPPED, setupW, gate, "unknown_bias", detM);
+     }
+   else
+     {
+      g_lastSetupDecision = gate;
+      g_lastSetupReason = "setup_ignored";
+      const string detI = StringFormat(
+                            "fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d candle_time=%s daily_bias_reason=%s gate_result=%s",
+                            fLo, fHi, gapPts,
+                            TimeUtcIso(cTime),
+                            JsonStringEscape(g_lastBiasReason),
+                            gate);
+      ExportSetupEvent(EVT_SETUP_SKIPPED, setupW, gate, "setup_ignored", detI);
+     }
+  }
+
+//+------------------------------------------------------------------+
+void RefreshSetupSummaryNotes(void)
   {
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    g_exportNotes = StringFormat(
-                       "E3.4.2 Mapazapp_TestEA Daily Bias V1 on %s; last=%s; gate_none=%s; IFVG deferred to E3.5; no trade rows (header-only trades CSV).",
+                       "E3.5 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); IFVG Setup V1 = FVG detection on %s (core fvg-detector geometry); gate_placeholder=%s; "
+                       "setup_inputs: enable=%s min_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=0 (no orders).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
-                       gateNone);
+                       TfToWire(InpExecutionTimeframe),
+                       gateNone,
+                       (InpEnableSetupDetection ? "true" : "false"),
+                       InpMinFvgPoints,
+                       InpMaxSetupAgeBars,
+                       (InpRequireDailyBiasAlignment ? "true" : "false"));
+  }
+
+//+------------------------------------------------------------------+
+void RefreshExportNotes(void)
+  {
+   RefreshSetupSummaryNotes();
   }
 
 //+------------------------------------------------------------------+
@@ -525,7 +824,7 @@ string WriteSummaryJson(void)
    json += "  \"backtest_role\": true,\r\n";
    json += "  \"use_h4_context\": " + (InpUseH4Context ? "true" : "false") + ",\r\n";
    json += "  \"use_h1_context\": " + (InpUseH1Context ? "true" : "false") + ",\r\n";
-   json += "  \"has_real_ifvg_logic\": false,\r\n";
+   json += "  \"has_real_ifvg_logic\": true,\r\n";
    json += "  \"has_real_daily_bias_logic\": true,\r\n";
    json += "  \"has_real_trading_orders\": false,\r\n";
    json += "  \"trade_count\": 0,\r\n";
@@ -534,9 +833,18 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"bearish_bias_count\": %I64d,\r\n", g_bearishBiasCount);
    json += StringFormat("  \"neutral_bias_count\": %I64d,\r\n", g_neutralBiasCount);
    json += StringFormat("  \"unknown_bias_count\": %I64d,\r\n", g_unknownBiasCount);
+   json += StringFormat("  \"total_setup_candidates\": %I64d,\r\n", g_totalSetupCandidates);
+   json += StringFormat("  \"bullish_setup_candidates\": %I64d,\r\n", g_bullishSetupCandidates);
+   json += StringFormat("  \"bearish_setup_candidates\": %I64d,\r\n", g_bearishSetupCandidates);
+   json += StringFormat("  \"allowed_setups\": %I64d,\r\n", g_allowedSetups);
    json += StringFormat("  \"rejected_by_daily_bias\": %I64d,\r\n", g_rejectedByDailyBias);
    json += StringFormat("  \"skipped_neutral_bias\": %I64d,\r\n", g_skippedNeutralBias);
    json += StringFormat("  \"missing_bias_context\": %I64d,\r\n", g_missingBiasContextCount);
+   json += StringFormat("  \"ignored_small_fvg\": %I64d,\r\n", g_ignoredSmallFvg);
+   json += "  \"last_setup_direction\": \"" + JsonStringEscape(g_lastSetupDirection) + "\",\r\n";
+   json += "  \"last_setup_decision\": \"" + JsonStringEscape(g_lastSetupDecision) + "\",\r\n";
+   json += "  \"last_setup_reason\": \"" + JsonStringEscape(g_lastSetupReason) + "\",\r\n";
+   json += StringFormat("  \"last_fvg_points\": %I64d,\r\n", g_lastFvgPoints);
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
    json += "}\r\n";
@@ -609,13 +917,14 @@ int OnInit()
      }
 
    g_initOk = true;
-   Print("Mapazapp_TestEA: official tester EA (Backtest role); Daily Bias V1; outputs under MQL5\\Files\\", g_baseRelPath);
+   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + IFVG Setup V1 (FVG); outputs under MQL5\\Files\\", g_baseRelPath);
 
    ExportLifecycleEvent("lifecycle_init", "ok", "OnInit", "paths_ready");
-   ExportLifecycleEvent("skeleton_ready", "noop", "E3.4.2",
-                       "IFVG detection pending E3.5; trades CSV header-only (no synthetic rows).");
+   ExportLifecycleEvent("skeleton_ready", "noop", "E3.5",
+                       "IFVG Setup V1 candidate detection (FVG geometry); no trades; trades CSV header-only.");
 
    TryEmitDailyBiasOnNewClosedBar();
+   TryDetectIfvgOnNewExecClosedBar();
 
    return INIT_SUCCEEDED;
   }
@@ -624,6 +933,7 @@ int OnInit()
 void OnTick()
   {
    TryEmitDailyBiasOnNewClosedBar();
+   TryDetectIfvgOnNewExecClosedBar();
   }
 
 //+------------------------------------------------------------------+

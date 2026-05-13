@@ -116,4 +116,11 @@
 - La lógica **tester-only**, **Daily Bias V1**, **eventos** (`lifecycle_*`, `skeleton_ready`, `daily_bias_evaluated`) y **`backtest_summary.json`** con schema **`backtest_ea_v1`** quedó en **`Mapazapp_TestEA.mq5`**.
 - **`APP/artifacts/mt5/experts/Mapazapp_BacktestEA/`** se **eliminó** del árbol activo (el historial Git conserva E3.3–E3.4).
 - Los **dos EAs oficiales** vigentes son solo **`Mapazapp_BridgeEA`** y **`Mapazapp_TestEA`**.
-- **Siguiente paso canónico:** **E3.5 — IFVG / Setup V1** en **`Mapazapp_TestEA`**.
+- **Siguiente paso canónico:** **E3.6** (export/evidencia) o **E4** (smoke Strategy Tester manual) según aprobación.
+
+---
+
+## 12. Resultado E3.5 (IFVG Setup V1 en TestEA)
+
+- **`Mapazapp_TestEA.mq5`** detecta **FVG de tres velas** (misma geometría que `fvg-detector.ts`), aplica **gate Daily Bias**, exporta **`setup_detected` / `setup_allowed` / `setup_rejected` / `setup_skipped`**, y emite summary con **`has_real_ifvg_logic: true`** y contadores de setup; **`trade_count`** permanece **0**.
+- Especificación: [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md).

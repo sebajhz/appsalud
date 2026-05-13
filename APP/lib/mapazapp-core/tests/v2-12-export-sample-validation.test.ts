@@ -109,7 +109,7 @@ describe("V2-12 export sample validation", () => {
     expect(r.summaryJson?.["live_trading_enabled"]).toBe(false);
   });
 
-  it("D2. TestEA E3.4.2 — backtest_ea_v1 bundle (header-only trades + summary)", () => {
+  it("D2. TestEA E3.5 — backtest_ea_v1 bundle (header-only trades + summary)", () => {
     const r = validateTestEaExportSample(
       {
         bundleKind: "testea_export_bundle",

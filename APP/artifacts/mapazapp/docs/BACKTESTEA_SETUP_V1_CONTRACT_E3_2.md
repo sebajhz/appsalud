@@ -9,7 +9,7 @@
 
 > **Nota E3.4.1–E3.4.2:** el rol contractual *BacktestEA* vive en **`Mapazapp_TestEA`**. La carpeta temporal **`Mapazapp_BacktestEA`** (E3.3–E3.4) se **eliminó del árbol** en **E3.4.2** tras migrar la lógica; el historial permanece en Git.
 
-**Relacionado:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md), [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md), [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md), artefactos `APP/artifacts/mt5/experts/Mapazapp_TestEA/`, `Mapazapp_BridgeEA/`.
+**Relacionado:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md), [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md), [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md), [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md), artefactos `APP/artifacts/mt5/experts/Mapazapp_TestEA/`, `Mapazapp_BridgeEA/`.
 
 ---
 
@@ -33,7 +33,7 @@
 | Export | `backtest_trades.csv` (cabecera), `backtest_events.csv`, `backtest_summary.json`; escritura **atómica** (`*.tmp` + `FileMove`). |
 | Daily Bias | **V1 implementado** — ver [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md). |
 | Schema summary | Default **`backtest_ea_v1`** (`official_ea: Mapazapp_TestEA`, `backtest_role: true`, flags `has_real_*`). |
-| IFVG / setup | Pendiente **E3.5**. |
+| IFVG / setup | **E3.5** — detección **candidata FVG** (tres velas cerradas, alineada con `fvg-detector.ts` del core), gate Daily Bias, eventos `setup_*`; sin conversión IFVG completa ni órdenes — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md). |
 | Import TS | CSV sin filas de datos → `importBacktestTradesFromCsv` devuelve **0 trades** con aviso `CSV_HEADER_ONLY_NO_TRADE_ROWS`; bundles legacy **`MZP_TESTEA_V1`** siguen validándose en fixtures. |
 
 **Conclusión:** **`Mapazapp_TestEA`** es el **único EA físico oficial** del Strategy Tester para el rol BacktestEA / setup proof.

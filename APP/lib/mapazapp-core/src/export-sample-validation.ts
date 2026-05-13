@@ -499,12 +499,12 @@ export function validateTestEaExportSample(
           );
           status = bumpStatus(status, "invalid");
         }
-        if (summaryJson["has_real_ifvg_logic"] !== false) {
+        if (summaryJson["has_real_ifvg_logic"] !== true) {
           diagnostics.push(
             exportSampleDiagnostic(
               "error",
               "TESTEA_SUMMARY_IFVG_FLAG",
-              "has_real_ifvg_logic must be false for backtest_ea_v1 samples",
+              "has_real_ifvg_logic must be true for backtest_ea_v1 samples (E3.5+ IFVG candidate detection)",
               { fileName: sj.fileName, detail: String(summaryJson["has_real_ifvg_logic"]) },
             ),
           );
@@ -588,7 +588,7 @@ export function validateTestEaExportSample(
         summaryJson["official_ea"] === "Mapazapp_TestEA" &&
         summaryJson["backtest_role"] === true &&
         summaryJson["has_real_daily_bias_logic"] === true &&
-        summaryJson["has_real_ifvg_logic"] === false &&
+        summaryJson["has_real_ifvg_logic"] === true &&
         summaryJson["has_real_trading_orders"] === false;
     } else {
       summaryOk = false;

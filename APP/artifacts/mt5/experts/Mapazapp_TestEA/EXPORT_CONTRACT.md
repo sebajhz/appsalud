@@ -1,6 +1,6 @@
 # Mapazapp_TestEA — export contract
 
-> **E3.4.2:** el EA oficial de Strategy Tester es **`Mapazapp_TestEA.mq5`**. El summary por defecto usa **`schema_version: backtest_ea_v1`** (`official_ea: Mapazapp_TestEA`, `backtest_role: true`). Los fixtures y herramientas del core pueden seguir usando el esquema legacy **`MZP_TESTEA_V1`** para compatibilidad de importación.
+> **E3.5:** el EA oficial de Strategy Tester es **`Mapazapp_TestEA.mq5`**. El summary por defecto usa **`schema_version: backtest_ea_v1`** (`official_ea: Mapazapp_TestEA`, `backtest_role: true`, `has_real_ifvg_logic: true` para detección candidata FVG). Los fixtures y herramientas del core pueden seguir usando el esquema legacy **`MZP_TESTEA_V1`** para compatibilidad de importación.
 
 ## `MZP_TESTEA_V1` (Checkpoint 14 — legacy)
 
@@ -81,7 +81,7 @@ For **data rows** later, the TypeScript importer maps this compact header onto t
 
 `run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details`
 
-- **Not** consumed by `importBacktestTradesFromCsv` today; kept for audit / future ingest.
+- **E3.5+ event types** (audit trail): `setup_detected`, `setup_allowed`, `setup_rejected`, `setup_skipped` (plus lifecycle and `daily_bias_evaluated`). See [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](../../../mapazapp/docs/BACKTESTEA_IFVG_SETUP_V1_E3_5.md).
 
 ---
 
@@ -113,9 +113,9 @@ For **data rows** later, the TypeScript importer maps this compact header onto t
 | `fixed_risk_r_meta` | number | Metadata echo only for CP14 placeholder |
 | `rr_target_meta` | number | Metadata echo |
 
-### 4.2 Default `backtest_ea_v1` (E3.4.2+ EA build)
+### 4.2 Default `backtest_ea_v1` (E3.4.2+ EA build, **E3.5** IFVG flags)
 
-Key fields (see `WriteSummaryJson` in `Mapazapp_TestEA.mq5`): `schema_version`, `run_id`, `strategy_id`, `parameter_set_id`, `symbol`, `execution_timeframe`, `daily_bias_timeframe`, `backtest_mode`, `tester_only`, `official_ea`, `backtest_role`, `has_real_daily_bias_logic`, `has_real_ifvg_logic`, `has_real_trading_orders`, `trade_count`, bias counters, `notes`.
+Key fields (see `WriteSummaryJson` in `Mapazapp_TestEA.mq5`): `schema_version`, `run_id`, `strategy_id`, `parameter_set_id`, `symbol`, `execution_timeframe`, `daily_bias_timeframe`, `backtest_mode`, `tester_only`, `official_ea`, `backtest_role`, `has_real_daily_bias_logic`, **`has_real_ifvg_logic` (true from E3.5 — FVG candidate detection)**, `has_real_trading_orders`, `trade_count`, bias counters, **setup counters** (`total_setup_candidates`, `bullish_setup_candidates`, `bearish_setup_candidates`, `allowed_setups`, `ignored_small_fvg`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `last_setup_*`, `last_fvg_points`), `notes`.
 
 ---
 
@@ -125,6 +125,7 @@ Key fields (see `WriteSummaryJson` in `Mapazapp_TestEA.mq5`): `schema_version`, 
 - No automatic registry mutation or parameter-set approval (see **`evaluateBacktestApproval`** — advisory only).
 - No translation of the full IFVG blueprint into MQL5 (future checkpoint).
 - No `OrderSend`, `CTrade`, `WebRequest`, DLL imports, or command files — see **`MANUAL_TEST_CHECKLIST.md`** § safety scan.
+- **E3.5:** FVG detection only — no full IFVG inversion / sweep / displacement pipeline from TypeScript yet; no tester orders; no synthetic trade rows.
 
 ---
 
@@ -132,3 +133,4 @@ Key fields (see `WriteSummaryJson` in `Mapazapp_TestEA.mq5`): `schema_version`, 
 
 - **BridgeEA (CP13):** `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` — live terminal **export-only** bridge files (`MZP_BRIDGE_V1`), separate contract.
 - **Core importer:** `APP/lib/mapazapp-core/src/backtest-importer.ts`
+- **IFVG Setup V1 (E3.5) spec:** `APP/artifacts/mapazapp/docs/BACKTESTEA_IFVG_SETUP_V1_E3_5.md`

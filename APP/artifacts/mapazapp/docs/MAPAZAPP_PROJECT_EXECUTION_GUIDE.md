@@ -112,7 +112,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | EA | Current path | Current role | Official? | Decision | Notes |
 |----|--------------|--------------|-----------|----------|-------|
 | **Mapazapp_BridgeEA** | `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` | Export-only bridge: mercado, velas, cuenta, deals, `bridge_status.json`; timer; **sin** backtest de setup; **sin** órdenes; **sin** comandos. | **Yes** | Mantener como único puente live read-only. | CP13; parsers core alineados a `MZP_BRIDGE_V1`. |
-| **Mapazapp_TestEA** | `APP/artifacts/mt5/experts/Mapazapp_TestEA/` | Strategy Tester oficial: **Daily Bias V1**, eventos, summary `backtest_ea_v1`, trades CSV **solo cabecera** (sin filas sintéticas); IFVG pendiente **E3.5**. | **Yes** | Único EA físico del rol BacktestEA / setup proof en tester. | Fail-closed fuera de tester; default `InpExportRoot` = `Mapazapp\TestEA`. |
+| **Mapazapp_TestEA** | `APP/artifacts/mt5/experts/Mapazapp_TestEA/` | Strategy Tester oficial: **Daily Bias V1**, **IFVG Setup V1 (FVG candidato)**, eventos, summary `backtest_ea_v1`, trades CSV **solo cabecera** (sin filas sintéticas). | **Yes** | Único EA físico del rol BacktestEA / setup proof en tester. | Fail-closed fuera de tester; default `InpExportRoot` = `Mapazapp\TestEA`. |
 | **Mapazapp_BacktestEA** | *(eliminado del repo en E3.4.2)* | Histórico E3.3–E3.4 — lógica migrada a **TestEA**. | **No** | **No** usar como destino de implementación. | Ver commits anteriores a E3.4.2 para el `.mq5` original. |
 
 ---
@@ -126,7 +126,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E3.2** congeló contrato Setup V1 / bias / export para el rol BacktestEA.
 - **E3.3–E3.4** añadieron esqueleto + Daily Bias V1 en carpeta temporal **`Mapazapp_BacktestEA`** (luego **fusionada y eliminada** en **E3.4.2**).
 - **E3.4.2** consolidó **Daily Bias V1**, eventos y summary en **`Mapazapp_TestEA.mq5`** (único EA oficial de tester).
-- **E3.5 (IFVG)** es el siguiente hito de implementación en **`Mapazapp_TestEA`**.
+- **E3.5** añade **detección candidata FVG** (setup long/short), gate Daily Bias y eventos `setup_*` en **`Mapazapp_TestEA.mq5`** — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md).
+- **E3.6 / E4** siguen siendo los siguientes hitos de evidencia / smoke tester según aprobación.
 
 ---
 
@@ -158,7 +159,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 |----|------|--------|-------|-------|--------|
 | E3.4.1 | EA roles reconciliation (docs + guía viva) | **completed** | Cursor + PM | Este documento + `MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`; sin código MT5 nuevo. |  |
 | E3.4.2 | Merge BacktestEA logic into **Mapazapp_TestEA** | **completed** | Cursor + PM | `Mapazapp_TestEA.mq5` + exports; carpeta `Mapazapp_BacktestEA` eliminada; core importer/validación dual schema. |  |
-| E3.5 | Setup V1 **IFVG** detection in **Mapazapp_TestEA** | pending | Cursor + PM | Implementar en **TestEA** únicamente. | |
+| E3.5 | Setup V1 **IFVG** (FVG candidato) in **Mapazapp_TestEA** | **completed** | Cursor + PM | `Mapazapp_TestEA.mq5`, `BACKTESTEA_IFVG_SETUP_V1_E3_5.md`, tests estáticos, samples, validación `backtest_ea_v1`. | **E3.6** o **E4** (smoke) |
 | E3.6 | Evidence export schema finalization | pending | Cursor + PM | Alinear CSV/JSON con importadores y contrato único desde TestEA. | |
 | E4 | First MT5 Strategy Tester smoke run (post-merge) | pending | Operator + Cursor | Manual; no automatizar sin checklist aprobado. | |
 | E5 | XAUUSD Strategy Tester campaign | pending | PM + Cursor | Acotar parámetros y evidencia. | |
@@ -181,8 +182,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E3.3 | BacktestEA tester-only skeleton | `APP/artifacts/mt5/experts/Mapazapp_BacktestEA/*`, docs | Artefacto físico separado de TestEA | E3.4 |
 | E3.4 | Daily Bias V1 in Mapazapp_BacktestEA | `Mapazapp_BacktestEA.mq5`, `BACKTESTEA_DAILY_BIAS_V1_E3_4.md` | Bias V1 + events + summary | E3.4.1 reconciliation |
 | E3.4.2 | Merge BacktestEA → TestEA; remove temp EA folder | `Mapazapp_TestEA.mq5`, `mapazapp-backtestea-static.test.ts`, `backtest-importer.ts`, `export-sample-validation*.ts`, docs | Un solo EA tester oficial; `backtest_ea_v1` summary; sin filas trade sintéticas | **E3.5** IFVG |
-
----
+| E3.5 | FVG candidato + gate Daily Bias + eventos `setup_*` | `Mapazapp_TestEA.mq5`, `BACKTESTEA_IFVG_SETUP_V1_E3_5.md`, static tests, samples, `export-sample-validation*.ts` | `has_real_ifvg_logic` true; `trade_count` 0; sin órdenes | **E3.6** o **E4** |
 
 ## 10. Cursor working rules
 

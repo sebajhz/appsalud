@@ -1,9 +1,10 @@
 # Mapazapp_TestEA — static samples (fictional)
 
-These files mirror the **E3.4.2** export shape from **`Mapazapp_TestEA.mq5`** (`schema_version: backtest_ea_v1`):
+These files mirror the **E3.5** export shape from **`Mapazapp_TestEA.mq5`** (`schema_version: backtest_ea_v1`):
 
 - **`backtest_trades.csv`** — **header only** (no data rows; no synthetic trades).
-- **`backtest_summary.json`** — summary flags and bias counters for tooling checks.
+- **`backtest_events.csv`** — illustrative rows (`daily_bias_evaluated`, `setup_detected`, `setup_allowed`).
+- **`backtest_summary.json`** — summary flags (`has_real_ifvg_logic: true`), bias + setup counters; **`trade_count: 0`**.
 
 They are **not** output from a real Strategy Tester run. **Do not** commit raw tester exports from live accounts.
 

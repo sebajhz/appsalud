@@ -126,14 +126,14 @@ export const V2_12_TESTEA_SUMMARY_UNSAFE_LIVE_JSON = V2_12_TESTEA_BACKTEST_SUMMA
   '"live_trading_enabled": true',
 );
 
-/** E3.4.2 — official TestEA: `backtest_ea_v1` summary + header-only trades CSV (no data rows). */
+/** E3.5 — official TestEA: `backtest_ea_v1` summary + header-only trades CSV (no data rows). */
 export const V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV = [
   "run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason",
 ].join("\n");
 
 export const V2_12_TESTEA_E342_SUMMARY_JSON = `{
   "schema_version": "backtest_ea_v1",
-  "ea_build": "MZP_TestEA_E3_4_2_fixture",
+  "ea_build": "MZP_TestEA_E3_5_fixture",
   "run_id": "V212_E342_RUN",
   "strategy_id": "IFVG_XAUUSD_V1",
   "parameter_set_id": "default",
@@ -147,7 +147,7 @@ export const V2_12_TESTEA_E342_SUMMARY_JSON = `{
   "backtest_role": true,
   "use_h4_context": true,
   "use_h1_context": true,
-  "has_real_ifvg_logic": false,
+  "has_real_ifvg_logic": true,
   "has_real_daily_bias_logic": true,
   "has_real_trading_orders": false,
   "trade_count": 0,
@@ -156,11 +156,20 @@ export const V2_12_TESTEA_E342_SUMMARY_JSON = `{
   "bearish_bias_count": 0,
   "neutral_bias_count": 0,
   "unknown_bias_count": 0,
+  "total_setup_candidates": 0,
+  "bullish_setup_candidates": 0,
+  "bearish_setup_candidates": 0,
+  "allowed_setups": 0,
   "rejected_by_daily_bias": 0,
   "skipped_neutral_bias": 0,
   "missing_bias_context": 0,
+  "ignored_small_fvg": 0,
+  "last_setup_direction": "none",
+  "last_setup_decision": "none",
+  "last_setup_reason": "",
+  "last_fvg_points": 0,
   "exported_at_utc": "2026-05-07T12:00:00Z",
-  "notes": "synthetic fixture E3.4.2"
+  "notes": "synthetic fixture E3.5"
 }`;
 
 export function v212E342TestEaBundleFiles(): ExportSampleFileText[] {
