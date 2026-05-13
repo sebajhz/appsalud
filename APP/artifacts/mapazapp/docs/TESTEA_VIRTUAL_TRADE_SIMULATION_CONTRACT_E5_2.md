@@ -281,6 +281,8 @@ Cada evento debe poder referenciar: **`trade_id`**, **`setup_event_id`**, **dire
 Los validadores futuros deben comprobar (lista mínima):
 
 - Coherencia **`trade_count`** con número de filas **cerradas** exportadas (definición exacta en E5.3).
+- Con **`has_real_virtual_trade_logic: true`**, paridad **`virtual_trade_count` == `trade_count`** tras **E5.4.1** (candidato contado = fila CSV final; skips previos al candidato no incrementan `virtual_trade_count`).
+- Geometría wire: long `entry > SL`, `TP > entry`, riesgo `entry − SL > 0`; short `entry < SL`, `TP < entry`, riesgo `SL − entry > 0` — el EA **E5.4.1** rechaza antes de exportar; el importador TS emite **warnings** si el CSV legacy viola estas reglas.
 - **`result_r`** numérico para **`win`** / **`loss`** cerrados estándar.
 - Manejo explícito de **`expired_*`** / **`ambiguous`** / **`invalid_risk`**.
 - Sin **`trade_id`** duplicados; sin geometría imposible SL/TP vs entry.

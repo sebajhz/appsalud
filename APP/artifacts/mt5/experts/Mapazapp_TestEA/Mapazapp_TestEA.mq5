@@ -6,8 +6,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.05"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation (no orders)."
+#property version   "1.06"
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation E5.4.1 (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -40,9 +40,10 @@ input int               InpVirtualEntryExpiryBars  = 20;
 input int               InpVirtualMaxBarsInTrade   = 40;
 input string            InpVirtualAmbiguityMode     = "ambiguous";
 input bool              InpVirtualOneTradeAtATime  = true;
+input int               InpVirtualMinTradeFvgPoints = 2;
 input bool              InpWriteVirtualTrades        = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_3"
+#define TESTEA_BUILD            "MZP_TestEA_E5_4_1"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -54,6 +55,7 @@ input bool              InpWriteVirtualTrades        = true;
 #define EVT_VIRT_EXPIRED        "virtual_trade_expired"
 #define EVT_VIRT_AMBIGUOUS      "virtual_trade_ambiguous"
 #define EVT_VIRT_SKIPPED        "virtual_trade_skipped"
+#define EVT_VIRT_UNRESOLVED     "virtual_trade_unresolved"
 #define REASON_BULL_BODY        "previous_daily_close_above_open"
 #define REASON_BEAR_BODY        "previous_daily_close_below_open"
 #define REASON_BODY_SMALL       "previous_daily_body_too_small"
@@ -121,6 +123,7 @@ long            g_win_count = 0;
 long            g_loss_count = 0;
 long            g_ambiguous_count = 0;
 long            g_expired_open_count = 0;
+long            g_unresolved_count = 0;
 long            g_trades_csv_row_count = 0;
 double          g_total_r = 0.0;
 double          g_equity_r_peak = 0.0;
@@ -692,6 +695,8 @@ void VirtualRegisterOutcomeStats(void)
       g_unfilled_expired_count++;
    else if(g_vt.outcome == "expired_open")
       g_expired_open_count++;
+   else if(g_vt.outcome == "unresolved")
+      g_unresolved_count++;
   }
 
 //+------------------------------------------------------------------+
@@ -773,41 +778,103 @@ bool VirtualTryFillCurrentBar(const double lo, const double hi, const datetime t
   }
 
 //+------------------------------------------------------------------+
-bool VirtualComputeLevels(const ENUM_MAPZ_SETUP_DIR d,
-                            const double fLo,
-                            const double fHi,
-                            double &entry,
-                            double &sl,
-                            double &tp,
-                            double &riskAbs)
+bool VirtualPrepareTradePrices(const ENUM_MAPZ_SETUP_DIR d,
+                                 const double fvgLoIn,
+                                 const double fvgHiIn,
+                                 double &entry,
+                                 double &sl,
+                                 double &tp,
+                                 double &riskAbs,
+                                 double &fvgLoOut,
+                                 double &fvgHiOut,
+                                 long &fvgPtsOut,
+                                 string &rejectReason)
   {
-   if(Trim(InpVirtualEntryMode) != "fvg_midpoint")
-      return false;
-   if(Trim(InpVirtualStopMode) != "fvg_boundary_with_buffer")
-      return false;
+   rejectReason = "";
+   fvgLoOut = MathMin(fvgLoIn, fvgHiIn);
+   fvgHiOut = MathMax(fvgLoIn, fvgHiIn);
    const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
    if(pt <= 0.0)
+     {
+      rejectReason = "invalid_risk_nonpositive";
       return false;
+     }
+   fvgPtsOut = CalculateFvgGapPoints(fvgLoOut, fvgHiOut, pt);
+   if(InpVirtualMinTradeFvgPoints > 0 && fvgPtsOut < InpVirtualMinTradeFvgPoints)
+     {
+      rejectReason = "fvg_below_virtual_trade_min";
+      return false;
+     }
+   if(Trim(InpVirtualEntryMode) != "fvg_midpoint")
+     {
+      rejectReason = "unsupported_virtual_entry_mode";
+      return false;
+     }
+   if(Trim(InpVirtualStopMode) != "fvg_boundary_with_buffer")
+     {
+      rejectReason = "unsupported_virtual_stop_mode";
+      return false;
+     }
    const double buf = (double)InpVirtualStopBufferPoints * pt;
-   entry = (fLo + fHi) / 2.0;
+   entry = (fvgLoOut + fvgHiOut) / 2.0;
    if(d == MAPZ_SETUP_LONG)
      {
-      sl = fLo - buf;
+      sl = fvgLoOut - buf;
       riskAbs = entry - sl;
       tp = entry + riskAbs * InpVirtualRiskReward;
      }
    else if(d == MAPZ_SETUP_SHORT)
      {
-      sl = fHi + buf;
+      sl = fvgHiOut + buf;
       riskAbs = sl - entry;
       tp = entry - riskAbs * InpVirtualRiskReward;
      }
    else
+     {
+      rejectReason = "invalid_geometry_direction";
       return false;
-   if(riskAbs <= 0.0)
+     }
+   entry = NormalizeDouble(entry, _Digits);
+   sl = NormalizeDouble(sl, _Digits);
+   tp = NormalizeDouble(tp, _Digits);
+   if(d == MAPZ_SETUP_LONG)
+     {
+      riskAbs = entry - sl;
+      if(entry <= sl)
+        {
+         rejectReason = "invalid_geometry_entry_sl";
+         return false;
+        }
+      if(tp <= entry)
+        {
+         rejectReason = "invalid_geometry_tp";
+         return false;
+        }
+     }
+   else
+     {
+      riskAbs = sl - entry;
+      if(entry >= sl)
+        {
+         rejectReason = "invalid_geometry_entry_sl";
+         return false;
+        }
+      if(tp >= entry)
+        {
+         rejectReason = "invalid_geometry_tp";
+         return false;
+        }
+     }
+   if(riskAbs < pt)
+     {
+      rejectReason = "invalid_risk_nonpositive";
       return false;
+     }
    if(!MathIsValidNumber(entry) || !MathIsValidNumber(sl) || !MathIsValidNumber(tp))
+     {
+      rejectReason = "invalid_risk_nonpositive";
       return false;
+     }
    return true;
   }
 
@@ -845,11 +912,15 @@ void VirtualOnSetupAllowed(const string setupEventId,
      }
 
    double entry = 0.0, sl = 0.0, tp = 0.0, riskAbs = 0.0;
-   if(!VirtualComputeLevels(sdir, fLo, fHi, entry, sl, tp, riskAbs))
+   double fLoN = 0.0, fHiN = 0.0;
+   long fvgPtsNorm = 0;
+   string rej = "";
+   if(!VirtualPrepareTradePrices(sdir, fLo, fHi, entry, sl, tp, riskAbs, fLoN, fHiN, fvgPtsNorm, rej))
      {
       g_invalid_risk_count++;
-      VirtualEmitSkipped("invalid_risk",
-                         StringFormat("setup_event_id=%s fvg_low=%.5f fvg_high=%.5f", JsonStringEscape(setupEventId), fLo, fHi));
+      VirtualEmitSkipped(rej,
+                         StringFormat("setup_event_id=%s fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d",
+                                      JsonStringEscape(setupEventId), fLo, fHi, gapPts));
       return;
      }
 
@@ -860,9 +931,9 @@ void VirtualOnSetupAllowed(const string setupEventId,
    g_vt.dir = sdir;
    g_vt.bias_enum = g_lastBiasEnum;
    g_vt.setup_dir = sdir;
-   g_vt.fvg_low = fLo;
-   g_vt.fvg_high = fHi;
-   g_vt.fvg_points = gapPts;
+   g_vt.fvg_low = fLoN;
+   g_vt.fvg_high = fHiN;
+   g_vt.fvg_points = fvgPtsNorm;
    g_vt.entry = entry;
    g_vt.sl = sl;
    g_vt.tp = tp;
@@ -1260,8 +1331,8 @@ void RefreshSetupSummaryNotes(void)
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    const long tcRows = g_trades_csv_row_count;
    g_exportNotes = StringFormat(
-                       "E5.3 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; "
-                       "setup_inputs: enable=%s min_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
+                       "E5.4.1 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; "
+                       "setup_inputs: enable=%s min_fvg_pts=%d virtual_min_trade_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
                        TfToWire(InpExecutionTimeframe),
@@ -1269,6 +1340,7 @@ void RefreshSetupSummaryNotes(void)
                        gateNone,
                        (InpEnableSetupDetection ? "true" : "false"),
                        InpMinFvgPoints,
+                       InpVirtualMinTradeFvgPoints,
                        InpMaxSetupAgeBars,
                        (InpRequireDailyBiasAlignment ? "true" : "false"),
                        tcRows);
@@ -1325,6 +1397,7 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"loss_count\": %I64d,\r\n", g_loss_count);
    json += StringFormat("  \"ambiguous_count\": %I64d,\r\n", g_ambiguous_count);
    json += StringFormat("  \"expired_open_count\": %I64d,\r\n", g_expired_open_count);
+   json += StringFormat("  \"unresolved_count\": %I64d,\r\n", g_unresolved_count);
    json += StringFormat("  \"invalid_risk_count\": %I64d,\r\n", g_invalid_risk_count);
    json += StringFormat("  \"skipped_trade_active\": %I64d,\r\n", g_skipped_trade_active);
    json += StringFormat("  \"total_r\": %.6f,\r\n", g_total_r);
@@ -1367,6 +1440,48 @@ string WriteTradesHeader(void)
 string WriteEventsHeader(void)
   {
    return "run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details";
+  }
+
+//+------------------------------------------------------------------+
+void VirtualFinalizeActiveTradeIfAny(void)
+  {
+   if(!g_testerOk || !g_initOk || !InpEnableVirtualTrades)
+      return;
+   if(!g_vt.active)
+      return;
+
+   const double cl = iClose(g_brokerSymbol, InpExecutionTimeframe, 1);
+   const datetime tBar = iTime(g_brokerSymbol, InpExecutionTimeframe, 1);
+   const datetime tExit = (tBar > 0 ? tBar : TimeGMT());
+   const string setupW = SetupDirectionToString(g_vt.setup_dir);
+
+   g_vt.exit_time = tExit;
+   g_vt.result_r = 0.0;
+
+   if(g_vt.filled)
+     {
+      g_vt.outcome = "unresolved";
+      g_vt.exit_reason = "deinit_with_active_virtual_trade";
+      g_vt.exit_price = (MathIsValidNumber(cl) ? NormalizeDouble(cl, _Digits) : g_vt.entry);
+     }
+   else
+     {
+      g_vt.outcome = "expired_unfilled";
+      g_vt.exit_reason = "deinit_pending_virtual_entry";
+      g_vt.exit_price = 0.0;
+     }
+
+   const string detU = VirtualBuildDetailsCore();
+   AppendEventRow(EVT_VIRT_UNRESOLVED,
+                  BiasDirectionToString(g_vt.bias_enum),
+                  setupW,
+                  "unresolved",
+                  g_vt.exit_reason,
+                  detU);
+   if(InpWriteTradesCsv && InpWriteVirtualTrades)
+      VirtualAppendTradeCsvRow(g_vt.bars_waiting_entry, "daily_bias_aligned", g_lastBiasReason, "");
+   VirtualRegisterOutcomeStats();
+   VirtualClearTrade();
   }
 
 //+------------------------------------------------------------------+
@@ -1425,11 +1540,11 @@ int OnInit()
      }
 
    g_initOk = true;
-   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + E5.3 virtual trade simulation (no orders); outputs under MQL5\\Files\\", g_baseRelPath);
+   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + E5.4.1 virtual trade simulation (no orders); outputs under MQL5\\Files\\", g_baseRelPath);
 
    ExportLifecycleEvent("lifecycle_init", "ok", "OnInit", "paths_ready");
-   ExportLifecycleEvent("skeleton_ready", "noop", "E5.3",
-                       "Virtual trade simulation on closed execution candles; has_full_ifvg_pipeline=false; has_real_trading_orders=false.");
+   ExportLifecycleEvent("skeleton_ready", "noop", "E5.4.1",
+                       "Virtual trade simulation on closed execution candles; geometry/risk gates; deinit unresolved; has_full_ifvg_pipeline=false; has_real_trading_orders=false.");
 
    TryEmitDailyBiasOnNewClosedBar();
    TryDetectIfvgOnNewExecClosedBar();
@@ -1447,6 +1562,7 @@ void OnTick()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
   {
+   VirtualFinalizeActiveTradeIfAny();
    WriteAllExports(reason);
   }
 

@@ -76,6 +76,7 @@ export const MAPZ_TESTEA_SUPPORTED_EVENT_TYPES = [
   "virtual_trade_expired",
   "virtual_trade_ambiguous",
   "virtual_trade_skipped",
+  "virtual_trade_unresolved",
   "lifecycle_deinit",
 ] as const;
 
@@ -97,6 +98,7 @@ export const MAPZ_TESTEA_SUPPORTED_DECISIONS = [
   "expired",
   "ambiguous",
   "skipped",
+  "unresolved",
 ] as const;
 
 const EVENT_TYPES = new Set<string>(MAPZ_TESTEA_SUPPORTED_EVENT_TYPES);

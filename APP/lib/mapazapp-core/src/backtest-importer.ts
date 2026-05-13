@@ -379,10 +379,24 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
         row: rowNum,
       });
     }
+    if (direction === "BUY" && tp !== undefined && tp <= ep.value) {
+      warnings.push({
+        code: "CSV_GEOMETRY_LONG_TP",
+        message: `Row ${rowNum}: LONG trade has TP <= entry (check CSV geometry)`,
+        row: rowNum,
+      });
+    }
     if (direction === "SELL" && sl !== undefined && sl <= ep.value) {
       warnings.push({
         code: "CSV_GEOMETRY_SHORT_SL",
         message: `Row ${rowNum}: SHORT trade has SL <= entry (check CSV geometry)`,
+        row: rowNum,
+      });
+    }
+    if (direction === "SELL" && tp !== undefined && tp >= ep.value) {
+      warnings.push({
+        code: "CSV_GEOMETRY_SHORT_TP",
+        message: `Row ${rowNum}: SHORT trade has TP >= entry (check CSV geometry)`,
         row: rowNum,
       });
     }

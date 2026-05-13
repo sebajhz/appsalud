@@ -118,13 +118,51 @@ describe("E4.1 validateTestEaExportBundleTexts", () => {
     expect(r.testEa.tradeCount).toBe(3);
   });
 
+  it("O. virtual_trade_count mismatch vs trade_count warns (E5.4.1 parity)", () => {
+    const summary = JSON.parse(V2_12_TESTEA_E342_SUMMARY_JSON) as Record<string, unknown>;
+    summary.schema_version = "backtest_ea_v1";
+    summary.tester_only = true;
+    summary.official_ea = "Mapazapp_TestEA";
+    summary.backtest_role = true;
+    summary.has_real_daily_bias_logic = true;
+    summary.has_real_ifvg_logic = true;
+    summary.has_real_trading_orders = false;
+    summary.has_full_ifvg_pipeline = false;
+    summary.has_real_virtual_trade_logic = true;
+    summary.trade_count = 2;
+    summary.virtual_trade_count = 3;
+    const trades = [
+      "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode",
+      "R1,T1,E1,2026-01-01T12:00:00Z,2026-01-01T11:00:00Z,2026-01-01T12:00:00Z,XAUUSD,M15,long,bullish,long,1,0.9,1.2,1.2,2,0,win,tp_hit,x,y,,0,0,0.9,1.1,20,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
+      "R1,T2,E2,2026-01-01T13:00:00Z,2026-01-01T12:00:00Z,2026-01-01T13:00:00Z,XAUUSD,M15,short,bearish,short,2,2.1,1.8,1.8,-1,0,loss,sl_hit,x,y,,0,0,1.8,2.1,30,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
+    ].join("\n");
+    const events = [
+      "run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details",
+      "R1,EVT_1,2026-01-01T00:00:00Z,XAUUSD,lifecycle_init,unknown,none,ok,OnInit,x",
+      "R1,EVT_2,2026-01-01T00:01:00Z,XAUUSD,skeleton_ready,unknown,none,noop,r,x",
+      "R1,EVT_3,2026-01-01T00:02:00Z,XAUUSD,daily_bias_evaluated,bullish,none,bias_recorded,r,x",
+      "R1,EVT_4,2026-01-01T00:03:00Z,XAUUSD,setup_detected,bullish,long,detected,r,x",
+      "R1,EVT_9,2026-01-01T00:09:00Z,XAUUSD,lifecycle_deinit,bullish,none,ok,OnDeinit,x",
+    ].join("\n");
+    const r = validateTestEaExportBundleTexts({
+      summaryJson: JSON.stringify(summary),
+      eventsCsv: events,
+      tradesCsv: trades,
+      eventsCsvByteLength: Buffer.byteLength(events, "utf8"),
+      bundleLabel: "MISMATCH_TEST",
+    });
+    expect(r.ok).toBe(true);
+    expect(r.testEa.diagnostics.some((d) => d.code === "TESTEA_VIRTUAL_TRADE_COUNT_MISMATCH")).toBe(true);
+  });
+
   it("M. trade_count > 0 without has_real_virtual_trade_logic fails", () => {
     const summary = JSON.parse(V2_12_TESTEA_E342_SUMMARY_JSON) as Record<string, unknown>;
     summary.trade_count = 2;
     summary.has_real_virtual_trade_logic = false;
     const trades = [
-      "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode",
-      "R1,T1,E1,2026-01-01T12:00:00Z,2026-01-01T11:00:00Z,2026-01-01T12:00:00Z,XAUUSD,M15,long,bullish,long,1,0.9,1.2,1.2,2,win,tp_hit,x,y,,0,0,0.9,1.1,20,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
+      "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode",
+      "R1,T1,E1,2026-01-01T12:00:00Z,2026-01-01T11:00:00Z,2026-01-01T12:00:00Z,XAUUSD,M15,long,bullish,long,1,0.9,1.2,1.2,2,0,win,tp_hit,x,y,,0,0,0.9,1.1,20,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
+      "R1,T2,E2,2026-01-01T13:00:00Z,2026-01-01T12:00:00Z,2026-01-01T13:00:00Z,XAUUSD,M15,short,bearish,short,2,2.1,1.8,1.8,-1,0,loss,sl_hit,x,y,,0,0,1.8,2.1,30,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
     ].join("\n");
     const r = validateTestEaExportBundleTexts({
       ...baseInput(),
@@ -140,8 +178,8 @@ describe("E4.1 validateTestEaExportBundleTexts", () => {
     summary.trade_count = 1;
     summary.has_real_virtual_trade_logic = true;
     const trades = [
-      "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode",
-      "R1,T1,E1,2026-01-01T12:00:00Z,2026-01-01T11:00:00Z,2026-01-01T12:00:00Z,XAUUSD,M15,long,bullish,long,1,0.9,1.2,1.2,2,win,tp_hit,x,y,,0,0,0.9,1.1,20,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
+      "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode",
+      "R1,T1,E1,2026-01-01T12:00:00Z,2026-01-01T11:00:00Z,2026-01-01T12:00:00Z,XAUUSD,M15,long,bullish,long,1,0.9,1.2,1.2,2,0,win,tp_hit,x,y,,0,0,0.9,1.1,20,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
     ].join("\n");
     const r = validateTestEaExportBundleTexts(
       { ...baseInput(), summaryJson: JSON.stringify(summary), tradesCsv: trades },

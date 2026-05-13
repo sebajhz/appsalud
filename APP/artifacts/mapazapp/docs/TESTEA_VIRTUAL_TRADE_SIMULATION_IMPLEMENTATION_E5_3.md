@@ -85,3 +85,7 @@ Nuevos / relevantes: `has_real_virtual_trade_logic`, `virtual_trade_count`, `tra
 ## 10. Siguiente paso
 
 **E5.4 — First virtual outcome smoke in Strategy Tester:** primera corrida en MT5 Strategy Tester con el EA compilado, revisión de CSV/JSON reales y ajuste fino si hiciera falta (sin este repositorio ejecutando MT5 en E5.3).
+
+## 11. Nota E5.4.1 (post–primer smoke E5.4)
+
+Tras el smoke E5.4 (**OK with warnings**), el repo endureció la simulación virtual (**`MZP_TestEA_E5_4_1`**): validación explícita de geometría tras `NormalizeDouble`, umbral **`InpVirtualMinTradeFvgPoints`** para no abrir trades virtuales sobre FVGs demasiado pequeños, `virtual_trade_skipped` con razones wire (`invalid_geometry_*`, `invalid_risk_nonpositive`, `fvg_below_virtual_trade_min`), cierre en **`OnDeinit`** con `virtual_trade_unresolved` / filas `unresolved` o `expired_unfilled` según estado, y alineación de validadores TS. Ver [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md). **Siguiente operativo:** **E5.4.2** — repetir smoke en Strategy Tester con el build E5.4.1.

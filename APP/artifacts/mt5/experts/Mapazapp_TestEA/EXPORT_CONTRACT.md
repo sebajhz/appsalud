@@ -68,13 +68,14 @@ Por defecto `InpExportRoot` = `Mapazapp\TestEA`.
 - `virtual_trade_closed` (E5.3)
 - `virtual_trade_expired` (E5.3)
 - `virtual_trade_ambiguous` (E5.3)
-- `virtual_trade_skipped` (E5.3)
+- `virtual_trade_skipped` (E5.3; E5.4.1: granular `reason` tags e.g. `invalid_geometry_entry_sl`, `fvg_below_virtual_trade_min`)
+- `virtual_trade_unresolved` (E5.4.1 — active virtual trade at `OnDeinit`)
 - `lifecycle_deinit`
 
 ### 2.3 `decision` soportados (validación TypeScript)
 
 Incluye (lista en `parseBacktestEventsCsv`):  
-`bias_recorded`, `setup_candidate_allowed`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `setup_ignored`, `lifecycle`, `detected`, `ok`, `noop`, **`created`**, **`filled`**, **`closed`**, **`expired`**, **`ambiguous`**, **`skipped`** (E5.3 virtual).
+`bias_recorded`, `setup_candidate_allowed`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `setup_ignored`, `lifecycle`, `detected`, `ok`, `noop`, **`created`**, **`filled`**, **`closed`**, **`expired`**, **`ambiguous`**, **`skipped`** (E5.3 virtual), **`unresolved`** (E5.4.1 `virtual_trade_unresolved`).
 
 ---
 
@@ -89,7 +90,7 @@ Incluye (lista en `parseBacktestEventsCsv`):
 ### 3.1 Importador TypeScript (`importBacktestTradesFromCsv`)
 
 - Con **solo cabecera** (0 filas de datos): **`ok: true`**, `trades: []`, aviso **`CSV_HEADER_ONLY_NO_TRADE_ROWS`**.
-- Con filas: columnas `entry` → `entry_price` (alias); `timestamp` opcional hacia `entry_time`/`exit_time` si faltan (legacy E3.4.2); columna **`outcome`** validada contra catálogo E5.3; avisos de geometría (SL vs entry, riesgo ≤ 0).
+- Con filas: columnas `entry` → `entry_price` (alias); `timestamp` opcional hacia `entry_time`/`exit_time` si faltan (legacy E3.4.2); columna **`outcome`** validada contra catálogo E5.3+ (**incluye `unresolved`**); avisos de geometría (SL vs entry, TP vs entry, riesgo ≤ 0).
 
 ### 3.2 Columnas extendidas (metadata futura)
 
@@ -119,8 +120,8 @@ Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas 
 | `has_full_ifvg_pipeline` | boolean | **false** (E3.6+) — sin conversión FVG→IFVG completa, sin ATR/sweeps/target liquidity del pipeline IFVG en el EA. |
 | `has_real_trading_orders` | boolean | **false** |
 | `has_real_virtual_trade_logic` | boolean | **true** cuando la simulación virtual está habilitada en el EA (E5.3). |
-| `trade_count` | number | **Debe igualar** el número de filas de datos en `backtest_trades.csv`. |
-| Contadores / métricas virtuales (E5.3) | number | p. ej. `virtual_trade_count`, `filled_trade_count`, `win_count`, `loss_count`, `total_r`, `average_r`, `winrate`, `expectancy_r`, `max_drawdown_r`, … — ver implementación E5.3. |
+| `trade_count` | number | **Debe igualar** el número de filas de datos en `backtest_trades.csv`. Con simulación virtual **E5.4.1+**, conviene que **`virtual_trade_count`** coincida con **`trade_count`** (paridad candidato/fila documentada en `TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`). |
+| Contadores / métricas virtuales (E5.3) | number | p. ej. `virtual_trade_count`, `filled_trade_count`, `win_count`, `loss_count`, `unresolved_count` (E5.4.1), `total_r`, `average_r`, `winrate`, `expectancy_r`, `max_drawdown_r`, … — ver implementación E5.3 / E5.4.1. |
 | Contadores bias | number | `total_bias_evaluated`, `bullish_bias_count`, `bearish_bias_count`, `neutral_bias_count`, `unknown_bias_count`. |
 | Contadores setup | number | `total_setup_candidates`, `bullish_setup_candidates`, `bearish_setup_candidates`, `allowed_setups`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `ignored_small_fvg`. |
 | Último setup | string / number | `last_setup_direction`, `last_setup_decision`, `last_setup_reason`, `last_fvg_points`. |

@@ -650,6 +650,25 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "invalid");
           }
         }
+        const vtc = summaryJson["virtual_trade_count"];
+        if (
+          summaryJson["has_real_virtual_trade_logic"] === true &&
+          typeof tc === "number" &&
+          typeof vtc === "number" &&
+          Number.isFinite(tc) &&
+          Number.isFinite(vtc) &&
+          tc !== vtc
+        ) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "warning",
+              "TESTEA_VIRTUAL_TRADE_COUNT_MISMATCH",
+              "summary.trade_count differs from summary.virtual_trade_count — after E5.4.1 these should match (one CSV row per counted virtual candidate)",
+              { fileName: sj.fileName, detail: `trade_count=${String(tc)} virtual_trade_count=${String(vtc)}` },
+            ),
+          );
+          status = bumpStatus(status, "valid_with_warnings");
+        }
         const forbiddenProfitKeys = ["total_profit", "profit_factor", "net_profit", "gross_profit", "win_rate_pct"];
         if (typeof tc === "number" && tc === 0) {
           for (const key of forbiddenProfitKeys) {

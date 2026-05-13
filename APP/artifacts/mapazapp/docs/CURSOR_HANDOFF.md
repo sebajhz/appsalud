@@ -15,7 +15,9 @@
 - **E5.1 cerrado (decisión docs-only):** modo outcome — [`TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md): **virtual dentro de `Mapazapp_TestEA` + Strategy Tester primero**; `tester_orders` solo tras gate opcional **E5.6**.
 - **E5.2 cerrado (contrato docs-only):** simulación virtual V1 — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): fill OHLC, SL/TP/RR, `ambiguous`, una operación activa, schema export documentado.
 - **E5.3 cerrado (implementación en repo):** simulación virtual en **`Mapazapp_TestEA.mq5`** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md); validadores TS + `EXPORT_CONTRACT.md` + muestras; **sin** `OrderSend`/`CTrade`.
-- **Siguiente paso canónico:** **E5.4** — **primer smoke de outcome virtual** en **MT5 Strategy Tester** (operador; evidencia acotada).
+- **E5.4 (operador) — primer smoke outcome virtual — OK with warnings:** bundle validado sin errores; warnings de geometría (FVG 1pt) — ver [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md).
+- **E5.4.1 — Fix repo (geometría virtual, deinit, TS):** [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md) + `Mapazapp_TestEA.mq5` **MZP_TestEA_E5_4_1**; sin `OrderSend`/`CTrade`.
+- **Siguiente paso canónico:** **E5.4.2** — **repetir smoke de outcome virtual** en **MT5 Strategy Tester** con el build **E5.4.1** (operador; evidencia acotada).
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

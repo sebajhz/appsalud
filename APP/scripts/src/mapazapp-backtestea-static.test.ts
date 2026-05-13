@@ -171,6 +171,7 @@ test("Q — samples: summary has_full false; events include setup + virtual flow
   assert.equal(summary["has_real_ifvg_logic"], true);
   assert.equal(summary["has_real_virtual_trade_logic"], true);
   assert.equal(summary["trade_count"], 3);
+  assert.equal(summary["virtual_trade_count"], 3);
   const events = readFileSync(SAMPLE_EVENTS_PATH, "utf8");
   assert.match(events, /setup_detected/);
   assert.match(events, /setup_allowed|setup_rejected|setup_skipped/);
@@ -184,6 +185,7 @@ test("S — virtual trade event markers present", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /virtual_trade_candidate_created/);
   assert.match(src, /virtual_trade_closed/);
+  assert.match(src, /virtual_trade_unresolved/);
 });
 
 test("R — README/contract document has_full_ifvg_pipeline false (no full-pipeline claim)", () => {
