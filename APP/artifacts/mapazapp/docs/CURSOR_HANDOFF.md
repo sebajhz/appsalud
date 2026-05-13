@@ -19,7 +19,8 @@
 - **E5.4.1 — Fix repo (geometría virtual, deinit, TS):** [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md) + `Mapazapp_TestEA.mq5` **MZP_TestEA_E5_4_1**; sin `OrderSend`/`CTrade`.
 - **E5.4.2 (operador) — re-smoke outcome virtual — OK:** solo warning `BUNDLE_EVENTS_LARGE`; sin `CSV_GEOMETRY_*` — evidencia [`TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md`](./TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md).
 - **E5.4.3 cerrado (docs-only):** política build/versioning TestEA — [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md).
-- **Siguiente paso canónico:** **E5.5** — **campaña XAUUSD** con **métricas de outcome** (diseño/ejecución según plan E5 y guía viva).
+- **E5.5 cerrado (docs-only):** runbook + plantilla informe campaña outcome XAUUSD — [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md), [`XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md).
+- **Siguiente paso canónico:** **E5.5.1** — **runs manuales** campaña (SET 001–004, rango baseline del runbook) en **MT5 Strategy Tester** + validación CLI por bundle.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

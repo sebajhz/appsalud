@@ -152,13 +152,13 @@ Valores tomados del `backtest_summary.json` / resumen validado (subset clave):
 - Outcomes **ambiguous** modelados con **`result_r = 0`** en la versión actual.
 - **`backtest_events.csv`** crece mucho en rangos largos → warning **`BUNDLE_EVENTS_LARGE`** esperado (~5,85 MB en este run).
 - Un solo **parameter set** (`MZP_IFVG_XAUUSD_V1_SET_003`); no hay conclusión de optimización ni ranking multi-set aún.
-- **Sin** conclusión de campaña Phase B hasta **E5.5** y diseño explícito de métricas de campaña.
+- **Sin** conclusión de campaña Phase B hasta **E5.5** y el runbook de métricas — ver [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md).
 
 ## 10. Decision
 
 **E5.4.2 = OK** con el único warning aceptable por tamaño de eventos.
 
-**Siguiente paso recomendado:** **E5.5** — campaña XAUUSD con métricas de outcome agregadas y trazabilidad por run.
+**Siguiente paso recomendado:** **E5.5** — runbook de campaña XAUUSD con métricas de outcome y trazabilidad por run — [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md).
 
 **Opcional antes de campaña:** **E5.4.4** — automatización ligera de etiquetado de build / scripts de copia de `.ex5` archivado local (solo si el operador lo desea; la política mínima ya está en **E5.4.3**).
 
@@ -169,3 +169,4 @@ Valores tomados del `backtest_summary.json` / resumen validado (subset clave):
 | Versión | Nota |
 |---------|------|
 | E5.4.3 v1 | Evidencia formal smoke E5.4.2 (commit docs) + enlace a política de versioning; sin ejecución MT5 desde este commit. |
+| E5.4.2 v2 | Enlace al runbook de campaña outcome **E5.5**. |

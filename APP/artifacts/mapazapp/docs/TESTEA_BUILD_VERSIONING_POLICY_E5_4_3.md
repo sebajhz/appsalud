@@ -56,14 +56,17 @@ La variante de “versión” vive en **`ea_build`**, Git, y copias locales de `
 
 ### 7. Campaign evidence bundle (minimum fields)
 
+Para campañas con **varios runs** (**E5.5+**), cada informe agregado debe incluir también **`campaign_id`** además de `run_id` y `parameter_set_id`, de modo que las filas se agrupen sin ambigüedad. Runbook: [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md).
+
 Cada informe o paquete de evidencia de campaña debe poder enlazar o listar como mínimo:
 
 | Campo | Ejemplo / notas |
 |--------|------------------|
+| `campaign_id` | p. ej. `MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1` (misma campaña, muchos `run_id`) |
 | Commit Git | SHA del repo usado para compilar |
 | `ea_build` | p. ej. `MZP_TestEA_E5_4_1` |
-| `run_id` | p. ej. `TEST_E5_4_2_A` |
-| `parameter_set_id` | p. ej. `MZP_IFVG_XAUUSD_V1_SET_003` |
+| `run_id` | p. ej. `TEST_E5_4_2_A` o `MZP_E5_5_XAUUSD_M15_D1_OUTCOME_SET001_FULL_A` |
+| `parameter_set_id` | p. ej. `MZP_IFVG_XAUUSD_V1_SET_003` o `MZP_IFVG_XAUUSD_V1_OUTCOME_SET_001` |
 | Símbolo | p. ej. XAUUSD |
 | Timeframe de ejecución | p. ej. M15 |
 | Carpeta de export / bundle validado | ruta o carpeta zip bajo `Mapazapp\TestEA\<RunId>` |
@@ -75,7 +78,7 @@ Cada informe o paquete de evidencia de campaña debe poder enlazar o listar como
 
 - **Nombre estable del EA** simplifica flujos humanos en MT5 (Expert list, rutas, documentación).
 - **`ea_build` + `run_id`** dan trazabilidad fina: qué código y qué corrida produjeron un CSV.
-- **`InpParameterSetId`** separa “configuración de estrategia” de “instancia de ejecución”.
+- **`InpParameterSetId`** separa la configuración del **parameter set** de la **instancia de ejecución**; en campañas multi-run, **`campaign_id`** (convención en runbook E5.5) agrupa filas de informe.
 - **Copia local opcional de `.ex5`** ayuda a auditorías manuales sin contaminar el historial Git con binarios.
 
 ---
@@ -85,3 +88,4 @@ Cada informe o paquete de evidencia de campaña debe poder enlazar o listar como
 | Versión | Nota |
 |---------|------|
 | E5.4.3 v1 | Política publicada junto a evidencia E5.4.2; docs-only. |
+| E5.4.3 v2 | `campaign_id` + runbook E5.5 en trazabilidad de campaña. |
