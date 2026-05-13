@@ -17,8 +17,8 @@ function baseInput() {
 }
 
 describe("E4.1 validateTestEaExportBundleTexts", () => {
-  it("A. fixture bundle passes", () => {
-    const r = validateTestEaExportBundleTexts(baseInput());
+  it("A. fixture bundle passes (E4 strict trade_count=0)", () => {
+    const r = validateTestEaExportBundleTexts(baseInput(), { requireTradeCountZero: true });
     expect(r.ok).toBe(true);
     expect(r.status).toBe("ok");
     expect(r.errors).toHaveLength(0);
@@ -79,7 +79,7 @@ describe("E4.1 validateTestEaExportBundleTexts", () => {
   });
 
   it("I. header-only trades passes", () => {
-    const r = validateTestEaExportBundleTexts(baseInput());
+    const r = validateTestEaExportBundleTexts(baseInput(), { requireTradeCountZero: true });
     expect(r.files.trades).toBe("header_only");
     expect(r.testEa.tradeCount).toBe(0);
   });
@@ -99,5 +99,55 @@ describe("E4.1 validateTestEaExportBundleTexts", () => {
       bundleLabel: "C:\\Temp\\Mapazapp\\testea\\RUN_A",
     });
     expect(r.warnings.some((w) => w.code === "BUNDLE_EXPORTROOT_LOWERCASE_TESTEA")).toBe(true);
+  });
+
+  it("L. E5.3 virtual trades sample bundle passes (default allow trade_count)", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const dir = join(fileURLToPath(new URL(".", import.meta.url)), "../../../artifacts/mt5/experts/Mapazapp_TestEA/samples");
+    const r = validateTestEaExportBundleTexts({
+      summaryJson: readFileSync(join(dir, "backtest_summary.json"), "utf8"),
+      eventsCsv: readFileSync(join(dir, "backtest_events.csv"), "utf8"),
+      tradesCsv: readFileSync(join(dir, "backtest_trades.csv"), "utf8"),
+      eventsCsvByteLength: 8000,
+      bundleLabel: "samples",
+    });
+    expect(r.ok).toBe(true);
+    expect(r.errors).toHaveLength(0);
+    expect(r.testEa.tradeCount).toBe(3);
+  });
+
+  it("M. trade_count > 0 without has_real_virtual_trade_logic fails", () => {
+    const summary = JSON.parse(V2_12_TESTEA_E342_SUMMARY_JSON) as Record<string, unknown>;
+    summary.trade_count = 2;
+    summary.has_real_virtual_trade_logic = false;
+    const trades = [
+      "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode",
+      "R1,T1,E1,2026-01-01T12:00:00Z,2026-01-01T11:00:00Z,2026-01-01T12:00:00Z,XAUUSD,M15,long,bullish,long,1,0.9,1.2,1.2,2,win,tp_hit,x,y,,0,0,0.9,1.1,20,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
+    ].join("\n");
+    const r = validateTestEaExportBundleTexts({
+      ...baseInput(),
+      summaryJson: JSON.stringify(summary),
+      tradesCsv: trades,
+    });
+    expect(r.ok).toBe(false);
+    expect(r.errors.some((e) => e.code === "TESTEA_SUMMARY_VIRTUAL_TRADE_LOGIC")).toBe(true);
+  });
+
+  it("N. requireTradeCountZero rejects summary with trades", () => {
+    const summary = JSON.parse(V2_12_TESTEA_E342_SUMMARY_JSON) as Record<string, unknown>;
+    summary.trade_count = 1;
+    summary.has_real_virtual_trade_logic = true;
+    const trades = [
+      "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode",
+      "R1,T1,E1,2026-01-01T12:00:00Z,2026-01-01T11:00:00Z,2026-01-01T12:00:00Z,XAUUSD,M15,long,bullish,long,1,0.9,1.2,1.2,2,win,tp_hit,x,y,,0,0,0.9,1.1,20,d,fvg_midpoint,fvg_boundary_with_buffer,ambiguous",
+    ].join("\n");
+    const r = validateTestEaExportBundleTexts(
+      { ...baseInput(), summaryJson: JSON.stringify(summary), tradesCsv: trades },
+      { requireTradeCountZero: true },
+    );
+    expect(r.ok).toBe(false);
+    expect(r.errors.some((e) => e.code === "BUNDLE_TRADE_COUNT_NONZERO")).toBe(true);
   });
 });

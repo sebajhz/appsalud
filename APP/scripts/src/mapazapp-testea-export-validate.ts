@@ -223,7 +223,7 @@ export function runTestEaExportValidateCli(argv: string[], io: TestEaExportValid
       eventsCsvByteLength: eventsBytes,
       bundleLabel: absBundle,
     },
-    { eventsLargeWarningBytes: parsed.eventsLargeWarnBytes },
+    { eventsLargeWarningBytes: parsed.eventsLargeWarnBytes, requireTradeCountZero: false },
   );
 
   if (parsed.strict) {

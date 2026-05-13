@@ -13,6 +13,19 @@ import type {
   IsoDateTimeString,
 } from "./backtest-types";
 
+/** TestEA E5.3 virtual / placeholder outcomes accepted in `backtest_trades.csv`. */
+export const MAPZ_TESTEA_TRADE_OUTCOMES = [
+  "win",
+  "loss",
+  "expired_unfilled",
+  "expired_open",
+  "ambiguous",
+  "invalid_risk",
+  "unresolved",
+] as const;
+
+const OUTCOME_SET = new Set<string>(MAPZ_TESTEA_TRADE_OUTCOMES);
+
 const REQUIRED_HEADERS = [
   "trade_id",
   "direction",
@@ -31,8 +44,8 @@ const HEADER_ALIASES: Record<string, string> = {
   resultr: "result_r",
   r: "result_r",
   pnl_r: "result_r",
-  /** Mapazapp_TestEA E3.4.2+ `backtest_trades.csv` uses a compact header. */
-  timestamp: "entry_time",
+  rr: "result_r",
+  /** Mapazapp_TestEA E3.4.2+ compact header: `entry` column is entry price. */
   entry: "entry_price",
 };
 
@@ -90,11 +103,17 @@ function resolveHeaderIndex(headerCells: string[]): Map<string, number> {
     if (!map.has(key)) map.set(key, i);
   });
   const normHeaders = headerCells.map((h) => normalizeHeader(h));
-  // E3.4.2 placeholder trades CSV: one `timestamp` column (maps to entry_time) and `entry` price only.
-  if (!normHeaders.includes("exit_time") && normHeaders.includes("timestamp") && map.has("entry_time")) {
-    map.set("exit_time", map.get("entry_time")!);
+  const idxOf = (name: string): number => normHeaders.indexOf(name);
+  // Legacy E3.4.2 compact CSV: single `timestamp` → entry_time / exit_time when missing.
+  if (!map.has("entry_time")) {
+    const ts = idxOf("timestamp");
+    if (ts >= 0) map.set("entry_time", ts);
   }
-  if (!normHeaders.includes("exit_price") && normHeaders.includes("entry") && map.has("entry_price")) {
+  if (!map.has("exit_time")) {
+    const ts = idxOf("timestamp");
+    if (ts >= 0) map.set("exit_time", ts);
+  }
+  if (!map.has("exit_price") && normHeaders.includes("entry") && map.has("entry_price")) {
     map.set("exit_price", map.get("entry_price")!);
   }
   return map;
@@ -271,6 +290,15 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
 
     const zoneId = pick(cells, col, "zone_id")?.trim();
     const exitReason = pick(cells, col, "exit_reason")?.trim();
+    const outcomeRaw = pick(cells, col, "outcome")?.trim() ?? "";
+    if (outcomeRaw !== "" && !OUTCOME_SET.has(outcomeRaw)) {
+      errors.push({
+        code: "CSV_ROW_OUTCOME_UNKNOWN",
+        message: `Unsupported outcome: ${outcomeRaw}`,
+        row: rowNum,
+      });
+      continue;
+    }
 
     const csvRunId = pick(cells, col, "run_id")?.trim();
     const tradeRunId = (csvRunId || runId) as BacktestRunId;
@@ -342,6 +370,33 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     if (swap !== undefined) trade.swap = swap;
     if (spreadAtEntry !== undefined) trade.spreadAtEntry = spreadAtEntry;
     if (scoreTotal !== undefined) trade.scoreTotal = scoreTotal;
+    if (outcomeRaw !== "") trade.outcome = outcomeRaw;
+
+    if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
+      warnings.push({
+        code: "CSV_GEOMETRY_LONG_SL",
+        message: `Row ${rowNum}: LONG trade has SL >= entry (check CSV geometry)`,
+        row: rowNum,
+      });
+    }
+    if (direction === "SELL" && sl !== undefined && sl <= ep.value) {
+      warnings.push({
+        code: "CSV_GEOMETRY_SHORT_SL",
+        message: `Row ${rowNum}: SHORT trade has SL <= entry (check CSV geometry)`,
+        row: rowNum,
+      });
+    }
+    if (sl !== undefined) {
+      const riskAbs = direction === "BUY" ? ep.value - sl : sl - ep.value;
+      if (!Number.isFinite(riskAbs) || riskAbs <= 0) {
+        warnings.push({
+          code: "CSV_GEOMETRY_RISK_NONPOSITIVE",
+          message: `Row ${rowNum}: implied risk (entry vs SL) is not positive`,
+          row: rowNum,
+        });
+      }
+    }
+
     trades.push(trade);
   }
 

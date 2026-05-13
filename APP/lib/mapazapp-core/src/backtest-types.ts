@@ -58,6 +58,8 @@ export interface BacktestTrade {
   zoneId?: string | undefined;
   reasonCodes?: string[] | undefined;
   exitReason?: string | undefined;
+  /** TestEA E5.3+ virtual outcome when present in CSV (`outcome` column). */
+  outcome?: string | undefined;
 }
 
 export interface BacktestImportWarning {

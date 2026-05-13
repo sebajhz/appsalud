@@ -14,7 +14,8 @@
 - **E5 cerrado (diseño docs-only):** campaña XAUUSD tester — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md); separa Phase A (sin rentabilidad) de Phase B (outcome); **no** ejecuta MT5 en E5.
 - **E5.1 cerrado (decisión docs-only):** modo outcome — [`TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md): **virtual dentro de `Mapazapp_TestEA` + Strategy Tester primero**; `tester_orders` solo tras gate opcional **E5.6**.
 - **E5.2 cerrado (contrato docs-only):** simulación virtual V1 — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): fill OHLC, SL/TP/RR, `ambiguous`, una operación activa, schema export documentado.
-- **Siguiente paso canónico:** **E5.3** — **implementación** de la simulación virtual en **`Mapazapp_TestEA.mq5`** + alineación `EXPORT_CONTRACT.md` / validadores TS; **sin** `OrderSend`/`CTrade`.
+- **E5.3 cerrado (implementación en repo):** simulación virtual en **`Mapazapp_TestEA.mq5`** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md); validadores TS + `EXPORT_CONTRACT.md` + muestras; **sin** `OrderSend`/`CTrade`.
+- **Siguiente paso canónico:** **E5.4** — **primer smoke de outcome virtual** en **MT5 Strategy Tester** (operador; evidencia acotada).
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

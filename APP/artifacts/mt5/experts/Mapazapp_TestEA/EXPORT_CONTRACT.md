@@ -1,6 +1,6 @@
-# Mapazapp_TestEA — export contract (E3.6)
+# Mapazapp_TestEA — export contract (E3.6 + E5.3 virtual outcome)
 
-> **Schema freeze (E3.6):** contrato de evidencia para **`Mapazapp_TestEA.mq5`** antes del primer smoke Strategy Tester (**E4**). Resumen de mapa: [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](../../../mapazapp/docs/BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
+> **Baseline E3.6** + **extensión E5.3** (simulación virtual sin órdenes). Resumen de mapa: [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](../../../mapazapp/docs/BACKTESTEA_EXPORT_SCHEMA_E3_6.md). Implementación: [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](../../../mapazapp/docs/TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md).
 
 ## Roles
 
@@ -9,7 +9,7 @@
 | **`Mapazapp_TestEA`** | **Único EA oficial** del MetaTrader 5 **Strategy Tester** para setup proof / exports de backtest en esta fase. |
 | **`Mapazapp_BridgeEA`** | **Separado**: export read-only en terminal live (`MZP_BRIDGE_V1`); **no** sustituye al TestEA. |
 
-**No hay órdenes:** sin `OrderSend`, sin `CTrade`, sin filas de trade inventadas. **`trade_count`** permanece **0** hasta una fase explícita de simulación u órdenes en tester.
+**No hay órdenes reales:** sin `OrderSend`, sin `CTrade`, sin posiciones abiertas por el EA. Con **`InpEnableVirtualTrades`** y **`InpWriteVirtualTrades`** activos, el EA puede escribir **filas de trades virtuales** coherente con la simulación (no son órdenes MT5). **`trade_count`** en `backtest_summary.json` debe **igualar** el número de filas de datos en `backtest_trades.csv` (0 si solo cabecera o simulación desactivada / sin escritura de filas).
 
 ## Versión de schema
 
@@ -54,7 +54,7 @@ Por defecto `InpExportRoot` = `Mapazapp\TestEA`.
 | `reason` | Sí | Etiqueta corta legible / código de razón. |
 | `details` | Sí | Texto sanitizado; puede incluir `fvg_low`, `fvg_high`, `fvg_points`, `candle_time`, `gate_result`, etc. **No** rutas privadas ni secretos. |
 
-### 2.2 `event_type` soportados (E3.6)
+### 2.2 `event_type` soportados (E3.6 + E5.3)
 
 - `lifecycle_init`
 - `skeleton_ready`
@@ -63,31 +63,37 @@ Por defecto `InpExportRoot` = `Mapazapp\TestEA`.
 - `setup_allowed`
 - `setup_rejected`
 - `setup_skipped`
+- `virtual_trade_candidate_created` (E5.3)
+- `virtual_trade_entry_filled` (E5.3)
+- `virtual_trade_closed` (E5.3)
+- `virtual_trade_expired` (E5.3)
+- `virtual_trade_ambiguous` (E5.3)
+- `virtual_trade_skipped` (E5.3)
 - `lifecycle_deinit`
 
-### 2.3 `decision` soportados (validación TypeScript E3.6)
+### 2.3 `decision` soportados (validación TypeScript)
 
-Incluye (lista congelada en `parseBacktestEventsCsv`):  
-`bias_recorded`, `setup_candidate_allowed`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `setup_ignored`, `lifecycle`, `detected`, `ok`, `noop`.
+Incluye (lista en `parseBacktestEventsCsv`):  
+`bias_recorded`, `setup_candidate_allowed`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `setup_ignored`, `lifecycle`, `detected`, `ok`, `noop`, **`created`**, **`filled`**, **`closed`**, **`expired`**, **`ambiguous`**, **`skipped`** (E5.3 virtual).
 
 ---
 
 ## 3. `backtest_trades.csv`
 
 - **Encoding:** ANSI, ASCII-safe.
-- **Cabecera obligatoria** cuando el EA escribe el archivo (E3.4.2+):  
-  `run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason`
-- **Filas de datos:** **ninguna** en la fase actual — **válido header-only**. **No** crear trades falsos ni `result_r` inventado.
-- **Dirección en filas futuras:** `BUY`/`SELL` o `LONG`/`SHORT` (normaliza el importador TS).
+- **Cabecera E5.3 (cuando hay simulación virtual):**  
+  `run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode`
+- **Filas de datos:** **ninguna** si la corrida no produce trades virtuales cerrados — **válido header-only**. Las filas deben corresponder a **cierres** de la simulación virtual (win/loss/expired/ambiguous/…); **no** filas sintéticas sin lógica del EA.
+- **Dirección:** `BUY`/`SELL` o `LONG`/`SHORT` (normaliza el importador TS).
 
 ### 3.1 Importador TypeScript (`importBacktestTradesFromCsv`)
 
 - Con **solo cabecera** (0 filas de datos): **`ok: true`**, `trades: []`, aviso **`CSV_HEADER_ONLY_NO_TRADE_ROWS`**.
-- Con filas en formato compacto: alias `timestamp` → `entry_time`, `entry` → `entry_price`; si faltan columnas literales `exit_time` / `exit_price` pero existen `timestamp` / `entry`, el importador duplica índices según `resolveHeaderIndex` en `backtest-importer.ts`.
+- Con filas: columnas `entry` → `entry_price` (alias); `timestamp` opcional hacia `entry_time`/`exit_time` si faltan (legacy E3.4.2); columna **`outcome`** validada contra catálogo E5.3; avisos de geometría (SL vs entry, riesgo ≤ 0).
 
 ### 3.2 Columnas extendidas (metadata futura)
 
-Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas adicionales en el importador (`commission`, `swap`, `zone_id`, …) — **opcionales** salvo las requeridas para filas con trade real.
+Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas adicionales en el importador (`commission`, `swap`, `zone_id`, …) — **opcionales** salvo las requeridas para filas importables.
 
 ---
 
@@ -112,7 +118,9 @@ Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas 
 | `has_real_ifvg_logic` | boolean | **true** — significa **detección FVG / candidato Setup V1 presente**, no pipeline IFVG completo. |
 | `has_full_ifvg_pipeline` | boolean | **false** (E3.6+) — sin conversión FVG→IFVG completa, sin ATR/sweeps/target liquidity del pipeline IFVG en el EA. |
 | `has_real_trading_orders` | boolean | **false** |
-| `trade_count` | number | **0** en fase actual. |
+| `has_real_virtual_trade_logic` | boolean | **true** cuando la simulación virtual está habilitada en el EA (E5.3). |
+| `trade_count` | number | **Debe igualar** el número de filas de datos en `backtest_trades.csv`. |
+| Contadores / métricas virtuales (E5.3) | number | p. ej. `virtual_trade_count`, `filled_trade_count`, `win_count`, `loss_count`, `total_r`, `average_r`, `winrate`, `expectancy_r`, `max_drawdown_r`, … — ver implementación E5.3. |
 | Contadores bias | number | `total_bias_evaluated`, `bullish_bias_count`, `bearish_bias_count`, `neutral_bias_count`, `unknown_bias_count`. |
 | Contadores setup | number | `total_setup_candidates`, `bullish_setup_candidates`, `bearish_setup_candidates`, `allowed_setups`, `rejected_by_daily_bias`, `skipped_neutral_bias`, `missing_bias_context`, `ignored_small_fvg`. |
 | Último setup | string / number | `last_setup_direction`, `last_setup_decision`, `last_setup_reason`, `last_fvg_points`. |
@@ -136,8 +144,8 @@ Ver tabla en versiones anteriores de este contrato y en tests `V2_12_TESTEA_BACK
 
 ## 5. Limitaciones actuales (no sobreprometer)
 
-- **No** pipeline IFVG completo en MQL5: **no** FVG→IFVG como en `tryConvertFvgToIfvg`, **no** filtros ATR del pipeline IFVG del core, **no** sweeps, **no** target liquidity, **no** simulación de trades.
-- **Sí** detección **FVG candidata** / **Setup V1 candidato** (tres velas cerradas, geometría alineada con `fvg-detector.ts`) + **Daily Bias gate**.
+- **No** pipeline IFVG completo en MQL5: **no** FVG→IFVG como en `tryConvertFvgToIfvg`, **no** filtros ATR del pipeline IFVG del core, **no** sweeps, **no** target liquidity.
+- **Sí** detección **FVG candidata** / **Setup V1 candidato** + **Daily Bias gate** + **simulación virtual de outcome** (E5.3) sobre velas cerradas, **sin** ticks de orden intra-barra y **sin** órdenes MT5.
 
 ---
 

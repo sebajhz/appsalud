@@ -71,12 +71,13 @@ test("F — expected export filenames referenced", () => {
   assert.match(src, /backtest_summary\.json/);
 });
 
-test("G — summary flags: IFVG on; daily bias on; tester orders off; pipeline not full", () => {
+test("G — summary flags: IFVG on; daily bias on; tester orders off; pipeline not full; virtual logic flag present", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /\\"has_real_ifvg_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_full_ifvg_pipeline\\"\s*:\s*false/);
   assert.match(src, /\\"has_real_daily_bias_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_real_trading_orders\\"\s*:\s*false/);
+  assert.match(src, /\\"has_real_virtual_trade_logic\\"/);
 });
 
 test("H — Daily Bias V1 + gate markers", () => {
@@ -147,7 +148,7 @@ test("N — temporary Mapazapp_BacktestEA artifact removed from active tree", ()
   );
 });
 
-test("O — README + EXPORT_CONTRACT declare IFVG candidate detection and no trades", () => {
+test("O — README + EXPORT_CONTRACT declare IFVG candidate detection and tester-only exports", () => {
   assert.ok(existsSync(EXPORT_CONTRACT_PATH));
   const readme = readFileSync(README_PATH, "utf8").toLowerCase();
   const ex = readFileSync(EXPORT_CONTRACT_PATH, "utf8").toLowerCase();
@@ -164,17 +165,25 @@ test("P — EXPORT_CONTRACT documents E3.6 / schema freeze", () => {
   assert.ok(ex.includes("backtest_events.csv"));
 });
 
-test("Q — samples: summary has_full false; events include setup flow; trades header-only", () => {
+test("Q — samples: summary has_full false; events include setup + virtual flow; trades include virtual rows", () => {
   const summary = JSON.parse(readFileSync(SAMPLE_SUMMARY_PATH, "utf8")) as Record<string, unknown>;
   assert.equal(summary["has_full_ifvg_pipeline"], false);
   assert.equal(summary["has_real_ifvg_logic"], true);
-  assert.equal(summary["trade_count"], 0);
+  assert.equal(summary["has_real_virtual_trade_logic"], true);
+  assert.equal(summary["trade_count"], 3);
   const events = readFileSync(SAMPLE_EVENTS_PATH, "utf8");
   assert.match(events, /setup_detected/);
   assert.match(events, /setup_allowed|setup_rejected|setup_skipped/);
+  assert.match(events, /virtual_trade_/);
   const trades = readFileSync(SAMPLE_TRADES_PATH, "utf8").trimEnd().split(/\r?\n/);
-  assert.equal(trades.length, 1, "trades sample must be header-only");
-  assert.ok(trades[0]!.includes("trade_id") && trades[0]!.includes("result_r"));
+  assert.ok(trades.length >= 2);
+  assert.ok(trades[0]!.includes("trade_id") && trades[0]!.includes("exit_price"));
+});
+
+test("S — virtual trade event markers present", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /virtual_trade_candidate_created/);
+  assert.match(src, /virtual_trade_closed/);
 });
 
 test("R — README/contract document has_full_ifvg_pipeline false (no full-pipeline claim)", () => {

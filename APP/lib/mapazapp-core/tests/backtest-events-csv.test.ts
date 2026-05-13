@@ -78,4 +78,18 @@ describe("backtest_events.csv parser (E3.6)", () => {
     expect(r2.ok).toBe(false);
     expect(r2.errors.some((e) => e.code === "EVENTS_ROW_EVENT_ID")).toBe(true);
   });
+
+  it("H. virtual_trade_* event types parse under bundleContract", () => {
+    const csv = [
+      validHeader,
+      "R1,EVT_1,2026-01-01T00:00:00Z,XAUUSD,lifecycle_init,unknown,none,ok,OnInit,x",
+      "R1,EVT_2,2026-01-01T00:01:00Z,XAUUSD,skeleton_ready,unknown,none,noop,r,x",
+      "R1,EVT_3,2026-01-01T00:02:00Z,XAUUSD,daily_bias_evaluated,bullish,none,bias_recorded,r,x",
+      "R1,EVT_4,2026-01-01T00:03:00Z,XAUUSD,virtual_trade_closed,bullish,long,closed,tp_hit,\"trade_id=T1\"",
+      "R1,EVT_5,2026-01-01T00:04:00Z,XAUUSD,lifecycle_deinit,bullish,none,ok,OnDeinit,x",
+    ].join("\n");
+    const r = parseBacktestEventsCsv(csv, { bundleContract: true });
+    expect(r.ok).toBe(true);
+    expect(r.eventTypeCounts?.virtual_trade_closed).toBe(1);
+  });
 });

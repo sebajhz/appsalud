@@ -70,6 +70,12 @@ export const MAPZ_TESTEA_SUPPORTED_EVENT_TYPES = [
   "setup_allowed",
   "setup_rejected",
   "setup_skipped",
+  "virtual_trade_candidate_created",
+  "virtual_trade_entry_filled",
+  "virtual_trade_closed",
+  "virtual_trade_expired",
+  "virtual_trade_ambiguous",
+  "virtual_trade_skipped",
   "lifecycle_deinit",
 ] as const;
 
@@ -85,6 +91,12 @@ export const MAPZ_TESTEA_SUPPORTED_DECISIONS = [
   "detected",
   "ok",
   "noop",
+  "created",
+  "filled",
+  "closed",
+  "expired",
+  "ambiguous",
+  "skipped",
 ] as const;
 
 const EVENT_TYPES = new Set<string>(MAPZ_TESTEA_SUPPORTED_EVENT_TYPES);

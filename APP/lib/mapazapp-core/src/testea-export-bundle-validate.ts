@@ -25,7 +25,7 @@ export interface TestEaBundleFilesState {
 }
 
 export interface TestEaBundleValidationOptions {
-  /** When true (default), `trade_count` in summary must be exactly `0`. */
+  /** When true (default for E5.3+), `trade_count` in summary may match virtual trade rows. When true, enforces trade_count === 0 (E4.1 legacy). */
   requireTradeCountZero?: boolean;
   /** Warn when `eventsCsvByteLength` exceeds this threshold. Default 1_500_000 bytes. */
   eventsLargeWarningBytes?: number;
@@ -94,7 +94,7 @@ export function validateTestEaExportBundleTexts(
   input: TestEaBundleValidationInput,
   options?: TestEaBundleValidationOptions,
 ): TestEaBundleValidationResult {
-  const requireTc0 = options?.requireTradeCountZero !== false;
+  const requireTc0 = options?.requireTradeCountZero === true;
   const largeBytes = options?.eventsLargeWarningBytes ?? 1_500_000;
 
   const errors: TestEaBundleIssue[] = [];

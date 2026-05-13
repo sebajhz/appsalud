@@ -222,7 +222,7 @@ Decidir **una** o **secuencia** de:
 | ID | Contenido |
 |----|------------|
 | **E5.2** | Contrato de simulación virtual (cerrado — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md)). |
-| **E5.3** | Implementación MQL5 + ajustes validadores TS si el contrato cambia. |
+| **E5.3** | **Implementado** en repo: MQL5 + validadores TS + muestras — ver [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md). Smoke real en tester → **E5.4**. |
 | **E5.4** | Primer smoke de outcome virtual en Strategy Tester (evidencia acotada). |
 | **E5.5** | Campaña XAUUSD con **métricas de outcome virtual**. |
 | **E5.6** (opcional) | Gate **tester_orders** + spec de seguridad si hace falta tras la virtual. |

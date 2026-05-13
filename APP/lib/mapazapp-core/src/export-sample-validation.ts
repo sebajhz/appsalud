@@ -578,6 +578,18 @@ export function validateTestEaExportSample(
           );
           status = bumpStatus(status, "invalid");
         }
+        const tcVirtProbe = summaryJson["trade_count"];
+        if (typeof tcVirtProbe === "number" && tcVirtProbe > 0 && summaryJson["has_real_virtual_trade_logic"] !== true) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_VIRTUAL_TRADE_LOGIC",
+              "has_real_virtual_trade_logic must be true when trade_count > 0 (E5.3 virtual outcomes)",
+              { fileName: sj.fileName },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

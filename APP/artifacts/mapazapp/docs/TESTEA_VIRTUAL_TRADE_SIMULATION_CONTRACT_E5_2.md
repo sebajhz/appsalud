@@ -5,7 +5,7 @@
 - **E5.2** define el **contrato formal** de la **simulación virtual de trades** para **`Mapazapp_TestEA`** **antes** de escribir lógica MQL5 (**E5.3**).
 - La simulación virtual ocurre **dentro de `Mapazapp_TestEA`** mientras corre en **MT5 Strategy Tester**; **no** es un backtester externo (TypeScript/core no sustituyen al tester).
 - **No** abre órdenes reales; **no** usa `CTrade` / `OrderSend` / apertura de posiciones; solo **filas de datos** y **métricas en exports**.
-- Este documento **prepara E5.3** (implementación) y **E5.4** (smoke de outcome).
+- **E5.3 implementado (código + validadores + docs):** [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md) — simulación virtual en `Mapazapp_TestEA`, exports y métricas R sin órdenes reales.
 
 **Relacionado:** [`TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md`](./TESTEA_TRADE_OUTCOME_MODE_DECISION_E5_1.md), [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md), [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md), [`EXPORT_CONTRACT.md`](../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md).
 

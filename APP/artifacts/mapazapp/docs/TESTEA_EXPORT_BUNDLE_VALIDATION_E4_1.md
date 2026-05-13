@@ -40,7 +40,7 @@ Códigos de salida: **0** éxito, **1** fallo de validación / lectura, **2** ar
 ## 4. Validaciones (resumen)
 
 - **Archivos:** los tres nombres exactos, no vacíos.
-- **Summary (`backtest_ea_v1`):** `schema_version`, `official_ea`, `tester_only`, `backtest_role`, flags IFVG/bias/órdenes/pipeline según E3.6; `trade_count === 0` (fase E4.x); `symbol`, `execution_timeframe`, `daily_bias_timeframe`; contadores numéricos `total_bias_evaluated`, `total_setup_candidates`, `allowed_setups`, `rejected_by_daily_bias`.
+- **Summary (`backtest_ea_v1`):** `schema_version`, `official_ea`, `tester_only`, `backtest_role`, flags IFVG/bias/órdenes/pipeline según E3.6; `symbol`, `execution_timeframe`, `daily_bias_timeframe`; contadores numéricos `total_bias_evaluated`, `total_setup_candidates`, `allowed_setups`, `rejected_by_daily_bias`. **`trade_count`:** por defecto (post–E5.3) debe **coincidir** con filas CSV; opción `requireTradeCountZero: true` fuerza `trade_count === 0` (bundles legacy E4.x). Si `trade_count > 0`, se exige **`has_real_virtual_trade_logic: true`**.
 - **Events:** `parseBacktestEventsCsv` + reglas bundle; heurística de **ruta privada** en `details` (warning); aviso si falta cualquier evento `setup_*` (rango corto — no siempre bug).
 - **Trades:** cabecera válida; filas con `trade_count = 0` → **warning** `TESTEA_TRADE_ROWS_WHILE_TRADE_COUNT_ZERO` (no error por defecto); mismatch distinto → error vía `validateTestEaExportSample`.
 
