@@ -7,6 +7,8 @@
 - El **EA** será el **motor principal** de simulación del setup en tester; **Mapazapp** (dashboard / core) **lee y valida** la **evidencia exportada**.
 - **E3.2 no implementa MQL5**, no ejecuta MT5 ni Strategy Tester.
 
+> **Nota E3.4.1 (arquitectura oficial):** el rol contractual *BacktestEA* es función del EA físico oficial de Strategy Tester **`Mapazapp_TestEA`**. La implementación provisional en **`Mapazapp_BacktestEA`** (E3.3–E3.4) debe **migrarse** a TestEA en **E3.4.2**; ver [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md) y [`MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md).
+
 **Relacionado:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md), [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md), [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md), artefactos `APP/artifacts/mt5/experts/Mapazapp_TestEA/`, `Mapazapp_BridgeEA/`, `Mapazapp_BacktestEA/`.
 
 ---
