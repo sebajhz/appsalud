@@ -1,11 +1,11 @@
 {
   "schema_version": "backtest_ea_v1",
-  "ea_build": "MZP_TestEA_E5_5_0_sample",
-  "run_id": "TESTEA_SAMPLE_RUN",
-  "campaign_id": "",
-  "optimization_safe_exports": false,
-  "effective_run_id": "TESTEA_SAMPLE_RUN",
-  "effective_export_folder_label": "TESTEA_SAMPLE_RUN",
+  "ea_build": "MZP_TestEA_E5_5_0_sample_nested",
+  "run_id": "MZP_E5_5_DOC_SAMPLE__default_FVG2_RR2_00_BIASBODY0_RALIGN1",
+  "campaign_id": "MZP_E5_5_DOC_SAMPLE",
+  "optimization_safe_exports": true,
+  "effective_run_id": "MZP_E5_5_DOC_SAMPLE__default_FVG2_RR2_00_BIASBODY0_RALIGN1",
+  "effective_export_folder_label": "default_FVG2_RR2_00_BIASBODY0_RALIGN1",
   "optimization_parameters": {
     "virtual_min_trade_fvg_points": 2,
     "virtual_risk_reward": 2.0,
@@ -65,5 +65,5 @@
   "last_setup_reason": "daily_bias_aligned",
   "last_fvg_points": 110,
   "exported_at_utc": "2026-01-15T10:00:00Z",
-  "notes": "Fictional E5.4.1 sample bundle — not Strategy Tester output. Virtual trades only; no live orders."
+  "notes": "Fictional E5.5.0 nested-folder sample — folder leaf differs from legacy flat run_id naming; validates CLI against campaign/SET path."
 }

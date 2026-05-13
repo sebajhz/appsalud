@@ -20,7 +20,7 @@ El operador y la documentación siempre referencian **el mismo nombre** en Exper
 ### 2. Build identity inside code and exports
 
 - Tras cambios **significativos** de lógica del EA (MQL5), actualizar el identificador de build exportado en summary (campo típico **`ea_build`**).
-- Ejemplo vigente en el repo: **`MZP_TestEA_E5_4_1`**.
+- Ejemplo vigente en el repo: **`MZP_TestEA_E5_5_0`** (E5.5.0 — exports seguros para optimización + metadatos de campaña en summary).
 
 `ea_build` debe cambiar cuando el comportamiento exportado o la semántica de trades/eventos cambie de forma material (no por retoques cosméticos de comentarios).
 
@@ -28,8 +28,9 @@ El operador y la documentación siempre referencian **el mismo nombre** en Exper
 
 - **`InpRunId`** debe ser **único por corrida** del Strategy Tester (o por lote de evidencia que se quiera distinguir).
 - Ejemplo: **`TEST_E5_4_2_A`**.
+- En **optimización masiva**, preferir **`InpOptimizationSafeExports=true`** (E5.5.0) para que la carpeta de export sea **única por combinación de parámetros** bajo `InpCampaignId` — ver [`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](./TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md).
 
-Evita colisiones de carpetas bajo `MQL5\Files\<ExportRoot>\<RunId>`.
+Evita colisiones de carpetas bajo `MQL5\Files\<ExportRoot>\<RunId>` **o** bajo `MQL5\Files\<ExportRoot>\<campaign_id>\<folder_leaf>` cuando el modo seguro está activo.
 
 ### 4. Parameter identity
 
@@ -64,12 +65,12 @@ Cada informe o paquete de evidencia de campaña debe poder enlazar o listar como
 |--------|------------------|
 | `campaign_id` | p. ej. `MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1` (misma campaña, muchos `run_id`) |
 | Commit Git | SHA del repo usado para compilar |
-| `ea_build` | p. ej. `MZP_TestEA_E5_4_1` |
+| `ea_build` | p. ej. `MZP_TestEA_E5_5_0` |
 | `run_id` | p. ej. `TEST_E5_4_2_A` o `MZP_E5_5_XAUUSD_M15_D1_OUTCOME_SET001_FULL_A` |
 | `parameter_set_id` | p. ej. `MZP_IFVG_XAUUSD_V1_SET_003` o `MZP_IFVG_XAUUSD_V1_OUTCOME_SET_001` |
 | Símbolo | p. ej. XAUUSD |
 | Timeframe de ejecución | p. ej. M15 |
-| Carpeta de export / bundle validado | ruta o carpeta zip bajo `Mapazapp\TestEA\<RunId>` |
+| Carpeta de export / bundle validado | ruta hoja bajo `Mapazapp\TestEA\<RunId>` **o** `Mapazapp\TestEA\<campaign_id>\<folder_leaf>` (E5.5.0) |
 | Resultado validación CLI | p. ej. `mapazapp:testea-export-validate` (`ok`, `status`, lista de warnings) |
 
 ---

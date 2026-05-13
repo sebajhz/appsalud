@@ -25,9 +25,19 @@ Fixtures históricos y herramientas pueden seguir usando **`MZP_TESTEA_V1`** (Ch
 
 Todas las rutas son relativas al perfil activo **`MQL5\Files\`**.
 
+**Modo legacy (`InpOptimizationSafeExports = false`, default):**
+
 ```text
 MQL5\Files\<InpExportRoot>\<run_id>\
 ```
+
+**Modo optimización seguro (`InpOptimizationSafeExports = true`, E5.5.0+):**
+
+```text
+MQL5\Files\<InpExportRoot>\<campaign_id>\<folder_leaf>\
+```
+
+`folder_leaf` es determinista (p. ej. desde `InpParameterSetId` + `InpVirtualMinTradeFvgPoints` + `InpVirtualRiskReward` + `InpDailyBiasMinBodyPoints` + `InpRequireDailyBiasAlignment` cuando `InpAutoBuildRunIdFromParams = true`). Ver [`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](../../../mapazapp/docs/TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md).
 
 Por defecto `InpExportRoot` = `Mapazapp\TestEA`.
 
@@ -105,7 +115,7 @@ Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas 
 | Campo | Tipo | Notas |
 |-------|------|--------|
 | `schema_version` | string | `backtest_ea_v1` |
-| `run_id` | string | Coherente con export. |
+| `run_id` | string | Coherente con export / columnas CSV. Con **E5.5.0+** puede convivir con `effective_run_id` cuando la carpeta hoja difiere del id legacy. |
 | `strategy_id` | string | Metadatos de estrategia (p. ej. `IFVG_XAUUSD_V1`). |
 | `parameter_set_id` | string | Metadatos de set. |
 | `symbol` | string | Canónico. |
@@ -130,7 +140,7 @@ Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas 
 
 ### 4.2 Opcionales / echo
 
-`ea_build`, `broker_symbol`, `use_h4_context`, `use_h1_context`, etc. — según el EA; no sustituyen campos obligatorios de identidad y flags de seguridad.
+`ea_build`, `broker_symbol`, `use_h4_context`, `use_h1_context`, **`campaign_id`**, **`optimization_safe_exports`**, **`effective_run_id`**, **`effective_export_folder_label`**, **`optimization_parameters`** (E5.5.0+) — según el EA; no sustituyen campos obligatorios de identidad y flags de seguridad.
 
 ### 4.3 Significado de contadores (resumen)
 

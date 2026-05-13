@@ -1,4 +1,5 @@
 import type { ImportBacktestCsvOptions } from "./backtest-types";
+import type { BacktestRunId } from "./ids";
 import type { ParameterSetId, StrategyId } from "./ids";
 import { parseBacktestEventsCsv } from "./backtest-events-csv";
 import { validateTestEaExportSample } from "./export-sample-validation";
@@ -65,6 +66,10 @@ function pickImportIds(summary: Record<string, unknown> | null): ImportBacktestC
   const sid = (summary?.["strategy_id"] as string | undefined)?.trim() || "MZP_IFVG_ZONE_REACTION_V1";
   const pid = (summary?.["parameter_set_id"] as string | undefined)?.trim() || "MZP_IFVG_XAUUSD_V1_SET_003";
   const sym = (summary?.["symbol"] as string | undefined)?.trim() || "XAUUSD";
+  const eff =
+    (summary?.["effective_run_id"] as string | undefined)?.trim() ||
+    (summary?.["run_id"] as string | undefined)?.trim() ||
+    "TESTEA_BUNDLE_VALIDATE";
   return {
     strategyId: sid as StrategyId,
     parameterSetId: pid as ParameterSetId,
@@ -72,12 +77,21 @@ function pickImportIds(summary: Record<string, unknown> | null): ImportBacktestC
     brokerSymbol: (summary?.["broker_symbol"] as string | undefined)?.trim() || undefined,
     datasetSplit: "validation",
     sourceType: "mapazapp_testea_csv",
-    runId: (summary?.["run_id"] as string | undefined)?.trim() || "TESTEA_BUNDLE_VALIDATE",
+    runId: eff as BacktestRunId,
   };
 }
 
 function isNonEmptyString(s: string): boolean {
   return typeof s === "string" && s.trim().length > 0;
+}
+
+function looksLikeOutcomeStyleParameterSetId(parameterSetId: string): boolean {
+  const s = parameterSetId.trim();
+  if (s.length === 0) return false;
+  if (/OUTCOME_SET/i.test(s)) return true;
+  if (/_OUTCOME_/i.test(s)) return true;
+  if (/^OUTCOME_/i.test(s)) return true;
+  return false;
 }
 
 function isFiniteNumber(v: unknown): v is number {
@@ -247,6 +261,26 @@ export function validateTestEaExportBundleTexts(
           message: `E4.1 phase expects trade_count === 0 (got ${String(tc)})`,
         });
       }
+    }
+
+    const pid = String(summaryObj["parameter_set_id"] ?? "").trim();
+    const cid = String(summaryObj["campaign_id"] ?? "").trim();
+    const safeOpt = summaryObj["optimization_safe_exports"];
+    if (looksLikeOutcomeStyleParameterSetId(pid) && !isNonEmptyString(cid)) {
+      warnings.push({
+        level: "warning",
+        code: "CAMPAIGN_ID_RECOMMENDED_FOR_OUTCOME_STYLE_SET",
+        message:
+          "parameter_set_id looks like an outcome campaign set but campaign_id is empty — set InpCampaignId for evidence traceability",
+      });
+    }
+    if (looksLikeOutcomeStyleParameterSetId(pid) && safeOpt === false) {
+      warnings.push({
+        level: "warning",
+        code: "OPTIMIZATION_SAFE_EXPORTS_DISABLED_FOR_OUTCOME_STYLE_RUN",
+        message:
+          "optimization_safe_exports is false while parameter_set_id looks outcome-style — MT5 Optimization may overwrite exports; prefer InpOptimizationSafeExports=true for sweeps",
+      });
     }
   }
 

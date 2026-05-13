@@ -195,3 +195,13 @@ test("R — README/contract document has_full_ifvg_pipeline false (no full-pipel
   assert.ok(readme.includes("false"));
   assert.ok(ex.includes("has_full_ifvg_pipeline"));
 });
+
+test("T — E5.5.0 optimization-safe export inputs + summary keys", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /InpCampaignId/);
+  assert.match(src, /InpAutoBuildRunIdFromParams/);
+  assert.match(src, /InpOptimizationSafeExports/);
+  assert.match(src, /TesterResolveExportIdentity/);
+  assert.match(src, /effective_run_id/);
+  assert.match(src, /optimization_parameters/);
+});

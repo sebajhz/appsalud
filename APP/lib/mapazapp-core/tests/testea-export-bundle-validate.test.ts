@@ -188,4 +188,45 @@ describe("E4.1 validateTestEaExportBundleTexts", () => {
     expect(r.ok).toBe(false);
     expect(r.errors.some((e) => e.code === "BUNDLE_TRADE_COUNT_NONZERO")).toBe(true);
   });
+
+  it("P. effective_run_id aligns importer when summary.run_id is stale vs CSV", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const nested = join(
+      fileURLToPath(new URL(".", import.meta.url)),
+      "../../../artifacts/mt5/experts/Mapazapp_TestEA/samples/MZP_E5_5_DOC_SAMPLE/default_FVG2_RR2_00_BIASBODY0_RALIGN1",
+    );
+    const summary = JSON.parse(readFileSync(join(nested, "backtest_summary.json"), "utf8")) as Record<string, unknown>;
+    summary.run_id = "STALE_RUN_ID_SHOULD_NOT_BREAK_IMPORT";
+    const r = validateTestEaExportBundleTexts({
+      summaryJson: JSON.stringify(summary),
+      eventsCsv: readFileSync(join(nested, "backtest_events.csv"), "utf8"),
+      tradesCsv: readFileSync(join(nested, "backtest_trades.csv"), "utf8"),
+      eventsCsvByteLength: 2000,
+      bundleLabel: "default_FVG2_RR2_00_BIASBODY0_RALIGN1",
+    });
+    expect(r.ok).toBe(true);
+    expect(r.errors).toHaveLength(0);
+  });
+
+  it("Q. outcome-style parameter set without campaign and optimization_safe false warns", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const dir = join(fileURLToPath(new URL(".", import.meta.url)), "../../../artifacts/mt5/experts/Mapazapp_TestEA/samples");
+    const summary = JSON.parse(readFileSync(join(dir, "backtest_summary.json"), "utf8")) as Record<string, unknown>;
+    summary.parameter_set_id = "OUTCOME_SET001";
+    summary.campaign_id = "";
+    summary.optimization_safe_exports = false;
+    const r = validateTestEaExportBundleTexts({
+      summaryJson: JSON.stringify(summary),
+      eventsCsv: readFileSync(join(dir, "backtest_events.csv"), "utf8"),
+      tradesCsv: readFileSync(join(dir, "backtest_trades.csv"), "utf8"),
+      eventsCsvByteLength: 8000,
+      bundleLabel: "samples",
+    });
+    expect(r.warnings.some((w) => w.code === "CAMPAIGN_ID_RECOMMENDED_FOR_OUTCOME_STYLE_SET")).toBe(true);
+    expect(r.warnings.some((w) => w.code === "OPTIMIZATION_SAFE_EXPORTS_DISABLED_FOR_OUTCOME_STYLE_RUN")).toBe(true);
+  });
 });

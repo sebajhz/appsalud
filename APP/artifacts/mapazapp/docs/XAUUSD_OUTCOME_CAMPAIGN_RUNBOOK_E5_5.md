@@ -10,7 +10,7 @@
 - **No** es optimización final ni búsqueda masiva de parámetros.
 - **No** es trading en vivo ni asistencia de ejecución real.
 - **No** usa órdenes MT5: `has_real_trading_orders` debe permanecer **false**; outcomes en filas virtuales y eventos CSV.
-- **Cada run** debe validarse con la CLI read-only **`pnpm --filter @workspace/scripts mapazapp:testea-export-validate`** (E4.1 / alineado con evidencia E5.4.x).
+- **Cada run** debe validarse con la CLI read-only **`pnpm --filter @workspace/scripts mapazapp:testea-export-validate`** (E4.1 / alineado con evidencia E5.4.x). Con carpetas anidadas por campaña (**E5.5.0**), pasar `--bundle` apuntando a la **carpeta hoja** que contiene los tres archivos — ver [`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](./TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md).
 
 Este documento es **solo runbook y criterios**; la ejecución material de la campaña queda en **E5.5.1+** (operador, MT5 manual).
 

@@ -24,7 +24,7 @@ Opciones:
 
 | Flag | Rol |
 |------|-----|
-| `--bundle <path>` | Carpeta que contiene exactamente `backtest_summary.json`, `backtest_events.csv`, `backtest_trades.csv`. |
+| `--bundle <path>` | Carpeta **hoja** que contiene exactamente `backtest_summary.json`, `backtest_events.csv`, `backtest_trades.csv` (puede ser anidada bajo `…/TestEA/<campaign_id>/<folder_leaf>/` — **E5.5.0**). |
 | `--json` | Salida JSON (`ok`, `status`, `errors`, `warnings`, `summary` recortado, `files`, `eventCounts`, `bundle` = basename). |
 | `--strict` | Promueve **warnings materiales** a errores (exit 1). **No** aplica a `CSV_HEADER_ONLY_NO_TRADE_ROWS` (cabecera sin filas es esperable con `trade_count = 0`). |
 | `--max-events-preview <n>` | Con `--json`, incluye hasta `n` líneas iniciales del CSV de eventos (tope interno 40). |
@@ -39,6 +39,7 @@ Códigos de salida: **0** éxito, **1** fallo de validación / lectura, **2** ar
 
 ## 4. Validaciones (resumen)
 
+- **E5.5.0+ (rutas anidadas):** el importador usa `summary.effective_run_id` cuando existe, de modo que el **basename** de la carpeta puede diferir de `summary.run_id` sin invalidar el bundle — ver [`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](./TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md).
 - **Archivos:** los tres nombres exactos, no vacíos.
 - **Summary (`backtest_ea_v1`):** `schema_version`, `official_ea`, `tester_only`, `backtest_role`, flags IFVG/bias/órdenes/pipeline según E3.6; `symbol`, `execution_timeframe`, `daily_bias_timeframe`; contadores numéricos `total_bias_evaluated`, `total_setup_candidates`, `allowed_setups`, `rejected_by_daily_bias`. **`trade_count`:** por defecto (post–E5.3) debe **coincidir** con filas CSV; opción `requireTradeCountZero: true` fuerza `trade_count === 0` (bundles legacy E4.x). Si `trade_count > 0`, se exige **`has_real_virtual_trade_logic: true`**.
 - **Events:** `parseBacktestEventsCsv` + reglas bundle; heurística de **ruta privada** en `details` (warning); aviso si falta cualquier evento `setup_*` (rango corto — no siempre bug).

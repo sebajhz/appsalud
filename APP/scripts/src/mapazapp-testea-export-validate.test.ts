@@ -130,3 +130,19 @@ test("CLI real samples path integration", () => {
   assert.equal(code, 0);
   assert.match(io.out, /Status: OK/);
 });
+
+test("CLI nested campaign sample path exits 0 with JSON summary slice", () => {
+  const nestedDir = join(samplesDir, "MZP_E5_5_DOC_SAMPLE", "default_FVG2_RR2_00_BIASBODY0_RALIGN1");
+  const io = captureIo({});
+  const code = runTestEaExportValidateCli(["--bundle", nestedDir, "--json"], io);
+  assert.equal(code, 0);
+  const j = JSON.parse(io.out) as {
+    ok: boolean;
+    bundle: string;
+    summary?: { campaign_id?: string; effective_run_id?: string; optimization_safe_exports?: boolean };
+  };
+  assert.equal(j.ok, true);
+  assert.match(j.bundle, /RALIGN1$/);
+  assert.equal(j.summary?.optimization_safe_exports, true);
+  assert.ok(typeof j.summary?.effective_run_id === "string" && j.summary.effective_run_id.length > 0);
+});
