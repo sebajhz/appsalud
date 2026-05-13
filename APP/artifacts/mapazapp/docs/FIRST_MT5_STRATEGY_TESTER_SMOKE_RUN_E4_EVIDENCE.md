@@ -204,7 +204,7 @@ No se pegan aquí miles de filas del CSV; la evidencia cuantitativa queda en el 
 **Next (recomendación):**
 
 - **E4.1 (implementado):** CLI `mapazapp:testea-export-validate` + doc [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md).
-- **E5:** diseño (y luego ejecución acotada) de **campaña XAUUSD** en Strategy Tester.
+- **E5 (diseño docs-only):** campaña XAUUSD Strategy Tester — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md) (Phase A sin rentabilidad; Phase B tras **E5.1**).
 - Antes de afirmar **rentabilidad** o **edge:** hace falta decisión y eventual implementación de **simulación de trades** u órdenes en tester según contrato, fuera del alcance de este smoke.
 
 ---

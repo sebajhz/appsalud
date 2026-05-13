@@ -11,7 +11,8 @@
 - **E3.6 cerrado:** esquema de export / evidencia congelado (`has_full_ifvg_pipeline`, eventos CSV, validadores) — ver [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
 - **E4 cerrado (smoke real MT5):** plan [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md); evidencia **OK with observations** [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md).
 - **E4.1 cerrado:** CLI `mapazapp:testea-export-validate` + `validateTestEaExportBundleTexts` — [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md).
-- **Siguiente paso canónico:** **E5** — diseño / campaña **XAUUSD** en Strategy Tester (validar evidencias con E4.1 antes de acumular runs).
+- **E5 cerrado (diseño docs-only):** campaña XAUUSD tester — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md); separa Phase A (sin rentabilidad) de Phase B (outcome); **no** ejecuta MT5 en E5.
+- **Siguiente paso canónico:** **E5.1** — decisión formal del **modo de outcome** de trades en TestEA (**simulación virtual** vs **tester_orders**, o secuencia); prerequisito antes de métricas de edge/rentabilidad.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

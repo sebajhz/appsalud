@@ -61,7 +61,7 @@ Códigos de salida: **0** éxito, **1** fallo de validación / lectura, **2** ar
 
 ## 7. Relación con E5
 
-- **E5** puede exigir validación de **cada** carpeta de evidencia con este CLI (o la API TS) antes de agregar a un índice de campaña.
+- **E5** ([`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md)) exige tratar la validación E4.1 como **paso obligatorio por run**: cada carpeta de export (summary + events + trades) debe pasar por este CLI (o `validateTestEaExportBundleTexts` en tooling) **antes** de consolidarla en informes de campaña o índices.
 - El CLI **no** sustituye análisis de edge ni rentabilidad; solo **integridad de bundle** y coherencia con el contrato congelado.
 
 ## 8. Referencias
