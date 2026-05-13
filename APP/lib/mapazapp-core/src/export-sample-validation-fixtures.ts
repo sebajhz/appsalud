@@ -134,6 +134,7 @@ export const V2_12_TESTEA_E342_EVENTS_CSV = [
   "V212_E342_RUN,EVT_000003,2026-05-07T12:00:02Z,XAUUSD,daily_bias_evaluated,bullish,none,bias_recorded,previous_daily_close_above_open,bias_tf=D1",
   "V212_E342_RUN,EVT_000004,2026-05-07T12:00:03Z,XAUUSD,setup_detected,bullish,long,detected,bullish_fvg_C_low_above_A_high,fvg_low=2000 fvg_high=2005",
   "V212_E342_RUN,EVT_000005,2026-05-07T12:00:04Z,XAUUSD,setup_allowed,bullish,long,setup_candidate_allowed,daily_bias_aligned,gate_result=setup_candidate_allowed",
+  "V212_E342_RUN,EVT_000099,2026-05-07T12:10:00Z,XAUUSD,lifecycle_deinit,bullish,none,ok,OnDeinit,reason_code=0",
 ].join("\n");
 
 export const V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV = [

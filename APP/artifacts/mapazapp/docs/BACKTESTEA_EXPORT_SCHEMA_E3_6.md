@@ -53,8 +53,9 @@ Campos clave además de identidad (`run_id`, `strategy_id`, `symbol`, timeframes
 ## 7. Samples y validación
 
 - Samples oficiales: `APP/artifacts/mt5/experts/Mapazapp_TestEA/samples/`.
-- Validación en memoria: `validateTestEaExportSample`, `parseBacktestEventsCsv`, `importBacktestTradesFromCsv` en `@workspace/mapazapp-core`.
+- Validación en memoria: `validateTestEaExportSample`, `validateTestEaExportBundleTexts`, `parseBacktestEventsCsv`, `importBacktestTradesFromCsv` en `@workspace/mapazapp-core`.
 - Fixtures de tests: `export-sample-validation-fixtures.ts` (`v212E342TestEaBundleFiles`).
+- **E4.1 — CLI bundle real (carpeta run):** `pnpm --filter @workspace/scripts mapazapp:testea-export-validate` — [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md).
 
 ## 8. Limitaciones y no-objetivos
 
@@ -64,6 +65,8 @@ Campos clave además de identidad (`run_id`, `strategy_id`, `symbol`, timeframes
 
 ## 9. Siguiente paso
 
-- **E4 — First MT5 Strategy Tester smoke run** (manual, con checklist operador): [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md).
+- **E4 — First MT5 Strategy Tester smoke run** (manual): [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md).
+- **E4.1 — Validación bundle exportado** (read-only, sin MT5): [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md).
+- **E5 — Campaña XAUUSD** en Strategy Tester (diseño y acumulación de bundles validados con E4.1).
 
 **Referencia detallada de columnas opcionales/obligatorias:** [`../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md`](../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md).

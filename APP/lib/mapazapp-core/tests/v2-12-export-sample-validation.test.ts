@@ -125,7 +125,7 @@ describe("V2-12 export sample validation", () => {
     expect(r.tradeCount).toBe(0);
     expect(r.eventsCsvPresent).toBe(true);
     expect(r.eventsParseOk).toBe(true);
-    expect(r.eventsDataRowCount).toBeGreaterThan(0);
+    expect(r.eventsDataRowCount).toBe(6);
     expect(r.summaryOk).toBe(true);
     expect(r.summaryJson?.["schema_version"]).toBe("backtest_ea_v1");
     expect(r.summaryJson?.["official_ea"]).toBe("Mapazapp_TestEA");

@@ -186,8 +186,8 @@ No se pegan aquí miles de filas del CSV; la evidencia cuantitativa queda en el 
 
 **Non-blocking**
 
+- **E4.1 cerrado (CLI + core):** validación read-only de carpetas reales TestEA — [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md); script `mapazapp:testea-export-validate`; función `validateTestEaExportBundleTexts` en `@workspace/mapazapp-core`.
 - Normalizar en operaciones futuras el **export root** canónico a `Mapazapp\TestEA` (documentación + inputs operador).
-- Valorar **E4.1** opcional: CLI o flujo de validación **bundle real** TestEA (summary + events + trades) además de `mapazapp:import-validate` (solo velas manuales) y validadores in-memory del core.
 - Para smokes rápidos, usar **rango de fechas más corto** si se desea CSV de eventos pequeño.
 - Decisión de producto previa a rentabilidad/edge: **simulación virtual de trades** vs modo **`tester_orders`** (cuando exista spec aprobada).
 
@@ -203,7 +203,7 @@ No se pegan aquí miles de filas del CSV; la evidencia cuantitativa queda en el 
 
 **Next (recomendación):**
 
-- **E4.1 (opcional):** workflow / CLI de validación del bundle real exportado por TestEA.
+- **E4.1 (implementado):** CLI `mapazapp:testea-export-validate` + doc [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md).
 - **E5:** diseño (y luego ejecución acotada) de **campaña XAUUSD** en Strategy Tester.
 - Antes de afirmar **rentabilidad** o **edge:** hace falta decisión y eventual implementación de **simulación de trades** u órdenes en tester según contrato, fuera del alcance de este smoke.
 

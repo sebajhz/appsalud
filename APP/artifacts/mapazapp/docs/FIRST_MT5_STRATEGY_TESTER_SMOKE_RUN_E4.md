@@ -111,13 +111,14 @@ Deben generarse (misma corrida, mismo `run_id`):
 
 **Opciones post-smoke (hoy):**
 
-1. **Revisión manual** del JSON frente a [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md) y [`EXPORT_CONTRACT.md`](../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md).
-2. **Validación en memoria** con el core: `validateTestEaExportSample`, `parseBacktestEventsCsv`, `importBacktestTradesFromCsv` (ver paquete `@workspace/mapazapp-core` y tests V2-12 / estáticos del EA).
-3. **Tests de repo** (regresión sobre samples oficiales, no sustituyen el smoke real):  
+1. **CLI E4.1 (recomendado):** `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<carpeta-run>"` — ver [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md) (ruta absoluta recomendada; `cwd` típico `APP/`).
+2. **Revisión manual** del JSON frente a [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md) y [`EXPORT_CONTRACT.md`](../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md).
+3. **Validación en memoria** con el core: `validateTestEaExportBundleTexts`, `validateTestEaExportSample`, `parseBacktestEventsCsv`, `importBacktestTradesFromCsv` (`@workspace/mapazapp-core`).
+4. **Tests de repo** (regresión sobre samples oficiales):  
    `pnpm --filter @workspace/mapazapp-core test`  
-   `pnpm --filter @workspace/scripts test` (incluye `mapazapp-backtestea-static.test.ts`).
+   `pnpm --filter @workspace/scripts test`.
 
-**Gap documental / producto (E4.1 si hace falta):** CLI o script único “`mapazapp:testea-export-validate --bundle <dir>`” que lea los tres archivos y emita informe — **fuera de alcance** de este commit de plan E4; abrir tarea si el operador lo necesita de forma recurrente.
+**Gap cerrado (E4.1):** el CLI **`mapazapp:testea-export-validate`** valida el bundle triple en disco (read-only) sin MT5.
 
 ---
 

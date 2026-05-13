@@ -128,7 +128,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E3.4.2** consolidó **Daily Bias V1**, eventos y summary en **`Mapazapp_TestEA.mq5`** (único EA oficial de tester).
 - **E3.5** añade **detección candidata FVG** (setup long/short), gate Daily Bias y eventos `setup_*` en **`Mapazapp_TestEA.mq5`** — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md).
 - **E3.6** congela el **esquema de export / evidencia** (CSV/JSON, samples, validadores TS) — ver [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
-- **E4** — **smoke manual MT5 Strategy Tester ejecutado**; plan en [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md), evidencia en [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md) (**OK with observations**). Siguiente foco recomendado: **E5** (campaña XAUUSD tester) y/o **E4.1** opcional (validación CLI bundle real).
+- **E4.1** — **CLI + core** validación bundle TestEA en disco (`mapazapp:testea-export-validate`, `validateTestEaExportBundleTexts`) — ver [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md). **No** MT5. **Siguiente:** **E5** campaña XAUUSD tester.
 
 ---
 
@@ -162,8 +162,9 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E3.4.2 | Merge BacktestEA logic into **Mapazapp_TestEA** | **completed** | Cursor + PM | `Mapazapp_TestEA.mq5` + exports; carpeta `Mapazapp_BacktestEA` eliminada; core importer/validación dual schema. |  |
 | E3.5 | Setup V1 **FVG candidato** in **Mapazapp_TestEA** | **completed** | Cursor + PM | `Mapazapp_TestEA.mq5`, `BACKTESTEA_IFVG_SETUP_V1_E3_5.md`, tests estáticos, samples, validación `backtest_ea_v1`. | **E3.6** |
 | E3.6 | Evidence export schema finalization | **completed** | Cursor + PM | `EXPORT_CONTRACT.md`, `BACKTESTEA_EXPORT_SCHEMA_E3_6.md`, `backtest-events-csv.ts`, validators, samples, static tests. | **E4** (smoke) |
-| E4 | First MT5 Strategy Tester smoke run (post-merge) | **completed** | Operator + Cursor | Smoke real OK — [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md); sin automatizar MT5 desde dashboard. | **E5** o **E4.1** opcional |
-| E5 | XAUUSD Strategy Tester campaign | pending | PM + Cursor | Acotar parámetros y evidencia. | |
+| E4 | First MT5 Strategy Tester smoke run (post-merge) | **completed** | Operator + Cursor | Smoke real OK — [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md); sin automatizar MT5 desde dashboard. | **E4.1** |
+| E4.1 | TestEA export bundle validation (CLI + core) | **completed** | Cursor + PM | `mapazapp:testea-export-validate`, `validateTestEaExportBundleTexts`, [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md); read-only; sin MT5. | **E5** |
+| E5 | XAUUSD Strategy Tester campaign | pending | PM + Cursor | Acotar parámetros y evidencia; validar bundles con E4.1. | |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |
@@ -186,7 +187,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E3.5 | FVG candidato + gate Daily Bias + eventos `setup_*` | `Mapazapp_TestEA.mq5`, `BACKTESTEA_IFVG_SETUP_V1_E3_5.md`, static tests, samples, `export-sample-validation*.ts` | `has_real_ifvg_logic` true; `trade_count` 0; sin órdenes | **E3.6** export schema |
 | E3.6 | Export schema freeze + `has_full_ifvg_pipeline` + events parser | `EXPORT_CONTRACT.md`, `BACKTESTEA_EXPORT_SCHEMA_E3_6.md`, `backtest-events-csv.ts`, `export-sample-validation*.ts`, samples, static tests | Contrato evidencia alineado TS/MQL5; sin MT5 run | **E4** smoke |
 | E4 (plan) | First MT5 Strategy Tester smoke — operator checklist + validation notes | `FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`, refs en guía / schema / handoff / roadmap | Plan E4 publicado; smoke ejecutado — ver evidencia | `FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md` |
-| E4 (evidence) | First MT5 Strategy Tester smoke — real run archived | `FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`, refs en plan E4 / guía / handoff / roadmap | Compilación 0/0; tester completó; 3 exports; summary `backtest_ea_v1`; `trade_count` 0; eventos bias + setup | **E5** campaña XAUUSD; **E4.1** opcional validación bundle |
+| E4 (evidence) | First MT5 Strategy Tester smoke — real run archived | `FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`, refs en plan E4 / guía / handoff / roadmap | Compilación 0/0; tester completó; 3 exports; summary `backtest_ea_v1`; `trade_count` 0; eventos bias + setup | **E4.1** bundle CLI |
+| E4.1 | TestEA export bundle validation — CLI + core | `mapazapp-testea-export-validate.ts`, `testea-export-bundle-validate.ts`, tests, `TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`, `export-sample-validation.ts`, `backtest-events-csv.ts`, fixture E342 +1 fila `lifecycle_deinit` | Validación read-only carpetas run; `bundleContract` eventos; opciones `zeroTradeCountMismatchAsWarning`, `eventsParseOptions` | **E5** campaña |
 
 ## 10. Cursor working rules
 

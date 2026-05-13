@@ -1,5 +1,5 @@
 import type { BacktestCampaignDataset } from "./backtest-campaign-types";
-import { parseBacktestEventsCsv } from "./backtest-events-csv";
+import { parseBacktestEventsCsv, type ParseBacktestEventsCsvOptions } from "./backtest-events-csv";
 import { importBacktestTradesFromCsv } from "./backtest-importer";
 import type { BacktestImportResult, ImportBacktestCsvOptions } from "./backtest-types";
 import {
@@ -357,6 +357,14 @@ export function validateBridgeEaExportSample(input: ExportSampleValidationInput)
 
 export interface TestEaValidateOptions {
   importOptions: ImportBacktestCsvOptions;
+  /**
+   * When true and `trade_count` in summary is 0, imported trade rows produce a **warning**
+   * instead of `TESTEA_TRADE_COUNT_MISMATCH` error (E4.1 bundle phase: header-only expected;
+   * unexpected rows are suspicious but not always fatal for smoke exports).
+   */
+  zeroTradeCountMismatchAsWarning?: boolean;
+  /** Passed to `parseBacktestEventsCsv` for `backtest_events.csv` (e.g. E4.1 `bundleContract`). */
+  eventsParseOptions?: ParseBacktestEventsCsvOptions;
 }
 
 export function validateTestEaExportSample(
@@ -409,7 +417,7 @@ export function validateTestEaExportSample(
   if (ev) {
     eventsCsvPresent = true;
     eventsParseAttempted = true;
-    const pr = parseBacktestEventsCsv(ev.text);
+    const pr = parseBacktestEventsCsv(ev.text, testEaOptions.eventsParseOptions);
     eventsDataRowCount = pr.rowCount;
     eventsParseOk = pr.ok;
     if (!pr.ok) {
@@ -606,22 +614,29 @@ export function validateTestEaExportSample(
         status = bumpStatus(status, "invalid");
       } else {
         summaryTradeCount = tc;
-        if (
-          tr &&
-          tradesImport &&
-          tradesImport.ok &&
-          typeof tc === "number" &&
-          tradesImport.trades.length !== tc
-        ) {
-          diagnostics.push(
-            exportSampleDiagnostic(
-              "error",
-              "TESTEA_TRADE_COUNT_MISMATCH",
-              "trade_count in summary does not match imported trade rows",
-              { fileName: sj.fileName, detail: `summary=${tc} csv=${tradesImport.trades.length}` },
-            ),
-          );
-          status = bumpStatus(status, "invalid");
+        if (tr && tradesImport && tradesImport.ok && typeof tc === "number" && tradesImport.trades.length !== tc) {
+          const mismatchDetail = `summary=${tc} csv=${tradesImport.trades.length}`;
+          if (testEaOptions.zeroTradeCountMismatchAsWarning && tc === 0 && tradesImport.trades.length > 0) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADE_ROWS_WHILE_TRADE_COUNT_ZERO",
+                "trade_count is 0 but backtest_trades.csv contains data rows — verify export phase or summary",
+                { fileName: sj.fileName, detail: mismatchDetail },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_TRADE_COUNT_MISMATCH",
+                "trade_count in summary does not match imported trade rows",
+                { fileName: sj.fileName, detail: mismatchDetail },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
         }
         const forbiddenProfitKeys = ["total_profit", "profit_factor", "net_profit", "gross_profit", "win_rate_pct"];
         if (typeof tc === "number" && tc === 0) {

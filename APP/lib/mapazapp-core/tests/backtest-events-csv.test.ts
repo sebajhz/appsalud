@@ -58,4 +58,24 @@ describe("backtest_events.csv parser (E3.6)", () => {
     expect(r.ok).toBe(true);
     expect(r.warnings.some((w) => w.code === "EVENTS_DETAILS_POSSIBLE_PATH_LEAK")).toBe(true);
   });
+
+  it("G. bundleContract requires lifecycle_deinit and event_id", () => {
+    const csvMissingDeinit = [
+      validHeader,
+      "R1,EVT_1,2026-01-01T00:00:00Z,XAUUSD,lifecycle_init,unknown,none,ok,OnInit,x",
+      "R1,EVT_2,2026-01-01T00:01:00Z,XAUUSD,skeleton_ready,unknown,none,noop,r,x",
+      "R1,EVT_3,2026-01-01T00:02:00Z,XAUUSD,daily_bias_evaluated,bullish,none,bias_recorded,r,x",
+    ].join("\n");
+    const r = parseBacktestEventsCsv(csvMissingDeinit, { bundleContract: true });
+    expect(r.ok).toBe(false);
+    expect(r.errors.some((e) => e.code === "EVENTS_BUNDLE_MISSING_EVENT_TYPE")).toBe(true);
+
+    const csvMissingEventId = [
+      validHeader,
+      "R1,,2026-01-01T00:00:00Z,XAUUSD,lifecycle_init,unknown,none,ok,OnInit,x",
+    ].join("\n");
+    const r2 = parseBacktestEventsCsv(csvMissingEventId, { bundleContract: true });
+    expect(r2.ok).toBe(false);
+    expect(r2.errors.some((e) => e.code === "EVENTS_ROW_EVENT_ID")).toBe(true);
+  });
 });

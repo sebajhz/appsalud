@@ -20,6 +20,32 @@ export interface BacktestEventsParseResult {
   rowCount: number;
   errors: BacktestEventsParseError[];
   warnings: BacktestEventsParseWarning[];
+  /** Populated when `bundleContract` option is used — counts of `event_type` per data row. */
+  eventTypeCounts?: Record<string, number>;
+}
+
+/** Wire values for `bias_direction` / `setup_direction` (E3.6 / EXPORT_CONTRACT). */
+export const MAPZ_TESTEA_BIAS_DIRECTIONS = ["bullish", "bearish", "neutral", "unknown", "none"] as const;
+export const MAPZ_TESTEA_SETUP_DIRECTIONS = ["long", "short", "none"] as const;
+
+const BIAS_DIR_SET = new Set<string>(MAPZ_TESTEA_BIAS_DIRECTIONS);
+const SETUP_DIR_SET = new Set<string>(MAPZ_TESTEA_SETUP_DIRECTIONS);
+
+const BUNDLE_REQUIRED_EVENT_TYPES = [
+  "lifecycle_init",
+  "skeleton_ready",
+  "daily_bias_evaluated",
+  "lifecycle_deinit",
+] as const;
+
+const SETUP_EVENT_TYPES = ["setup_detected", "setup_allowed", "setup_rejected", "setup_skipped"] as const;
+
+export interface ParseBacktestEventsCsvOptions {
+  /**
+   * E4.1 bundle validation: require `event_id` / `timestamp`, wire directions,
+   * required lifecycle event types, and emit `eventTypeCounts`.
+   */
+  bundleContract?: boolean;
 }
 
 const EVENTS_REQUIRED_HEADERS = [
@@ -108,9 +134,14 @@ function resolveEventsHeaderIndex(headerCells: string[]): Map<string, number> {
  * Validates header + data rows for TestEA evidence events CSV.
  * Unknown `event_type` / `decision` → error (contract freeze).
  */
-export function parseBacktestEventsCsv(csvText: string): BacktestEventsParseResult {
+export function parseBacktestEventsCsv(
+  csvText: string,
+  options?: ParseBacktestEventsCsvOptions,
+): BacktestEventsParseResult {
   const errors: BacktestEventsParseError[] = [];
   const warnings: BacktestEventsParseWarning[] = [];
+  const bundleContract = options?.bundleContract === true;
+  const eventTypeCounts: Record<string, number> = {};
 
   const rows = splitCsvRows(csvText);
   if (rows.length < 1) {
@@ -167,6 +198,8 @@ export function parseBacktestEventsCsv(csvText: string): BacktestEventsParseResu
         message: `Unsupported event_type: ${eventType}`,
         row: rowNum,
       });
+    } else {
+      eventTypeCounts[eventType] = (eventTypeCounts[eventType] ?? 0) + 1;
     }
     if (!decision) {
       errors.push({ code: "EVENTS_ROW_DECISION", message: "Missing decision", row: rowNum });
@@ -187,8 +220,59 @@ export function parseBacktestEventsCsv(csvText: string): BacktestEventsParseResu
         row: rowNum,
       });
     }
+
+    if (bundleContract) {
+      const evId = pick("event_id").trim();
+      const ts = pick("timestamp").trim();
+      if (!evId) {
+        errors.push({ code: "EVENTS_ROW_EVENT_ID", message: "Missing event_id", row: rowNum });
+      }
+      if (!ts) {
+        errors.push({ code: "EVENTS_ROW_TIMESTAMP", message: "Missing timestamp", row: rowNum });
+      }
+      const biasRaw = pick("bias_direction").trim().toLowerCase();
+      if (!BIAS_DIR_SET.has(biasRaw)) {
+        errors.push({
+          code: "EVENTS_ROW_BIAS_DIRECTION_UNKNOWN",
+          message: `Unsupported bias_direction: ${pick("bias_direction").trim()}`,
+          row: rowNum,
+        });
+      }
+      const setupRaw = pick("setup_direction").trim().toLowerCase();
+      if (!SETUP_DIR_SET.has(setupRaw)) {
+        errors.push({
+          code: "EVENTS_ROW_SETUP_DIRECTION_UNKNOWN",
+          message: `Unsupported setup_direction: ${pick("setup_direction").trim()}`,
+          row: rowNum,
+        });
+      }
+    }
+  }
+
+  if (bundleContract && errors.length === 0) {
+    for (const req of BUNDLE_REQUIRED_EVENT_TYPES) {
+      if ((eventTypeCounts[req] ?? 0) < 1) {
+        errors.push({
+          code: "EVENTS_BUNDLE_MISSING_EVENT_TYPE",
+          message: `Bundle contract requires at least one row with event_type "${req}"`,
+        });
+      }
+    }
+    const hasAnySetup = SETUP_EVENT_TYPES.some((t) => (eventTypeCounts[t] ?? 0) > 0);
+    if (!hasAnySetup) {
+      warnings.push({
+        code: "BUNDLE_NO_SETUP_EVENTS",
+        message: "No setup_detected / setup_allowed / setup_rejected / setup_skipped rows — may be OK for very short ranges",
+      });
+    }
   }
 
   const ok = errors.length === 0;
-  return { ok, rowCount: dataRows, errors, warnings };
+  return {
+    ok,
+    rowCount: dataRows,
+    errors,
+    warnings,
+    ...(bundleContract ? { eventTypeCounts } : {}),
+  };
 }
