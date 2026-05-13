@@ -8,7 +8,7 @@
 - Si cambia el **rol** de un componente o la **arquitectura** de producto, **actualizar este archivo** en el mismo checkpoint (o inmediatamente después), no solo el código.
 - Este documento debe **mantenerse vivo**: en **cada checkpoint** cerrado, actualizar al menos la tabla **Next-step checklist** (§8) y una línea en el **Implementation Ledger** (§9).
 
-**Relacionado:** [`MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md), [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md).
+**Relacionado:** [`MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md), [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md). **TestEA build / versioning (E5.4.3):** [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md).
 
 ---
 
@@ -131,7 +131,9 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E4.1** — **CLI + core** validación bundle TestEA en disco (`mapazapp:testea-export-validate`, `validateTestEaExportBundleTexts`) — ver [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md). **No** MT5.
 - **E5** — **diseño (docs-only)** campaña XAUUSD Strategy Tester — [`XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md`](./XAUUSD_STRATEGY_TESTER_CAMPAIGN_DESIGN_E5.md): Phase A (candidato/compuerta) vs Phase B (outcome); sin métricas de rentabilidad hasta implementación acordada.
 - **E5.4** — **primer smoke outcome virtual (operador)** — evidencia acotada; estado documentado: **OK with warnings** (geometría CSV en FVG 1pt); ver [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md).
-- **E5.4.1** — **fix repo** (sin MT5 en CI): endurecer geometría virtual + deinit + validadores — [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md). **Siguiente:** **E5.4.2** repetir smoke Strategy Tester con build **MZP_TestEA_E5_4_1**.
+- **E5.4.1** — **fix repo** (sin MT5 en CI): endurecer geometría virtual + deinit + validadores — [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md).
+- **E5.4.2** — **re-smoke outcome virtual (operador)** sobre **`47c440f` / `MZP_TestEA_E5_4_1`**: **OK** con solo **`BUNDLE_EVENTS_LARGE`**; sin warnings de geometría — [`TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md`](./TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md).
+- **E5.4.3** — **evidencia formal + política build/versioning TestEA** (solo docs) — [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md). **Siguiente:** **E5.5** campaña XAUUSD con métricas de outcome.
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -175,6 +177,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.3 | Virtual trade simulation **implementation** (TestEA) | **completed** | Cursor + PM | MQL5 + `EXPORT_CONTRACT.md` + validadores TS + samples; sin `OrderSend`/CTrade — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md). | **E5.4** |
 | E5.4 | Virtual outcome **first smoke** (Strategy Tester) | **completed (operator)** | Operador humano | Smoke XAUUSD M15/D1; CLI **OK with warnings** (geometría CSV en FVG mínimos); evidencia no versionada aquí — ver [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md). | **E5.4.1** |
 | E5.4.1 | Virtual trade **geometry + deinit** hardening (repo) | **completed** | Cursor | `Mapazapp_TestEA.mq5` E5.4.1, TS validators/tests, docs — [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md); sin MT5 en CI. | **E5.4.2** |
+| E5.4.2 | Virtual outcome **re-smoke** (Strategy Tester, post-E5.4.1) | **completed (operator)** | Operador humano | XAUUSD M15/D1; CLI ok; solo `BUNDLE_EVENTS_LARGE`; sin `CSV_GEOMETRY_*` — [`TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md`](./TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md). | **E5.4.3** |
+| E5.4.3 | TestEA smoke **evidence** + **build/versioning policy** (docs) | **completed** | Cursor + PM | Evidencia E5.4.2 + [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md); sin código. | **E5.5** |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |
@@ -205,6 +209,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.3 | Virtual trade simulation **implementation** (TestEA) | `TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`, `Mapazapp_TestEA.mq5`, `EXPORT_CONTRACT.md`, core validators/tests | Simulación virtual on-bar; CSV/summary/eventos; `has_real_virtual_trade_logic` | **E5.4** smoke |
 | E5.4 | Virtual outcome smoke (operador) | Evidencia run acotado + CLI E4.1 | OK with warnings — geometría 9 filas FVG 1pt | **E5.4.1** |
 | E5.4.1 | Geometry / deinit / TS alignment | `Mapazapp_TestEA.mq5`, `backtest-importer.ts`, `backtest-events-csv.ts`, `export-sample-validation.ts`, tests, `TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md` | Sin geometría inválida exportada desde EA; paridad contadores documentada | **E5.4.2** re-smoke |
+| E5.4.2 | Virtual outcome re-smoke (operator) | Carpeta run `TEST_E5_4_2_A` (local MT5) + CLI E4.1 | OK — solo `BUNDLE_EVENTS_LARGE`; `trade_count`==`virtual_trade_count`; sin geometría CSV | **E5.4.3** docs |
+| E5.4.3 | Smoke evidence E5.4.2 + TestEA build/versioning policy | `TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md`, `TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`, refs guía/handoff/roadmap/E5.4.1/E5.3 | Trazabilidad runs/campaña documentada | **E5.5** campaña |
 
 ## 10. Cursor working rules
 

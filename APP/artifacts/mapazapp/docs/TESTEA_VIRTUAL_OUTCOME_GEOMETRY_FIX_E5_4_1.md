@@ -21,16 +21,17 @@
 
 **E5.4 = OK with warnings** — bundle contract satisfied; warnings flagged real geometry defects now blocked at source in **E5.4.1**.
 
-## Next: E5.4.2
+## E5.4.2 — Clean re-smoke (operator)
 
-Repeat the same Strategy Tester smoke with **`MZP_TestEA_E5_4_1`**, same inputs, then re-run:
+Con el build **`MZP_TestEA_E5_4_1`** sobre commit **`47c440f`**, el operador repitió el smoke en Strategy Tester: validación CLI **`ok: true`**, **`errors: []`**, solo **`BUNDLE_EVENTS_LARGE`** (rango largo / `events.csv` ~5,85 MB); **sin** `CSV_GEOMETRY_*` ni `CSV_GEOMETRY_RISK_NONPOSITIVE`; **`trade_count` == `virtual_trade_count`**. Evidencia detallada: [`TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md`](./TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md). Política de build/versioning: [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md).
 
-`pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<run-folder>" --json`
+## Next: E5.5 (campaign)
 
-Expect: **no** `CSV_GEOMETRY_*` warnings from tiny FVG rows; **`trade_count` == `virtual_trade_count`**; optional `--strict` behavior unchanged except new parity / TP warnings if regressions appear.
+**E5.4.2** cerrado como **OK** con warning aceptable. Siguiente paso canónico: **E5.5** — campaña XAUUSD con métricas de outcome. Opcional: **E5.4.4** — automatización de etiquetado/archivo `.ex5` si se desea antes de campaña.
 
 ## Document history
 
 | Version | Note |
 |---------|------|
 | E5.4.1 v1 | Post–E5.4 smoke hardening + TS/docs alignment; no MT5 execution from this checkpoint. |
+| E5.4.1 v2 | Enlace a evidencia E5.4.2 (smoke limpio) + política E5.4.3; siguiente paso E5.5. |

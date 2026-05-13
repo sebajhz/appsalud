@@ -88,4 +88,8 @@ Nuevos / relevantes: `has_real_virtual_trade_logic`, `virtual_trade_count`, `tra
 
 ## 11. Nota E5.4.1 (post–primer smoke E5.4)
 
-Tras el smoke E5.4 (**OK with warnings**), el repo endureció la simulación virtual (**`MZP_TestEA_E5_4_1`**): validación explícita de geometría tras `NormalizeDouble`, umbral **`InpVirtualMinTradeFvgPoints`** para no abrir trades virtuales sobre FVGs demasiado pequeños, `virtual_trade_skipped` con razones wire (`invalid_geometry_*`, `invalid_risk_nonpositive`, `fvg_below_virtual_trade_min`), cierre en **`OnDeinit`** con `virtual_trade_unresolved` / filas `unresolved` o `expired_unfilled` según estado, y alineación de validadores TS. Ver [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md). **Siguiente operativo:** **E5.4.2** — repetir smoke en Strategy Tester con el build E5.4.1.
+Tras el smoke E5.4 (**OK with warnings**), el repo endureció la simulación virtual (**`MZP_TestEA_E5_4_1`**): validación explícita de geometría tras `NormalizeDouble`, umbral **`InpVirtualMinTradeFvgPoints`** para no abrir trades virtuales sobre FVGs demasiado pequeños, `virtual_trade_skipped` con razones wire (`invalid_geometry_*`, `invalid_risk_nonpositive`, `fvg_below_virtual_trade_min`), cierre en **`OnDeinit`** con `virtual_trade_unresolved` / filas `unresolved` o `expired_unfilled` según estado, y alineación de validadores TS. Ver [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md). **E5.4.2 (operador):** smoke **limpio** post-fix — solo warning `BUNDLE_EVENTS_LARGE`; sin geometría CSV inválida — [`TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md`](./TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md). **Siguiente:** **E5.5** campaña métricas.
+
+## 12. Nota E5.4.3 (política build / versioning)
+
+Para trazabilidad de runs y builds en campaña: [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md).

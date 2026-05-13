@@ -17,7 +17,9 @@
 - **E5.3 cerrado (implementación en repo):** simulación virtual en **`Mapazapp_TestEA.mq5`** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md); validadores TS + `EXPORT_CONTRACT.md` + muestras; **sin** `OrderSend`/`CTrade`.
 - **E5.4 (operador) — primer smoke outcome virtual — OK with warnings:** bundle validado sin errores; warnings de geometría (FVG 1pt) — ver [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md).
 - **E5.4.1 — Fix repo (geometría virtual, deinit, TS):** [`TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`](./TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md) + `Mapazapp_TestEA.mq5` **MZP_TestEA_E5_4_1**; sin `OrderSend`/`CTrade`.
-- **Siguiente paso canónico:** **E5.4.2** — **repetir smoke de outcome virtual** en **MT5 Strategy Tester** con el build **E5.4.1** (operador; evidencia acotada).
+- **E5.4.2 (operador) — re-smoke outcome virtual — OK:** solo warning `BUNDLE_EVENTS_LARGE`; sin `CSV_GEOMETRY_*` — evidencia [`TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md`](./TESTEA_VIRTUAL_OUTCOME_SMOKE_EVIDENCE_E5_4_2.md).
+- **E5.4.3 cerrado (docs-only):** política build/versioning TestEA — [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md).
+- **Siguiente paso canónico:** **E5.5** — **campaña XAUUSD** con **métricas de outcome** (diseño/ejecución según plan E5 y guía viva).
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 
