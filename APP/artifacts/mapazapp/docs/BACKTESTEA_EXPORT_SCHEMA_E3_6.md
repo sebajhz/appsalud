@@ -2,7 +2,7 @@
 
 ## 1. Propósito
 
-- **Congelar** el contrato de evidencia que escribe **`Mapazapp_TestEA`** antes del primer **smoke real** en MT5 Strategy Tester (**E4**).
+- **Congelar** el contrato de evidencia que escribe **`Mapazapp_TestEA`** antes del primer **smoke real** en MT5 Strategy Tester (**E4**). El smoke E4 valida en runtime que los exports reales respetan este documento — ver [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md).
 - **E3.6** no ejecuta MT5 ni Strategy Tester; solo documentación, samples, validadores TypeScript y tests.
 
 ## 2. Archivos exportados (por corrida)
@@ -64,6 +64,6 @@ Campos clave además de identidad (`run_id`, `strategy_id`, `symbol`, timeframes
 
 ## 9. Siguiente paso
 
-- **E4 — First MT5 Strategy Tester smoke run** (manual, con checklist operador).
+- **E4 — First MT5 Strategy Tester smoke run** (manual, con checklist operador): [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md).
 
 **Referencia detallada de columnas opcionales/obligatorias:** [`../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md`](../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md).

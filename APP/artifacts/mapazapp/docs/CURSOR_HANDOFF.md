@@ -9,7 +9,8 @@
 - **Reconciliación de roles EA (E3.4.1):** [`APP/artifacts/mapazapp/docs/MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md).
 - **E3.5 cerrado:** detección **FVG candidata** + gate Daily Bias en **`Mapazapp_TestEA`** — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md).
 - **E3.6 cerrado:** esquema de export / evidencia congelado (`has_full_ifvg_pipeline`, eventos CSV, validadores) — ver [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
-- **Siguiente paso canónico:** **E4** — primer smoke manual en Strategy Tester cuando el operador lo apruebe.
+- **E4 (plan publicado):** primer smoke manual MT5 Strategy Tester — checklist, criterios éxito/fallo, validación Mapazapp y gap CLI bundle: [`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md`](./FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4.md).
+- **Siguiente paso canónico:** operador ejecuta **E4** en MT5 según ese documento; si **OK** → commit separado con **`FIRST_MT5_STRATEGY_TESTER_SMOKE_RUN_E4_EVIDENCE.md`**; si falla compile/export/schema → **E4.1** antes de evidencia.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 
