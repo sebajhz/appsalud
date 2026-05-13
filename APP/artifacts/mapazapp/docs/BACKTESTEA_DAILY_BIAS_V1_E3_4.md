@@ -2,10 +2,10 @@
 
 ## 1. Qué se implementó
 
-- Lógica **Daily Bias V1** dentro de **`Mapazapp_BacktestEA.mq5`** (solo **Strategy Tester**).
+- Lógica **Daily Bias V1** en **`Mapazapp_TestEA.mq5`** (solo **Strategy Tester**) — **E3.4.2** tras migración desde el artefacto temporal `Mapazapp_BacktestEA` (E3.3–E3.4).
 - Evaluación en **vela cerrada previa** del timeframe configurado (`InpDailyBiasTimeframe`, por defecto D1).
 
-> **Nota E3.4.1:** E3.4 implementó Daily Bias V1 en el artefacto temporal **`Mapazapp_BacktestEA`**; **E3.4.2** debe **migrar/reconciliar** esa lógica en el EA oficial de tester **`Mapazapp_TestEA`** (ver [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)).
+> **Nota E3.4.1–E3.4.2:** E3.4 desarrolló Daily Bias V1 primero en **`Mapazapp_BacktestEA`**; **E3.4.2** migró esa lógica al EA oficial **`Mapazapp_TestEA`** y eliminó la carpeta temporal del árbol activo.
 - Eventos **`daily_bias_evaluated`** en `backtest_events.csv`.
 - **`backtest_summary.json`** con `has_real_daily_bias_logic: true` y contadores de outcome de bias.
 - Función **`ApplyDailyBiasGatePlaceholder`** lista para **E3.5** (dirección de setup `long` / `short` / `none` vs bias); en E3.4 no se incrementan `rejected_by_daily_bias` ni `skipped_neutral_bias` desde setups (no hay IFVG).

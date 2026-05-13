@@ -1,10 +1,10 @@
 # Mapazapp_TestEA — static samples (fictional)
 
-These files mirror the **CSV header order** and **summary JSON shape** produced by **`Mapazapp_TestEA.mq5`** for **`MZP_TESTEA_V1`**. They are **not** output from a real Strategy Tester run and contain **no** live broker fields.
+These files mirror the **E3.4.2** export shape from **`Mapazapp_TestEA.mq5`** (`schema_version: backtest_ea_v1`):
 
-Use them for:
+- **`backtest_trades.csv`** — **header only** (no data rows; no synthetic trades).
+- **`backtest_summary.json`** — summary flags and bias counters for tooling checks.
 
-- Human diffing against **`EXPORT_CONTRACT.md`**
-- **`importBacktestTradesFromCsv`** smoke checks (`@workspace/mapazapp-core`)
+They are **not** output from a real Strategy Tester run. **Do not** commit raw tester exports from live accounts.
 
-**Do not** commit raw tester exports from a live terminal into git.
+**Related:** `@workspace/mapazapp-core` `validateTestEaExportSample` (supports `MZP_TESTEA_V1` fixtures in-memory and `backtest_ea_v1` bundles), `importBacktestTradesFromCsv` (header-only CSV → zero trades + `CSV_HEADER_ONLY_NO_TRADE_ROWS` warning).

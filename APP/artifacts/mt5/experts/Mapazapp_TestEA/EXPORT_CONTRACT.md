@@ -1,7 +1,8 @@
-# Mapazapp_TestEA — export contract (`MZP_TESTEA_V1`)
+# Mapazapp_TestEA — export contract
 
-**Artifact:** `Mapazapp_TestEA.mq5` — **Strategy Tester only**, virtual export for Mapazapp **Checkpoint 8** (`importBacktestTradesFromCsv`).  
-**Not** **Mapazapp_BridgeEA**. **Not** live trading. **Not** IFVG production logic.
+> **E3.4.2:** el EA oficial de Strategy Tester es **`Mapazapp_TestEA.mq5`**. El summary por defecto usa **`schema_version: backtest_ea_v1`** (`official_ea: Mapazapp_TestEA`, `backtest_role: true`). Los fixtures y herramientas del core pueden seguir usando el esquema legacy **`MZP_TESTEA_V1`** para compatibilidad de importación.
+
+## `MZP_TESTEA_V1` (Checkpoint 14 — legacy)
 
 ---
 
@@ -15,10 +16,10 @@ Suggested layout after export:
 MQL5\Files\<InpExportRoot>\<run_id>\
 ```
 
-Default `InpExportRoot`: `Mapazapp\testea` → example:
+Default `InpExportRoot` (**E3.4.2**): `Mapazapp\TestEA` → example:
 
 ```text
-MQL5\Files\Mapazapp\testea\TESTEA_XAUUSD_20260105_123456_12345\
+MQL5\Files\Mapazapp\TestEA\TESTEA_XAUUSD_20260105_123456_12345\
 ```
 
 ---
@@ -61,13 +62,36 @@ Checkpoint 8 TypeScript entry point: **`importBacktestTradesFromCsv`** (`APP/lib
 
 ---
 
-## 3. `backtest_summary.json`
+### 2.2 E3.4.2 — expanded trades header (`backtest_ea_v1`)
 
-Advisory metadata only. **Not** consumed by `importBacktestTradesFromCsv` today (CSV is the importer input). Keep fields stable for future ingest / dashboards.
+When using the default **E3.4.2** EA build, `backtest_trades.csv` uses this **header** (data rows intentionally empty until IFVG/trades exist):
+
+`run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason`
+
+`importBacktestTradesFromCsv` returns **zero trades** with warning **`CSV_HEADER_ONLY_NO_TRADE_ROWS`** for header-only files.
+
+For **data rows** later, the TypeScript importer maps this compact header onto the canonical columns: `timestamp` → `entry_time`; `entry` → `entry_price`; and, only when the CSV has no literal `exit_time` / `exit_price` columns but does include `timestamp` / `entry`, it reuses the same cell index for `exit_time` / `exit_price` so required columns resolve (see `resolveHeaderIndex` in `backtest-importer.ts`).
+
+---
+
+## 3. `backtest_events.csv` (E3.4.2+)
+
+- **Encoding:** ANSI (`FILE_ANSI`), ASCII-safe content.
+- **Header required** (exact order from EA):
+
+`run_id,event_id,timestamp,symbol,event_type,bias_direction,setup_direction,decision,reason,details`
+
+- **Not** consumed by `importBacktestTradesFromCsv` today; kept for audit / future ingest.
+
+---
+
+## 4. `backtest_summary.json`
+
+### 4.1 Legacy `MZP_TESTEA_V1` (fixtures / CP14-shaped samples)
 
 | Field | Type | Notes |
-|-------|------|--------|
-| `schema_version` | string | e.g. `MZP_TESTEA_V1` |
+|-------|------|-------|
+| `schema_version` | string | `MZP_TESTEA_V1` |
 | `ea_build` | string | EA build tag |
 | `run_id` | string | Matches export folder segment when possible |
 | `strategy_id` | string | Registry-oriented id (metadata) |
@@ -89,9 +113,13 @@ Advisory metadata only. **Not** consumed by `importBacktestTradesFromCsv` today 
 | `fixed_risk_r_meta` | number | Metadata echo only for CP14 placeholder |
 | `rr_target_meta` | number | Metadata echo |
 
+### 4.2 Default `backtest_ea_v1` (E3.4.2+ EA build)
+
+Key fields (see `WriteSummaryJson` in `Mapazapp_TestEA.mq5`): `schema_version`, `run_id`, `strategy_id`, `parameter_set_id`, `symbol`, `execution_timeframe`, `daily_bias_timeframe`, `backtest_mode`, `tester_only`, `official_ea`, `backtest_role`, `has_real_daily_bias_logic`, `has_real_ifvg_logic`, `has_real_trading_orders`, `trade_count`, bias counters, `notes`.
+
 ---
 
-## 4. Explicit non-goals (Checkpoint 14)
+## 5. Explicit non-goals (Checkpoint 14)
 
 - No claim of profitability or production readiness.
 - No automatic registry mutation or parameter-set approval (see **`evaluateBacktestApproval`** — advisory only).
@@ -100,7 +128,7 @@ Advisory metadata only. **Not** consumed by `importBacktestTradesFromCsv` today 
 
 ---
 
-## 5. Related artifacts
+## 6. Related artifacts
 
 - **BridgeEA (CP13):** `APP/artifacts/mt5/experts/Mapazapp_BridgeEA/` — live terminal **export-only** bridge files (`MZP_BRIDGE_V1`), separate contract.
 - **Core importer:** `APP/lib/mapazapp-core/src/backtest-importer.ts`

@@ -1,111 +1,36 @@
-# Mapazapp_TestEA (Checkpoint 14)
+# Mapazapp_TestEA — Official Strategy Tester EA (E3.4.2+)
 
-**Mapazapp Checkpoint 14 — MT5 Strategy Tester export / virtual evidence only.**
-
-Separate Expert Advisor from **`Mapazapp_BridgeEA` (CP13)**. This EA is intended to run **inside MetaTrader 5 Strategy Tester** and write **virtual** backtest evidence files compatible with **`@workspace/mapazapp-core`** **`importBacktestTradesFromCsv`** (Checkpoint 8).
+**`Mapazapp_TestEA`** is the **official MetaTrader 5 Strategy Tester** Expert Advisor for Mapazapp. It also fulfills the **BacktestEA role** (setup proof, Daily Bias, evidence export) in a **single** EA — see [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](../../../mapazapp/docs/MAPAZAPP_PROJECT_EXECUTION_GUIDE.md).
 
 | Topic | Detail |
 |-------|--------|
-| **Live chart** | **Do not** rely on this EA on live charts — `OnInit` fails unless `MQLInfoInteger(MQL_TESTER)` is true. |
-| **Trading** | **No** `OrderSend`, **no** `CTrade`, **no** broker orders in CP14. |
-| **Commands** | **No** inbound command files. |
-| **Network / DLL** | **No** `WebRequest`, **no** `#import` DLLs. |
-| **Registry** | **No** MT5-side registry mutation; Mapazapp approval remains **advisory** (`evaluateBacktestApproval`). |
-| **Checkpoint 15 (TypeScript)** | Product-side **`evaluateBacktestEvidence`** ingests **pasted or programmatic CSV text** (no EA disk watcher). Operators keep raw tester CSV local; futures may add controlled import UI — still **no** auto-registry approval from exports alone. |
-| **Strategy logic** | **Placeholder skeleton only** — **not** the full IFVG engine; **not** a profitability claim. |
+| **Live chart** | **Do not** use on live charts — `OnInit` returns **`INIT_FAILED`** unless `MQLInfoInteger(MQL_TESTER) != 0`. |
+| **Trading** | **No** `OrderSend`, **no** `CTrade`, **no** broker orders (E3.4.2). |
+| **Daily Bias** | **V1 implemented** — last closed bar on `InpDailyBiasTimeframe`; events in `backtest_events.csv`; see [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](../../../mapazapp/docs/BACKTESTEA_DAILY_BIAS_V1_E3_4.md). |
+| **IFVG / Setup V1** | **Pending E3.5** — no real IFVG detection yet. |
+| **Exports** | `backtest_trades.csv` (**header only**, no synthetic trade rows), `backtest_events.csv`, `backtest_summary.json` under `MQL5\Files\<InpExportRoot>\<run_id>\` (default `Mapazapp\TestEA`). |
+| **Schema** | Default `InpSchemaVersion = backtest_ea_v1` (summary JSON). |
+| **Other official EA** | **`Mapazapp_BridgeEA`** — separate, **read-only** live bridge; not for Strategy Tester setup proof. |
+| **Legacy artifact** | **`Mapazapp_BacktestEA`** (E3.3–E3.4) was a **temporary** duplicate; logic **merged here** in **E3.4.2** and the folder **removed** from the repo (history remains in Git). |
 
-**Manual handoff:** **[MANUAL_TEST_CHECKLIST.md](./MANUAL_TEST_CHECKLIST.md)**  
-**Wire format:** **[EXPORT_CONTRACT.md](./EXPORT_CONTRACT.md)**  
-**Samples (fictional):** **[samples/](./samples/)**
-
-**Verified manually in MT5 Strategy Tester:** one real tester smoke succeeded after the portability compile fix (MetaEditor **0 errors / 0 warnings**). On that run, outputs appeared under the **Strategy Tester agent** profile — e.g. beneath **`MetaQuotes\Tester\<terminal-id>\Agent-…\MQL5\Files\`**, not necessarily under the interactive terminal’s **Open Data Folder**. See checklist **“First real Strategy Tester smoke result.”** **CP14 remains virtual skeleton export only** (placeholder row, **not** IFVG and **not** a profitability result).
-
----
-
-## Outputs
-
-Under **`MQL5\Files\<InpExportRoot>\<run_id>\`** within the active MT5 **Files** sandbox (interactive terminal **or** Strategy Tester **agent** tree — default root `Mapazapp\testea`):
-
-| File | Purpose |
-|------|---------|
-| `backtest_trades.csv` | Trade rows for **`importBacktestTradesFromCsv`** |
-| `backtest_summary.json` | Run metadata (not parsed by core importer yet) |
-
-Writes use temp files + **`FileMove`** under the Files sandbox (same pattern as BridgeEA).
-
-### Summary JSON — `tester_from` / `tester_to`
-
-Both fields are **always JSON `null`** in CP14. The EA does **not** read Strategy Tester model date APIs (e.g. `TesterStartTime` / `TesterStopTime`) so the source stays portable across MetaEditor / build variants. They remain **optional** contract keys for documentation or future checkpoints / manual enrichment from the tester UI.
+**Manual handoff:** [`MANUAL_TEST_CHECKLIST.md`](./MANUAL_TEST_CHECKLIST.md) (may still mention older CP14 schema in places — prefer this README + `EXPORT_CONTRACT.md` for E3.4.2).  
+**Wire format:** [`EXPORT_CONTRACT.md`](./EXPORT_CONTRACT.md)  
+**Samples (fictional):** [`samples/`](./samples/)
 
 ---
 
-## Inputs (summary)
+## Security posture
 
-| Input | Default | Notes |
-|-------|---------|--------|
-| `InpSchemaVersion` | `MZP_TESTEA_V1` | Wire schema tag |
-| `InpStrategyId` / `InpParameterSetId` | IFVG ids | Metadata / CSV columns — **not** auto-approval |
-| `InpCanonicalSymbol` | `XAUUSD` | Canonical label for CSV |
-| `InpAccountId` | `TESTER_ACCOUNT` | Tester label — **not** a live account assertion |
-| `InpExportRoot` | `Mapazapp\testea` | Split on `\` / `/`, segments sanitized |
-| `InpRunId` | *(empty)* | Auto-generated folder id if empty |
-| `InpDatasetSplit` | `validation` | Echoed in JSON; align with CP8 `datasetSplit` when importing |
-| `InpWriteTradesCsv` / `InpWriteSummaryJson` | `true` | Toggle outputs |
-| `InpMagic` | `140013` | Reserved metadata — **no** orders in CP14 |
-| `InpFixedRiskR` | `1.0` | Metadata echo — placeholder trade uses fixed **price** risk distance |
-| `InpRrTarget` | `2.0` | Used to place virtual **TP** distance vs SL distance |
-| `InpMaxBars` | `0` | `0` = min(`Bars()`, cap); else cap CopyRates depth |
-| `InpExportSignalsOnly` | `true` | When `true` and enough bars, emit **one** deterministic placeholder row |
+- **Tester-only** — fail-closed outside Strategy Tester.
+- **No live trading** — no orders, no profitability claims from exports.
+- **No** inbound command files, **no** `WebRequest`, **no** execution hooks toward Mapazapp at runtime.
 
 ---
 
-## Placeholder trade behaviour
+## Operator notes
 
-When `InpExportSignalsOnly=true` and at least **3** bars are available from `CopyRates`, the EA emits **one** virtual **BUY** row:
+1. Copy **`Mapazapp_TestEA.mq5`** into the terminal’s `MQL5\Experts\Mapazapp\` (or your layout).
+2. Compile in **MetaEditor** (F7).
+3. Run only in **Strategy Tester** with a symbol/time range that provides closed bars for the bias timeframe.
 
-- Entry: **open** of the **oldest** bar in the copied window.
-- Exit: **close** of the **newest** bar in the window.
-- SL / TP: synthetic distances from `SYMBOL_POINT` (see source comments).
-- `exit_reason`: `PLACEHOLDER_VIRTUAL_SKELETON_NOT_IFVG`.
-
-When `InpExportSignalsOnly=false`, only the CSV **header** is written (zero data rows). Summary `trade_count` remains **0**.
-
----
-
-## TypeScript import (later path)
-
-From repo roots, after copying CSV text into memory (no MT5 required):
-
-```ts
-import { importBacktestTradesFromCsv, assembleBacktestRunFromImportedTrades } from "@workspace/mapazapp-core";
-
-const r = importBacktestTradesFromCsv(csvText, {
-  strategyId: "MZP_IFVG_ZONE_REACTION_V1",
-  parameterSetId: "MZP_IFVG_XAUUSD_V1_SET_003",
-  canonicalSymbol: "XAUUSD",
-  brokerSymbol: _SymbolFromTester,
-  accountId: "TESTER_ACCOUNT",
-  datasetSplit: "validation",
-  sourceType: "mapazapp_testea_csv",
-  runId: "...",
-});
-```
-
-Use **`evaluateBacktestApproval`** only as **advisory** governance — it does **not** mutate the registry.
-
----
-
-## Compile and run (outline)
-
-1. Copy **`Mapazapp_TestEA.mq5`** to **`MQL5\Experts\Mapazapp\`** (or subfolder) on the tester machine.
-2. Open MetaEditor → compile (F7).
-3. MT5 → **View → Strategy Tester** → select **Mapazapp_TestEA**, symbol, period, date range, model.
-4. Start test; when the run finishes, **`OnDeinit`** writes exports under **`MQL5\Files\...`**.
-
-This repository does **not** compile MQL5 in CI — MetaEditor compile is **manual**.
-
----
-
-## Related
-
-- **BridgeEA:** `../Mapazapp_BridgeEA/` — live terminal bridge export (`MZP_BRIDGE_V1`).
+Evidence CSV/JSON is written on **`OnDeinit`** (end of test pass) using atomic temp + `FileMove`, same pattern as BridgeEA.

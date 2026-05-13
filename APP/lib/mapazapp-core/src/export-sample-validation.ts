@@ -428,41 +428,111 @@ export function validateTestEaExportSample(
     if (root !== undefined && root !== null && typeof root === "object" && !Array.isArray(root)) {
       summaryJson = root as Record<string, unknown>;
       const schema = summaryJson["schema_version"];
-      if (schema !== "MZP_TESTEA_V1") {
+
+      if (schema === "MZP_TESTEA_V1") {
+        const execMode = summaryJson["execution_mode"];
+        if (execMode !== "virtual_export_only") {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_EXECUTION_MODE",
+              "execution_mode must be virtual_export_only for CP14/TestEA contract samples",
+              { fileName: sj.fileName, detail: String(execMode) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+        const live = summaryJson["live_trading_enabled"];
+        if (live !== false) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_LIVE_FLAG",
+              "live_trading_enabled must be false for safe TestEA export samples",
+              { fileName: sj.fileName, detail: String(live) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+      } else if (schema === "backtest_ea_v1") {
+        if (summaryJson["tester_only"] !== true) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_TESTER_ONLY",
+              "tester_only must be true for backtest_ea_v1 samples",
+              { fileName: sj.fileName, detail: String(summaryJson["tester_only"]) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+        if (summaryJson["official_ea"] !== "Mapazapp_TestEA") {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_OFFICIAL_EA",
+              "official_ea must be Mapazapp_TestEA for backtest_ea_v1 samples",
+              { fileName: sj.fileName, detail: String(summaryJson["official_ea"]) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+        if (summaryJson["backtest_role"] !== true) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_BACKTEST_ROLE",
+              "backtest_role must be true for backtest_ea_v1 samples",
+              { fileName: sj.fileName, detail: String(summaryJson["backtest_role"]) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+        if (summaryJson["has_real_daily_bias_logic"] !== true) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_BIAS_FLAG",
+              "has_real_daily_bias_logic must be true for backtest_ea_v1 samples",
+              { fileName: sj.fileName, detail: String(summaryJson["has_real_daily_bias_logic"]) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+        if (summaryJson["has_real_ifvg_logic"] !== false) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_IFVG_FLAG",
+              "has_real_ifvg_logic must be false for backtest_ea_v1 samples",
+              { fileName: sj.fileName, detail: String(summaryJson["has_real_ifvg_logic"]) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+        if (summaryJson["has_real_trading_orders"] !== false) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_SUMMARY_ORDERS_FLAG",
+              "has_real_trading_orders must be false for backtest_ea_v1 samples",
+              { fileName: sj.fileName, detail: String(summaryJson["has_real_trading_orders"]) },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
+      } else {
         diagnostics.push(
           exportSampleDiagnostic(
             "error",
             "TESTEA_SUMMARY_SCHEMA",
-            "schema_version must be MZP_TESTEA_V1",
+            "schema_version must be MZP_TESTEA_V1 or backtest_ea_v1",
             { fileName: sj.fileName, detail: String(schema) },
           ),
         );
         status = bumpStatus(status, "invalid");
       }
-      const execMode = summaryJson["execution_mode"];
-      if (execMode !== "virtual_export_only") {
-        diagnostics.push(
-          exportSampleDiagnostic(
-            "error",
-            "TESTEA_SUMMARY_EXECUTION_MODE",
-            "execution_mode must be virtual_export_only for CP14/TestEA contract samples",
-            { fileName: sj.fileName, detail: String(execMode) },
-          ),
-        );
-        status = bumpStatus(status, "invalid");
-      }
-      const live = summaryJson["live_trading_enabled"];
-      if (live !== false) {
-        diagnostics.push(
-          exportSampleDiagnostic(
-            "error",
-            "TESTEA_SUMMARY_LIVE_FLAG",
-            "live_trading_enabled must be false for safe TestEA export samples",
-            { fileName: sj.fileName, detail: String(live) },
-          ),
-        );
-        status = bumpStatus(status, "invalid");
-      }
+
       const tc = summaryJson["trade_count"];
       if (typeof tc !== "number" || !Number.isFinite(tc) || tc < 0) {
         diagnostics.push(
@@ -476,20 +546,53 @@ export function validateTestEaExportSample(
         status = bumpStatus(status, "invalid");
       } else {
         summaryTradeCount = tc;
+        if (
+          tr &&
+          tradesImport &&
+          tradesImport.ok &&
+          typeof tc === "number" &&
+          tradesImport.trades.length !== tc
+        ) {
+          diagnostics.push(
+            exportSampleDiagnostic(
+              "error",
+              "TESTEA_TRADE_COUNT_MISMATCH",
+              "trade_count in summary does not match imported trade rows",
+              { fileName: sj.fileName, detail: `summary=${tc} csv=${tradesImport.trades.length}` },
+            ),
+          );
+          status = bumpStatus(status, "invalid");
+        }
       }
     }
   }
 
   if (sj && summaryJson) {
     const summaryErrors = diagnostics.filter((d) => d.fileName === sj.fileName && d.level === "error");
-    summaryOk =
-      summaryErrors.length === 0 &&
-      summaryJson["schema_version"] === "MZP_TESTEA_V1" &&
-      summaryJson["execution_mode"] === "virtual_export_only" &&
-      summaryJson["live_trading_enabled"] === false &&
+    const schema = summaryJson["schema_version"];
+    const tradeCountOk =
       typeof summaryJson["trade_count"] === "number" &&
       Number.isFinite(summaryJson["trade_count"] as number) &&
       (summaryJson["trade_count"] as number) >= 0;
+    if (schema === "MZP_TESTEA_V1") {
+      summaryOk =
+        summaryErrors.length === 0 &&
+        tradeCountOk &&
+        summaryJson["execution_mode"] === "virtual_export_only" &&
+        summaryJson["live_trading_enabled"] === false;
+    } else if (schema === "backtest_ea_v1") {
+      summaryOk =
+        summaryErrors.length === 0 &&
+        tradeCountOk &&
+        summaryJson["tester_only"] === true &&
+        summaryJson["official_ea"] === "Mapazapp_TestEA" &&
+        summaryJson["backtest_role"] === true &&
+        summaryJson["has_real_daily_bias_logic"] === true &&
+        summaryJson["has_real_ifvg_logic"] === false &&
+        summaryJson["has_real_trading_orders"] === false;
+    } else {
+      summaryOk = false;
+    }
   } else {
     summaryOk = false;
   }

@@ -8,6 +8,7 @@ import {
 } from "../src/export-sample-validation";
 import {
   v212BridgeBundleMissingCandles,
+  v212E342TestEaBundleFiles,
   v212MixedBundleFiles,
   v212SanitizedBridgeBundleFiles,
   v212SanitizedTestEaBundleFiles,
@@ -106,6 +107,22 @@ describe("V2-12 export sample validation", () => {
     expect(r.summaryOk).toBe(true);
     expect(r.summaryJson?.["execution_mode"]).toBe("virtual_export_only");
     expect(r.summaryJson?.["live_trading_enabled"]).toBe(false);
+  });
+
+  it("D2. TestEA E3.4.2 — backtest_ea_v1 bundle (header-only trades + summary)", () => {
+    const r = validateTestEaExportSample(
+      {
+        bundleKind: "testea_export_bundle",
+        files: v212E342TestEaBundleFiles(),
+        privacyMode: "relaxed",
+      },
+      testEaImportOpts,
+    );
+    expect(r.tradesImport?.ok).toBe(true);
+    expect(r.tradeCount).toBe(0);
+    expect(r.summaryOk).toBe(true);
+    expect(r.summaryJson?.["schema_version"]).toBe("backtest_ea_v1");
+    expect(r.summaryJson?.["official_ea"]).toBe("Mapazapp_TestEA");
   });
 
   it("E. TestEA unsafe summary — live_trading_enabled true fails", () => {

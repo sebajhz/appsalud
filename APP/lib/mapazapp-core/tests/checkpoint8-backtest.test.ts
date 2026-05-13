@@ -78,6 +78,16 @@ describe("Checkpoint 8 — CSV importer", () => {
     expect(r.warnings.some((w) => w.code === "CSV_RESULT_MONEY_MISSING")).toBe(false);
   });
 
+  it("header-only CSV (E3.4.2 TestEA trades header) imports zero trades with warning", () => {
+    const csv = [
+      "run_id,trade_id,timestamp,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,result_r,exit_reason,setup_reason,bias_reason,rejection_reason",
+    ].join("\n");
+    const r = importBacktestTradesFromCsv(csv, baseOpts);
+    expect(r.ok).toBe(true);
+    expect(r.trades).toHaveLength(0);
+    expect(r.warnings.some((w) => w.code === "CSV_HEADER_ONLY_NO_TRADE_ROWS")).toBe(true);
+  });
+
   it("missing required column returns error", () => {
     const csv = ["trade_id,direction,entry_time,exit_time,entry_price,exit_price", "t1,BUY,a,b,1,2"].join("\n");
     const r = importBacktestTradesFromCsv(csv, baseOpts);

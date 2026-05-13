@@ -7,9 +7,9 @@
 - El **EA** será el **motor principal** de simulación del setup en tester; **Mapazapp** (dashboard / core) **lee y valida** la **evidencia exportada**.
 - **E3.2 no implementa MQL5**, no ejecuta MT5 ni Strategy Tester.
 
-> **Nota E3.4.1 (arquitectura oficial):** el rol contractual *BacktestEA* es función del EA físico oficial de Strategy Tester **`Mapazapp_TestEA`**. La implementación provisional en **`Mapazapp_BacktestEA`** (E3.3–E3.4) debe **migrarse** a TestEA en **E3.4.2**; ver [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md) y [`MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md).
+> **Nota E3.4.1–E3.4.2:** el rol contractual *BacktestEA* vive en **`Mapazapp_TestEA`**. La carpeta temporal **`Mapazapp_BacktestEA`** (E3.3–E3.4) se **eliminó del árbol** en **E3.4.2** tras migrar la lógica; el historial permanece en Git.
 
-**Relacionado:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md), [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md), [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md), artefactos `APP/artifacts/mt5/experts/Mapazapp_TestEA/`, `Mapazapp_BridgeEA/`, `Mapazapp_BacktestEA/`.
+**Relacionado:** [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md`](./ENGINE_INVENTORY_AND_SETUP_CONTRACT_AUDIT_E2.md), [`XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md`](./XAUUSD_DATASET_IMPORT_DATA_HEALTH_PLAN_E3.md), [`MT5_DATA_INTEGRATION.md`](./MT5_DATA_INTEGRATION.md), [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md), artefactos `APP/artifacts/mt5/experts/Mapazapp_TestEA/`, `Mapazapp_BridgeEA/`.
 
 ---
 
@@ -24,28 +24,23 @@
 | Comandos / red | **Sin** ingest de command files, **sin** `WebRequest`, **sin** DLLs. |
 | Uso | Terminal **live** (gráfico) para **lectura/estado/datos** hacia Mapazapp; **no** es el EA de Strategy Tester del setup proof. |
 
-### 2.2 Mapazapp_TestEA (`Mapazapp_TestEA.mq5`)
-
-| Aspecto | Estado (CP14) |
-|---------|----------------|
-| Entorno | **Solo Strategy Tester**: `OnInit` exige `MQLInfoInteger(MQL_TESTER) != 0`; si no, **`INIT_FAILED`** y mensaje explícito. |
-| Trading | **Sin** `OrderSend` / **sin** `CTrade`; evidencia **virtual**. |
-| Export | `backtest_trades.csv` + `backtest_summary.json` bajo `MQL5\Files\<InpExportRoot>\<run_id>\`; escritura **atómica** (`*.tmp` + `FileMove`). |
-| Lógica | **Esqueleto / placeholder**: una fila **BUY** sintética entre primera/última barra copiada; `exit_reason` = `PLACEHOLDER_VIRTUAL_SKELETON_NOT_IFVG`; **no** IFVG real, **no** daily bias. |
-| Schema | `MZP_TESTEA_V1`; compatible con `importBacktestTradesFromCsv` en core (ruta documentada en README TestEA). |
-
-**Conclusión:** **TestEA actual** es una **base sólida de seguridad + export + paths**, pero **no** es aún el **BacktestEA real** del Setup V1. E3.2 define el contrato al que debe **evolucionar** (o del que debe **heredar**) ese artefacto.
-
-### 2.3 Mapazapp_BacktestEA (`Mapazapp_BacktestEA.mq5`, E3.3–E3.4)
+### 2.2 Mapazapp_TestEA (`Mapazapp_TestEA.mq5`) — **E3.4.2 (oficial)**
 
 | Aspecto | Estado |
 |---------|--------|
-| Ruta en repo | `APP/artifacts/mt5/experts/Mapazapp_BacktestEA/` (separado de TestEA). |
-| Entorno | **Solo Strategy Tester** (`MQL_TESTER`); fuera → `INIT_FAILED`. |
-| Trading | **Sin** ejecución de órdenes; modo virtual; sin imports de trading del terminal. |
-| Export | `backtest_trades.csv` (cabecera), `backtest_events.csv`, `backtest_summary.json` bajo `MQL5\Files\<InpExportRoot>\<run_id>\`. |
-| Daily Bias | **V1 implementado (E3.4)** — ver [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md). |
+| Entorno | **Solo Strategy Tester** (`MQL_TESTER`); fuera → **`INIT_FAILED`**. |
+| Trading | **Sin** `OrderSend` / **sin** `CTrade`; **sin** filas de trade sintéticas (CSV de trades solo cabecera). |
+| Export | `backtest_trades.csv` (cabecera), `backtest_events.csv`, `backtest_summary.json`; escritura **atómica** (`*.tmp` + `FileMove`). |
+| Daily Bias | **V1 implementado** — ver [`BACKTESTEA_DAILY_BIAS_V1_E3_4.md`](./BACKTESTEA_DAILY_BIAS_V1_E3_4.md). |
+| Schema summary | Default **`backtest_ea_v1`** (`official_ea: Mapazapp_TestEA`, `backtest_role: true`, flags `has_real_*`). |
 | IFVG / setup | Pendiente **E3.5**. |
+| Import TS | CSV sin filas de datos → `importBacktestTradesFromCsv` devuelve **0 trades** con aviso `CSV_HEADER_ONLY_NO_TRADE_ROWS`; bundles legacy **`MZP_TESTEA_V1`** siguen validándose en fixtures. |
+
+**Conclusión:** **`Mapazapp_TestEA`** es el **único EA físico oficial** del Strategy Tester para el rol BacktestEA / setup proof.
+
+### 2.3 Histórico — `Mapazapp_BacktestEA` (E3.3–E3.4, **removido en E3.4.2**)
+
+Entre **E3.3** y **E3.4** existió un tercer archivo `Mapazapp_BacktestEA.mq5` bajo `APP/artifacts/mt5/experts/Mapazapp_BacktestEA/` con esqueleto tester-only + Daily Bias V1. En **E3.4.2** esa lógica se **fusionó** en **`Mapazapp_TestEA.mq5`** y la carpeta se **eliminó** del repositorio activo (no borra el historial Git).
 
 ---
 

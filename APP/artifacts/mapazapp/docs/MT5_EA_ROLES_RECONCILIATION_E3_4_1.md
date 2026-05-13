@@ -108,3 +108,12 @@
 ---
 
 *Checkpoint: **E3.4.1** — docs-only, sin ejecución MT5, sin Strategy Tester, sin cambios de código MQL5 en este entregable.*
+
+---
+
+## 11. Resultado E3.4.2 (merge ejecutado)
+
+- La lógica **tester-only**, **Daily Bias V1**, **eventos** (`lifecycle_*`, `skeleton_ready`, `daily_bias_evaluated`) y **`backtest_summary.json`** con schema **`backtest_ea_v1`** quedó en **`Mapazapp_TestEA.mq5`**.
+- **`APP/artifacts/mt5/experts/Mapazapp_BacktestEA/`** se **eliminó** del árbol activo (el historial Git conserva E3.3–E3.4).
+- Los **dos EAs oficiales** vigentes son solo **`Mapazapp_BridgeEA`** y **`Mapazapp_TestEA`**.
+- **Siguiente paso canónico:** **E3.5 — IFVG / Setup V1** en **`Mapazapp_TestEA`**.

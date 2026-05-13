@@ -1,5 +1,6 @@
 /**
- * E3.3 / E3.4 — Static safety and Daily Bias V1 markers for Mapazapp_BacktestEA.mq5 (no MetaEditor).
+ * E3.4.2 — Static safety and Daily Bias V1 markers for official `Mapazapp_TestEA.mq5` (no MetaEditor).
+ * Historical name `mapazapp-backtestea-static.test.ts` kept for the scripts package test entry.
  */
 
 import assert from "node:assert/strict";
@@ -9,8 +10,9 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const EA_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_BacktestEA/Mapazapp_BacktestEA.mq5");
-const README_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_BacktestEA/README.md");
+const EA_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/Mapazapp_TestEA.mq5");
+const README_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/README.md");
+const LEGACY_BACKTEST_EA_DIR = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_BacktestEA");
 
 const FORBIDDEN_SUBSTRINGS = [
   "OrderSend",
@@ -21,21 +23,30 @@ const FORBIDDEN_SUBSTRINGS = [
   "terminal64.exe",
 ] as const;
 
-test("A — Mapazapp_BacktestEA.mq5 exists", () => {
+test("A — Mapazapp_TestEA.mq5 exists", () => {
   assert.ok(existsSync(EA_PATH), `missing EA at ${EA_PATH}`);
 });
 
-test("B — MQL_TESTER guard present", () => {
+test("B — README declares official Strategy Tester EA", () => {
+  assert.ok(existsSync(README_PATH));
+  const readme = readFileSync(README_PATH, "utf8");
+  const lower = readme.toLowerCase();
+  assert.ok(lower.includes("mapazapp_testea") || lower.includes("mapazapp testea"));
+  assert.ok(lower.includes("strategy tester"));
+  assert.ok(lower.includes("official") || lower.includes("oficial"));
+});
+
+test("C — MQL_TESTER guard present", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /MQLInfoInteger\s*\(\s*MQL_TESTER\s*\)/);
 });
 
-test("C — INIT_FAILED outside tester", () => {
+test("D — INIT_FAILED outside tester", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /INIT_FAILED/);
 });
 
-test("D — forbidden live/network/trade API tokens absent in MQL5 source", () => {
+test("E — forbidden live/network/trade API tokens absent in MQL5 source", () => {
   const src = readFileSync(EA_PATH, "utf8");
   for (const bad of FORBIDDEN_SUBSTRINGS) {
     assert.equal(
@@ -49,28 +60,29 @@ test("D — forbidden live/network/trade API tokens absent in MQL5 source", () =
   assert.equal(lower.includes("live trading copy"), false);
 });
 
-test("E — expected export filenames referenced", () => {
+test("F — expected export filenames referenced", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /backtest_trades\.csv/);
   assert.match(src, /backtest_events\.csv/);
   assert.match(src, /backtest_summary\.json/);
 });
 
-test("F — summary flags: IFVG and tester orders off; daily bias on", () => {
+test("G — summary flags: IFVG and tester orders off; daily bias on", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /"has_real_ifvg_logic"\s*:\s*false/);
-  assert.match(src, /"has_real_daily_bias_logic"\s*:\s*true/);
-  assert.match(src, /"has_real_trading_orders"\s*:\s*false/);
+  // MQL5 string literals escape JSON quotes as \"
+  assert.match(src, /\\"has_real_ifvg_logic\\"\s*:\s*false/);
+  assert.match(src, /\\"has_real_daily_bias_logic\\"\s*:\s*true/);
+  assert.match(src, /\\"has_real_trading_orders\\"\s*:\s*false/);
 });
 
-test("G — Daily Bias V1 implementation markers", () => {
+test("H — Daily Bias V1 implementation markers", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /EvaluateDailyBiasV1/);
   assert.match(src, /daily_bias_evaluated/);
   assert.match(src, /ApplyDailyBiasGatePlaceholder/);
 });
 
-test("H — summary bias counters present", () => {
+test("I — summary bias counters present", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /total_bias_evaluated/);
   assert.match(src, /bullish_bias_count/);
@@ -82,7 +94,7 @@ test("H — summary bias counters present", () => {
   assert.match(src, /missing_bias_context/);
 });
 
-test("I — wire bias direction tokens present", () => {
+test("J — wire bias direction tokens present", () => {
   const src = readFileSync(EA_PATH, "utf8");
   assert.match(src, /"bullish"/);
   assert.match(src, /"bearish"/);
@@ -90,12 +102,16 @@ test("I — wire bias direction tokens present", () => {
   assert.match(src, /"unknown"/);
 });
 
-test("J — README declares Daily Bias V1 and tester-only posture", () => {
-  assert.ok(existsSync(README_PATH));
-  const readme = readFileSync(README_PATH, "utf8");
-  const lower = readme.toLowerCase();
-  assert.ok(lower.includes("daily bias"));
-  assert.ok(lower.includes("v1") || lower.includes("e3.4"));
-  assert.ok(lower.includes("strategy tester") || lower.includes("solo strategy tester"));
-  assert.ok(lower.includes("live") && (lower.includes("no ") || lower.includes("not ")));
+test("K — official EA markers in summary JSON builder", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /\\"official_ea\\"\s*:\s*\\"Mapazapp_TestEA\\"/);
+  assert.match(src, /\\"backtest_role\\"\s*:\s*true/);
+});
+
+test("N — temporary Mapazapp_BacktestEA artifact removed from active tree", () => {
+  assert.equal(
+    existsSync(join(LEGACY_BACKTEST_EA_DIR, "Mapazapp_BacktestEA.mq5")),
+    false,
+    "Mapazapp_BacktestEA.mq5 should not remain after E3.4.2 merge",
+  );
 });

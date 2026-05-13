@@ -31,6 +31,9 @@ const HEADER_ALIASES: Record<string, string> = {
   resultr: "result_r",
   r: "result_r",
   pnl_r: "result_r",
+  /** Mapazapp_TestEA E3.4.2+ `backtest_trades.csv` uses a compact header. */
+  timestamp: "entry_time",
+  entry: "entry_price",
 };
 
 function normalizeHeader(h: string): string {
@@ -86,6 +89,14 @@ function resolveHeaderIndex(headerCells: string[]): Map<string, number> {
     key = HEADER_ALIASES[key] ?? key;
     if (!map.has(key)) map.set(key, i);
   });
+  const normHeaders = headerCells.map((h) => normalizeHeader(h));
+  // E3.4.2 placeholder trades CSV: one `timestamp` column (maps to entry_time) and `entry` price only.
+  if (!normHeaders.includes("exit_time") && normHeaders.includes("timestamp") && map.has("entry_time")) {
+    map.set("exit_time", map.get("entry_time")!);
+  }
+  if (!normHeaders.includes("exit_price") && normHeaders.includes("entry") && map.has("entry_price")) {
+    map.set("exit_price", map.get("entry_price")!);
+  }
   return map;
 }
 
@@ -109,9 +120,18 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
   const trades: BacktestTrade[] = [];
 
   const rows = splitCsvRows(csvText);
-  if (rows.length < 2) {
-    errors.push({ code: "CSV_NO_DATA", message: "CSV must include a header row and at least one data row." });
+  if (rows.length < 1) {
+    errors.push({ code: "CSV_EMPTY", message: "CSV must include a header row." });
     return { ok: false, trades: [], errors, warnings };
+  }
+
+  let dataRowCount = 0;
+  for (let r = 1; r < rows.length; r++) {
+    const cells = parseCsvLine(rows[r]!);
+    if (cells.length === 0 || (cells.length === 1 && cells[0] === "")) continue;
+    const allEmpty = cells.every((c) => c.trim() === "");
+    if (allEmpty) continue;
+    dataRowCount++;
   }
 
   const headerCells = parseCsvLine(rows[0]!);
@@ -127,6 +147,14 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
   }
   if (errors.length > 0) {
     return { ok: false, trades: [], errors, warnings };
+  }
+
+  if (dataRowCount === 0) {
+    warnings.push({
+      code: "CSV_HEADER_ONLY_NO_TRADE_ROWS",
+      message: "CSV contains a header but no trade data rows; nothing imported.",
+    });
+    return { ok: true, trades: [], errors, warnings };
   }
 
   let runId = options.runId?.trim();
@@ -356,7 +384,7 @@ export function assembleBacktestRunFromImportedTrades(
     summary,
     trades: importResult.trades,
     warnings: importResult.warnings,
-    notes: "Assembled from in-memory CSV import — use Mapazapp_TestEA (CP14) for optional Strategy Tester virtual export shape.",
+    notes: "Assembled from in-memory CSV import — Mapazapp_TestEA (E3.4.2+) Strategy Tester export; legacy MZP_TESTEA_V1 rows still parse when present.",
   };
 }
 
