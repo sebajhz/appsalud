@@ -297,6 +297,20 @@ string BuildRunId(void)
   }
 
 //+------------------------------------------------------------------+
+ulong MapazappStableStringHash(const string value)
+  {
+   ulong hash = (ulong)2166136261u;
+   const int len = (int)StringLen(value);
+   for(int i = 0; i < len; i++)
+     {
+      const ushort ch = StringGetCharacter(value, i);
+      hash = hash ^ (ulong)ch;
+      hash = hash * (ulong)16777619u;
+     }
+   return hash;
+  }
+
+//+------------------------------------------------------------------+
 uint TesterParamFingerprintU32(void)
   {
    string s = Trim(InpParameterSetId);
@@ -304,7 +318,7 @@ uint TesterParamFingerprintU32(void)
    s += "|" + DoubleToString(InpVirtualRiskReward, 8);
    s += "|" + IntegerToString(InpDailyBiasMinBodyPoints);
    s += "|" + (InpRequireDailyBiasAlignment ? "1" : "0");
-   return (uint)StringHash(s);
+   return (uint)MapazappStableStringHash(s);
   }
 
 //+------------------------------------------------------------------+

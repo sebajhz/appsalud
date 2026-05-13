@@ -16,6 +16,8 @@ Eso **contamina o destruye evidencia**: el último pase en escribir gana, y los 
 
 **E5.5.0** introduce identidad de export **determinista y por campaña**, sin cambiar la lógica de trades virtuales ni añadir órdenes MT5.
 
+**E5.5.0.1:** se corrigió un fallo de compilación en MetaEditor: la huella de parámetros para carpetas seguras en optimización dejó de usar `StringHash` (no disponible de forma fiable en este contexto MQL5) y pasó a un **hash estable local** (`MapazappStableStringHash`, estilo FNV-1a), conservando el comportamiento determinista de E5.5.0.
+
 ---
 
 ## 2. Riesgo de pisado (sin E5.5.0)

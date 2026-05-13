@@ -203,5 +203,17 @@ test("T — E5.5.0 optimization-safe export inputs + summary keys", () => {
   assert.match(src, /InpOptimizationSafeExports/);
   assert.match(src, /TesterResolveExportIdentity/);
   assert.match(src, /effective_run_id/);
+  assert.match(src, /effective_export_folder_label/);
   assert.match(src, /optimization_parameters/);
+});
+
+test("U — E5.5.0.1: no bare StringHash(); local MapazappStableStringHash for param fingerprint", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.equal(
+    /\bStringHash\s*\(/.test(src),
+    false,
+    "bare StringHash() is not reliably available in MQL5; use MapazappStableStringHash",
+  );
+  assert.match(src, /MapazappStableStringHash/);
+  assert.match(src, /TesterParamFingerprintU32/);
 });
