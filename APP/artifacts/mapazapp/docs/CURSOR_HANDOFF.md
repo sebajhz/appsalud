@@ -23,6 +23,7 @@
 - **E5.5.0 cerrado (repo):** identidad de export **segura para optimización** (`InpOptimizationSafeExports`, carpetas por campaña, `effective_run_id`, validadores) — [`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](./TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md).
 - **E5.5.0.2 fix (repo):** escritura CSV/JSON en modo export seguro (carpetas + `FileMove`/`FileOpen` robustos y logs); build **`MZP_TestEA_E5_5_0_2`** — nota en el mismo doc **E5.5.0**.
 - **E5.5.0.3 fix (repo):** `FileOpen` sobre `.tmp` sin `FILE_REWRITE` (err 5003 en tester) + **fallback escritura directa** al JSON/CSV final; build **`MZP_TestEA_E5_5_0_3`** — ver [`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](./TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md).
+- **E5.5.0.4 (repo):** defaults de inputs TestEA para campaña E5.5 + **presets `.set`** (`presets/`) para carga en Strategy Tester; build **`MZP_TestEA_E5_5_0_4`** — README del EA + mismo doc E5.5.0.
 - **Siguiente paso canónico:** **E5.5.1** — **MT5 Strategy Tester Optimization** con **agentes locales** y **matriz pequeña** de parámetros; validar cada carpeta hoja con `mapazapp:testea-export-validate`; no commitear CSV grandes.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)

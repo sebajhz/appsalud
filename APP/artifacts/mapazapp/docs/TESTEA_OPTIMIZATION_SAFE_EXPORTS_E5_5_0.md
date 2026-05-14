@@ -22,6 +22,8 @@ Eso **contamina o destruye evidencia**: el último pase en escribir gana, y los 
 
 **E5.5.0.3:** los diagnósticos de E5.5.0.2 aislaron el fallo: **`FileOpen` sobre `*.tmp` con error 5003** — en MQL5, **`FILE_REWRITE` no es válido en `FileOpen`** (solo tiene sentido en `FileMove`/`FileCopy` donde el runtime lo acepta). E5.5.0.3 usa **flags `FileOpen` conservadores** (`FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_SHARE_READ`) para el temporal y el destino en modo **respaldo directo**, mantiene el flujo **tmp + `FileMove(..., FILE_REWRITE)`** cuando funciona, y si el camino atómico falla intenta **escritura directa** al fichero final con logs explícitos (sin éxito silencioso si ambos caminos fallan).
 
+**E5.5.0.4:** los valores por defecto del EA y los **ficheros `.set`** bajo `Mapazapp_TestEA/presets/` alinean el flujo **E5.5 / E5.5.1** (campaña XAUUSD, exports optimization-safe, ids de estrategia y parameter set) para **reducir errores de configuración** del operador; ver README del EA.
+
 ---
 
 ## 2. Riesgo de pisado (sin E5.5.0)

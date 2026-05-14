@@ -6,18 +6,18 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.08"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation E5.5.0 optimization-safe exports; E5.5.0.3 FileOpen-safe atomic export writes (no orders)."
+#property version   "1.09"
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.5.0.4 campaign defaults + presets; E5.5.0.3 FileOpen-safe export writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
-input string            InpStrategyId              = "IFVG_XAUUSD_V1";
-input string            InpParameterSetId          = "default";
+input string            InpStrategyId              = "MZP_IFVG_ZONE_REACTION_V1";
+input string            InpParameterSetId          = "MZP_IFVG_XAUUSD_V1_OUTCOME_OPT_FVG_SWEEP_001";
 input string            InpCanonicalSymbol         = "XAUUSD";
-input string            InpRunId                   = "";
+input string            InpRunId                   = "TEST_SAFE_EXPORT_SINGLE_C";
 input string            InpCampaignId              = "MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1";
 input bool              InpAutoBuildRunIdFromParams = true;
-input bool              InpOptimizationSafeExports = false;
+input bool              InpOptimizationSafeExports = true;
 input string            InpExportRoot              = "Mapazapp\\TestEA";
 input ENUM_TIMEFRAMES   InpExecutionTimeframe      = PERIOD_M15;
 input ENUM_TIMEFRAMES   InpDailyBiasTimeframe      = PERIOD_D1;
@@ -46,7 +46,7 @@ input bool              InpVirtualOneTradeAtATime  = true;
 input int               InpVirtualMinTradeFvgPoints = 2;
 input bool              InpWriteVirtualTrades        = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_5_0_3"
+#define TESTEA_BUILD            "MZP_TestEA_E5_5_0_4"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"

@@ -1,0 +1,39 @@
+; Mapazapp_TestEA — E5.5.1 optimization sweep (local agents only; no MQL5 Cloud)
+; Build: MZP_TestEA_E5_5_0_4 — load in Strategy Tester → Inputs, then enable Optimization.
+; FIXED: leave InpOptimizationSafeExports=true, InpAutoBuildRunIdFromParams=true, campaign/strategy/parameter_set as below.
+; DO NOT add InpOptimizationSafeExports to the optimization matrix (checkbox off for that row).
+; SWEEP: enable optimization ONLY for InpVirtualMinTradeFvgPoints — Start=2, Step=8, Stop=50, Value=2.
+; If your MT5 build ignores the || line below, set that range manually in the Inputs grid for InpVirtualMinTradeFvgPoints only.
+InpSchemaVersion=backtest_ea_v1
+InpStrategyId=MZP_IFVG_ZONE_REACTION_V1
+InpParameterSetId=MZP_IFVG_XAUUSD_V1_OUTCOME_OPT_FVG_SWEEP_001
+InpCanonicalSymbol=XAUUSD
+InpRunId=TEST_SAFE_EXPORT_SINGLE_C
+InpCampaignId=MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1
+InpAutoBuildRunIdFromParams=true
+InpOptimizationSafeExports=true
+InpExportRoot=Mapazapp\TestEA
+InpExecutionTimeframe=15
+InpDailyBiasTimeframe=16408
+InpUseH4Context=true
+InpUseH1Context=true
+InpBacktestMode=virtual
+InpDailyBiasMinBodyPoints=0
+InpWriteTradesCsv=true
+InpWriteEventsCsv=true
+InpWriteSummaryJson=true
+InpEnableSetupDetection=true
+InpMinFvgPoints=0
+InpMaxSetupAgeBars=20
+InpRequireDailyBiasAlignment=true
+InpEnableVirtualTrades=true
+InpVirtualEntryMode=fvg_midpoint
+InpVirtualStopMode=fvg_boundary_with_buffer
+InpVirtualStopBufferPoints=0
+InpVirtualRiskReward=2.0
+InpVirtualEntryExpiryBars=20
+InpVirtualMaxBarsInTrade=40
+InpVirtualAmbiguityMode=ambiguous
+InpVirtualOneTradeAtATime=true
+InpVirtualMinTradeFvgPoints||2|2|8|50|1
+InpWriteVirtualTrades=true

@@ -17,6 +17,9 @@ const SAMPLE_SUMMARY_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazap
 const SAMPLE_EVENTS_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/samples/backtest_events.csv");
 const SAMPLE_TRADES_PATH = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/samples/backtest_trades.csv");
 const LEGACY_BACKTEST_EA_DIR = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_BacktestEA");
+const PRESETS_DIR = join(__dirname, "../../artifacts/mt5/experts/Mapazapp_TestEA/presets");
+const PRESET_SINGLE_SAFE = join(PRESETS_DIR, "Mapazapp_TestEA_E5_5_single_safe_export.set");
+const PRESET_OPT_SWEEP = join(PRESETS_DIR, "Mapazapp_TestEA_E5_5_optimization_fvg_sweep.set");
 
 const FORBIDDEN_SUBSTRINGS = [
   "OrderSend",
@@ -252,4 +255,31 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
   );
   assert.match(src, /Mapazapp_TestEA export error: direct FileOpen failed for/);
   assert.match(src, /Mapazapp_TestEA export error: FileMove failed for/);
+});
+
+test("X — E5.5.0.4: campaign default inputs + MT5 presets", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_5_0_4"/);
+  assert.match(src, /input bool\s+InpOptimizationSafeExports\s*=\s*true/);
+  assert.match(src, /input bool\s+InpAutoBuildRunIdFromParams\s*=\s*true/);
+  assert.match(
+    src,
+    /input string\s+InpCampaignId\s*=\s*"MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1"/,
+  );
+  assert.match(src, /input string\s+InpStrategyId\s*=\s*"MZP_IFVG_ZONE_REACTION_V1"/);
+  assert.match(
+    src,
+    /input string\s+InpParameterSetId\s*=\s*"MZP_IFVG_XAUUSD_V1_OUTCOME_OPT_FVG_SWEEP_001"/,
+  );
+  assert.ok(existsSync(PRESETS_DIR), `expected presets dir at ${PRESETS_DIR}`);
+  assert.ok(existsSync(PRESET_SINGLE_SAFE));
+  assert.ok(existsSync(PRESET_OPT_SWEEP));
+  const single = readFileSync(PRESET_SINGLE_SAFE, "utf8");
+  const sweep = readFileSync(PRESET_OPT_SWEEP, "utf8");
+  assert.match(single, /InpOptimizationSafeExports=true/);
+  assert.match(sweep, /InpOptimizationSafeExports=true/);
+  for (const bad of FORBIDDEN_SUBSTRINGS) {
+    assert.equal(single.includes(bad), false);
+    assert.equal(sweep.includes(bad), false);
+  }
 });

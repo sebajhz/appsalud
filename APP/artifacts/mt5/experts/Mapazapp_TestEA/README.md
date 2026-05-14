@@ -1,4 +1,4 @@
-# Mapazapp_TestEA — Official Strategy Tester EA (E3.6–E5.5.0)
+# Mapazapp_TestEA — Official Strategy Tester EA (E3.6–E5.5.0.4)
 
 **`Mapazapp_TestEA`** is the **official MetaTrader 5 Strategy Tester** Expert Advisor for Mapazapp. It also fulfills the **BacktestEA role** (setup proof, Daily Bias, IFVG candidate detection, evidence export) in a **single** EA — see [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](../../../mapazapp/docs/MAPAZAPP_PROJECT_EXECUTION_GUIDE.md).
 
@@ -30,9 +30,18 @@
 ## Operator notes
 
 1. Copy **`Mapazapp_TestEA.mq5`** into the terminal’s `MQL5\Experts\Mapazapp\` (or your layout).
-2. Compile in **MetaEditor** (F7).
+2. Compile in **MetaEditor** (F7) as **`MZP_TestEA_E5_5_0_4`**.
 3. Run only in **Strategy Tester** with a symbol/time range that provides closed bars for the bias and execution timeframes.
+4. For **E5.5 / E5.5.1** inputs, prefer loading a **preset** from [`presets/`](./presets/) (see **E5.5 defaults and presets** below) instead of hand-editing every field.
 
-Evidence CSV/JSON is written on **`OnDeinit`** (end of test pass) using atomic temp + `FileMove`, same pattern as BridgeEA.
+---
 
-**Next:** **E5.5.1** — MT5 Optimization with **local agents** on a small parameter matrix; collect one bundle folder per pass (see E5.5.0 doc). **E5.4.2** smoke remains the single-run baseline reference.
+## E5.5 defaults and presets
+
+- **Compile** build **`MZP_TestEA_E5_5_0_4`** (see `TESTEA_BUILD` in `Mapazapp_TestEA.mq5`).
+- **Single run (no optimization)** — validate export writing under optimization-safe paths: copy [`presets/Mapazapp_TestEA_E5_5_single_safe_export.set`](./presets/Mapazapp_TestEA_E5_5_single_safe_export.set) to your terminal `MQL5\Presets\` (or load from repo path in MetaEditor if you open it from disk), then in Strategy Tester → **Inputs** → **Load** → pick that file. It fixes `InpOptimizationSafeExports=true`, `InpAutoBuildRunIdFromParams=true`, campaign / strategy / parameter set ids, and `InpRunId=TEST_SAFE_EXPORT_SINGLE_C`.
+- **Optimization (E5.5.1 FVG sweep)** — load [`presets/Mapazapp_TestEA_E5_5_optimization_fvg_sweep.set`](./presets/Mapazapp_TestEA_E5_5_optimization_fvg_sweep.set). **Only** enable the **Optimization** checkbox (and Start/Step/Stop) for **`InpVirtualMinTradeFvgPoints`**: Value **2**, Start **2**, Step **8**, Stop **50**. The preset also includes an `InpVirtualMinTradeFvgPoints||2|2|8|50|1` line for terminals that honor optimization metadata in `.set` files; if your build ignores it, set that range manually in the Inputs grid.
+- **Keep fixed (do not optimize):** `InpOptimizationSafeExports=true`, `InpAutoBuildRunIdFromParams=true`, `InpCampaignId`, `InpStrategyId`, `InpParameterSetId`, and the rest of the sweep defaults — **do not** add `InpOptimizationSafeExports` to the optimization matrix.
+- **MQL5 Cloud:** not supported in this workflow yet; use **local agents** only.
+
+Evidence CSV/JSON is written on **`OnDeinit`** (end of test pass) using atomic temp + `FileMove`, with a direct-write fallback (E5.5.0.3).
