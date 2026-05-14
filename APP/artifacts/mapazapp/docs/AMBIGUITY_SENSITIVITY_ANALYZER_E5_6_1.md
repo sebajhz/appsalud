@@ -71,9 +71,9 @@ No aprobar el setup si solo es rentable con **`ambiguous = 0R`** y bajo **`conse
 
 ---
 
-## 7. Siguiente paso (E5.6.2)
+## 7. Evidencia archivada (E5.6.2)
 
-Tras ejecutar la CLI sobre los **7 bundles E5.5.1** (u otra matriz), el operador archiva salida JSON/CSV local y un breve informe cualitativo → checkpoint **E5.6.2 — evidencia de sensibilidad a ambigüedad**.
+El operador ejecutó la CLI sobre los **7 bundles E5.5.1** (carpeta **E55**); resultados y decisión documentados en [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md).
 
 ---
 
@@ -82,3 +82,4 @@ Tras ejecutar la CLI sobre los **7 bundles E5.5.1** (u otra matriz), el operador
 | Versión | Nota |
 |---------|------|
 | E5.6.1 v1 | Analizador core + CLI `mapazapp:testea-ambiguity-sensitivity`. |
+| E5.6.1 v1.1 | Puntero a evidencia cerrada **E5.6.2**. |

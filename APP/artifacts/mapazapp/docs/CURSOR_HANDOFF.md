@@ -29,7 +29,8 @@
 - **E5.5.2 cerrado (docs-only):** auditoría profesional de setup/entrada, decisiones de operador, dudas, roadmap E5.6–E5.13, caveat BridgeEA/live — [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md).
 - **E5.6 cerrado (docs-only):** sensibilidad y diagnósticos `ambiguous` (modos contables, stress −1R, métricas, opciones implementación A/B/C, BridgeEA) — [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md).
 - **E5.6.1 cerrado (repo):** analizador post-proceso bundles TestEA (modos `neutral_zero` / `conservative_loss` / `skip_ambiguous`) + CLI `pnpm --filter @workspace/scripts mapazapp:testea-ambiguity-sensitivity` — [`AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md`](./AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md); **sin** cambio MQL5 ni re-ejecución MT5.
-- **Siguiente paso canónico:** **E5.6.2** — evidencia operador (JSON/CSV del CLI sobre bundles locales **E5.5.1**); después **E5.7** — contrato **Entry Quality Score V1** (observación; sin compuerta dura); seguir **E5.8**–**E5.13** en audit/roadmap. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte** — ver **E5.5.2** §15.
+- **E5.6.2 cerrado (docs):** evidencia operador — 7 bundles E55; `neutral_zero` / `skip_ambiguous` positivos; `conservative_loss` negativo en todos los FVG — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md).
+- **Siguiente paso canónico:** **E5.7** — contrato **Entry Quality Score V1** (observación; sin compuerta dura); seguir **E5.8**–**E5.13** en audit/roadmap. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte** — ver **E5.5.2** §15.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

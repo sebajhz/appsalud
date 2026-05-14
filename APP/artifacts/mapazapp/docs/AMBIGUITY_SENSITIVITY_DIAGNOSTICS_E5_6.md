@@ -3,7 +3,7 @@
 **Tipo:** plan de checkpoint (documentación viva).  
 **Alcance E5.6:** solo **documentación** y definición de camino de implementación futura. **No** cambia lógica de trading en este commit salvo decisión explícita posterior.  
 **Prerrequisitos:** [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md) (**E5.5.2**); campaña **E5.5.1** válida (`MZP_TestEA_E5_5_0_5`, 7 bundles validados).  
-**Relacionado:** [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md), [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md), [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md). **Implementación opción A (post-proceso):** [`AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md`](./AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md) (**E5.6.1**).
+**Relacionado:** [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md), [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md), [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md). **Implementación opción A (post-proceso):** [`AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md`](./AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md) (**E5.6.1**). **Evidencia operador (7 bundles E55):** [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md) (**E5.6.2**).
 
 ---
 
@@ -121,7 +121,7 @@ Un setup **robusto** debe, como mínimo, una de:
 1. **Empezar por A o B:** **A** si los exports actuales ya permiten recomputar sin tocar el EA; **B** si se prefiere un summary “oficial” por modo en el próximo run.  
 2. **Añadir C** si tras A/B sigue faltando granularidad para segmentar (sesión, vela ruidosa, distancias).
 
-**Estado (E5.6.1):** la **opción A** está implementada en el repo (core TypeScript + CLI `mapazapp:testea-ambiguity-sensitivity`); ver [`AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md`](./AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md). El siguiente paso operativo es **evidencia E5.6.2** (salida JSON/CSV del operador sobre bundles locales E5.5.1).
+**Estado (E5.6.1–E5.6.2):** la **opción A** está implementada en el repo (core TypeScript + CLI `mapazapp:testea-ambiguity-sensitivity`); ver [`AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md`](./AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md). La **evidencia operador** sobre los 7 bundles E5.5.1 (E55) está archivada en [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md).
 
 **E5.6 no aprueba estrategia** ni implementa código: solo fija el plan y el orden recomendado.
 

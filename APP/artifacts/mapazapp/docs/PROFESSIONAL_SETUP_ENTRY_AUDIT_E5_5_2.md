@@ -274,6 +274,7 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 |----|-----------|
 | **E5.5.2** | Este documento: auditoría profesional, decisiones, dudas, roadmap. |
 | **E5.6** | Sensibilidad y diagnóstico `ambiguous` (plan cerrado + modos contables + opciones A/B/C) — [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md). |
+| **E5.6.2** | Evidencia CLI sensibilidad ambigüedad sobre bundles E5.5.1 (E55) — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md). |
 | **E5.7** | Contrato **Entry Quality Score V1** (observación únicamente; sin compuerta dura). |
 | **E5.8** | Implementación en TestEA: export de score/componentes **sin** gate de trading. |
 | **E5.9** | Campaña de **distribución** de score y análisis off-line. |
@@ -307,6 +308,7 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 - Resultado **prometedor** en términos de R y expectativa **positiva** en la muestra, pero **insuficiente para aprobación**.
 - **~1697 trades** en ~16 meses para **un símbolo** es **demasiada frecuencia** para un asistente que deba escalar a multi-símbolo sin controles; riesgo de **sobre-trading** y fatiga de señal.
 - **436 ambiguous** en el escenario más denso es **demasiado alto** para ignorar: exige **estudio sistemático** (E5.6), no solo limpieza contable.
+- Post–**E5.6.2**, el análisis de sensibilidad confirma edge en `neutral_zero` / `skip_ambiguous` y colapso bajo `conservative_loss` — ver [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md); el setup sigue **no aprobado**.
 
 ---
 
@@ -316,3 +318,4 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 |---------|------|
 | E5.5.2 v1 | Creación: auditoría profesional post–E5.5.1; decisiones y roadmap E5.6+. |
 | E5.5.2 v1.1 | Puntero explícito al plan **E5.6** en doc dedicado `AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`. |
+| E5.5.2 v1.2 | Puntero a evidencia **E5.6.2** + fila §15; lectura post-análisis ambigüedad. |
