@@ -20,6 +20,8 @@ Eso **contamina o destruye evidencia**: el último pase en escribir gana, y los 
 
 **E5.5.0.2:** en una prueba manual de export seguro (un solo pase del Strategy Tester), la carpeta efectiva bajo `MQL5\Files\…\<campaign>\<folder_leaf>\` existía pero **no aparecían** `backtest_summary.json`, `backtest_events.csv` ni `backtest_trades.csv`. Esta revisión endurece la **creación recursiva de carpetas** (`EnsureRelativeFolderExists`), el **commit atómico** (`FileMove` con `FILE_REWRITE`), la **re-creación del directorio padre** antes de cada `FileOpen`, y añade **diagnósticos** (`GetLastError`, rutas en `OnInit`, mensajes si falla la escritura final).
 
+**E5.5.0.3:** los diagnósticos de E5.5.0.2 aislaron el fallo: **`FileOpen` sobre `*.tmp` con error 5003** — en MQL5, **`FILE_REWRITE` no es válido en `FileOpen`** (solo tiene sentido en `FileMove`/`FileCopy` donde el runtime lo acepta). E5.5.0.3 usa **flags `FileOpen` conservadores** (`FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_SHARE_READ`) para el temporal y el destino en modo **respaldo directo**, mantiene el flujo **tmp + `FileMove(..., FILE_REWRITE)`** cuando funciona, y si el camino atómico falla intenta **escritura directa** al fichero final con logs explícitos (sin éxito silencioso si ambos caminos fallan).
+
 ---
 
 ## 2. Riesgo de pisado (sin E5.5.0)

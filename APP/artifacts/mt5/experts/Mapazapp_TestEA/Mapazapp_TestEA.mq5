@@ -7,7 +7,7 @@
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
 #property version   "1.08"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation E5.5.0 optimization-safe exports (no orders)."
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation E5.5.0 optimization-safe exports; E5.5.0.3 FileOpen-safe atomic export writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -46,7 +46,7 @@ input bool              InpVirtualOneTradeAtATime  = true;
 input int               InpVirtualMinTradeFvgPoints = 2;
 input bool              InpWriteVirtualTrades        = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_5_0_2"
+#define TESTEA_BUILD            "MZP_TestEA_E5_5_0_3"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -535,6 +535,32 @@ bool BuildExportPath(void)
   }
 
 //+------------------------------------------------------------------+
+bool WriteTextDirect(const string relativePathRaw, const string body)
+  {
+   const string relativePath = NormalizeExportRelPath(relativePathRaw);
+   ResetLastError();
+   const int fh = FileOpen(relativePath,
+                           FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_SHARE_READ);
+   if(fh == INVALID_HANDLE)
+     {
+      const int err = GetLastError();
+      PrintFormat("Mapazapp_TestEA export error: direct FileOpen failed for %s, err=%d", relativePath, err);
+      return false;
+     }
+   if(FileWriteString(fh, body) <= 0)
+     {
+      const int err = GetLastError();
+      PrintFormat("Mapazapp_TestEA export error: direct FileWriteString failed for %s, err=%d", relativePath, err);
+      FileClose(fh);
+      return false;
+     }
+   FileFlush(fh);
+   FileClose(fh);
+   PrintFormat("Mapazapp_TestEA export warning: direct write succeeded after atomic fallback for %s", relativePath);
+   return true;
+  }
+
+//+------------------------------------------------------------------+
 bool WriteTextAtomic(const string relativePathRaw, const string body)
   {
    const string relativePath = NormalizeExportRelPath(relativePathRaw);
@@ -549,26 +575,47 @@ bool WriteTextAtomic(const string relativePathRaw, const string body)
         }
      }
 
+   if(FileIsExist(tmp, 0))
+     {
+      ResetLastError();
+      FileDelete(tmp, 0);
+     }
+
    ResetLastError();
-   const int fh = FileOpen(tmp,
-                           FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_SHARE_READ | FILE_REWRITE);
+   int fh = FileOpen(tmp,
+                     FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_SHARE_READ);
    if(fh == INVALID_HANDLE)
      {
       const int err = GetLastError();
       PrintFormat("Mapazapp_TestEA export error: FileOpen failed for %s, err=%d", tmp, err);
-      g_exportWriteFailCount++;
-      return false;
+      PrintFormat("Mapazapp_TestEA export warning: atomic write failed, attempting direct write for %s", relativePath);
+      if(!WriteTextDirect(relativePathRaw, body))
+        {
+         g_exportWriteFailCount++;
+         return false;
+        }
+      return true;
      }
+
    if(FileWriteString(fh, body) <= 0)
      {
       const int err = GetLastError();
       PrintFormat("Mapazapp_TestEA export error: FileWriteString failed for %s, err=%d", tmp, err);
       FileClose(fh);
-      g_exportWriteFailCount++;
-      return false;
+      ResetLastError();
+      FileDelete(tmp, 0);
+      PrintFormat("Mapazapp_TestEA export warning: atomic write failed, attempting direct write for %s", relativePath);
+      if(!WriteTextDirect(relativePathRaw, body))
+        {
+         g_exportWriteFailCount++;
+         return false;
+        }
+      return true;
      }
+
    FileFlush(fh);
    FileClose(fh);
+
    if(FileIsExist(relativePath, 0))
      {
       ResetLastError();
@@ -579,11 +626,23 @@ bool WriteTextAtomic(const string relativePathRaw, const string body)
                      relativePath, err);
         }
      }
+
    ResetLastError();
-   if(!FileMove(tmp, 0, relativePath, FILE_REWRITE))
+   if(FileMove(tmp, 0, relativePath, FILE_REWRITE))
+      return true;
+
+   const int errMove = GetLastError();
+   PrintFormat("Mapazapp_TestEA export error: FileMove failed for %s -> %s, err=%d", tmp, relativePath, errMove);
+
+   if(FileIsExist(tmp, 0))
      {
-      const int err = GetLastError();
-      PrintFormat("Mapazapp_TestEA export error: FileMove failed for %s -> %s, err=%d", tmp, relativePath, err);
+      ResetLastError();
+      FileDelete(tmp, 0);
+     }
+
+   PrintFormat("Mapazapp_TestEA export warning: atomic write failed, attempting direct write for %s", relativePath);
+   if(!WriteTextDirect(relativePathRaw, body))
+     {
       g_exportWriteFailCount++;
       return false;
      }

@@ -229,3 +229,27 @@ test("V — E5.5.0.2: safe-export folder chain + FileOpen diagnostics + g_baseRe
   assert.match(src, /g_baseRelPath \+ "\\\\backtest_trades\.csv"/);
   assert.match(src, /FileMove\(tmp, 0, relativePath, FILE_REWRITE\)/);
 });
+
+test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback after atomic path fails", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  const fileOpenCalls = src.match(/FileOpen\s*\([\s\S]*?\)/g) ?? [];
+  assert.ok(fileOpenCalls.length > 0, "expected at least one FileOpen call");
+  for (const call of fileOpenCalls) {
+    assert.equal(
+      call.includes("FILE_REWRITE"),
+      false,
+      `FILE_REWRITE is not a valid FileOpen flag in MQL5; offending call: ${call.slice(0, 120)}`,
+    );
+  }
+  assert.match(src, /WriteTextDirect/);
+  assert.match(
+    src,
+    /Mapazapp_TestEA export warning: atomic write failed, attempting direct write for/,
+  );
+  assert.match(
+    src,
+    /Mapazapp_TestEA export warning: direct write succeeded after atomic fallback for/,
+  );
+  assert.match(src, /Mapazapp_TestEA export error: direct FileOpen failed for/);
+  assert.match(src, /Mapazapp_TestEA export error: FileMove failed for/);
+});
