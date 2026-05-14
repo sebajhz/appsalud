@@ -3,7 +3,7 @@
 **Tipo:** documento vivo (auditoría de estrategia, decisiones de operador, dudas, hoja de ruta).  
 **Alcance:** solo documentación. **No** sustituye informes numéricos por parámetro en la plantilla de campaña.  
 **Contexto de campaña:** primera campaña válida de barrido FVG en XAUUSD M15/D1 con `Mapazapp_TestEA` build **`MZP_TestEA_E5_5_0_5`**; siete bundles exportados y validados (`ok=true`, `errors=0`); único warning recurrente: `BUNDLE_EVENTS_LARGE`.  
-**Relacionado:** [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md), [`XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md), [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md).
+**Relacionado:** [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md), [`XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md), [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md).
 
 **Objetivo del documento:** que sesiones futuras (Cursor, ChatGPT u operador) puedan **reanudar** sin perder: estado técnico, interpretación de resultados, **límites de lo probado** (tester vs live), decisiones explícitas y siguiente secuencia de checkpoints.
 
@@ -192,6 +192,8 @@ Qué falta (lista de trabajo intelectual / de producto), sin pretender exhaustiv
 
 ## 10. Hoja de ruta análisis `ambiguous` — plan E5.6
 
+**Plan formal (cerrado docs-only):** [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md).
+
 Objetivo: reducir incertidumbre **metodológica**, no “esconder” ambigüedades.
 
 **Líneas de trabajo:**
@@ -271,7 +273,7 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | ID | Contenido |
 |----|-----------|
 | **E5.5.2** | Este documento: auditoría profesional, decisiones, dudas, roadmap. |
-| **E5.6** | Sensibilidad y diagnóstico `ambiguous` (plan + exports de diagnóstico). |
+| **E5.6** | Sensibilidad y diagnóstico `ambiguous` (plan cerrado + modos contables + opciones A/B/C) — [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md). |
 | **E5.7** | Contrato **Entry Quality Score V1** (observación únicamente; sin compuerta dura). |
 | **E5.8** | Implementación en TestEA: export de score/componentes **sin** gate de trading. |
 | **E5.9** | Campaña de **distribución** de score y análisis off-line. |
@@ -313,3 +315,4 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | Versión | Nota |
 |---------|------|
 | E5.5.2 v1 | Creación: auditoría profesional post–E5.5.1; decisiones y roadmap E5.6+. |
+| E5.5.2 v1.1 | Puntero explícito al plan **E5.6** en doc dedicado `AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`. |
