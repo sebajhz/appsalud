@@ -275,7 +275,7 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | **E5.5.2** | Este documento: auditoría profesional, decisiones, dudas, roadmap. |
 | **E5.6** | Sensibilidad y diagnóstico `ambiguous` (plan cerrado + modos contables + opciones A/B/C) — [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md). |
 | **E5.6.2** | Evidencia CLI sensibilidad ambigüedad sobre bundles E5.5.1 (E55) — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md). |
-| **E5.7** | Contrato **Entry Quality Score V1** (observación únicamente; sin compuerta dura). |
+| **E5.7** | Contrato **Entry Quality Score V1** (observación únicamente; sin compuerta dura) — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md). |
 | **E5.8** | Implementación en TestEA: export de score/componentes **sin** gate de trading. |
 | **E5.9** | Campaña de **distribución** de score y análisis off-line. |
 | **E5.10** | Detección/export de **liquidity sweep** (sin bloqueo inicial). |
@@ -319,3 +319,4 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | E5.5.2 v1 | Creación: auditoría profesional post–E5.5.1; decisiones y roadmap E5.6+. |
 | E5.5.2 v1.1 | Puntero explícito al plan **E5.6** en doc dedicado `AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`. |
 | E5.5.2 v1.2 | Puntero a evidencia **E5.6.2** + fila §15; lectura post-análisis ambigüedad. |
+| E5.5.2 v1.3 | Puntero a contrato **E5.7** Entry Quality Score V1. |

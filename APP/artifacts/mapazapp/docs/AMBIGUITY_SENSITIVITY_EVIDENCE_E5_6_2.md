@@ -126,12 +126,14 @@ El setup permanece **prometedor pero no aprobado**: no se eleva a “aprobado pa
 
 | ID | Contenido |
 |----|-----------|
-| **E5.7** | Contrato **Entry Quality Score V1** (observación; sin compuerta dura). |
+| **E5.7** | Contrato **Entry Quality Score V1** — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) (observación; sin compuerta dura). |
 | **E5.8** | Export de score / componentes en TestEA (observación). |
 | **E5.9** | Campaña de **distribución** de score y análisis off-line. |
 | **E5.10** | Detección y export de **liquidity sweep** (sin bloqueo inicial). |
 
 *(Cadena E5.11–E5.13 sigue en [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md) §15.)*
+
+**Contrato formal E5.7:** [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) — score en modo **observación**; implementación en **E5.8+**.
 
 ---
 
@@ -148,3 +150,4 @@ El setup permanece **prometedor pero no aprobado**: no se eleva a “aprobado pa
 | Versión | Nota |
 |---------|------|
 | E5.6.2 v1 | Evidencia operador: 7 bundles E55; tablas y decisión archivadas. |
+| E5.6.2 v1.1 | Puntero al contrato **E5.7** Entry Quality Score V1. |
