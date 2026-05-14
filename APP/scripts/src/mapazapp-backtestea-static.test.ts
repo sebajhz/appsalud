@@ -257,9 +257,9 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
   assert.match(src, /Mapazapp_TestEA export error: FileMove failed for/);
 });
 
-test("X — E5.5.0.4: campaign default inputs + MT5 presets", () => {
+test("X — E5.5.0.5: campaign defaults + short export folder inputs + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_5_0_4"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_5_0_5"/);
   assert.match(src, /input bool\s+InpOptimizationSafeExports\s*=\s*true/);
   assert.match(src, /input bool\s+InpAutoBuildRunIdFromParams\s*=\s*true/);
   assert.match(
@@ -271,6 +271,8 @@ test("X — E5.5.0.4: campaign default inputs + MT5 presets", () => {
     src,
     /input string\s+InpParameterSetId\s*=\s*"MZP_IFVG_XAUUSD_V1_OUTCOME_OPT_FVG_SWEEP_001"/,
   );
+  assert.match(src, /input string\s+InpExportCampaignFolder\s*=\s*"E55"/);
+  assert.match(src, /input string\s+InpExportParameterFolder\s*=\s*"SET001"/);
   assert.ok(existsSync(PRESETS_DIR), `expected presets dir at ${PRESETS_DIR}`);
   assert.ok(existsSync(PRESET_SINGLE_SAFE));
   assert.ok(existsSync(PRESET_OPT_SWEEP));
@@ -278,8 +280,28 @@ test("X — E5.5.0.4: campaign default inputs + MT5 presets", () => {
   const sweep = readFileSync(PRESET_OPT_SWEEP, "utf8");
   assert.match(single, /InpOptimizationSafeExports=true/);
   assert.match(sweep, /InpOptimizationSafeExports=true/);
+  assert.match(single, /InpExportCampaignFolder=E55/);
+  assert.match(single, /InpExportParameterFolder=SET001/);
+  assert.match(sweep, /InpExportCampaignFolder=E55/);
+  assert.match(sweep, /InpExportParameterFolder=SET001/);
   for (const bad of FORBIDDEN_SUBSTRINGS) {
     assert.equal(single.includes(bad), false);
     assert.equal(sweep.includes(bad), false);
+  }
+});
+
+test("Y — E5.5.0.5: summary export_* keys + physical safe path ties to InpExportCampaignFolder (not full campaign_id segment)", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /\\"export_campaign_folder\\"/);
+  assert.match(src, /\\"export_parameter_folder\\"/);
+  assert.match(src, /g_campaignIdEffective = phyCamp/);
+  assert.match(src, /string\s+phyCamp\s*=\s*SanitizeToken\s*\(\s*Trim\s*\(\s*InpExportCampaignFolder\s*\)\s*\)/);
+  assert.equal(
+    /tail\[0\]\s*=\s*g_campaignIdForSummary/.test(src),
+    false,
+    "optimization-safe physical folder must not use g_campaignIdForSummary (full campaign metadata) as path segment",
+  );
+  for (const bad of FORBIDDEN_SUBSTRINGS) {
+    assert.equal(src.includes(bad), false);
   }
 });

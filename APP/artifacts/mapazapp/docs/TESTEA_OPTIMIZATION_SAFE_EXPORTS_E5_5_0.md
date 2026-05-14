@@ -24,6 +24,8 @@ Eso **contamina o destruye evidencia**: el último pase en escribir gana, y los 
 
 **E5.5.0.4:** los valores por defecto del EA y los **ficheros `.set`** bajo `Mapazapp_TestEA/presets/` alinean el flujo **E5.5 / E5.5.1** (campaña XAUUSD, exports optimization-safe, ids de estrategia y parameter set) para **reducir errores de configuración** del operador; ver README del EA.
 
+**E5.5.0.5:** en pruebas manuales con **nombres largos** de campaña y parameter set como **segmentos de ruta física**, los **agentes del Strategy Tester** a veces creaban la carpeta pero **no escribían** los tres ficheros de export (fallo atribuible a **longitud de ruta** en el entorno del tester). A partir de **E5.5.0.5**, con `InpOptimizationSafeExports=true`, el EA usa **`InpExportCampaignFolder`** y **`InpExportParameterFolder`** solo para la **jerarquía de carpetas bajo `MQL5\Files\`**; en `backtest_summary.json` se mantienen los metadatos completos `campaign_id` (= `InpCampaignId`), `parameter_set_id`, `strategy_id`, y se añaden `export_campaign_folder`, `export_parameter_folder`, `effective_export_folder_label`, `effective_run_id` (campaña corta + `__` + hoja corta).
+
 ---
 
 ## 2. Riesgo de pisado (sin E5.5.0)
@@ -40,34 +42,37 @@ Eso **contamina o destruye evidencia**: el último pase en escribir gana, y los 
 
 | Input | Default recomendado en docs | Rol |
 |-------|-----------------------------|-----|
-| `InpCampaignId` | `MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1` | Segmento de carpeta bajo `InpExportRoot` (sanitizado). |
-| `InpAutoBuildRunIdFromParams` | `true` | Si `InpOptimizationSafeExports`: hoja de carpeta + `run_id` efectivo derivados de `parameter_set_id` + parámetros clave (FVG mínimo, RR, bias body, gate bias). |
-| `InpOptimizationSafeExports` | `false` (compatibilidad) | `true`: estructura `…\<campaign_id>\<folder_leaf>\`; `false`: comportamiento histórico `…\<run_id>\`. |
+| `InpCampaignId` | `MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1` | Metadato `campaign_id` en JSON (sanitizado); **no** define el segmento de carpeta física cuando `InpOptimizationSafeExports=true` (E5.5.0.5). |
+| `InpExportCampaignFolder` | `E55` | **Solo** segmento de carpeta física bajo `InpExportRoot` cuando `InpOptimizationSafeExports=true` (E5.5.0.5). |
+| `InpExportParameterFolder` | `SET001` | Prefijo corto de la **hoja** de carpeta (`<folder>_FVG…`) cuando `InpAutoBuildRunIdFromParams=true` y exports seguros (E5.5.0.5). |
+| `InpAutoBuildRunIdFromParams` | `true` | Si `InpOptimizationSafeExports`: hoja de carpeta + `effective_run_id` derivados de `InpExportParameterFolder` + parámetros clave (FVG mínimo, RR, bias body, gate bias). |
+| `InpOptimizationSafeExports` | `false` (compatibilidad en doc genérica; default EA E5.5 = `true`) | `true`: estructura `…\<export_campaign_folder>\<folder_leaf>\`; `false`: comportamiento histórico `…\<run_id>\`. |
 
 **Nota:** con `InpOptimizationSafeExports = false`, el EA sigue usando solo `InpRunId` / auto-run como en builds anteriores.
 
 ---
 
-## 4. Estructura de carpetas (cuando `InpOptimizationSafeExports = true`)
+## 4. Estructura de carpetas (cuando `InpOptimizationSafeExports = true`, E5.5.0.5)
 
 ```text
-MQL5\Files\<InpExportRoot>\<campaign_id>\<folder_leaf>\
+MQL5\Files\<InpExportRoot>\<InpExportCampaignFolder>\<folder_leaf>\
   backtest_summary.json
   backtest_events.csv
   backtest_trades.csv
 ```
 
-Ejemplo (ilustrativo):
+Ejemplo canónico (defaults E5.5 workflow):
 
 ```text
-MQL5\Files\Mapazapp\TestEA\MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1\SET001_FVG2_RR2_00_BIASBODY0_RALIGN1\
+MQL5\Files\Mapazapp\TestEA\E55\SET001_FVG2_RR2_00_BIASBODY0_RALIGN1\
 ```
 
 - **Determinista:** mismos inputs MT5 → misma carpeta (apta para repetición y multi-agente con parámetros distintos).
 - **Sin timestamp** en la hoja por defecto (no depende del reloj para el nombre).
 - **Caracteres inválidos** eliminados vía sanitización (misma familia que el resto del EA).
+- **Trazabilidad:** `backtest_summary.json` conserva `campaign_id`, `parameter_set_id` y `strategy_id` con los valores completos de los inputs; además `export_campaign_folder`, `export_parameter_folder`, `effective_export_folder_label` y `effective_run_id` reflejan las etiquetas cortas usadas en disco.
 
-`backtest_summary.json` incluye (entre otros): `campaign_id`, `optimization_safe_exports`, `effective_run_id`, `effective_export_folder_label`, `optimization_parameters` (eco de los cuatro parámetros de optimización citados en el runbook).
+`backtest_summary.json` incluye (entre otros): `campaign_id`, `optimization_safe_exports`, `effective_run_id`, `effective_export_folder_label`, `export_campaign_folder`, `export_parameter_folder`, `optimization_parameters` (eco de los cuatro parámetros de optimización citados en el runbook).
 
 ---
 
@@ -76,9 +81,10 @@ MQL5\Files\Mapazapp\TestEA\MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1\SET001_FVG2_RR2_00_
 1. Compilar `Mapazapp_TestEA` en MetaEditor (fuera de alcance de este repo en CI).
 2. En Strategy Tester, activar **Optimization** y configurar la matriz de parámetros deseada.
 3. Poner **`InpOptimizationSafeExports = true`** y **`InpAutoBuildRunIdFromParams = true`** para sweeps estándar.
-4. Ajustar **`InpCampaignId`** al id de campaña (p. ej. E5.5).
-5. Usar **agentes locales** (aprovechar los cores de la máquina). Revisar en la documentación del terminal el límite de agentes y la RAM por agente.
-6. **MQL5 Cloud** queda **fuera de alcance** en esta fase (no documentado como soporte oficial Mapazapp aquí).
+4. Ajustar **`InpCampaignId`** al id de campaña (p. ej. E5.5) — queda en JSON como **`campaign_id`**.
+5. Con exports seguros (E5.5.0.5), ajustar **`InpExportCampaignFolder`** / **`InpExportParameterFolder`** a etiquetas **cortas** para la ruta física (p. ej. `E55`, `SET001`); no sustituyen los ids largos en el resumen JSON.
+6. Usar **agentes locales** (aprovechar los cores de la máquina). Revisar en la documentación del terminal el límite de agentes y la RAM por agente.
+7. **MQL5 Cloud** queda **fuera de alcance** en esta fase (no documentado como soporte oficial Mapazapp aquí).
 
 **No** ejecutar este documento desde el repo: no hay automatización MT5 en E5.5.0.
 
@@ -93,7 +99,7 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
   --bundle "<ruta-a-la-carpeta-hoja>" --json
 ```
 
-La CLI acepta rutas anidadas (`…\TestEA\<campaign_id>\<folder_leaf>`). El importador usa `effective_run_id` si existe, de modo que el **nombre de la carpeta** no tiene que coincidir con el campo legacy `run_id` del JSON.
+La CLI acepta rutas anidadas (`…\TestEA\<export_campaign_folder>\<folder_leaf>`). El importador usa `effective_run_id` si existe, de modo que el **nombre de la carpeta** no tiene que coincidir con el campo legacy `run_id` del JSON.
 
 **Avisos útiles (core):**
 
@@ -118,7 +124,8 @@ Un `OnTester()` que devuelva p. ej. `expectancy_r` ajustada por penalizaciones (
 ## 9. Checklist rápido operador
 
 - [ ] `InpOptimizationSafeExports` acorde al modo (single run vs optimización).
-- [ ] `InpCampaignId` coherente con el runbook / informe de campaña.
+- [ ] `InpCampaignId` coherente con el runbook / informe de campaña (metadato JSON).
+- [ ] Con exports seguros, `InpExportCampaignFolder` / `InpExportParameterFolder` **cortos** (evitar rutas largas en agentes del tester).
 - [ ] Validar **cada** carpeta hoja con `mapazapp:testea-export-validate`.
 - [ ] No usar `Mapazapp_TestEA` fuera de `MQL_TESTER`.
 
@@ -126,4 +133,4 @@ Un `OnTester()` que devuelva p. ej. `expectancy_r` ajustada por penalizaciones (
 
 ## 10. Siguiente paso canónico
 
-**E5.5.1** — ejecutar MT5 Optimization con agentes locales sobre una **matriz pequeña** de parámetros, recoger bundles bajo `campaign_id` distintos y adjuntar hashes / métricas agregadas en el informe de campaña (sin subir CSV masivos a Git).
+**E5.5.1** — recompilar **`MZP_TestEA_E5_5_0_5`**, ejecutar MT5 Strategy Tester (single safe-export de verificación, luego **Optimization** con agentes locales sobre una **matriz pequeña** de parámetros), recoger bundles bajo rutas cortas (`…\TestEA\E55\…`) y adjuntar hashes / métricas agregadas en el informe de campaña (sin subir CSV masivos a Git). Los ids largos de campaña y parameter set siguen en `backtest_summary.json`.

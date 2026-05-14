@@ -6,8 +6,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.09"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.5.0.4 campaign defaults + presets; E5.5.0.3 FileOpen-safe export writes (no orders)."
+#property version   "1.10"
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.5.0.5 short physical export folders + full JSON ids; E5.5.0.3 FileOpen-safe export writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -18,6 +18,8 @@ input string            InpRunId                   = "TEST_SAFE_EXPORT_SINGLE_C"
 input string            InpCampaignId              = "MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1";
 input bool              InpAutoBuildRunIdFromParams = true;
 input bool              InpOptimizationSafeExports = true;
+input string            InpExportCampaignFolder    = "E55";
+input string            InpExportParameterFolder   = "SET001";
 input string            InpExportRoot              = "Mapazapp\\TestEA";
 input ENUM_TIMEFRAMES   InpExecutionTimeframe      = PERIOD_M15;
 input ENUM_TIMEFRAMES   InpDailyBiasTimeframe      = PERIOD_D1;
@@ -46,7 +48,7 @@ input bool              InpVirtualOneTradeAtATime  = true;
 input int               InpVirtualMinTradeFvgPoints = 2;
 input bool              InpWriteVirtualTrades        = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_5_0_4"
+#define TESTEA_BUILD            "MZP_TestEA_E5_5_0_5"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -333,7 +335,7 @@ string TesterFormatRrToken(const double rr)
 //+------------------------------------------------------------------+
 string TesterBuildAutoFolderLeaf(void)
   {
-   string ps = SanitizeToken(Trim(InpParameterSetId));
+   string ps = SanitizeToken(Trim(InpExportParameterFolder));
    if(StringLen(ps) == 0)
       ps = "SET";
    const string rrTok = TesterFormatRrToken(InpVirtualRiskReward);
@@ -361,11 +363,15 @@ void TesterResolveExportIdentity(void)
       return;
      }
 
-   string camp = SanitizeToken(Trim(InpCampaignId));
-   if(StringLen(camp) == 0)
-      camp = "MZP_CAMPAIGN_DEFAULT";
-   g_campaignIdEffective = camp;
-   g_campaignIdForSummary = camp;
+   string campFull = SanitizeToken(Trim(InpCampaignId));
+   if(StringLen(campFull) == 0)
+      campFull = "MZP_CAMPAIGN_DEFAULT";
+   g_campaignIdForSummary = campFull;
+
+   string phyCamp = SanitizeToken(Trim(InpExportCampaignFolder));
+   if(StringLen(phyCamp) == 0)
+      phyCamp = "EXP_CAMP";
+   g_campaignIdEffective = phyCamp;
 
    string leaf = "";
    if(InpAutoBuildRunIdFromParams)
@@ -387,7 +393,7 @@ void TesterResolveExportIdentity(void)
 
    g_exportFolderLeaf = leaf;
 
-   string combined = camp + "__" + leaf;
+   string combined = phyCamp + "__" + leaf;
    const int MAXRUNID = 120;
    if(StringLen(combined) > MAXRUNID)
       combined = StringSubstr(combined, 0, MAXRUNID);
@@ -1690,6 +1696,8 @@ string WriteSummaryJson(void)
    json += "  \"last_setup_reason\": \"" + JsonStringEscape(g_lastSetupReason) + "\",\r\n";
    json += StringFormat("  \"last_fvg_points\": %I64d,\r\n", g_lastFvgPoints);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
+   json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
+   json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
    json += "  \"optimization_safe_exports\": " + (g_optimizationSafeExports ? "true" : "false") + ",\r\n";
    json += "  \"effective_run_id\": \"" + JsonStringEscape(g_runId) + "\",\r\n";
    json += "  \"effective_export_folder_label\": \"" + JsonStringEscape(g_exportFolderLeaf) + "\",\r\n";
@@ -1830,7 +1838,7 @@ int OnInit()
    PrintFormat("Mapazapp_TestEA export layout: trades path: %s\\backtest_trades.csv", g_baseRelPath);
 
    g_initOk = true;
-   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + E5.5.0 virtual trade simulation (no orders); outputs under MQL5\\Files\\", g_baseRelPath);
+   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + E5.5.0.5 virtual trade simulation (no orders); outputs under MQL5\\Files\\", g_baseRelPath);
 
    ExportLifecycleEvent("lifecycle_init", "ok", "OnInit", "paths_ready");
    ExportLifecycleEvent("skeleton_ready", "noop", "E5.5.0",

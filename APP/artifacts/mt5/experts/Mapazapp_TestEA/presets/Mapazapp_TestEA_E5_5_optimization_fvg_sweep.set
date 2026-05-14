@@ -1,5 +1,5 @@
 ; Mapazapp_TestEA — E5.5.1 optimization sweep (local agents only; no MQL5 Cloud)
-; Build: MZP_TestEA_E5_5_0_4 — load in Strategy Tester → Inputs, then enable Optimization.
+; Build: MZP_TestEA_E5_5_0_5 — load in Strategy Tester → Inputs, then enable Optimization.
 ; FIXED: leave InpOptimizationSafeExports=true, InpAutoBuildRunIdFromParams=true, campaign/strategy/parameter_set as below.
 ; DO NOT add InpOptimizationSafeExports to the optimization matrix (checkbox off for that row).
 ; SWEEP: enable optimization ONLY for InpVirtualMinTradeFvgPoints — Start=2, Step=8, Stop=50, Value=2.
@@ -10,6 +10,8 @@ InpParameterSetId=MZP_IFVG_XAUUSD_V1_OUTCOME_OPT_FVG_SWEEP_001
 InpCanonicalSymbol=XAUUSD
 InpRunId=TEST_SAFE_EXPORT_SINGLE_C
 InpCampaignId=MZP_E5_5_XAUUSD_M15_D1_OUTCOME_V1
+InpExportCampaignFolder=E55
+InpExportParameterFolder=SET001
 InpAutoBuildRunIdFromParams=true
 InpOptimizationSafeExports=true
 InpExportRoot=Mapazapp\TestEA
