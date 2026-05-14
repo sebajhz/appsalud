@@ -21,6 +21,7 @@
 - **E5.4.3 cerrado (docs-only):** política build/versioning TestEA — [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md).
 - **E5.5 cerrado (docs-only):** runbook + plantilla informe campaña outcome XAUUSD — [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md), [`XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md).
 - **E5.5.0 cerrado (repo):** identidad de export **segura para optimización** (`InpOptimizationSafeExports`, carpetas por campaña, `effective_run_id`, validadores) — [`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](./TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md).
+- **E5.5.0.2 fix (repo):** escritura CSV/JSON en modo export seguro (carpetas + `FileMove`/`FileOpen` robustos y logs); build **`MZP_TestEA_E5_5_0_2`** — nota en el mismo doc **E5.5.0**.
 - **Siguiente paso canónico:** **E5.5.1** — **MT5 Strategy Tester Optimization** con **agentes locales** y **matriz pequeña** de parámetros; validar cada carpeta hoja con `mapazapp:testea-export-validate`; no commitear CSV grandes.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)

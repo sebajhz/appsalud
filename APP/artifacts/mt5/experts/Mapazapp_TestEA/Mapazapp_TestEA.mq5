@@ -6,7 +6,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.07"
+#property version   "1.08"
 #property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation E5.5.0 optimization-safe exports (no orders)."
 #property strict
 
@@ -46,7 +46,7 @@ input bool              InpVirtualOneTradeAtATime  = true;
 input int               InpVirtualMinTradeFvgPoints = 2;
 input bool              InpWriteVirtualTrades        = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_5_0"
+#define TESTEA_BUILD            "MZP_TestEA_E5_5_0_2"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -93,6 +93,7 @@ string          g_exportFolderLeaf = "";
 string          g_campaignIdEffective = "";
 string          g_campaignIdForSummary = "";
 bool            g_optimizationSafeExports = false;
+int             g_exportWriteFailCount = 0;
 
 datetime        g_lastClosedBiasBarTime = 0;
 ENUM_MAPZ_BIAS  g_lastBiasEnum = MAPZ_BIAS_UNKNOWN;
@@ -435,19 +436,65 @@ string JoinPathSegmentsBackslash(const string &segments[])
   }
 
 //+------------------------------------------------------------------+
-bool EnsureFolderTreeFromSegments(const string &segments[])
+string NormalizeExportRelPath(const string raw)
   {
+   string p = raw;
+   StringReplace(p, "/", "\\");
+   StringTrimLeft(p);
+   StringTrimRight(p);
+   return p;
+  }
+
+//+------------------------------------------------------------------+
+bool EnsureRelativeFolderExists(const string relativeFolderRaw)
+  {
+   const string rel = NormalizeExportRelPath(relativeFolderRaw);
+   if(StringLen(rel) == 0)
+      return false;
+   const ushort sep = StringGetCharacter("\\", 0);
+   string parts[];
+   const int n = StringSplit(rel, sep, parts);
    string acc = "";
-   const int k = ArraySize(segments);
-   for(int i = 0; i < k; i++)
+   for(int i = 0; i < n; i++)
      {
+      const string piece = Trim(parts[i]);
+      if(StringLen(piece) == 0)
+         continue;
       if(StringLen(acc) == 0)
-         acc = segments[i];
+         acc = piece;
       else
-         acc = acc + "\\" + segments[i];
-      FolderCreate(acc);
+         acc = acc + "\\" + piece;
+      ResetLastError();
+      if(!FolderCreate(acc))
+        {
+         const int err = GetLastError();
+         PrintFormat("Mapazapp_TestEA export error: FolderCreate failed for %s, err=%d", acc, err);
+         return false;
+        }
      }
-   return (k > 0 && StringLen(acc) > 0);
+   return StringLen(acc) > 0;
+  }
+
+//+------------------------------------------------------------------+
+bool ExportParentFolderForFile(const string relativeFileRaw, string &outParent)
+  {
+   outParent = "";
+   const string p = NormalizeExportRelPath(relativeFileRaw);
+   const int len = (int)StringLen(p);
+   int last = -1;
+   for(int i = len - 1; i >= 0; i--)
+     {
+      const ushort ch = StringGetCharacter(p, i);
+      if(ch == (ushort)'\\')
+        {
+         last = i;
+         break;
+        }
+     }
+   if(last <= 0)
+      return false;
+   outParent = StringSubstr(p, 0, last);
+   return StringLen(outParent) > 0;
   }
 
 //+------------------------------------------------------------------+
@@ -479,30 +526,67 @@ bool BuildExportPath(void)
    for(int j = 0; j < t; j++)
       allSegs[r + j] = tail[j];
 
-   if(!EnsureFolderTreeFromSegments(allSegs))
-      return false;
    g_baseRelPath = JoinPathSegmentsBackslash(allSegs);
-   return (StringLen(g_baseRelPath) > 0);
+   if(StringLen(g_baseRelPath) == 0)
+      return false;
+   if(!EnsureRelativeFolderExists(g_baseRelPath))
+      return false;
+   return true;
   }
 
 //+------------------------------------------------------------------+
-bool WriteTextAtomic(const string relativePath, const string body)
+bool WriteTextAtomic(const string relativePathRaw, const string body)
   {
+   const string relativePath = NormalizeExportRelPath(relativePathRaw);
    const string tmp = relativePath + ".tmp";
-   int fh = FileOpen(tmp, FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_SHARE_READ);
+   string parent = "";
+   if(ExportParentFolderForFile(tmp, parent))
+     {
+      if(!EnsureRelativeFolderExists(parent))
+        {
+         g_exportWriteFailCount++;
+         return false;
+        }
+     }
+
+   ResetLastError();
+   const int fh = FileOpen(tmp,
+                           FILE_WRITE | FILE_TXT | FILE_ANSI | FILE_SHARE_READ | FILE_REWRITE);
    if(fh == INVALID_HANDLE)
+     {
+      const int err = GetLastError();
+      PrintFormat("Mapazapp_TestEA export error: FileOpen failed for %s, err=%d", tmp, err);
+      g_exportWriteFailCount++;
       return false;
+     }
    if(FileWriteString(fh, body) <= 0)
      {
+      const int err = GetLastError();
+      PrintFormat("Mapazapp_TestEA export error: FileWriteString failed for %s, err=%d", tmp, err);
       FileClose(fh);
+      g_exportWriteFailCount++;
       return false;
      }
    FileFlush(fh);
    FileClose(fh);
-   if(FileIsExist(relativePath))
-      FileDelete(relativePath);
-   if(!FileMove(tmp, 0, relativePath, 0))
+   if(FileIsExist(relativePath, 0))
+     {
+      ResetLastError();
+      if(!FileDelete(relativePath, 0))
+        {
+         const int err = GetLastError();
+         PrintFormat("Mapazapp_TestEA export error: FileDelete failed for %s, err=%d (continuing with FileMove+rewrite)",
+                     relativePath, err);
+        }
+     }
+   ResetLastError();
+   if(!FileMove(tmp, 0, relativePath, FILE_REWRITE))
+     {
+      const int err = GetLastError();
+      PrintFormat("Mapazapp_TestEA export error: FileMove failed for %s -> %s, err=%d", tmp, relativePath, err);
+      g_exportWriteFailCount++;
       return false;
+     }
    return true;
   }
 
@@ -1632,19 +1716,29 @@ void WriteAllExports(const int deinitReason)
       string tradesBody = WriteTradesHeader() + "\r\n";
       if(StringLen(g_tradesDataLines) > 0)
          tradesBody += g_tradesDataLines + "\r\n";
-      WriteTextAtomic(g_baseRelPath + "\\backtest_trades.csv", tradesBody);
+      const string tradesPath = g_baseRelPath + "\\backtest_trades.csv";
+      if(!WriteTextAtomic(tradesPath, tradesBody))
+         Print("Mapazapp_TestEA export error: trades CSV final write failed (see FileOpen/FileMove logs above).");
      }
 
    if(InpWriteEventsCsv)
      {
       const string eventsBody = WriteEventsHeader() + "\r\n" + g_eventsDataLines + "\r\n";
-      WriteTextAtomic(g_baseRelPath + "\\backtest_events.csv", eventsBody);
+      const string eventsPath = g_baseRelPath + "\\backtest_events.csv";
+      if(!WriteTextAtomic(eventsPath, eventsBody))
+         Print("Mapazapp_TestEA export error: events CSV final write failed (see FileOpen/FileMove logs above).");
      }
 
    if(InpWriteSummaryJson)
      {
-      WriteTextAtomic(g_baseRelPath + "\\backtest_summary.json", WriteSummaryJson());
+      const string summaryPath = g_baseRelPath + "\\backtest_summary.json";
+      const string summaryJson = WriteSummaryJson();
+      if(!WriteTextAtomic(summaryPath, summaryJson))
+         Print("Mapazapp_TestEA export error: summary JSON final write failed (see FileOpen/FileMove logs above).");
      }
+
+   if(g_exportWriteFailCount > 0)
+      PrintFormat("Mapazapp_TestEA export: completed with prior write failures (count=%d).", g_exportWriteFailCount);
   }
 
 //+------------------------------------------------------------------+
@@ -1670,6 +1764,11 @@ int OnInit()
       Print("Mapazapp_TestEA: invalid export path.");
       return INIT_FAILED;
      }
+
+   PrintFormat("Mapazapp_TestEA export layout: effective folder (under MQL5\\Files\\): %s", g_baseRelPath);
+   PrintFormat("Mapazapp_TestEA export layout: summary path: %s\\backtest_summary.json", g_baseRelPath);
+   PrintFormat("Mapazapp_TestEA export layout: events path: %s\\backtest_events.csv", g_baseRelPath);
+   PrintFormat("Mapazapp_TestEA export layout: trades path: %s\\backtest_trades.csv", g_baseRelPath);
 
    g_initOk = true;
    Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + E5.5.0 virtual trade simulation (no orders); outputs under MQL5\\Files\\", g_baseRelPath);

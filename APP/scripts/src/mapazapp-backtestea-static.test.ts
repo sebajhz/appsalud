@@ -217,3 +217,15 @@ test("U — E5.5.0.1: no bare StringHash(); local MapazappStableStringHash for p
   assert.match(src, /MapazappStableStringHash/);
   assert.match(src, /TesterParamFingerprintU32/);
 });
+
+test("V — E5.5.0.2: safe-export folder chain + FileOpen diagnostics + g_baseRelPath writes", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /EnsureRelativeFolderExists/);
+  assert.match(src, /Mapazapp_TestEA export error: FileOpen failed for/);
+  assert.match(src, /GetLastError\(\)/);
+  assert.match(src, /Mapazapp_TestEA export layout: summary path:/);
+  assert.match(src, /g_baseRelPath \+ "\\\\backtest_summary\.json"/);
+  assert.match(src, /g_baseRelPath \+ "\\\\backtest_events\.csv"/);
+  assert.match(src, /g_baseRelPath \+ "\\\\backtest_trades\.csv"/);
+  assert.match(src, /FileMove\(tmp, 0, relativePath, FILE_REWRITE\)/);
+});

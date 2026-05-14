@@ -18,6 +18,8 @@ Eso **contamina o destruye evidencia**: el último pase en escribir gana, y los 
 
 **E5.5.0.1:** se corrigió un fallo de compilación en MetaEditor: la huella de parámetros para carpetas seguras en optimización dejó de usar `StringHash` (no disponible de forma fiable en este contexto MQL5) y pasó a un **hash estable local** (`MapazappStableStringHash`, estilo FNV-1a), conservando el comportamiento determinista de E5.5.0.
 
+**E5.5.0.2:** en una prueba manual de export seguro (un solo pase del Strategy Tester), la carpeta efectiva bajo `MQL5\Files\…\<campaign>\<folder_leaf>\` existía pero **no aparecían** `backtest_summary.json`, `backtest_events.csv` ni `backtest_trades.csv`. Esta revisión endurece la **creación recursiva de carpetas** (`EnsureRelativeFolderExists`), el **commit atómico** (`FileMove` con `FILE_REWRITE`), la **re-creación del directorio padre** antes de cada `FileOpen`, y añade **diagnósticos** (`GetLastError`, rutas en `OnInit`, mensajes si falla la escritura final).
+
 ---
 
 ## 2. Riesgo de pisado (sin E5.5.0)

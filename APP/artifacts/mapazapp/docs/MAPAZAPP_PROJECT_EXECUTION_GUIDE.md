@@ -8,7 +8,7 @@
 - Si cambia el **rol** de un componente o la **arquitectura** de producto, **actualizar este archivo** en el mismo checkpoint (o inmediatamente después), no solo el código.
 - Este documento debe **mantenerse vivo**: en **cada checkpoint** cerrado, actualizar al menos la tabla **Next-step checklist** (§8) y una línea en el **Implementation Ledger** (§9).
 
-**Relacionado:** [`MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md), [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md). **TestEA build / versioning (E5.4.3):** [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md).
+**Relacionado:** [`MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md), [`ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md`](./ENGINE_SETUP_PROOF_MASTER_PLAN_E1.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md). **TestEA build / versioning (E5.4.3):** [`TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md`](./TESTEA_BUILD_VERSIONING_POLICY_E5_4_3.md). **E5.5.0.2:** TestEA escribe de forma fiable los tres ficheros en rutas `optimization_safe` (ver [`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](./TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md)).
 
 ---
 
