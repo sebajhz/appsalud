@@ -47,6 +47,8 @@ const HEADER_ALIASES: Record<string, string> = {
   rr: "result_r",
   /** Mapazapp_TestEA E3.4.2+ compact header: `entry` column is entry price. */
   entry: "entry_price",
+  /** TestEA E5.8 — optional quality column; maps to `scoreTotal` for advisory imports. */
+  entry_quality_score: "score_total",
 };
 
 function normalizeHeader(h: string): string {

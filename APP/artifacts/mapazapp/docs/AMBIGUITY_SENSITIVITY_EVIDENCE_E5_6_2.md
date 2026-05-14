@@ -133,7 +133,7 @@ El setup permanece **prometedor pero no aprobado**: no se eleva a “aprobado pa
 
 *(Cadena E5.11–E5.13 sigue en [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md) §15.)*
 
-**Contrato formal E5.7:** [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) — score en modo **observación**; implementación en **E5.8+**.
+**Contrato formal E5.7:** [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) — score en modo **observación**. **E5.8 (repo):** primera exportación en TestEA — [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md); **E5.9+** campañas de distribución y revisión de umbrales.
 
 ---
 
@@ -152,3 +152,4 @@ El setup permanece **prometedor pero no aprobado**: no se eleva a “aprobado pa
 | E5.6.2 v1 | Evidencia operador: 7 bundles E55; tablas y decisión archivadas. |
 | E5.6.2 v1.1 | Puntero al contrato **E5.7** Entry Quality Score V1. |
 | E5.6.2 v1.2 | **E5.7** cerrado en repo: contrato formal [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) (observación; exports §9; métricas campaña §8). |
+| E5.6.2 v1.3 | **E5.8** export score en TestEA (observación) — [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md); §9 actualizado. |

@@ -1,6 +1,6 @@
 {
   "schema_version": "backtest_ea_v1",
-  "ea_build": "MZP_TestEA_E5_5_0_sample_nested",
+  "ea_build": "MZP_TestEA_E5_8_0_sample_nested",
   "run_id": "MZP_E5_5_DOC_SAMPLE__default_FVG2_RR2_00_BIASBODY0_RALIGN1",
   "campaign_id": "MZP_E5_5_DOC_SAMPLE",
   "optimization_safe_exports": true,
@@ -10,7 +10,9 @@
     "virtual_min_trade_fvg_points": 2,
     "virtual_risk_reward": 2.0,
     "daily_bias_min_body_points": 0,
-    "require_daily_bias_alignment": true
+    "require_daily_bias_alignment": true,
+    "entry_quality_score_enabled": true,
+    "entry_quality_score_gate_enabled": false
   },
   "strategy_id": "IFVG_XAUUSD_V1",
   "parameter_set_id": "default",
@@ -28,6 +30,10 @@
   "has_full_ifvg_pipeline": false,
   "has_real_daily_bias_logic": true,
   "has_real_virtual_trade_logic": true,
+  "has_entry_quality_score_logic": true,
+  "score_observation_only": true,
+  "score_gate_enabled": false,
+  "entry_quality_score_export_enabled": true,
   "has_real_trading_orders": false,
   "trade_count": 3,
   "virtual_trade_count": 3,
@@ -64,6 +70,15 @@
   "last_setup_decision": "setup_candidate_allowed",
   "last_setup_reason": "daily_bias_aligned",
   "last_fvg_points": 110,
+  "score_a_count": 0,
+  "score_b_count": 0,
+  "score_c_count": 2,
+  "score_rejected_count": 1,
+  "average_entry_quality_score": 51.333333,
+  "average_ambiguous_risk_score": 25.0,
+  "average_score_win": 53.0,
+  "average_score_loss": 53.0,
+  "average_score_ambiguous": 0.0,
   "exported_at_utc": "2026-01-15T10:00:00Z",
-  "notes": "Fictional E5.5.0 nested-folder sample — folder leaf differs from legacy flat run_id naming; validates CLI against campaign/SET path."
+  "notes": "Fictional E5.8 nested-folder sample — folder leaf differs from legacy flat run_id naming; score fields illustrative."
 }

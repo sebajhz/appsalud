@@ -278,7 +278,7 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | **E5.6** | Sensibilidad y diagnóstico `ambiguous` (plan cerrado + modos contables + opciones A/B/C) — [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md). |
 | **E5.6.2** | Evidencia CLI sensibilidad ambigüedad sobre bundles E5.5.1 (E55) — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md). |
 | **E5.7** | Contrato **Entry Quality Score V1** (observación únicamente; sin compuerta dura) — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md). |
-| **E5.8** | Implementación en TestEA: export de score/componentes **sin** gate de trading. |
+| **E5.8** | **Repo cerrado:** export de score/componentes en `Mapazapp_TestEA` **`MZP_TestEA_E5_8_0`** — [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md); **sin** gate de trading (`InpEntryQualityScoreGateEnabled=false`). |
 | **E5.9** | Campaña de **distribución** de score y análisis off-line. |
 | **E5.10** | Detección/export de **liquidity sweep** (sin bloqueo inicial). |
 | **E5.11** | Filtros/config **sesión + noticias** (inputs acordados). |
@@ -323,3 +323,4 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | E5.5.2 v1.2 | Puntero a evidencia **E5.6.2** + fila §15; lectura post-análisis ambigüedad. |
 | E5.5.2 v1.3 | Puntero a contrato **E5.7** Entry Quality Score V1. |
 | E5.5.2 v1.4 | §6: enlace explícito al contrato **E5.7** como fuente formal (weights, §8–§9, `ambiguous_risk_*`). |
+| E5.5.2 v1.5 | §15: **E5.8** marcado como cerrado en repo (export score observación; build `MZP_TestEA_E5_8_0`). |

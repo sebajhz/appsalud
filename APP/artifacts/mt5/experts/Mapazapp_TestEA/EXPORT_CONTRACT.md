@@ -94,6 +94,9 @@ Incluye (lista en `parseBacktestEventsCsv`):
 - **Encoding:** ANSI, ASCII-safe.
 - **Cabecera E5.3 (cuando hay simulación virtual):**  
   `run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode`
+- **Cabecera E5.8 (extensión observación — columnas añadidas al final):**  
+  `entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_type,session_bucket,trade_window_status,spread_status,news_mode`  
+  Los bundles **anteriores** sin estas columnas siguen siendo válidos (importador TS: columnas opcionales). Cuando existan, `validateTestEaExportSample` exige coherencia con `has_entry_quality_score_logic` / `score_observation_only` / `score_gate_enabled` en `backtest_summary.json` (ver validador en `@workspace/mapazapp-core`).
 - **Filas de datos:** **ninguna** si la corrida no produce trades virtuales cerrados — **válido header-only**. Las filas deben corresponder a **cierres** de la simulación virtual (win/loss/expired/ambiguous/…); **no** filas sintéticas sin lógica del EA.
 - **Dirección:** `BUY`/`SELL` o `LONG`/`SHORT` (normaliza el importador TS).
 
@@ -130,6 +133,11 @@ Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas 
 | `has_full_ifvg_pipeline` | boolean | **false** (E3.6+) — sin conversión FVG→IFVG completa, sin ATR/sweeps/target liquidity del pipeline IFVG en el EA. |
 | `has_real_trading_orders` | boolean | **false** |
 | `has_real_virtual_trade_logic` | boolean | **true** cuando la simulación virtual está habilitada en el EA (E5.3). |
+| `has_entry_quality_score_logic` | boolean | **E5.8:** **true** cuando el EA exporta el modelo Entry Quality Score V1 (observación; no compuerta de trades). |
+| `score_observation_only` | boolean | **E5.8:** debe ser **true** si `has_entry_quality_score_logic` es true (sin bloqueo por score). |
+| `score_gate_enabled` | boolean | **E5.8:** debe ser **false** en modo observación (sin veto automático por umbral de score). |
+| `entry_quality_score_export_enabled` | boolean | Eco de `InpEntryQualityScoreEnabled` (export numérico activo o filas en ceros con marca `off`). |
+| Agregados score (E5.8) | number | `score_a_count`, `score_b_count`, `score_c_count`, `score_rejected_count`, `average_entry_quality_score`, `average_ambiguous_risk_score`, `average_score_win`, `average_score_loss`, `average_score_ambiguous` (promedios 0 si no hubo trades en esa categoría). |
 | `trade_count` | number | **Debe igualar** el número de filas de datos en `backtest_trades.csv`. Con simulación virtual **E5.4.1+**, conviene que **`virtual_trade_count`** coincida con **`trade_count`** (paridad candidato/fila documentada en `TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`). |
 | Contadores / métricas virtuales (E5.3) | number | p. ej. `virtual_trade_count`, `filled_trade_count`, `win_count`, `loss_count`, `unresolved_count` (E5.4.1), `total_r`, `average_r`, `winrate`, `expectancy_r`, `max_drawdown_r`, … — ver implementación E5.3 / E5.4.1. |
 | Contadores bias | number | `total_bias_evaluated`, `bullish_bias_count`, `bearish_bias_count`, `neutral_bias_count`, `unknown_bias_count`. |

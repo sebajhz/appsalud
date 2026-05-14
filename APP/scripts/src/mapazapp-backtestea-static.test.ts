@@ -168,11 +168,14 @@ test("P — EXPORT_CONTRACT documents E3.6 / schema freeze", () => {
   assert.ok(ex.includes("backtest_events.csv"));
 });
 
-test("Q — samples: summary has_full false; events include setup + virtual flow; trades include virtual rows", () => {
+test("Q — samples: summary has_full false; events include setup + virtual flow; trades include virtual rows + E5.8 score columns", () => {
   const summary = JSON.parse(readFileSync(SAMPLE_SUMMARY_PATH, "utf8")) as Record<string, unknown>;
   assert.equal(summary["has_full_ifvg_pipeline"], false);
   assert.equal(summary["has_real_ifvg_logic"], true);
   assert.equal(summary["has_real_virtual_trade_logic"], true);
+  assert.equal(summary["has_entry_quality_score_logic"], true);
+  assert.equal(summary["score_observation_only"], true);
+  assert.equal(summary["score_gate_enabled"], false);
   assert.equal(summary["trade_count"], 3);
   assert.equal(summary["virtual_trade_count"], 3);
   const events = readFileSync(SAMPLE_EVENTS_PATH, "utf8");
@@ -182,6 +185,7 @@ test("Q — samples: summary has_full false; events include setup + virtual flow
   const trades = readFileSync(SAMPLE_TRADES_PATH, "utf8").trimEnd().split(/\r?\n/);
   assert.ok(trades.length >= 2);
   assert.ok(trades[0]!.includes("trade_id") && trades[0]!.includes("exit_price"));
+  assert.ok(trades[0]!.includes("entry_quality_score") && trades[0]!.includes("ambiguous_risk_score"));
 });
 
 test("S — virtual trade event markers present", () => {
@@ -257,9 +261,14 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
   assert.match(src, /Mapazapp_TestEA export error: FileMove failed for/);
 });
 
-test("X — E5.5.0.5: campaign defaults + short export folder inputs + MT5 presets", () => {
+test("X — E5.8 + E5.5.0.5: build marker, entry quality inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_5_0_5"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_8_0"/);
+  assert.match(src, /input bool\s+InpEntryQualityScoreEnabled\s*=\s*true/);
+  assert.match(src, /input bool\s+InpEntryQualityScoreGateEnabled\s*=\s*false/);
+  assert.match(src, /has_entry_quality_score_logic/);
+  assert.match(src, /score_observation_only/);
+  assert.match(src, /score_gate_enabled/);
   assert.match(src, /input bool\s+InpOptimizationSafeExports\s*=\s*true/);
   assert.match(src, /input bool\s+InpAutoBuildRunIdFromParams\s*=\s*true/);
   assert.match(
@@ -304,4 +313,16 @@ test("Y — E5.5.0.5: summary export_* keys + physical safe path ties to InpExpo
   for (const bad of FORBIDDEN_SUBSTRINGS) {
     assert.equal(src.includes(bad), false);
   }
+});
+
+test("Z — E5.8: score field tokens present in EA (CSV header + components)", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /entry_quality_grade/);
+  assert.match(src, /htf_narrative_score/);
+  assert.match(src, /liquidity_event_score/);
+  assert.match(src, /displacement_fvg_quality_score/);
+  assert.match(src, /entry_confirmation_score/);
+  assert.match(src, /ambiguous_risk_score/);
+  assert.match(src, /missing_quality_components/);
+  assert.match(src, /ambiguous_risk_reasons/);
 });

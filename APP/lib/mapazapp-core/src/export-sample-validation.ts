@@ -590,6 +590,30 @@ export function validateTestEaExportSample(
           );
           status = bumpStatus(status, "invalid");
         }
+        if (summaryJson["has_entry_quality_score_logic"] === true) {
+          if (summaryJson["score_observation_only"] !== true) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_SCORE_OBSERVATION_ONLY",
+                "E5.8: when has_entry_quality_score_logic is true, score_observation_only must be true (observation-only exports)",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          if (summaryJson["score_gate_enabled"] === true) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_SCORE_GATE_ENABLED",
+                "E5.8: score_gate_enabled must be false for observation-only Entry Quality Score exports",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

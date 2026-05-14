@@ -141,8 +141,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.6 (docs) —** plan sensibilidad y diagnósticos `ambiguous` (modos contables, métricas, opciones A/B/C) — [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md).
 - **E5.6.1 (repo) —** analizador TypeScript + CLI post-proceso bundles (`mapazapp:testea-ambiguity-sensitivity`) — [`AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md`](./AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md).
 - **E5.6.2 (docs) —** evidencia sensibilidad ambigüedad (7 bundles E55; tablas y decisión) — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md).
-- **E5.7 (docs) —** contrato **Entry Quality Score V1** (observación; componentes; sin implementación MQL5/TS en E5.7) — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md).
-- **Siguiente operativo:** **E5.8** — export de score en TestEA (solo observación); luego **E5.9** campaña de distribución; cadena E5.10–E5.13 en roadmap y handoff.
+- **E5.7 (docs) —** contrato **Entry Quality Score V1** — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md). **E5.8 (repo) —** export score en TestEA (`MZP_TestEA_E5_8_0`) — [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md).
+- **Siguiente operativo:** **E5.9** — campaña de distribución del score; cadena E5.10–E5.13 en roadmap y handoff.
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -198,7 +198,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.6 | Ambiguity **sensitivity + diagnostics** plan (docs-only) | **completed** | Cursor + PM | Modos contables, stress −1R/ambiguous, métricas, opciones A/B/C, BridgeEA flags — [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md). | **E5.6.1** |
 | E5.6.1 | TestEA **ambiguity sensitivity analyzer** (core + CLI) | **completed** | Cursor | Post-proceso `neutral_zero` / `conservative_loss` / `skip_ambiguous` — [`AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md`](./AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md); sin cambio MQL5. | **E5.6.2** |
 | E5.6.2 | Ambiguity sensitivity **evidence** (docs-only; operador) | **completed** | Operador + Cursor | 7 bundles E55; tablas y decisión — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md); CSV local no versionado. | **E5.7** |
-| E5.7 | **Entry Quality Score V1** contract (docs-only) | **completed** | Cursor + PM | Score observación; 7 componentes + métricas campaña; BridgeEA parity — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md). | **E5.8** |
+| E5.7 | **Entry Quality Score V1** contract (docs-only) | **completed** | Cursor + PM | [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md). | **E5.8** |
+| E5.8 | **Entry Quality Score** export TestEA (observación) | **completed** | Cursor | `Mapazapp_TestEA.mq5` **`MZP_TestEA_E5_8_0`**, CSV/summary/events, validadores TS, muestras — [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md). | **E5.9** |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |
@@ -240,7 +241,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.6 | Ambiguity sensitivity + diagnostics plan (docs-only) | `AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`, refs guía / handoff / roadmap / audit E5.5.2 §10 | Stress −1R/ambiguous; modos A/B/C; sin cambio MQL5 en E5.6 | **E5.6.1** |
 | E5.6.1 | Ambiguity sensitivity analyzer (core + CLI) | `testea-ambiguity-sensitivity.ts`, `mapazapp-testea-ambiguity-sensitivity.ts`, doc E5.6.1, refs guía/handoff/roadmap | Opción **A** (post-proceso TS) implementada; sin MT5 | **E5.6.2** |
 | E5.6.2 | Ambiguity sensitivity evidence (operator CLI on E55 bundles) | `AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`, refs guía/handoff/roadmap/audit | Setup sigue no aprobado; `conservative_loss` negativo en todos los FVG | **E5.7** |
-| E5.7 | Entry Quality Score V1 contract (docs-only) | `ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`, `AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`, `PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`, `MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`, `CURSOR_HANDOFF.md`, `ROADMAP_V2_MASTER_EXECUTION_PLAN.md` | Contrato §1–§14: 7 componentes (100 pt borrador), grades provisionales, hard vs soft gates, `ambiguous_risk_*`, CSV draft §9; sin código MQL5/TS | **E5.8** |
+| E5.7 | Entry Quality Score V1 contract (docs-only) | `ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`, cross-refs | Contrato E5.7 cerrado | **E5.8** |
+| E5.8 | Entry Quality Score export (TestEA observation) | `Mapazapp_TestEA.mq5`, `EXPORT_CONTRACT.md`, samples, `export-sample-validation.ts`, `backtest-importer.ts`, `ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`, docs guía/handoff/roadmap | Score en CSV/summary; `score_gate_enabled` false; sin bloqueo trades | **E5.9** |
 
 ## 10. Cursor working rules
 

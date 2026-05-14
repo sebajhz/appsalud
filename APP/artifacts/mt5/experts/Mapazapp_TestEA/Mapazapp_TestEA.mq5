@@ -6,8 +6,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.10"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.5.0.5 short physical export folders + full JSON ids; E5.5.0.3 FileOpen-safe export writes (no orders)."
+#property version   "1.11"
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.8 observation-only Entry Quality Score V1 export; E5.5.0.5 short physical export folders + full JSON ids; E5.5.0.3 FileOpen-safe export writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -48,7 +48,10 @@ input bool              InpVirtualOneTradeAtATime  = true;
 input int               InpVirtualMinTradeFvgPoints = 2;
 input bool              InpWriteVirtualTrades        = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_5_0_5"
+input bool              InpEntryQualityScoreEnabled      = true;
+input bool              InpEntryQualityScoreGateEnabled = false;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_8_0"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -142,6 +145,41 @@ double          g_equity_r_cum = 0.0;
 double          g_max_drawdown_r = 0.0;
 string          g_last_trade_outcome = "";
 double          g_last_trade_result_r = 0.0;
+
+long            g_eq_grade_a = 0;
+long            g_eq_grade_b = 0;
+long            g_eq_grade_c = 0;
+long            g_eq_grade_rejected = 0;
+double          g_eq_sum_entry_quality = 0.0;
+double          g_eq_sum_ambiguous_risk = 0.0;
+double          g_eq_sum_entry_quality_win = 0.0;
+long            g_eq_count_win_scored = 0;
+double          g_eq_sum_entry_quality_loss = 0.0;
+long            g_eq_count_loss_scored = 0;
+double          g_eq_sum_entry_quality_ambiguous = 0.0;
+long            g_eq_count_ambiguous_scored = 0;
+
+struct MapzEqScorePack
+  {
+   int               entry_quality_score;
+   string            entry_quality_grade;
+   int               htf_narrative_score;
+   int               liquidity_event_score;
+   int               displacement_fvg_quality_score;
+   int               entry_confirmation_score;
+   int               target_quality_score;
+   int               session_news_spread_score;
+   int               risk_overtrading_score;
+   int               ambiguous_risk_score;
+   string            quality_reasons;
+   string            missing_quality_components;
+   string            ambiguous_risk_reasons;
+   string            liquidity_event_type;
+   string            session_bucket;
+   string            trade_window_status;
+   string            spread_status;
+   string            news_mode;
+  };
 
 struct MapzVirtualTrade
   {
@@ -929,9 +967,274 @@ string ExportSetupEvent(const string eventType,
   }
 
 //+------------------------------------------------------------------+
-string VirtualBuildDetailsCore(void)
+string MapzEqGradeFromTotal(const int total)
+  {
+   if(total >= 80)
+      return "A";
+   if(total >= 65)
+      return "B";
+   if(total >= 50)
+      return "C";
+   return "Rejected";
+  }
+
+//+------------------------------------------------------------------+
+void MapzEqRegisterGradeBucket(const string grade)
+  {
+   if(grade == "off")
+      return;
+   if(grade == "A")
+      g_eq_grade_a++;
+   else if(grade == "B")
+      g_eq_grade_b++;
+   else if(grade == "C")
+      g_eq_grade_c++;
+   else if(grade == "Rejected")
+      g_eq_grade_rejected++;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
+                                  const ENUM_MAPZ_BIAS biasEnum,
+                                  const long fvgPts,
+                                  const double entry,
+                                  const double sl,
+                                  const double tp,
+                                  const double riskAbs,
+                                  const bool filled,
+                                  const string outcome,
+                                  MapzEqScorePack &out)
+  {
+   out.entry_quality_score = 0;
+   out.entry_quality_grade = "off";
+   out.htf_narrative_score = 0;
+   out.liquidity_event_score = 0;
+   out.displacement_fvg_quality_score = 0;
+   out.entry_confirmation_score = 0;
+   out.target_quality_score = 0;
+   out.session_news_spread_score = 0;
+   out.risk_overtrading_score = 0;
+   out.ambiguous_risk_score = 0;
+   out.quality_reasons = "";
+   out.missing_quality_components = "";
+   out.ambiguous_risk_reasons = "";
+   out.liquidity_event_type = "none";
+   out.session_bucket = "unknown";
+   out.trade_window_status = "unknown";
+   out.spread_status = "unknown";
+   out.news_mode = "observe_only";
+
+   if(!InpEntryQualityScoreEnabled)
+     {
+      out.missing_quality_components = "entry_quality_score_export_disabled|";
+      return;
+     }
+
+   const bool longDir = (dir == MAPZ_SETUP_LONG);
+   const bool shortDir = (dir == MAPZ_SETUP_SHORT);
+   const bool biasAlign = (longDir && biasEnum == MAPZ_BIAS_BULLISH) || (shortDir && biasEnum == MAPZ_BIAS_BEARISH);
+
+   if(biasAlign)
+     {
+      out.htf_narrative_score = 18;
+      out.quality_reasons += "daily_bias_aligned|";
+     }
+   else if(biasEnum == MAPZ_BIAS_NEUTRAL)
+     {
+      out.htf_narrative_score = 5;
+      out.missing_quality_components += "neutral_bias_context|";
+     }
+   else if(biasEnum == MAPZ_BIAS_UNKNOWN)
+     {
+      out.htf_narrative_score = 3;
+      out.missing_quality_components += "daily_bias_unknown|";
+     }
+   else
+     {
+      out.htf_narrative_score = 0;
+      out.missing_quality_components += "bias_not_aligned|";
+     }
+
+   if(InpUseH4Context || InpUseH1Context)
+      out.missing_quality_components += "missing_h4_h1_structure|";
+
+   out.liquidity_event_score = 0;
+   out.missing_quality_components += "liquidity_event_not_implemented|";
+
+   const int vmin = (InpVirtualMinTradeFvgPoints > 0 ? InpVirtualMinTradeFvgPoints : 1);
+   const double ratio = (double)fvgPts / (double)vmin;
+   string fvgBucket = "below_virtual_min";
+   if(fvgPts < vmin)
+     {
+      out.displacement_fvg_quality_score = 0;
+      fvgBucket = "below_virtual_min";
+     }
+   else if(ratio < 1.25)
+     {
+      out.displacement_fvg_quality_score = 5;
+      fvgBucket = "near_min";
+     }
+   else if(ratio < 2.0)
+     {
+      out.displacement_fvg_quality_score = 10;
+      fvgBucket = "medium";
+     }
+   else
+     {
+      out.displacement_fvg_quality_score = 15;
+      fvgBucket = "strong";
+     }
+   out.quality_reasons += StringFormat("fvg_size_bucket=%s|", fvgBucket);
+
+   if(!filled)
+     {
+      out.entry_confirmation_score = 3;
+      out.missing_quality_components += "entry_not_filled|";
+     }
+   else if(outcome == "ambiguous")
+     {
+      out.entry_confirmation_score = 6;
+      out.quality_reasons += "midpoint_fill|";
+     }
+   else if(outcome == "win" || outcome == "loss")
+     {
+      out.entry_confirmation_score = 8;
+      out.quality_reasons += "midpoint_fill|";
+     }
+   else
+     {
+      out.entry_confirmation_score = 5;
+      out.quality_reasons += "midpoint_fill|";
+     }
+   out.missing_quality_components += "confirmation_not_implemented|";
+
+   if(riskAbs <= 0.0 || (!longDir && !shortDir))
+     {
+      out.target_quality_score = 0;
+      out.missing_quality_components += "invalid_risk_geometry|";
+     }
+   else
+     {
+      const double rrObs = (longDir ? (tp - entry) / (entry - sl) : (entry - tp) / (sl - entry));
+      const double rrTol = 0.25;
+      if(MathAbs(rrObs - InpVirtualRiskReward) <= rrTol)
+         out.target_quality_score = 7;
+      else
+         out.target_quality_score = 5;
+      out.quality_reasons += "rr_geometry_ok|";
+     }
+   out.missing_quality_components += "target_liquidity_not_implemented|";
+
+   out.session_news_spread_score = 0;
+   out.missing_quality_components += "session_news_spread_not_implemented|";
+
+   if(InpVirtualOneTradeAtATime)
+      out.risk_overtrading_score = 5;
+   else
+      out.risk_overtrading_score = 3;
+   out.missing_quality_components += "risk_daily_limits_not_implemented|";
+
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   long riskPts = 0;
+   if(pt > 0.0 && riskAbs > 0.0)
+      riskPts = (long)MathRound(riskAbs / pt);
+
+   int amb = 25;
+   if(fvgPts < (long)(vmin * 1.5))
+     {
+      amb += 20;
+      out.ambiguous_risk_reasons += "small_fvg|";
+     }
+   if(riskPts > 0 && riskPts < (long)(vmin * 1.2))
+     {
+      amb += 20;
+      out.ambiguous_risk_reasons += "tight_risk|";
+     }
+   if(outcome == "ambiguous")
+     {
+      amb += 30;
+      out.ambiguous_risk_reasons += "both_sl_tp_possible|";
+     }
+   else if(StringLen(outcome) == 0)
+     {
+      out.ambiguous_risk_reasons += "unknown_until_exit|";
+     }
+
+   if(g_initOk && pt > 0.0 && riskAbs > 0.0)
+     {
+      const datetime tEx = g_vt.exit_time;
+      if(tEx > 0)
+        {
+         const int sh = iBarShift(g_brokerSymbol, InpExecutionTimeframe, tEx, false);
+         if(sh >= 0)
+           {
+            const double rg = iHigh(g_brokerSymbol, InpExecutionTimeframe, sh)
+                              - iLow(g_brokerSymbol, InpExecutionTimeframe, sh);
+            if(rg > riskAbs * 3.0)
+              {
+               amb += 15;
+               out.ambiguous_risk_reasons += "large_exit_bar_range|";
+              }
+           }
+        }
+     }
+
+   if(amb > 100)
+      amb = 100;
+   if(amb < 0)
+      amb = 0;
+   out.ambiguous_risk_score = amb;
+
+   out.entry_quality_score = out.htf_narrative_score + out.liquidity_event_score + out.displacement_fvg_quality_score
+                             + out.entry_confirmation_score + out.target_quality_score + out.session_news_spread_score
+                             + out.risk_overtrading_score;
+   if(out.entry_quality_score > 100)
+      out.entry_quality_score = 100;
+   if(out.entry_quality_score < 0)
+      out.entry_quality_score = 0;
+   out.entry_quality_grade = MapzEqGradeFromTotal(out.entry_quality_score);
+  }
+
+//+------------------------------------------------------------------+
+string MapzEqScoresToDetailsSuffix(const MapzEqScorePack &p)
   {
    return StringFormat(
+             "eq_score=%d eq_grade=%s eq_htf=%d eq_liq=%d eq_disp=%d eq_entry=%d eq_tgt=%d eq_sess=%d eq_risk=%d eq_amb_risk=%d eq_miss=%s eq_qual=%s eq_amb_rsn=%s liq_type=%s sess_bucket=%s tw=%s spr=%s news=%s",
+             p.entry_quality_score,
+             JsonStringEscape(p.entry_quality_grade),
+             p.htf_narrative_score,
+             p.liquidity_event_score,
+             p.displacement_fvg_quality_score,
+             p.entry_confirmation_score,
+             p.target_quality_score,
+             p.session_news_spread_score,
+             p.risk_overtrading_score,
+             p.ambiguous_risk_score,
+             JsonStringEscape(p.missing_quality_components),
+             JsonStringEscape(p.quality_reasons),
+             JsonStringEscape(p.ambiguous_risk_reasons),
+             JsonStringEscape(p.liquidity_event_type),
+             JsonStringEscape(p.session_bucket),
+             JsonStringEscape(p.trade_window_status),
+             JsonStringEscape(p.spread_status),
+             JsonStringEscape(p.news_mode));
+  }
+
+//+------------------------------------------------------------------+
+string VirtualBuildDetailsCore(void)
+  {
+   MapzEqScorePack eqp;
+   MapzEqComputeScoresFromState(g_vt.dir,
+                                g_vt.bias_enum,
+                                g_vt.fvg_points,
+                                g_vt.entry,
+                                g_vt.sl,
+                                g_vt.tp,
+                                g_vt.risk_abs,
+                                g_vt.filled,
+                                g_vt.outcome,
+                                eqp);
+   const string base = StringFormat(
              "trade_id=%s setup_event_id=%s entry=%.5f sl=%.5f tp=%.5f rr=%.2f fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d outcome=%s result_r=%.3f bars_waiting_entry=%d bars_held=%d reason=%s",
              JsonStringEscape(g_vt.trade_id),
              JsonStringEscape(g_vt.setup_event_id),
@@ -942,6 +1245,7 @@ string VirtualBuildDetailsCore(void)
              g_vt.bars_waiting_entry,
              g_vt.bars_held,
              JsonStringEscape(g_vt.exit_reason));
+   return base + " " + MapzEqScoresToDetailsSuffix(eqp);
   }
 
 //+------------------------------------------------------------------+
@@ -1008,6 +1312,59 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
                 + InpVirtualEntryMode + ","
                 + InpVirtualStopMode + ","
                 + InpVirtualAmbiguityMode;
+
+   MapzEqScorePack eqp;
+   MapzEqComputeScoresFromState(g_vt.dir,
+                                g_vt.bias_enum,
+                                g_vt.fvg_points,
+                                g_vt.entry,
+                                g_vt.sl,
+                                g_vt.tp,
+                                g_vt.risk_abs,
+                                g_vt.filled,
+                                g_vt.outcome,
+                                eqp);
+   row += "," + IntegerToString(eqp.entry_quality_score)
+          + "," + eqp.entry_quality_grade
+          + "," + IntegerToString(eqp.htf_narrative_score)
+          + "," + IntegerToString(eqp.liquidity_event_score)
+          + "," + IntegerToString(eqp.displacement_fvg_quality_score)
+          + "," + IntegerToString(eqp.entry_confirmation_score)
+          + "," + IntegerToString(eqp.target_quality_score)
+          + "," + IntegerToString(eqp.session_news_spread_score)
+          + "," + IntegerToString(eqp.risk_overtrading_score)
+          + "," + IntegerToString(eqp.ambiguous_risk_score)
+          + "," + eqp.quality_reasons
+          + "," + eqp.missing_quality_components
+          + "," + eqp.ambiguous_risk_reasons
+          + "," + eqp.liquidity_event_type
+          + "," + eqp.session_bucket
+          + "," + eqp.trade_window_status
+          + "," + eqp.spread_status
+          + "," + eqp.news_mode;
+
+   if(InpEntryQualityScoreEnabled)
+     {
+      g_eq_sum_entry_quality += (double)eqp.entry_quality_score;
+      g_eq_sum_ambiguous_risk += (double)eqp.ambiguous_risk_score;
+      MapzEqRegisterGradeBucket(eqp.entry_quality_grade);
+      if(g_vt.outcome == "win")
+        {
+         g_eq_sum_entry_quality_win += (double)eqp.entry_quality_score;
+         g_eq_count_win_scored++;
+        }
+      else if(g_vt.outcome == "loss")
+        {
+         g_eq_sum_entry_quality_loss += (double)eqp.entry_quality_score;
+         g_eq_count_loss_scored++;
+        }
+      else if(g_vt.outcome == "ambiguous")
+        {
+         g_eq_sum_entry_quality_ambiguous += (double)eqp.entry_quality_score;
+         g_eq_count_ambiguous_scored++;
+        }
+     }
+
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
    g_tradesDataLines += row;
@@ -1534,12 +1891,21 @@ void TryDetectIfvgOnNewExecClosedBar(void)
       g_allowedSetups++;
       g_lastSetupDecision = gate;
       g_lastSetupReason = "daily_bias_aligned";
-      const string detA = StringFormat(
+      string detA = StringFormat(
                             "fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d candle_time=%s daily_bias_reason=%s gate_result=%s",
                             fLo, fHi, gapPts,
                             TimeUtcIso(cTime),
                             JsonStringEscape(g_lastBiasReason),
                             gate);
+      double entP = 0.0, slP = 0.0, tpP = 0.0, rAbsP = 0.0, fLoP = 0.0, fHiP = 0.0;
+      long fvgPtsP = 0;
+      string rjP = "";
+      if(VirtualPrepareTradePrices(sdir, fLo, fHi, entP, slP, tpP, rAbsP, fLoP, fHiP, fvgPtsP, rjP))
+        {
+         MapzEqScorePack eqSetup;
+         MapzEqComputeScoresFromState(sdir, g_lastBiasEnum, fvgPtsP, entP, slP, tpP, rAbsP, false, "", eqSetup);
+         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup);
+        }
       const string evAllow = ExportSetupEvent(EVT_SETUP_ALLOWED, setupW, gate, "daily_bias_aligned", detA);
       VirtualOnSetupAllowed(evAllow, setupW, sdir, fLo, fHi, gapPts, cTime, rsn);
      }
@@ -1602,13 +1968,14 @@ void RefreshSetupSummaryNotes(void)
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    const long tcRows = g_trades_csv_row_count;
    g_exportNotes = StringFormat(
-                       "E5.5.0 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; "
+                       "E5.8 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; entry_quality_score_export=%s (observation-only); "
                        "setup_inputs: enable=%s min_fvg_pts=%d virtual_min_trade_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
                        TfToWire(InpExecutionTimeframe),
                        (InpEnableVirtualTrades ? "on" : "off"),
                        gateNone,
+                       (InpEntryQualityScoreEnabled ? "on" : "off"),
                        (InpEnableSetupDetection ? "true" : "false"),
                        InpMinFvgPoints,
                        InpVirtualMinTradeFvgPoints,
@@ -1659,6 +2026,10 @@ string WriteSummaryJson(void)
    json += "  \"has_full_ifvg_pipeline\": false,\r\n";
    json += "  \"has_real_daily_bias_logic\": true,\r\n";
    json += "  \"has_real_virtual_trade_logic\": " + (InpEnableVirtualTrades ? "true" : "false") + ",\r\n";
+   json += "  \"has_entry_quality_score_logic\": true,\r\n";
+   json += "  \"score_observation_only\": true,\r\n";
+   json += "  \"score_gate_enabled\": false,\r\n";
+   json += "  \"entry_quality_score_export_enabled\": " + (InpEntryQualityScoreEnabled ? "true" : "false") + ",\r\n";
    json += "  \"has_real_trading_orders\": false,\r\n";
    json += StringFormat("  \"trade_count\": %I64d,\r\n", tcRows);
    json += StringFormat("  \"virtual_trade_count\": %I64d,\r\n", g_virtual_trade_count);
@@ -1695,6 +2066,20 @@ string WriteSummaryJson(void)
    json += "  \"last_setup_decision\": \"" + JsonStringEscape(g_lastSetupDecision) + "\",\r\n";
    json += "  \"last_setup_reason\": \"" + JsonStringEscape(g_lastSetupReason) + "\",\r\n";
    json += StringFormat("  \"last_fvg_points\": %I64d,\r\n", g_lastFvgPoints);
+   const double avgEntryQ = (tcRows > 0 ? g_eq_sum_entry_quality / (double)tcRows : 0.0);
+   const double avgAmbR = (tcRows > 0 ? g_eq_sum_ambiguous_risk / (double)tcRows : 0.0);
+   const double avgEqWin = (g_eq_count_win_scored > 0 ? g_eq_sum_entry_quality_win / (double)g_eq_count_win_scored : 0.0);
+   const double avgEqLoss = (g_eq_count_loss_scored > 0 ? g_eq_sum_entry_quality_loss / (double)g_eq_count_loss_scored : 0.0);
+   const double avgEqAmb = (g_eq_count_ambiguous_scored > 0 ? g_eq_sum_entry_quality_ambiguous / (double)g_eq_count_ambiguous_scored : 0.0);
+   json += StringFormat("  \"score_a_count\": %I64d,\r\n", g_eq_grade_a);
+   json += StringFormat("  \"score_b_count\": %I64d,\r\n", g_eq_grade_b);
+   json += StringFormat("  \"score_c_count\": %I64d,\r\n", g_eq_grade_c);
+   json += StringFormat("  \"score_rejected_count\": %I64d,\r\n", g_eq_grade_rejected);
+   json += StringFormat("  \"average_entry_quality_score\": %.6f,\r\n", avgEntryQ);
+   json += StringFormat("  \"average_ambiguous_risk_score\": %.6f,\r\n", avgAmbR);
+   json += StringFormat("  \"average_score_win\": %.6f,\r\n", avgEqWin);
+   json += StringFormat("  \"average_score_loss\": %.6f,\r\n", avgEqLoss);
+   json += StringFormat("  \"average_score_ambiguous\": %.6f,\r\n", avgEqAmb);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -1705,7 +2090,9 @@ string WriteSummaryJson(void)
    json += StringFormat("    \"virtual_min_trade_fvg_points\": %d,\r\n", InpVirtualMinTradeFvgPoints);
    json += StringFormat("    \"virtual_risk_reward\": %.6f,\r\n", InpVirtualRiskReward);
    json += StringFormat("    \"daily_bias_min_body_points\": %d,\r\n", InpDailyBiasMinBodyPoints);
-   json += "    \"require_daily_bias_alignment\": " + (InpRequireDailyBiasAlignment ? "true" : "false") + "\r\n";
+   json += "    \"require_daily_bias_alignment\": " + (InpRequireDailyBiasAlignment ? "true" : "false") + ",\r\n";
+   json += "    \"entry_quality_score_enabled\": " + (InpEntryQualityScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"entry_quality_score_gate_enabled\": " + (InpEntryQualityScoreGateEnabled ? "true" : "false") + "\r\n";
    json += "  },\r\n";
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
@@ -1716,7 +2103,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_type,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+
@@ -1838,7 +2225,7 @@ int OnInit()
    PrintFormat("Mapazapp_TestEA export layout: trades path: %s\\backtest_trades.csv", g_baseRelPath);
 
    g_initOk = true;
-   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + E5.5.0.5 virtual trade simulation (no orders); outputs under MQL5\\Files\\", g_baseRelPath);
+   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + virtual trades + E5.8 Entry Quality Score (observation-only, no orders); outputs under MQL5\\Files\\", g_baseRelPath);
 
    ExportLifecycleEvent("lifecycle_init", "ok", "OnInit", "paths_ready");
    ExportLifecycleEvent("skeleton_ready", "noop", "E5.5.0",

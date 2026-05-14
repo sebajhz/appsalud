@@ -387,3 +387,4 @@ XAUUSD solo ya mostró **alta frecuencia** de candidatos; multi-símbolo amplifi
 | Versión | Nota |
 |---------|------|
 | E5.7 v1 | Contrato formal: 7 componentes (100 pt borrador), grades provisionales, exports §9, métricas §8, parity BridgeEA §10. |
+| E5.7 v1.1 | **E5.8** implementa la primera exportación en TestEA (observación) — ver [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md). |

@@ -160,6 +160,14 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(t.zoneId).toBe("SAMPLE_ZONE");
   });
 
+  it("maps TestEA E5.8 header alias entry_quality_score to scoreTotal", () => {
+    const csv = MAPAZAPP_TESTEA_SAMPLE_CSV.replace("score_total", "entry_quality_score");
+    const r = importBacktestTradesFromCsv(csv, testeaOpts);
+    expect(r.ok).toBe(true);
+    expect(r.trades).toHaveLength(1);
+    expect(r.trades[0]!.scoreTotal).toBe(0.72);
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);

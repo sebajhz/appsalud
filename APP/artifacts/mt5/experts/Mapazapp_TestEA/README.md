@@ -30,7 +30,7 @@
 ## Operator notes
 
 1. Copy **`Mapazapp_TestEA.mq5`** into the terminal’s `MQL5\Experts\Mapazapp\` (or your layout).
-2. Compile in **MetaEditor** (F7) as **`MZP_TestEA_E5_5_0_5`**.
+2. Compile in **MetaEditor** (F7) as **`MZP_TestEA_E5_8_0`**.
 3. Run only in **Strategy Tester** with a symbol/time range that provides closed bars for the bias and execution timeframes.
 4. For **E5.5 / E5.5.1** inputs, prefer loading a **preset** from [`presets/`](./presets/) (see **E5.5 defaults and presets** below) instead of hand-editing every field.
 
@@ -38,7 +38,7 @@
 
 ## E5.5 defaults and presets
 
-- **Compile** build **`MZP_TestEA_E5_5_0_5`** (see `TESTEA_BUILD` in `Mapazapp_TestEA.mq5`).
+- **Compile** build **`MZP_TestEA_E5_8_0`** (see `TESTEA_BUILD` in `Mapazapp_TestEA.mq5`).
 - **Single run (no optimization)** — validate export writing under optimization-safe paths: copy [`presets/Mapazapp_TestEA_E5_5_single_safe_export.set`](./presets/Mapazapp_TestEA_E5_5_single_safe_export.set) to your terminal `MQL5\Presets\` (or load from repo path in MetaEditor if you open it from disk), then in Strategy Tester → **Inputs** → **Load** → pick that file. It sets `InpOptimizationSafeExports=true`, `InpAutoBuildRunIdFromParams=true`, full campaign / strategy / parameter set ids, **`InpExportCampaignFolder=E55`**, **`InpExportParameterFolder=SET001`**, and `InpRunId=TEST_SAFE_EXPORT_SINGLE_C`.
 - **Optimization (E5.5.1 FVG sweep)** — load [`presets/Mapazapp_TestEA_E5_5_optimization_fvg_sweep.set`](./presets/Mapazapp_TestEA_E5_5_optimization_fvg_sweep.set). **Only** enable the **Optimization** checkbox (and Start/Step/Stop) for **`InpVirtualMinTradeFvgPoints`**: Value **2**, Start **2**, Step **8**, Stop **50**. The preset also includes an `InpVirtualMinTradeFvgPoints||2|2|8|50|1` line for terminals that honor optimization metadata in `.set` files; if your build ignores it, set that range manually in the Inputs grid.
 - **Keep fixed (do not optimize):** `InpOptimizationSafeExports=true`, `InpAutoBuildRunIdFromParams=true`, `InpCampaignId`, `InpStrategyId`, `InpParameterSetId`, `InpExportCampaignFolder`, `InpExportParameterFolder`, and the rest of the sweep defaults — **do not** add `InpOptimizationSafeExports` to the optimization matrix.

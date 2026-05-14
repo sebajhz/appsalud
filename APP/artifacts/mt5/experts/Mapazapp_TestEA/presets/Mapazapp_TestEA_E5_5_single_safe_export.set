@@ -1,5 +1,5 @@
 ; Mapazapp_TestEA — E5.5 single run (no optimization): safe export validation
-; Build: MZP_TestEA_E5_5_0_5 — load in Strategy Tester → Inputs → right-click → Load
+; Build: MZP_TestEA_E5_8_0 — load in Strategy Tester → Inputs → right-click → Load
 ; Keep InpOptimizationSafeExports=true and InpAutoBuildRunIdFromParams=true.
 InpSchemaVersion=backtest_ea_v1
 InpStrategyId=MZP_IFVG_ZONE_REACTION_V1
@@ -36,3 +36,5 @@ InpVirtualAmbiguityMode=ambiguous
 InpVirtualOneTradeAtATime=true
 InpVirtualMinTradeFvgPoints=2
 InpWriteVirtualTrades=true
+InpEntryQualityScoreEnabled=true
+InpEntryQualityScoreGateEnabled=false

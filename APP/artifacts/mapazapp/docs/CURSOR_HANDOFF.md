@@ -30,8 +30,9 @@
 - **E5.6 cerrado (docs-only):** sensibilidad y diagnósticos `ambiguous` (modos contables, stress −1R, métricas, opciones implementación A/B/C, BridgeEA) — [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md).
 - **E5.6.1 cerrado (repo):** analizador post-proceso bundles TestEA (modos `neutral_zero` / `conservative_loss` / `skip_ambiguous`) + CLI `pnpm --filter @workspace/scripts mapazapp:testea-ambiguity-sensitivity` — [`AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md`](./AMBIGUITY_SENSITIVITY_ANALYZER_E5_6_1.md); **sin** cambio MQL5 ni re-ejecución MT5.
 - **E5.6.2 cerrado (docs):** evidencia operador — 7 bundles E55; `neutral_zero` / `skip_ambiguous` positivos; `conservative_loss` negativo en todos los FVG — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md).
-- **E5.7 cerrado (docs-only):** contrato **Entry Quality Score V1** — observación primero; siete componentes (100 pt provisionales); sub-campos `ambiguous_risk_score` / `ambiguous_risk_reasons`; métricas de campaña §8 (E5.9); borrador columnas CSV §9; hard vs soft gates §6; parity BridgeEA §10; sin compuerta dura ni código — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md).
-- **Siguiente paso canónico:** **E5.8** — export de score en TestEA (solo observación); **E5.9** campaña de distribución; **E5.10**–**E5.13** en audit/roadmap. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte** — ver **E5.5.2** §15.
+- **E5.7 cerrado (docs-only):** contrato **Entry Quality Score V1** — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md).
+- **E5.8 cerrado (repo):** export **Entry Quality Score V1** en `Mapazapp_TestEA` — build **`MZP_TestEA_E5_8_0`**; columnas CSV + flags summary (`has_entry_quality_score_logic`, `score_observation_only`, `score_gate_enabled: false`); eventos `eq_*` en `details`; validador TS; doc [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md).
+- **Siguiente paso canónico:** **E5.9** — campaña de distribución del score; **E5.10**–**E5.13** en audit/roadmap. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte** — ver **E5.5.2** §15.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 
