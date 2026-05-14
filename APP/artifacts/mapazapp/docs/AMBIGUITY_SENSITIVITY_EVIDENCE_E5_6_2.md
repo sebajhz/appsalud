@@ -151,3 +151,4 @@ El setup permanece **prometedor pero no aprobado**: no se eleva a “aprobado pa
 |---------|------|
 | E5.6.2 v1 | Evidencia operador: 7 bundles E55; tablas y decisión archivadas. |
 | E5.6.2 v1.1 | Puntero al contrato **E5.7** Entry Quality Score V1. |
+| E5.6.2 v1.2 | **E5.7** cerrado en repo: contrato formal [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) (observación; exports §9; métricas campaña §8). |

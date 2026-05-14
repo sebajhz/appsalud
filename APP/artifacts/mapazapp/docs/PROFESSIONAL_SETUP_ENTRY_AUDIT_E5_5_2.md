@@ -110,6 +110,8 @@ Qué falta (lista de trabajo intelectual / de producto), sin pretender exhaustiv
 
 ## 6. Propuesta “Entry Quality Score V1” (solo observación)
 
+**Contrato formal (pesos provisionales, grades, exports CSV, métricas de campaña, parity BridgeEA):** [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) (**E5.7**). Este §6 conserva el resumen ejecutivo; la semántica versionada vive en el contrato.
+
 **Principio:** observación primero; **sin pesos finales** como verdad; primera implementación futura = exportar **valores crudos por componente** + **total** (fórmula documentada pero **reversible**).
 
 **Componentes propuestos (borrador):**
@@ -320,3 +322,4 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | E5.5.2 v1.1 | Puntero explícito al plan **E5.6** en doc dedicado `AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`. |
 | E5.5.2 v1.2 | Puntero a evidencia **E5.6.2** + fila §15; lectura post-análisis ambigüedad. |
 | E5.5.2 v1.3 | Puntero a contrato **E5.7** Entry Quality Score V1. |
+| E5.5.2 v1.4 | §6: enlace explícito al contrato **E5.7** como fuente formal (weights, §8–§9, `ambiguous_risk_*`). |

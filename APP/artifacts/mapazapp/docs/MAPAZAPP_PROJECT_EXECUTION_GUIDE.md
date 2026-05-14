@@ -240,7 +240,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.6 | Ambiguity sensitivity + diagnostics plan (docs-only) | `AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`, refs guía / handoff / roadmap / audit E5.5.2 §10 | Stress −1R/ambiguous; modos A/B/C; sin cambio MQL5 en E5.6 | **E5.6.1** |
 | E5.6.1 | Ambiguity sensitivity analyzer (core + CLI) | `testea-ambiguity-sensitivity.ts`, `mapazapp-testea-ambiguity-sensitivity.ts`, doc E5.6.1, refs guía/handoff/roadmap | Opción **A** (post-proceso TS) implementada; sin MT5 | **E5.6.2** |
 | E5.6.2 | Ambiguity sensitivity evidence (operator CLI on E55 bundles) | `AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`, refs guía/handoff/roadmap/audit | Setup sigue no aprobado; `conservative_loss` negativo en todos los FVG | **E5.7** |
-| E5.7 | Entry Quality Score V1 contract (docs-only) | `ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`, refs guía/handoff/roadmap/audit | Observación primero; pesos provisionales; sin código | **E5.8** |
+| E5.7 | Entry Quality Score V1 contract (docs-only) | `ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`, `AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`, `PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`, `MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`, `CURSOR_HANDOFF.md`, `ROADMAP_V2_MASTER_EXECUTION_PLAN.md` | Contrato §1–§14: 7 componentes (100 pt borrador), grades provisionales, hard vs soft gates, `ambiguous_risk_*`, CSV draft §9; sin código MQL5/TS | **E5.8** |
 
 ## 10. Cursor working rules
 
