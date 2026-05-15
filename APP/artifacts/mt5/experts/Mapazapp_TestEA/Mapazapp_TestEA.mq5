@@ -57,7 +57,7 @@ input int               InpLocalSwingLookbackBars      = 20;
 input int               InpLiquiditySweepBufferPoints  = 0;
 input bool              InpLiquiditySweepScoreEnabled   = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_10_2"
+#define TESTEA_BUILD            "MZP_TestEA_E5_10_2_1"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -1121,6 +1121,118 @@ string MapzLiqGradeFromQuality(const int q)
 
 //+------------------------------------------------------------------+
 //| Liquidity Sweep Quality V1 (E5.10.2): closed-candle heuristics.   |
+//| E5.10.2.1: stricter caps for A/B; reasons — weak token only on   |
+//| grade Weak; subconditions are specific tokens (no duplicate weak).|
+//+------------------------------------------------------------------+
+void MapzLiqDistributeQualityParts(const int targetTotal,
+                                   const int pRec,
+                                   const int pDir,
+                                   const int pReact,
+                                   const int pDisp,
+                                   const int pDist,
+                                   int &oRec,
+                                   int &oDir,
+                                   int &oReact,
+                                   int &oDisp,
+                                   int &oDist)
+  {
+   oRec = oDir = oReact = oDisp = oDist = 0;
+   const int raw = pRec + pDir + pReact + pDisp + pDist;
+   if(targetTotal <= 0 || raw <= 0)
+      return;
+
+   oRec = (int)MathFloor((double)pRec * (double)targetTotal / (double)raw + 1e-9);
+   oDir = (int)MathFloor((double)pDir * (double)targetTotal / (double)raw + 1e-9);
+   oReact = (int)MathFloor((double)pReact * (double)targetTotal / (double)raw + 1e-9);
+   oDisp = (int)MathFloor((double)pDisp * (double)targetTotal / (double)raw + 1e-9);
+   oDist = (int)MathFloor((double)pDist * (double)targetTotal / (double)raw + 1e-9);
+
+   int s = oRec + oDir + oReact + oDisp + oDist;
+   int rem = targetTotal - s;
+   while(rem > 0)
+     {
+      int bestDim = -1;
+      double bestFrac = -1.0;
+      for(int dim = 0; dim < 5; dim++)
+        {
+         int pi = pRec;
+         int cur = oRec;
+         if(dim == 1)
+           {
+            pi = pDir;
+            cur = oDir;
+           }
+         else if(dim == 2)
+           {
+            pi = pReact;
+            cur = oReact;
+           }
+         else if(dim == 3)
+           {
+            pi = pDisp;
+            cur = oDisp;
+           }
+         else if(dim == 4)
+           {
+            pi = pDist;
+            cur = oDist;
+           }
+         if(pi <= 0)
+            continue;
+         const double want = (double)pi * (double)targetTotal / (double)raw;
+         const double frac = want - (double)cur;
+         if(frac > bestFrac + 1e-12)
+           {
+            bestFrac = frac;
+            bestDim = dim;
+           }
+        }
+      if(bestDim < 0)
+         break;
+      if(bestDim == 0)
+         oRec++;
+      else if(bestDim == 1)
+         oDir++;
+      else if(bestDim == 2)
+         oReact++;
+      else if(bestDim == 3)
+         oDisp++;
+      else
+         oDist++;
+      rem--;
+     }
+   while(rem < 0)
+     {
+      if(oDist > 0 && pDist > 0)
+        {
+         oDist--;
+         rem++;
+        }
+      else if(oDisp > 0 && pDisp > 0)
+        {
+         oDisp--;
+         rem++;
+        }
+      else if(oReact > 0 && pReact > 0)
+        {
+         oReact--;
+         rem++;
+        }
+      else if(oDir > 0 && pDir > 0)
+        {
+         oDir--;
+         rem++;
+        }
+      else if(oRec > 0 && pRec > 0)
+        {
+         oRec--;
+         rem++;
+        }
+      else
+         break;
+     }
+  }
+
 //+------------------------------------------------------------------+
 void MapzLiquidityFinalizeQuality(const string sym,
                                   const ENUM_TIMEFRAMES tf,
@@ -1155,6 +1267,13 @@ void MapzLiquidityFinalizeQuality(const string sym,
       return;
      }
 
+   bool flag_old = false;
+   bool flag_opp = false;
+   bool flag_partial_dir = false;
+   bool flag_no_rx = false;
+   bool flag_disp_unc = false;
+   bool flag_far = false;
+
    const int age = io.age_bars;
    int rec = 1;
    if(age <= 4)
@@ -1166,9 +1285,8 @@ void MapzLiquidityFinalizeQuality(const string sym,
    else
      {
       rec = 1;
-      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_old");
+      flag_old = true;
      }
-   io.recency_score = rec;
 
    const bool wantLong = (setupDir == MAPZ_SETUP_LONG);
    const bool wantShort = (setupDir == MAPZ_SETUP_SHORT);
@@ -1177,8 +1295,7 @@ void MapzLiquidityFinalizeQuality(const string sym,
    if(opp)
      {
       dirS = 0;
-      MapzLiqAppendQualityReason(io.quality_reasons, "opposite_liquidity_sweep");
-      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_quality_weak");
+      flag_opp = true;
      }
    else if(wantLong && io.ev_type == "PDL_SWEEP")
       dirS = 5;
@@ -1191,20 +1308,18 @@ void MapzLiquidityFinalizeQuality(const string sym,
    else
      {
       dirS = 2;
-      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_directional_partial");
+      flag_partial_dir = true;
      }
-   io.directional_score = dirS;
 
    int react = 0;
    if(opp)
      {
-      react = 1;
+      react = 0;
      }
    else if(io.sweep_bar_shift < 0 || S < 1)
      {
       react = 0;
-      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_no_reaction");
-      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_quality_weak");
+      flag_no_rx = true;
      }
    else
      {
@@ -1244,12 +1359,10 @@ void MapzLiquidityFinalizeQuality(const string sym,
          react = 5;
       else
         {
-         react = 1;
-         MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_no_reaction");
-         MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_quality_weak");
+         react = 0;
+         flag_no_rx = true;
         }
      }
-   io.reaction_score = react;
 
    int disp = 0;
    if(opp)
@@ -1323,17 +1436,15 @@ void MapzLiquidityFinalizeQuality(const string sym,
          disp = 2;
       else
         {
-         disp = 1;
-         MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_displacement_not_confirmed");
-         MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_quality_weak");
+         disp = 0;
+         flag_disp_unc = true;
         }
      }
    else
      {
-      disp = 1;
-      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_displacement_not_confirmed");
+      disp = 0;
+      flag_disp_unc = true;
      }
-   io.displacement_score = disp;
 
    int distQ = 0;
    const double mid = (fLo + fHi) / 2.0;
@@ -1346,25 +1457,77 @@ void MapzLiquidityFinalizeQuality(const string sym,
    else
      {
       distQ = 0;
-      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_level_far_from_fvg");
-      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_quality_weak");
+      flag_far = true;
      }
    if(penetration > 140 && distQ > 0)
       distQ--;
    if(distQ < 0)
       distQ = 0;
-   io.distance_score = distQ;
 
    int total = rec + dirS + react + disp + distQ;
-   if(opp && total > 7)
-      total = 7;
    if(total > 20)
       total = 20;
+
+   if(opp)
+     {
+      total = (int)MathMin(total, 7);
+     }
+   else
+     {
+      const bool solid_rx = (react >= 4);
+      const bool solid_disp = (disp >= 2);
+      const bool ok_prox = (distQ >= 1);
+      const bool ok_dir = (dirS >= 4);
+
+      if(!solid_rx && !solid_disp)
+         total = (int)MathMin(total, 8);
+      else if(!solid_rx || !solid_disp)
+         total = (int)MathMin(total, 12);
+
+      if(!ok_prox)
+         total = (int)MathMin(total, 10);
+
+      if(!ok_dir)
+         total = (int)MathMin(total, 13);
+
+      const bool canA = solid_rx && solid_disp && ok_prox && ok_dir && (rec >= 4);
+      if(!canA)
+         total = (int)MathMin(total, 16);
+
+      if(total > 20)
+         total = 20;
+     }
+
+   int oRec = 0, oDir = 0, oReact = 0, oDisp = 0, oDist = 0;
+   MapzLiqDistributeQualityParts(total, rec, dirS, react, disp, distQ, oRec, oDir, oReact, oDisp, oDist);
+   io.recency_score = oRec;
+   io.directional_score = oDir;
+   io.reaction_score = oReact;
+   io.displacement_score = oDisp;
+   io.distance_score = oDist;
    io.quality_score = total;
    io.quality_grade = MapzLiqGradeFromQuality(total);
 
-   if(StringLen(io.quality_reasons) == 0)
-      io.quality_reasons = "liquidity_sweep_quality_ok";
+   if(flag_old)
+      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_old");
+   if(flag_opp)
+      MapzLiqAppendQualityReason(io.quality_reasons, "opposite_liquidity_sweep");
+   if(flag_partial_dir)
+      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_directional_partial");
+   if(flag_no_rx)
+      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_no_reaction");
+   if(flag_disp_unc)
+      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_displacement_not_confirmed");
+   if(flag_far)
+      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_level_far_from_fvg");
+
+   const string gr = io.quality_grade;
+   if(gr == "Weak" && total >= 1)
+      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_quality_weak");
+   else if(gr == "A" || gr == "B")
+      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_quality_ok");
+   else if(gr == "C" && total >= 12)
+      MapzLiqAppendQualityReason(io.quality_reasons, "liquidity_sweep_quality_ok");
   }
 
 //+------------------------------------------------------------------+

@@ -270,7 +270,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.10.2 + E5.5.0.5: build marker, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_10_2"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_10_2_1"/);
   assert.match(src, /input bool\s+InpEntryQualityScoreEnabled\s*=\s*true/);
   assert.match(src, /input bool\s+InpEntryQualityScoreGateEnabled\s*=\s*false/);
   assert.match(src, /input bool\s+InpEnableLiquiditySweepDetection\s*=\s*true/);

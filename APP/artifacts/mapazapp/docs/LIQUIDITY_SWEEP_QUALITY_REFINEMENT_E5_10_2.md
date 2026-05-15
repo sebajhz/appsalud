@@ -20,15 +20,18 @@ Subscores (suma máx. **20** puntos en el componente de liquidez que alimenta `e
 |-----------|-------|------|
 | Recencia | 0–4 | Sweep más reciente respecto al setup (≤4 barras fuerte; ≤12 media; resto débil dentro del lookback). |
 | Dirección | 0–5 | Alineación PDH/PDL y swings con la dirección del setup; opuesto → casi nulo. |
-| Reacción | 0–5 | Tras el sweep, al menos una vela cerrada “rechaza” el nivel (largos: cierre por encima del nivel barrido en lows; cortos: cierre por debajo en highs). |
-| Desplazamiento | 0–4 | Entre el sweep y el setup: cuerpo direccional o mini-FVG coherente; si no, puntuación conservadora + razón `liquidity_sweep_displacement_not_confirmed`. |
+| Reacción | 0–5 | Tras el sweep, al menos una vela cerrada “rechaza” el nivel; si no, **0** en componente bruto + `liquidity_sweep_no_reaction` (E5.10.2.1). |
+| Desplazamiento | 0–4 | Entre el sweep y el setup: cuerpo direccional o mini-FVG coherente; si no hay evidencia, **0** en componente bruto + razón `liquidity_sweep_displacement_not_confirmed` (E5.10.2.1). |
 | Distancia al FVG | 0–2 | Proximidad del nivel de liquidez al centro del FVG del setup; niveles muy lejos penalizan. |
 
 **Grado de calidad** (`liquidity_sweep_quality_grade`): **A** ≥17, **B** 13–16, **C** 8–12, **Weak** 1–7, **None** 0.
 
+**E5.10.2.1 — Topes de contexto (mismo máx. 20 en bruto, total final capado):** sin cambiar umbrales globales de Entry Quality, el total `liquidity_sweep_quality_score` aplica **mins** encadenados cuando no hay contexto “suficiente” para bandas altas: opuesto (≤7); sin reacción clara **y** sin desplazamiento (≤8); falta de reacción **o** desplazamiento (≤12); nivel lejos del FVG / `distQ==0` (≤10); dirección solo parcial (≤13); sin el conjunto **reacción + desplazamiento + proximidad + dirección ≥4 + recencia ≥4** barras fuertes (≤16) — así **A** exige más que mera detección. Tras el total capado, los cinco subscores exportados se **redistribuyen proporcionalmente** para que **sumen exactamente** el total mostrado.
+
 ### Razones (`liquidity_sweep_quality_reasons`)
 
-Tokens orientativos (no son “missing” de detección): `liquidity_sweep_quality_weak`, `liquidity_sweep_no_reaction`, `liquidity_sweep_displacement_not_confirmed`, `liquidity_sweep_old`, `opposite_liquidity_sweep`, `liquidity_level_far_from_fvg`, `liquidity_sweep_quality_ok`, `liquidity_sweep_quality_none`, etc.
+- **E5.10.2.1 (actual):** la cadena es `|`-separada. Primero van tokens **específicos** por subcondición: `liquidity_sweep_old`, `opposite_liquidity_sweep`, `liquidity_directional_partial`, `liquidity_sweep_no_reaction`, `liquidity_sweep_displacement_not_confirmed`, `liquidity_level_far_from_fvg`. **`liquidity_sweep_quality_weak`** aparece **como máximo una vez** y **solo** si el grado final es **Weak** (1–7) — no se duplica por cada subfallo (corrige conteos de frecuencia inflados en análisis por token). **`liquidity_sweep_quality_ok`** se añade para grado **A** o **B**, y para **C** con total **≥ 12** (cohorte “fuerte” dentro de C). Sin compuerta dura.
+- **E5.10.2 (histórico):** en builds anteriores `liquidity_sweep_quality_weak` podía repetirse junto a cada subcondición y `quality_ok` solo si la cadena quedaba vacía; usar **E5.10.2.1+** para analítica por razón.
 
 **Importante:** no se reintroduce `liquidity_event_not_implemented`. Un sweep débil sigue siendo **detectado**; la calidad baja en score, no se marca como “no implementado”.
 
@@ -50,7 +53,7 @@ Se prefiere **`liquidity_event_score` = `liquidity_sweep_quality_score`** (total
 
 ## Próximo smoke recomendado — E5.10.3
 
-1. Recompilar TestEA (`MZP_TestEA_E5_10_2`) y exportar un bundle real (Strategy Tester).
+1. Recompilar TestEA (`MZP_TestEA_E5_10_2_1`) y exportar un bundle real (Strategy Tester).
 2. Ejecutar `mapazapp:testea-export-validate` y `mapazapp:testea-score-calibration`.
 3. Comparar **distribución** de `liquidity_sweep_quality_score` por `outcome` y bandas de grado.
 
