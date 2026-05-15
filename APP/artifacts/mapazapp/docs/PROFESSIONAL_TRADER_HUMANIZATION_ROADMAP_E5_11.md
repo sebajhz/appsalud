@@ -40,23 +40,13 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## B. Estructura profesional (HTF)
 
-### E5.11 — HTF Structure V1
+### E5.11 — HTF Structure V1 (**export cerrado en repo**)
 
-**Propósito:** sustituir un sesgo superficial «solo D1» por un **contexto de estructura** más cercano al trader discrecional.
+**Propósito:** sustituir un sesgo superficial «solo D1» por un **contexto de estructura H4/H1** exportable para análisis post-hoc.
 
-**Campos planificados (observación-first):**
+**Referencia técnica:** [`HTF_STRUCTURE_EXPORT_E5_11.md`](./HTF_STRUCTURE_EXPORT_E5_11.md) — columnas CSV, summary, sufijo eventos, score observación 0–20, inputs; **sin** compuerta dura.
 
-| Campo |
-|-------|
-| `htf_trend_direction` |
-| `h4_structure_state` |
-| `h1_structure_state` |
-| `htf_structure_aligned` |
-| `protected_high` |
-| `protected_low` |
-| `external_liquidity_high` |
-| `external_liquidity_low` |
-| `structure_reason_codes` |
+**Smoke operador siguiente:** **E5.11.1**.
 
 ---
 

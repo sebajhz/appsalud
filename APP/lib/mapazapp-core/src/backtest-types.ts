@@ -96,6 +96,25 @@ export interface BacktestTrade {
   liquidityChainReactionClosePrice?: number | undefined;
   liquidityChainReactionLevel?: number | undefined;
   liquidityChainReactionBarsChecked?: number | undefined;
+  /** E5.11 HTF Structure V1 observation columns (optional; older CSV). */
+  htfStructureEnabled?: boolean | undefined;
+  h4StructureState?: string | undefined;
+  h1StructureState?: string | undefined;
+  h4StructureDirection?: string | undefined;
+  h1StructureDirection?: string | undefined;
+  htfStructureAligned?: boolean | undefined;
+  htfStructureConflict?: boolean | undefined;
+  /** Observation-only HTF structure score (0–20); distinct from `htf_narrative_score` column semantics when V1 feeds EQ. */
+  htfStructureScore?: number | undefined;
+  h4ProtectedHigh?: number | undefined;
+  h4ProtectedLow?: number | undefined;
+  h1ProtectedHigh?: number | undefined;
+  h1ProtectedLow?: number | undefined;
+  h4ExternalLiquidityHigh?: number | undefined;
+  h4ExternalLiquidityLow?: number | undefined;
+  h1ExternalLiquidityHigh?: number | undefined;
+  h1ExternalLiquidityLow?: number | undefined;
+  htfStructureReasons?: string | undefined;
 }
 
 export interface BacktestImportWarning {

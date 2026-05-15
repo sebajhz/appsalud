@@ -93,7 +93,7 @@ Conteos agregados a nivel trade sobre tokens de `liquidity_chain_reaction_failur
 - **No** cambios a umbrales globales de Entry Quality.
 - **No** fabricar grados A/B.
 - **No** seguir tuneando solo la reacción **sin** contexto más amplio de estructura de mercado.
-- **Siguiente paso estratégico recomendado:** **E5.11 — HTF Structure V1** (tras cerrar esta evidencia en docs).
+- **Siguiente paso estratégico recomendado:** **E5.11 — HTF Structure V1** quedó **implementado en repo** (`MZP_TestEA_E5_11`) — ver [`HTF_STRUCTURE_EXPORT_E5_11.md`](./HTF_STRUCTURE_EXPORT_E5_11.md). **Siguiente evidencia operador:** **E5.11.1** (smoke tras recompilar y correr Strategy Tester).
 
 ---
 

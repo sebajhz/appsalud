@@ -52,6 +52,11 @@ export const LIQUIDITY_CHAIN_CALIBRATION_COLUMNS = [
 
 export type LiquidityChainCalibrationColumn = (typeof LIQUIDITY_CHAIN_CALIBRATION_COLUMNS)[number];
 
+/** E5.11 optional observation column when present in CSV. */
+export const HTF_STRUCTURE_CALIBRATION_COLUMNS = ["htf_structure_score"] as const;
+
+export type HtfStructureCalibrationColumn = (typeof HTF_STRUCTURE_CALIBRATION_COLUMNS)[number];
+
 export type TestEaScoreOutcomeGroup =
   | "all"
   | "wins"
@@ -158,6 +163,8 @@ export interface TestEaScoreCalibrationBundleAnalysis {
   liquidity_quality_component_stats: Partial<Record<LiquidityQualityCalibrationColumn, TestEaScoreComponentStats>> | null;
   /** Present when trades CSV includes E5.10.4 causal chain numeric columns. */
   liquidity_chain_component_stats: Partial<Record<LiquidityChainCalibrationColumn, TestEaScoreComponentStats>> | null;
+  /** Present when trades CSV includes E5.11 `htf_structure_score`. */
+  htf_structure_component_stats: Partial<Record<HtfStructureCalibrationColumn, TestEaScoreComponentStats>> | null;
 }
 
 export interface TestEaScoreCalibrationBundleTextInput {
@@ -306,6 +313,8 @@ export interface TradeScoreAuxiliary {
   liquidity_quality: Partial<Record<LiquidityQualityCalibrationColumn, number | null>> | null;
   /** E5.10.4 optional chain numerics when CSV includes liquidity_chain_* score/lag columns. */
   liquidity_chain: Partial<Record<LiquidityChainCalibrationColumn, number | null>> | null;
+  /** E5.11 optional HTF structure observation score when CSV includes `htf_structure_score`. */
+  htf_structure: Partial<Record<HtfStructureCalibrationColumn, number | null>> | null;
   missing_raw: string;
   missing_tokens: string[];
 }
@@ -316,6 +325,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   hasEntryQualityScoreColumn: boolean;
   hasLiquidityQualityColumns: boolean;
   hasLiquidityChainColumns: boolean;
+  hasHtfStructureScoreColumn: boolean;
   warnings: string[];
 } {
   const warnings: string[] = [];
@@ -328,6 +338,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       hasEntryQualityScoreColumn: false,
       hasLiquidityQualityColumns: false,
       hasLiquidityChainColumns: false,
+      hasHtfStructureScoreColumn: false,
       warnings,
     };
   }
@@ -336,6 +347,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   const hasEntryQualityScoreColumn = col.has("score_total");
   const hasLiquidityQualityColumns = col.has("liquidity_sweep_quality_score");
   const hasLiquidityChainColumns = col.has("liquidity_chain_score");
+  const hasHtfStructureScoreColumn = col.has("htf_structure_score");
 
   const emptyComponents = (): Record<ScoreComponentColumn, number | null> => ({
     htf_narrative_score: null,
@@ -378,6 +390,14 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       }
     }
 
+    let htf_structure: Partial<Record<HtfStructureCalibrationColumn, number | null>> | null = null;
+    if (hasHtfStructureScoreColumn) {
+      htf_structure = {};
+      for (const c of HTF_STRUCTURE_CALIBRATION_COLUMNS) {
+        htf_structure[c] = parseFiniteNumber(pick(cells, col, c));
+      }
+    }
+
     const aux: TradeScoreAuxiliary = {
       entry_quality_grade: pick(cells, col, "entry_quality_grade")?.trim() ?? null,
       score: parseFiniteNumber(pick(cells, col, "score_total")),
@@ -385,13 +405,14 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       components: comps,
       liquidity_quality,
       liquidity_chain,
+      htf_structure,
       missing_raw: missingRaw,
       missing_tokens,
     };
     byTradeId.set(tid, aux);
   }
 
-  return { byTradeId, hasEntryQualityScoreColumn, hasLiquidityQualityColumns, hasLiquidityChainColumns, warnings };
+  return { byTradeId, hasEntryQualityScoreColumn, hasLiquidityQualityColumns, hasLiquidityChainColumns, hasHtfStructureScoreColumn, warnings };
 }
 
 export function tokenizeMissingComponents(raw: string): string[] {
@@ -631,6 +652,50 @@ function buildLiquidityChainComponentStats(
   return any ? out : null;
 }
 
+function buildHtfStructureComponentStats(
+  rows: { trade: BacktestTrade; aux: TradeScoreAuxiliary | undefined }[],
+): Partial<Record<HtfStructureCalibrationColumn, TestEaScoreComponentStats>> | null {
+  const out: Partial<Record<HtfStructureCalibrationColumn, TestEaScoreComponentStats>> = {};
+  let any = false;
+  for (const col of HTF_STRUCTURE_CALIBRATION_COLUMNS) {
+    const vals: number[] = [];
+    const byOutcome: Partial<Record<TestEaScoreOutcomeGroup, { sum: number; count: number }>> = {};
+    let allSum = 0;
+    let allCnt = 0;
+    for (const { trade, aux } of rows) {
+      const v = aux?.htf_structure?.[col];
+      if (v == null || !Number.isFinite(v)) continue;
+      any = true;
+      vals.push(v);
+      allSum += v;
+      allCnt += 1;
+      const g = outcomeGroup(trade);
+      const cur = byOutcome[g] ?? { sum: 0, count: 0 };
+      cur.sum += v;
+      cur.count += 1;
+      byOutcome[g] = cur;
+    }
+    const byOutFin: TestEaScoreComponentStats["by_outcome"] = {};
+    if (allCnt > 0) byOutFin.all = { count: allCnt, average: allSum / allCnt };
+    for (const [k, v] of Object.entries(byOutcome)) {
+      const og = k as TestEaScoreOutcomeGroup;
+      byOutFin[og] = { count: v!.count, average: v!.count > 0 ? v!.sum / v!.count : null };
+    }
+    if (vals.length === 0) {
+      out[col] = { min: null, max: null, average: null, by_outcome: byOutFin };
+    } else {
+      const sorted = [...vals].sort((a, b) => a - b);
+      out[col] = {
+        min: sorted[0]!,
+        max: sorted[sorted.length - 1]!,
+        average: average(vals),
+        by_outcome: byOutFin,
+      };
+    }
+  }
+  return any ? out : null;
+}
+
 function missingFrequency(rows: { aux: TradeScoreAuxiliary | undefined }[]): Record<string, number> {
   const freq: Record<string, number> = {};
   for (const { aux } of rows) {
@@ -709,6 +774,7 @@ export function analyzeTestEaScoreCalibrationFromTexts(
     component_stats: {},
     liquidity_quality_component_stats: null,
     liquidity_chain_component_stats: null,
+    htf_structure_component_stats: null,
   };
 
   let summary: Record<string, unknown>;
@@ -920,6 +986,9 @@ export function analyzeTestEaScoreCalibrationFromTexts(
       : null,
     liquidity_chain_component_stats: auxParse.hasLiquidityChainColumns
       ? buildLiquidityChainComponentStats(merged)
+      : null,
+    htf_structure_component_stats: auxParse.hasHtfStructureScoreColumn
+      ? buildHtfStructureComponentStats(merged)
       : null,
   };
 

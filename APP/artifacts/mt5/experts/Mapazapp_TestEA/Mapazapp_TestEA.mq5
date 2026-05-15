@@ -6,8 +6,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.11"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit + E5.10.4 causal chain (observation/export); E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 observation-only Entry Quality Score V1 export; E5.5.0.5 short physical export folders + full JSON ids; E5.5.0.3 FileOpen-safe export writes (no orders)."
+#property version   "1.12"
+#property description "Strategy Tester only: official TestEA. E5.11 HTF Structure V1 (H4/H1 observation/export); Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit + causal chain (observation/export); E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 Entry Quality Score V1 observation-only; E5.5.0.5 short paths + full JSON ids; E5.5.0.3 FileOpen-safe writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -57,7 +57,12 @@ input int               InpLocalSwingLookbackBars      = 20;
 input int               InpLiquiditySweepBufferPoints  = 0;
 input bool              InpLiquiditySweepScoreEnabled   = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_10_6"
+input bool              InpEnableHtfStructureV1        = true;
+input int               InpHtfStructureSwingLookbackBars = 2;
+input int               InpHtfStructureMaxBars           = 300;
+input bool              InpHtfStructureScoreEnabled     = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_11"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -212,6 +217,39 @@ long            g_chain_rx_fail_wrong_level = 0;
 long            g_chain_rx_fail_sweep_after_fvg = 0;
 long            g_chain_rx_fail_other = 0;
 
+double          g_htf_sum_structure_score = 0.0;
+long            g_htf_aligned_count = 0;
+long            g_htf_conflict_count = 0;
+long            g_htf_h4_bull = 0;
+long            g_htf_h4_bear = 0;
+long            g_htf_h4_range = 0;
+long            g_htf_h4_trans = 0;
+long            g_htf_h1_bull = 0;
+long            g_htf_h1_bear = 0;
+long            g_htf_h1_range = 0;
+long            g_htf_h1_trans = 0;
+
+struct MapzHtfTradeSnap
+  {
+   bool              enabled;
+   string            h4_structure_state;
+   string            h1_structure_state;
+   string            h4_structure_direction;
+   string            h1_structure_direction;
+   bool              htf_structure_aligned;
+   bool              htf_structure_conflict;
+   int               htf_structure_score;
+   double            h4_protected_high;
+   double            h4_protected_low;
+   double            h1_protected_high;
+   double            h1_protected_low;
+   double            h4_external_liquidity_high;
+   double            h4_external_liquidity_low;
+   double            h1_external_liquidity_high;
+   double            h1_external_liquidity_low;
+   string            htf_structure_reasons;
+  };
+
 struct MapzLiquiditySnapshot
   {
    bool     detected;
@@ -299,6 +337,7 @@ struct MapzVirtualTrade
    string               exit_reason;
    string               setup_reason_tag;
    MapzLiquiditySnapshot liq;
+   MapzHtfTradeSnap     htf;
   };
 
 MapzVirtualTrade g_vt;
@@ -2091,6 +2130,395 @@ void MapzLiquidityEvaluate(const string sym,
   }
 
 //+------------------------------------------------------------------+
+void MapzHtfSnapClear(MapzHtfTradeSnap &o)
+  {
+   o.enabled = false;
+   o.h4_structure_state = "unknown";
+   o.h1_structure_state = "unknown";
+   o.h4_structure_direction = "unknown";
+   o.h1_structure_direction = "unknown";
+   o.htf_structure_aligned = false;
+   o.htf_structure_conflict = false;
+   o.htf_structure_score = 0;
+   o.h4_protected_high = 0.0;
+   o.h4_protected_low = 0.0;
+   o.h1_protected_high = 0.0;
+   o.h1_protected_low = 0.0;
+   o.h4_external_liquidity_high = 0.0;
+   o.h4_external_liquidity_low = 0.0;
+   o.h1_external_liquidity_high = 0.0;
+   o.h1_external_liquidity_low = 0.0;
+   o.htf_structure_reasons = "";
+  }
+
+//+------------------------------------------------------------------+
+void MapzHtfAppendToken(string &buf, const string tok)
+  {
+   if(StringLen(tok) == 0)
+      return;
+   if(StringLen(buf) > 0)
+      buf += "|";
+   buf += tok;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzHtfIsSwingHigh(const string sym, const ENUM_TIMEFRAMES tf, const int s, const int N)
+  {
+   if(s < N)
+      return false;
+   const int bars = Bars(sym, tf);
+   if(bars <= 0 || (s + N) >= bars)
+      return false;
+   const double h = iHigh(sym, tf, s);
+   for(int k = 1; k <= N; k++)
+     {
+      if(h <= iHigh(sym, tf, s - k) || h <= iHigh(sym, tf, s + k))
+         return false;
+     }
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzHtfIsSwingLow(const string sym, const ENUM_TIMEFRAMES tf, const int s, const int N)
+  {
+   if(s < N)
+      return false;
+   const int bars = Bars(sym, tf);
+   if(bars <= 0 || (s + N) >= bars)
+      return false;
+   const double lo = iLow(sym, tf, s);
+   for(int k = 1; k <= N; k++)
+     {
+      if(lo >= iLow(sym, tf, s - k) || lo >= iLow(sym, tf, s + k))
+         return false;
+     }
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+void MapzHtfClassifyTf(const string sym,
+                       const ENUM_TIMEFRAMES tf,
+                       const int N,
+                       const int maxScanIn,
+                       string &state,
+                       string &direction,
+                       double &prot_hi,
+                       double &prot_lo,
+                       double &ext_hi,
+                       double &ext_lo,
+                       string &rsn)
+  {
+   state = "unknown_structure";
+   direction = "unknown";
+   prot_hi = 0.0;
+   prot_lo = 0.0;
+   ext_hi = 0.0;
+   ext_lo = 0.0;
+   rsn = "";
+   const int bars = Bars(sym, tf);
+   if(bars <= N * 2 + 5)
+     {
+      MapzHtfAppendToken(rsn, "htf_structure_insufficient_swings");
+      MapzHtfAppendToken(rsn, "htf_structure_unknown");
+      return;
+     }
+   const int maxS = MathMin(maxScanIn, bars - N - 2);
+   int hSh[16];
+   int lSh[16];
+   double hPr[16];
+   double lPr[16];
+   int hCnt = 0;
+   int lCnt = 0;
+   for(int s = 1 + N; s <= maxS && (hCnt < 8 || lCnt < 8); s++)
+     {
+      if(hCnt < 8 && MapzHtfIsSwingHigh(sym, tf, s, N))
+        {
+         hSh[hCnt] = s;
+         hPr[hCnt] = iHigh(sym, tf, s);
+         hCnt++;
+        }
+      if(lCnt < 8 && MapzHtfIsSwingLow(sym, tf, s, N))
+        {
+         lSh[lCnt] = s;
+         lPr[lCnt] = iLow(sym, tf, s);
+         lCnt++;
+        }
+     }
+   if(hCnt < 2 || lCnt < 2)
+     {
+      MapzHtfAppendToken(rsn, "htf_structure_insufficient_swings");
+      MapzHtfAppendToken(rsn, "htf_structure_unknown");
+      state = "unknown_structure";
+      direction = "unknown";
+      return;
+     }
+   const double cls = iClose(sym, tf, 1);
+   const bool hh = (hPr[0] > hPr[1]);
+   const bool hl = (lPr[0] > lPr[1]);
+   const bool lh = (hPr[0] < hPr[1]);
+   const bool ll = (lPr[0] < lPr[1]);
+   const bool bullBreak = (cls > hPr[0]);
+   const bool bearBreak = (cls < lPr[0]);
+   if((hh && hl && bearBreak) || (lh && ll && bullBreak))
+     {
+      state = "transition_structure";
+      direction = "transition";
+      MapzHtfAppendToken(rsn, "htf_structure_transition");
+     }
+   else if((hh && hl) || (bullBreak && !bearBreak))
+     {
+      state = "bullish_structure";
+      direction = "bullish";
+     }
+   else if((lh && ll) || (bearBreak && !bullBreak))
+     {
+      state = "bearish_structure";
+      direction = "bearish";
+     }
+   else
+     {
+      state = "range_structure";
+      direction = "range";
+      MapzHtfAppendToken(rsn, "htf_structure_range");
+     }
+
+   if(StringFind(state, "bullish") >= 0)
+     {
+      prot_lo = lPr[0];
+      if(prot_hi <= 0.0 && hCnt >= 1)
+         prot_hi = hPr[0];
+     }
+   else if(StringFind(state, "bearish") >= 0)
+     {
+      prot_hi = hPr[0];
+      if(prot_lo <= 0.0 && lCnt >= 1)
+         prot_lo = lPr[0];
+     }
+   else
+     {
+      prot_hi = hPr[0];
+      prot_lo = lPr[0];
+      MapzHtfAppendToken(rsn, "protected_level_missing");
+     }
+
+   ext_hi = 0.0;
+   ext_lo = 0.0;
+   for(int i = 0; i < hCnt; i++)
+     {
+      if(hPr[i] > cls && (ext_hi <= 0.0 || hPr[i] < ext_hi))
+         ext_hi = hPr[i];
+     }
+   for(int j = 0; j < lCnt; j++)
+     {
+      if(lPr[j] < cls && (ext_lo <= 0.0 || lPr[j] > ext_lo))
+         ext_lo = lPr[j];
+     }
+   if(ext_hi <= 0.0 || ext_lo <= 0.0)
+      MapzHtfAppendToken(rsn, "external_liquidity_missing");
+  }
+
+//+------------------------------------------------------------------+
+void MapzHtfFinalizeSnap(const ENUM_MAPZ_SETUP_DIR dir, const ENUM_MAPZ_BIAS biasEnum, MapzHtfTradeSnap &o)
+  {
+   if(!o.enabled)
+      return;
+   const bool longDir = (dir == MAPZ_SETUP_LONG);
+   const bool shortDir = (dir == MAPZ_SETUP_SHORT);
+   o.htf_structure_conflict = false;
+   o.htf_structure_aligned = false;
+   if(longDir)
+     {
+      const bool h4Bear = (o.h4_structure_direction == "bearish");
+      const bool h1Bear = (o.h1_structure_direction == "bearish");
+      const bool h4Bull = (o.h4_structure_direction == "bullish");
+      const bool h1Bull = (o.h1_structure_direction == "bullish");
+      const bool h4Soft = (o.h4_structure_direction == "range" || o.h4_structure_direction == "transition" || o.h4_structure_direction == "unknown");
+      const bool h1Soft = (o.h1_structure_direction == "range" || o.h1_structure_direction == "transition" || o.h1_structure_direction == "unknown");
+      if(h4Bear || h1Bear)
+        {
+         o.htf_structure_conflict = true;
+         if(h4Bear)
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h4_conflict");
+         if(h1Bear)
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h1_conflict");
+        }
+      if(!o.htf_structure_conflict)
+        {
+         if(h4Bull && h1Bull)
+           {
+            o.htf_structure_aligned = true;
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_aligned");
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h4_aligned");
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h1_aligned");
+           }
+         else if((h4Bull && h1Soft) || (h1Bull && h4Soft))
+           {
+            o.htf_structure_aligned = true;
+            if(h4Bull)
+               MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h4_aligned");
+            if(h1Bull)
+               MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h1_aligned");
+           }
+        }
+     }
+   else if(shortDir)
+     {
+      const bool h4Bull = (o.h4_structure_direction == "bullish");
+      const bool h1Bull = (o.h1_structure_direction == "bullish");
+      const bool h4Bear = (o.h4_structure_direction == "bearish");
+      const bool h1Bear = (o.h1_structure_direction == "bearish");
+      const bool h4Soft = (o.h4_structure_direction == "range" || o.h4_structure_direction == "transition" || o.h4_structure_direction == "unknown");
+      const bool h1Soft = (o.h1_structure_direction == "range" || o.h1_structure_direction == "transition" || o.h1_structure_direction == "unknown");
+      if(h4Bull || h1Bull)
+        {
+         o.htf_structure_conflict = true;
+         if(h4Bull)
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h4_conflict");
+         if(h1Bull)
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h1_conflict");
+        }
+      if(!o.htf_structure_conflict)
+        {
+         if(h4Bear && h1Bear)
+           {
+            o.htf_structure_aligned = true;
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_aligned");
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h4_aligned");
+            MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h1_aligned");
+           }
+         else if((h4Bear && h1Soft) || (h1Bear && h4Soft))
+           {
+            o.htf_structure_aligned = true;
+            if(h4Bear)
+               MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h4_aligned");
+            if(h1Bear)
+               MapzHtfAppendToken(o.htf_structure_reasons, "htf_structure_h1_aligned");
+           }
+        }
+     }
+
+   int sc = 0;
+   const bool biasTradeAlign = (longDir && biasEnum == MAPZ_BIAS_BULLISH) || (shortDir && biasEnum == MAPZ_BIAS_BEARISH);
+   if(biasTradeAlign)
+      sc += 6;
+   else if(biasEnum == MAPZ_BIAS_NEUTRAL)
+      sc += 2;
+   else if(biasEnum == MAPZ_BIAS_UNKNOWN)
+      sc += 1;
+
+   int add4 = 0;
+   if(longDir)
+     {
+      if(o.h4_structure_direction == "bullish")
+         add4 = 7;
+      else if(o.h4_structure_direction == "bearish")
+         add4 = 0;
+      else if(o.h4_structure_direction == "range" || o.h4_structure_direction == "transition")
+         add4 = 4;
+      else
+         add4 = 2;
+     }
+   else if(shortDir)
+     {
+      if(o.h4_structure_direction == "bearish")
+         add4 = 7;
+      else if(o.h4_structure_direction == "bullish")
+         add4 = 0;
+      else if(o.h4_structure_direction == "range" || o.h4_structure_direction == "transition")
+         add4 = 4;
+      else
+         add4 = 2;
+     }
+   int add1 = 0;
+   if(longDir)
+     {
+      if(o.h1_structure_direction == "bullish")
+         add1 = 7;
+      else if(o.h1_structure_direction == "bearish")
+         add1 = 0;
+      else if(o.h1_structure_direction == "range" || o.h1_structure_direction == "transition")
+         add1 = 4;
+      else
+         add1 = 2;
+     }
+   else if(shortDir)
+     {
+      if(o.h1_structure_direction == "bearish")
+         add1 = 7;
+      else if(o.h1_structure_direction == "bullish")
+         add1 = 0;
+      else if(o.h1_structure_direction == "range" || o.h1_structure_direction == "transition")
+         add1 = 4;
+      else
+         add1 = 2;
+     }
+   sc += add4 + add1;
+   if(o.htf_structure_conflict)
+      sc = (int)MathRound((double)sc * 0.4);
+   if(sc > 20)
+      sc = 20;
+   if(sc < 0)
+      sc = 0;
+   o.htf_structure_score = sc;
+  }
+
+//+------------------------------------------------------------------+
+void MapzHtfBuildTradeSnap(const string sym, const ENUM_MAPZ_SETUP_DIR dir, const ENUM_MAPZ_BIAS biasEnum, MapzHtfTradeSnap &out)
+  {
+   MapzHtfSnapClear(out);
+   if(!InpEnableHtfStructureV1)
+      return;
+   out.enabled = true;
+   int N = InpHtfStructureSwingLookbackBars;
+   if(N < 2)
+      N = 2;
+   if(N > 5)
+      N = 5;
+   int mx = InpHtfStructureMaxBars;
+   if(mx < 80)
+      mx = 80;
+   string r4 = "";
+   string r1 = "";
+   string st4, st1, dir4, dir1;
+   double ph4, pl4, eh4, el4, ph1, pl1, eh1, el1;
+   if(InpUseH4Context)
+      MapzHtfClassifyTf(sym, PERIOD_H4, N, mx, st4, dir4, ph4, pl4, eh4, el4, r4);
+   else
+     {
+      st4 = "unknown_structure";
+      dir4 = "unknown";
+      ph4 = pl4 = eh4 = el4 = 0.0;
+      MapzHtfAppendToken(r4, "htf_structure_unknown");
+     }
+   if(InpUseH1Context)
+      MapzHtfClassifyTf(sym, PERIOD_H1, N, mx, st1, dir1, ph1, pl1, eh1, el1, r1);
+   else
+     {
+      st1 = "unknown_structure";
+      dir1 = "unknown";
+      ph1 = pl1 = eh1 = el1 = 0.0;
+      MapzHtfAppendToken(r1, "htf_structure_unknown");
+     }
+   out.h4_structure_state = st4;
+   out.h1_structure_state = st1;
+   out.h4_structure_direction = dir4;
+   out.h1_structure_direction = dir1;
+   out.h4_protected_high = ph4;
+   out.h4_protected_low = pl4;
+   out.h1_protected_high = ph1;
+   out.h1_protected_low = pl1;
+   out.h4_external_liquidity_high = eh4;
+   out.h4_external_liquidity_low = el4;
+   out.h1_external_liquidity_high = eh1;
+   out.h1_external_liquidity_low = el1;
+   if(StringLen(r4) > 0)
+      MapzHtfAppendToken(out.htf_structure_reasons, StringFormat("h4:%s", r4));
+   if(StringLen(r1) > 0)
+      MapzHtfAppendToken(out.htf_structure_reasons, StringFormat("h1:%s", r1));
+   MapzHtfFinalizeSnap(dir, biasEnum, out);
+  }
+
+//+------------------------------------------------------------------+
 void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
                                   const ENUM_MAPZ_BIAS biasEnum,
                                   const long fvgPts,
@@ -2101,6 +2529,7 @@ void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
                                   const bool filled,
                                   const string outcome,
                                   const MapzLiquiditySnapshot &liq,
+                                  const MapzHtfTradeSnap &htfSnap,
                                   MapzEqScorePack &out)
   {
    out.entry_quality_score = 0;
@@ -2132,28 +2561,52 @@ void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
    const bool shortDir = (dir == MAPZ_SETUP_SHORT);
    const bool biasAlign = (longDir && biasEnum == MAPZ_BIAS_BULLISH) || (shortDir && biasEnum == MAPZ_BIAS_BEARISH);
 
-   if(biasAlign)
+   const bool useHtfEq = (InpEnableHtfStructureV1 && InpHtfStructureScoreEnabled && htfSnap.enabled);
+   if(useHtfEq)
      {
-      out.htf_narrative_score = 18;
-      out.quality_reasons += "daily_bias_aligned|";
-     }
-   else if(biasEnum == MAPZ_BIAS_NEUTRAL)
-     {
-      out.htf_narrative_score = 5;
-      out.missing_quality_components += "neutral_bias_context|";
-     }
-   else if(biasEnum == MAPZ_BIAS_UNKNOWN)
-     {
-      out.htf_narrative_score = 3;
-      out.missing_quality_components += "daily_bias_unknown|";
+      out.htf_narrative_score = htfSnap.htf_structure_score;
+      if(biasAlign)
+         out.quality_reasons += "daily_bias_aligned|";
+      else if(biasEnum == MAPZ_BIAS_NEUTRAL)
+         out.missing_quality_components += "neutral_bias_context|";
+      else if(biasEnum == MAPZ_BIAS_UNKNOWN)
+         out.missing_quality_components += "daily_bias_unknown|";
+      else
+         out.missing_quality_components += "bias_not_aligned|";
+      if(htfSnap.htf_structure_aligned)
+         out.quality_reasons += "htf_structure_aligned|";
+      if(htfSnap.htf_structure_conflict)
+         out.quality_reasons += "htf_structure_conflict|";
      }
    else
      {
-      out.htf_narrative_score = 0;
-      out.missing_quality_components += "bias_not_aligned|";
+      if(biasAlign)
+        {
+         out.htf_narrative_score = 18;
+         out.quality_reasons += "daily_bias_aligned|";
+        }
+      else if(biasEnum == MAPZ_BIAS_NEUTRAL)
+        {
+         out.htf_narrative_score = 5;
+         out.missing_quality_components += "neutral_bias_context|";
+        }
+      else if(biasEnum == MAPZ_BIAS_UNKNOWN)
+        {
+         out.htf_narrative_score = 3;
+         out.missing_quality_components += "daily_bias_unknown|";
+        }
+      else
+        {
+         out.htf_narrative_score = 0;
+         out.missing_quality_components += "bias_not_aligned|";
+        }
      }
 
-   if(InpUseH4Context || InpUseH1Context)
+   if(InpEnableHtfStructureV1 && htfSnap.enabled)
+     {
+      // H4/H1 structure exported — do not emit legacy missing_h4_h1_structure placeholder.
+     }
+   else if(InpUseH4Context || InpUseH1Context)
       out.missing_quality_components += "missing_h4_h1_structure|";
 
    out.liquidity_event_score = 0;
@@ -2340,13 +2793,21 @@ void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
   }
 
 //+------------------------------------------------------------------+
-string MapzEqScoresToDetailsSuffix(const MapzEqScorePack &p, const MapzLiquiditySnapshot &lx)
+string MapzEqScoresToDetailsSuffix(const MapzEqScorePack &p, const MapzLiquiditySnapshot &lx, const MapzHtfTradeSnap &hx)
   {
+   const string htfComp = StringFormat(
+             " htf_en=%s h4=%s h1=%s htf_ali=%s htf_cnf=%s htf_scr=%d",
+             (hx.enabled ? "true" : "false"),
+             JsonStringEscape(hx.h4_structure_direction),
+             JsonStringEscape(hx.h1_structure_direction),
+             (hx.htf_structure_aligned ? "true" : "false"),
+             (hx.htf_structure_conflict ? "true" : "false"),
+             hx.htf_structure_score);
    return StringFormat(
              "eq_score=%d eq_grade=%s eq_htf=%d eq_liq=%d eq_disp=%d eq_entry=%d eq_tgt=%d eq_sess=%d eq_risk=%d eq_amb_risk=%d eq_miss=%s eq_qual=%s eq_amb_rsn=%s liq_type=%s "
              "liq_ev_det=%s liq_ev_type=%s liq_ev_dir=%s liq_age=%d liq_lvl=%.5f liq_sweep_px=%.5f liq_dist_pts=%I64d liq_rsn=%s "
              "liq_q=%d liq_q_grade=%s liq_q_rec=%d liq_q_dir=%d liq_q_react=%d liq_q_disp=%d liq_q_dist=%d liq_q_rsn=%s "
-             "sess_bucket=%s tw=%s spr=%s news=%s",
+             "sess_bucket=%s tw=%s spr=%s news=%s%s",
              p.entry_quality_score,
              JsonStringEscape(p.entry_quality_grade),
              p.htf_narrative_score,
@@ -2380,7 +2841,8 @@ string MapzEqScoresToDetailsSuffix(const MapzEqScorePack &p, const MapzLiquidity
              JsonStringEscape(p.session_bucket),
              JsonStringEscape(p.trade_window_status),
              JsonStringEscape(p.spread_status),
-             JsonStringEscape(p.news_mode));
+             JsonStringEscape(p.news_mode),
+             htfComp);
   }
 
 //+------------------------------------------------------------------+
@@ -2397,6 +2859,7 @@ string VirtualBuildDetailsCore(void)
                                 g_vt.filled,
                                 g_vt.outcome,
                                 g_vt.liq,
+                                g_vt.htf,
                                 eqp);
    const string base = StringFormat(
              "trade_id=%s setup_event_id=%s entry=%.5f sl=%.5f tp=%.5f rr=%.2f fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d outcome=%s result_r=%.3f bars_waiting_entry=%d bars_held=%d reason=%s",
@@ -2409,7 +2872,7 @@ string VirtualBuildDetailsCore(void)
              g_vt.bars_waiting_entry,
              g_vt.bars_held,
              JsonStringEscape(g_vt.exit_reason));
-   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq);
+   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf);
   }
 
 //+------------------------------------------------------------------+
@@ -2488,6 +2951,7 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
                                 g_vt.filled,
                                 g_vt.outcome,
                                 g_vt.liq,
+                                g_vt.htf,
                                 eqp);
    row += "," + IntegerToString(eqp.entry_quality_score)
           + "," + eqp.entry_quality_grade
@@ -2532,6 +2996,23 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + DoubleToString(g_vt.liq.chain_reaction_close_price, _Digits)
           + "," + DoubleToString(g_vt.liq.chain_reaction_level, _Digits)
           + "," + IntegerToString(g_vt.liq.chain_reaction_bars_checked)
+          + "," + (g_vt.htf.enabled ? "true" : "false")
+          + "," + g_vt.htf.h4_structure_state
+          + "," + g_vt.htf.h1_structure_state
+          + "," + g_vt.htf.h4_structure_direction
+          + "," + g_vt.htf.h1_structure_direction
+          + "," + (g_vt.htf.htf_structure_aligned ? "true" : "false")
+          + "," + (g_vt.htf.htf_structure_conflict ? "true" : "false")
+          + "," + IntegerToString(g_vt.htf.htf_structure_score)
+          + "," + DoubleToString(g_vt.htf.h4_protected_high, _Digits)
+          + "," + DoubleToString(g_vt.htf.h4_protected_low, _Digits)
+          + "," + DoubleToString(g_vt.htf.h1_protected_high, _Digits)
+          + "," + DoubleToString(g_vt.htf.h1_protected_low, _Digits)
+          + "," + DoubleToString(g_vt.htf.h4_external_liquidity_high, _Digits)
+          + "," + DoubleToString(g_vt.htf.h4_external_liquidity_low, _Digits)
+          + "," + DoubleToString(g_vt.htf.h1_external_liquidity_high, _Digits)
+          + "," + DoubleToString(g_vt.htf.h1_external_liquidity_low, _Digits)
+          + "," + g_vt.htf.htf_structure_reasons
           + "," + eqp.session_bucket
           + "," + eqp.trade_window_status
           + "," + eqp.spread_status
@@ -2646,6 +3127,33 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
          g_chain_grade_none++;
      }
 
+   if(g_vt.htf.enabled)
+     {
+      g_htf_sum_structure_score += (double)g_vt.htf.htf_structure_score;
+      if(g_vt.htf.htf_structure_aligned)
+         g_htf_aligned_count++;
+      if(g_vt.htf.htf_structure_conflict)
+         g_htf_conflict_count++;
+      const string s4 = g_vt.htf.h4_structure_state;
+      if(s4 == "bullish_structure")
+         g_htf_h4_bull++;
+      else if(s4 == "bearish_structure")
+         g_htf_h4_bear++;
+      else if(s4 == "range_structure")
+         g_htf_h4_range++;
+      else if(s4 == "transition_structure")
+         g_htf_h4_trans++;
+      const string s1h = g_vt.htf.h1_structure_state;
+      if(s1h == "bullish_structure")
+         g_htf_h1_bull++;
+      else if(s1h == "bearish_structure")
+         g_htf_h1_bear++;
+      else if(s1h == "range_structure")
+         g_htf_h1_range++;
+      else if(s1h == "transition_structure")
+         g_htf_h1_trans++;
+     }
+
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
    g_tradesDataLines += row;
@@ -2660,6 +3168,7 @@ void VirtualClearTrade(void)
    g_vt.bars_waiting_entry = 0;
    g_vt.bars_held = 0;
    MapzLiquiditySnapshotClear(g_vt.liq);
+   MapzHtfSnapClear(g_vt.htf);
   }
 
 //+------------------------------------------------------------------+
@@ -2863,6 +3372,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    g_vt.exit_reason = "";
    g_vt.setup_reason_tag = setupGeomReason;
    MapzLiquiditySnapshotCopy(g_vt.liq, liqInit);
+   MapzHtfBuildTradeSnap(g_brokerSymbol, sdir, g_lastBiasEnum, g_vt.htf);
 
    g_virtual_trade_count++;
    const string detC = VirtualBuildDetailsCore();
@@ -3188,9 +3698,11 @@ void TryDetectIfvgOnNewExecClosedBar(void)
       string rjP = "";
       if(VirtualPrepareTradePrices(sdir, fLo, fHi, entP, slP, tpP, rAbsP, fLoP, fHiP, fvgPtsP, rjP))
         {
+         MapzHtfTradeSnap htfPrev;
+         MapzHtfBuildTradeSnap(g_brokerSymbol, sdir, g_lastBiasEnum, htfPrev);
          MapzEqScorePack eqSetup;
-         MapzEqComputeScoresFromState(sdir, g_lastBiasEnum, fvgPtsP, entP, slP, tpP, rAbsP, false, "", liqWork, eqSetup);
-         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork);
+         MapzEqComputeScoresFromState(sdir, g_lastBiasEnum, fvgPtsP, entP, slP, tpP, rAbsP, false, "", liqWork, htfPrev, eqSetup);
+         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev);
         }
       const string evAllow = ExportSetupEvent(EVT_SETUP_ALLOWED, setupW, gate, "daily_bias_aligned", detA);
       VirtualOnSetupAllowed(evAllow, setupW, sdir, fLo, fHi, gapPts, cTime, rsn, liqWork);
@@ -3254,7 +3766,7 @@ void RefreshSetupSummaryNotes(void)
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    const long tcRows = g_trades_csv_row_count;
    g_exportNotes = StringFormat(
-                       "E5.10.4 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); "
+                       "E5.11 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); "
                        "setup_inputs: enable=%s min_fvg_pts=%d virtual_min_trade_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
@@ -3263,6 +3775,7 @@ void RefreshSetupSummaryNotes(void)
                        gateNone,
                        (InpEnableLiquiditySweepDetection ? "on" : "off"),
                        (InpEntryQualityScoreEnabled ? "on" : "off"),
+                       (InpEnableHtfStructureV1 ? "on" : "off"),
                        (InpEnableSetupDetection ? "true" : "false"),
                        InpMinFvgPoints,
                        InpVirtualMinTradeFvgPoints,
@@ -3317,12 +3830,14 @@ string WriteSummaryJson(void)
    json += "  \"has_liquidity_sweep_quality_v1_logic\": true,\r\n";
    json += "  \"has_liquidity_chain_v1_logic\": true,\r\n";
    json += "  \"has_liquidity_chain_reaction_audit_v1_logic\": true,\r\n";
+   json += "  \"has_htf_structure_v1_logic\": true,\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
    json += "  \"score_gate_enabled\": false,\r\n";
    json += "  \"entry_quality_score_export_enabled\": " + (InpEntryQualityScoreEnabled ? "true" : "false") + ",\r\n";
    json += "  \"liquidity_sweep_detection_enabled\": " + (InpEnableLiquiditySweepDetection ? "true" : "false") + ",\r\n";
    json += "  \"liquidity_sweep_score_enabled\": " + (InpLiquiditySweepScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "  \"htf_structure_enabled\": " + (InpEnableHtfStructureV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_real_trading_orders\": false,\r\n";
    json += StringFormat("  \"trade_count\": %I64d,\r\n", tcRows);
    json += StringFormat("  \"virtual_trade_count\": %I64d,\r\n", g_virtual_trade_count);
@@ -3427,6 +3942,18 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"liquidity_chain_reaction_fail_wrong_level_count\": %I64d,\r\n", g_chain_rx_fail_wrong_level);
    json += StringFormat("  \"liquidity_chain_reaction_fail_sweep_after_fvg_count\": %I64d,\r\n", g_chain_rx_fail_sweep_after_fvg);
    json += StringFormat("  \"liquidity_chain_reaction_fail_other_count\": %I64d,\r\n", g_chain_rx_fail_other);
+   const double avgHtfStruct = (tcRows > 0 ? g_htf_sum_structure_score / (double)tcRows : 0.0);
+   json += StringFormat("  \"htf_structure_aligned_count\": %I64d,\r\n", g_htf_aligned_count);
+   json += StringFormat("  \"htf_structure_conflict_count\": %I64d,\r\n", g_htf_conflict_count);
+   json += StringFormat("  \"htf_structure_h4_bullish_count\": %I64d,\r\n", g_htf_h4_bull);
+   json += StringFormat("  \"htf_structure_h4_bearish_count\": %I64d,\r\n", g_htf_h4_bear);
+   json += StringFormat("  \"htf_structure_h4_range_count\": %I64d,\r\n", g_htf_h4_range);
+   json += StringFormat("  \"htf_structure_h4_transition_count\": %I64d,\r\n", g_htf_h4_trans);
+   json += StringFormat("  \"htf_structure_h1_bullish_count\": %I64d,\r\n", g_htf_h1_bull);
+   json += StringFormat("  \"htf_structure_h1_bearish_count\": %I64d,\r\n", g_htf_h1_bear);
+   json += StringFormat("  \"htf_structure_h1_range_count\": %I64d,\r\n", g_htf_h1_range);
+   json += StringFormat("  \"htf_structure_h1_transition_count\": %I64d,\r\n", g_htf_h1_trans);
+   json += StringFormat("  \"average_htf_structure_score\": %.6f,\r\n", avgHtfStruct);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -3444,7 +3971,11 @@ string WriteSummaryJson(void)
    json += StringFormat("    \"liquidity_sweep_lookback_bars\": %d,\r\n", InpLiquiditySweepLookbackBars);
    json += StringFormat("    \"local_swing_lookback_bars\": %d,\r\n", InpLocalSwingLookbackBars);
    json += StringFormat("    \"liquidity_sweep_buffer_points\": %d,\r\n", InpLiquiditySweepBufferPoints);
-   json += "    \"liquidity_sweep_score_enabled\": " + (InpLiquiditySweepScoreEnabled ? "true" : "false") + "\r\n";
+   json += "    \"liquidity_sweep_score_enabled\": " + (InpLiquiditySweepScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"htf_structure_v1_enabled\": " + (InpEnableHtfStructureV1 ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"htf_structure_swing_lookback_bars\": %d,\r\n", InpHtfStructureSwingLookbackBars);
+   json += StringFormat("    \"htf_structure_max_bars\": %d,\r\n", InpHtfStructureMaxBars);
+   json += "    \"htf_structure_score_enabled\": " + (InpHtfStructureScoreEnabled ? "true" : "false") + "\r\n";
    json += "  },\r\n";
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
@@ -3455,7 +3986,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+

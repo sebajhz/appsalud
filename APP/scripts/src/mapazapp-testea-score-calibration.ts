@@ -80,6 +80,7 @@ export function analyzeTestEaBundleScoreCalibration(
       component_stats: {},
       liquidity_quality_component_stats: null,
       liquidity_chain_component_stats: null,
+      htf_structure_component_stats: null,
     };
   }
   return analyzeTestEaScoreCalibrationFromTexts({

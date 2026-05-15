@@ -550,6 +550,90 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
     }
 
+    const htfEnRaw = pick(cells, col, "htf_structure_enabled");
+    const h4StRaw = pick(cells, col, "h4_structure_state");
+    const h1StRaw = pick(cells, col, "h1_structure_state");
+    const h4DirRaw = pick(cells, col, "h4_structure_direction");
+    const h1DirRaw = pick(cells, col, "h1_structure_direction");
+    const htfAliRaw = pick(cells, col, "htf_structure_aligned");
+    const htfCnfRaw = pick(cells, col, "htf_structure_conflict");
+    const htfScrRaw = pick(cells, col, "htf_structure_score");
+    const h4PhRaw = pick(cells, col, "h4_protected_high");
+    const h4PlRaw = pick(cells, col, "h4_protected_low");
+    const h1PhRaw = pick(cells, col, "h1_protected_high");
+    const h1PlRaw = pick(cells, col, "h1_protected_low");
+    const h4ElhRaw = pick(cells, col, "h4_external_liquidity_high");
+    const h4EllRaw = pick(cells, col, "h4_external_liquidity_low");
+    const h1ElhRaw = pick(cells, col, "h1_external_liquidity_high");
+    const h1EllRaw = pick(cells, col, "h1_external_liquidity_low");
+    const htfRsnRaw = pick(cells, col, "htf_structure_reasons");
+
+    if (htfEnRaw !== undefined && htfEnRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(htfEnRaw, "htf_structure_enabled", rowNum);
+      if (b.ok) trade.htfStructureEnabled = b.val;
+      else warnings.push({ code: "CSV_HTF_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (h4StRaw?.trim()) trade.h4StructureState = h4StRaw.trim();
+    if (h1StRaw?.trim()) trade.h1StructureState = h1StRaw.trim();
+    if (h4DirRaw?.trim()) trade.h4StructureDirection = h4DirRaw.trim();
+    if (h1DirRaw?.trim()) trade.h1StructureDirection = h1DirRaw.trim();
+    if (htfAliRaw !== undefined && htfAliRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(htfAliRaw, "htf_structure_aligned", rowNum);
+      if (b.ok) trade.htfStructureAligned = b.val;
+      else warnings.push({ code: "CSV_HTF_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (htfCnfRaw !== undefined && htfCnfRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(htfCnfRaw, "htf_structure_conflict", rowNum);
+      if (b.ok) trade.htfStructureConflict = b.val;
+      else warnings.push({ code: "CSV_HTF_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (htfScrRaw !== undefined && htfScrRaw.trim() !== "") {
+      const p = parseNumber(htfScrRaw, "htf_structure_score", rowNum);
+      if (p.ok) trade.htfStructureScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (h4PhRaw !== undefined && h4PhRaw.trim() !== "") {
+      const p = parseNumber(h4PhRaw, "h4_protected_high", rowNum);
+      if (p.ok) trade.h4ProtectedHigh = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (h4PlRaw !== undefined && h4PlRaw.trim() !== "") {
+      const p = parseNumber(h4PlRaw, "h4_protected_low", rowNum);
+      if (p.ok) trade.h4ProtectedLow = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (h1PhRaw !== undefined && h1PhRaw.trim() !== "") {
+      const p = parseNumber(h1PhRaw, "h1_protected_high", rowNum);
+      if (p.ok) trade.h1ProtectedHigh = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (h1PlRaw !== undefined && h1PlRaw.trim() !== "") {
+      const p = parseNumber(h1PlRaw, "h1_protected_low", rowNum);
+      if (p.ok) trade.h1ProtectedLow = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (h4ElhRaw !== undefined && h4ElhRaw.trim() !== "") {
+      const p = parseNumber(h4ElhRaw, "h4_external_liquidity_high", rowNum);
+      if (p.ok) trade.h4ExternalLiquidityHigh = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (h4EllRaw !== undefined && h4EllRaw.trim() !== "") {
+      const p = parseNumber(h4EllRaw, "h4_external_liquidity_low", rowNum);
+      if (p.ok) trade.h4ExternalLiquidityLow = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (h1ElhRaw !== undefined && h1ElhRaw.trim() !== "") {
+      const p = parseNumber(h1ElhRaw, "h1_external_liquidity_high", rowNum);
+      if (p.ok) trade.h1ExternalLiquidityHigh = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (h1EllRaw !== undefined && h1EllRaw.trim() !== "") {
+      const p = parseNumber(h1EllRaw, "h1_external_liquidity_low", rowNum);
+      if (p.ok) trade.h1ExternalLiquidityLow = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (htfRsnRaw?.trim()) trade.htfStructureReasons = htfRsnRaw.trim();
+
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({
         code: "CSV_GEOMETRY_LONG_SL",

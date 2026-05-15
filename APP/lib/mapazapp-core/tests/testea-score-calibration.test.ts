@@ -383,6 +383,28 @@ describe("testea-score-calibration", () => {
     expect(p.byTradeId.get("t0")?.liquidity_chain?.liquidity_chain_sweep_to_setup_bars).toBe(6);
   });
 
+  it("parseTradeScoreAuxiliaryByTradeId maps E5.11 htf_structure_score when present", () => {
+    const headers = [
+      "trade_id",
+      "direction",
+      "entry_time",
+      "exit_time",
+      "entry_price",
+      "exit_price",
+      "result_r",
+      "symbol",
+      "strategy_id",
+      "parameter_set_id",
+      "outcome",
+      "entry_quality_score",
+      "htf_structure_score",
+    ].join(",");
+    const row = ["t_htf", "BUY", "2026-01-01T10:00:00Z", "2026-01-01T11:00:00Z", "1", "1", "1", "XAUUSD", "IFVG_X", "SET_SC", "win", "70", "14"].join(",");
+    const p = parseTradeScoreAuxiliaryByTradeId([headers, row].join("\n"));
+    expect(p.hasHtfStructureScoreColumn).toBe(true);
+    expect(p.byTradeId.get("t_htf")?.htf_structure?.htf_structure_score).toBe(14);
+  });
+
   it("analyzeTestEaScoreCalibrationFromTexts fills liquidity_quality_component_stats when quality columns exist", () => {
     const headers = [
       "trade_id",
@@ -407,6 +429,7 @@ describe("testea-score-calibration", () => {
       "risk_overtrading_score",
       "ambiguous_risk_score",
       "missing_quality_components",
+      "htf_structure_score",
       "liquidity_sweep_quality_score",
       "liquidity_sweep_recency_score",
       "liquidity_sweep_reaction_score",
@@ -441,6 +464,7 @@ describe("testea-score-calibration", () => {
       "5",
       "25",
       "",
+      "18",
       "14",
       "4",
       "5",
@@ -463,5 +487,6 @@ describe("testea-score-calibration", () => {
     expect(r.liquidity_quality_component_stats?.liquidity_sweep_recency_score?.min).toBe(4);
     expect(r.liquidity_chain_component_stats?.liquidity_chain_score?.average).toBe(19);
     expect(r.liquidity_chain_component_stats?.liquidity_chain_sweep_to_setup_bars?.min).toBe(8);
+    expect(r.htf_structure_component_stats?.htf_structure_score?.average).toBe(18);
   });
 });

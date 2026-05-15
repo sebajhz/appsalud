@@ -237,6 +237,25 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(t.liquidityChainReactionBarsChecked).toBe(2);
   });
 
+  it("parses optional E5.11 HTF structure observation columns when present", () => {
+    const header =
+      "trade_id,direction,entry_time,exit_time,entry,exit_price,result_r,result_money,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons";
+    const row =
+      "t_htf,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,2005,1,0,true,bullish_structure,bullish_structure,bullish,bullish,true,false,17,2010,1990,2008,1995,2020,1985,2015,1992,htf_structure_aligned";
+    const r = importBacktestTradesFromCsv(`${header}\n${row}`, testeaOpts);
+    expect(r.ok).toBe(true);
+    const t = r.trades[0]!;
+    expect(t.htfStructureEnabled).toBe(true);
+    expect(t.h4StructureState).toBe("bullish_structure");
+    expect(t.h1StructureState).toBe("bullish_structure");
+    expect(t.htfStructureAligned).toBe(true);
+    expect(t.htfStructureConflict).toBe(false);
+    expect(t.htfStructureScore).toBe(17);
+    expect(t.h4ProtectedHigh).toBeCloseTo(2010, 5);
+    expect(t.h4ExternalLiquidityLow).toBeCloseTo(1985, 5);
+    expect(t.htfStructureReasons).toBe("htf_structure_aligned");
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);

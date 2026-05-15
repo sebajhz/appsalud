@@ -995,6 +995,117 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_htf_structure_v1_logic"] === true) {
+          if (!("htf_structure_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_HTF_STRUCTURE_E5_11_KEY",
+                `E5.11: when has_htf_structure_v1_logic is true, summary must include "htf_structure_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else {
+            const en = summaryJson["htf_structure_enabled"];
+            if (typeof en !== "boolean") {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_HTF_STRUCTURE_E5_11_BOOL",
+                  `E5.11: "htf_structure_enabled" must be a boolean`,
+                  { fileName: sj.fileName, detail: String(en) },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          const htfNumericSummaryKeys = [
+            "htf_structure_aligned_count",
+            "htf_structure_conflict_count",
+            "htf_structure_h4_bullish_count",
+            "htf_structure_h4_bearish_count",
+            "htf_structure_h4_range_count",
+            "htf_structure_h4_transition_count",
+            "htf_structure_h1_bullish_count",
+            "htf_structure_h1_bearish_count",
+            "htf_structure_h1_range_count",
+            "htf_structure_h1_transition_count",
+            "average_htf_structure_score",
+          ] as const;
+          for (const k of htfNumericSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_HTF_STRUCTURE_E5_11_KEY",
+                  `E5.11: when has_htf_structure_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const v = summaryJson[k];
+              if (typeof v !== "number" || !Number.isFinite(v)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_HTF_STRUCTURE_E5_11_NUM",
+                    `E5.11: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(v) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const htfCols = [
+              "htf_structure_enabled",
+              "h4_structure_state",
+              "h1_structure_state",
+              "h4_structure_direction",
+              "h1_structure_direction",
+              "htf_structure_aligned",
+              "htf_structure_conflict",
+              "htf_structure_score",
+              "h4_protected_high",
+              "h4_protected_low",
+              "h1_protected_high",
+              "h1_protected_low",
+              "h4_external_liquidity_high",
+              "h4_external_liquidity_low",
+              "h1_external_liquidity_high",
+              "h1_external_liquidity_low",
+              "htf_structure_reasons",
+            ] as const;
+            for (const col of htfCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_HTF_STRUCTURE_E5_11",
+                    `E5.11: backtest_trades.csv header must include "${col}" when has_htf_structure_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_HTF_STRUCTURE_HEADER_CHECK",
+                "has_htf_structure_v1_logic is true but backtest_trades.csv missing — cannot verify E5.11 HTF columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(
