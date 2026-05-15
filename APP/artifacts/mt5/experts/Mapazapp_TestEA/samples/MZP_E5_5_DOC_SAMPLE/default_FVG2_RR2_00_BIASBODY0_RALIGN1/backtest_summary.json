@@ -1,6 +1,6 @@
 {
   "schema_version": "backtest_ea_v1",
-  "ea_build": "MZP_TestEA_E5_10_4_sample",
+  "ea_build": "MZP_TestEA_E5_10_6_sample",
   "run_id": "TESTEA_SAMPLE_RUN",
   "campaign_id": "",
   "optimization_safe_exports": true,
@@ -38,6 +38,7 @@
   "has_liquidity_sweep_v1_logic": true,
   "has_liquidity_sweep_quality_v1_logic": true,
   "has_liquidity_chain_v1_logic": true,
+  "has_liquidity_chain_reaction_audit_v1_logic": true,
   "has_entry_quality_score_logic": true,
   "score_observation_only": true,
   "score_gate_enabled": false,
@@ -124,6 +125,12 @@
   "liquidity_chain_reaction_confirmed_count": 1,
   "liquidity_chain_displacement_confirmed_count": 2,
   "liquidity_chain_fvg_after_sweep_count": 1,
+  "liquidity_chain_reaction_checked_count": 2,
+  "liquidity_chain_reaction_fail_close_not_back_inside_count": 1,
+  "liquidity_chain_reaction_fail_no_candle_after_sweep_count": 0,
+  "liquidity_chain_reaction_fail_wrong_level_count": 0,
+  "liquidity_chain_reaction_fail_sweep_after_fvg_count": 0,
+  "liquidity_chain_reaction_fail_other_count": 0,
   "exported_at_utc": "2026-01-15T10:00:00Z",
-  "notes": "Fictional E5.10.4 nested-folder sample — not Strategy Tester output. Same shape as root samples/; optimization_safe_exports=true for doc layout tests."
+  "notes": "Fictional E5.10.6 nested-folder sample — not Strategy Tester output. Same shape as root samples/ + reaction audit keys; optimization_safe_exports=true for doc layout tests."
 }

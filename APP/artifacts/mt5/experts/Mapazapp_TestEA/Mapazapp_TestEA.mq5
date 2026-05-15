@@ -7,7 +7,7 @@
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
 #property version   "1.11"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.4 Causal Liquidity Chain V1 (observation/export); E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 observation-only Entry Quality Score V1 export; E5.5.0.5 short physical export folders + full JSON ids; E5.5.0.3 FileOpen-safe export writes (no orders)."
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit + E5.10.4 causal chain (observation/export); E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 observation-only Entry Quality Score V1 export; E5.5.0.5 short physical export folders + full JSON ids; E5.5.0.3 FileOpen-safe export writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -57,7 +57,7 @@ input int               InpLocalSwingLookbackBars      = 20;
 input int               InpLiquiditySweepBufferPoints  = 0;
 input bool              InpLiquiditySweepScoreEnabled   = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_10_4"
+#define TESTEA_BUILD            "MZP_TestEA_E5_10_6"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -205,6 +205,12 @@ double          g_chain_sum_sweep_to_setup = 0.0;
 long            g_chain_reaction_confirmed_count = 0;
 long            g_chain_displacement_confirmed_count = 0;
 long            g_chain_fvg_after_sweep_count = 0;
+long            g_chain_rx_checked_count = 0;
+long            g_chain_rx_fail_close_not_back_inside = 0;
+long            g_chain_rx_fail_no_candle = 0;
+long            g_chain_rx_fail_wrong_level = 0;
+long            g_chain_rx_fail_sweep_after_fvg = 0;
+long            g_chain_rx_fail_other = 0;
 
 struct MapzLiquiditySnapshot
   {
@@ -235,6 +241,10 @@ struct MapzLiquiditySnapshot
    bool     chain_fvg_created_after_sweep;
    long     chain_distance_to_fvg_points;
    string   chain_reasons;
+   string   chain_reaction_failure_reason;
+   double   chain_reaction_close_price;
+   double   chain_reaction_level;
+   int      chain_reaction_bars_checked;
   };
 
 struct MapzEqScorePack
@@ -1102,6 +1112,10 @@ void MapzLiquiditySnapshotClear(MapzLiquiditySnapshot &o)
    o.chain_fvg_created_after_sweep = false;
    o.chain_distance_to_fvg_points = 0;
    o.chain_reasons = "";
+   o.chain_reaction_failure_reason = "";
+   o.chain_reaction_close_price = 0.0;
+   o.chain_reaction_level = 0.0;
+   o.chain_reaction_bars_checked = 0;
   }
 
 //+------------------------------------------------------------------+
@@ -1134,6 +1148,10 @@ void MapzLiquiditySnapshotCopy(MapzLiquiditySnapshot &dst, const MapzLiquiditySn
    dst.chain_fvg_created_after_sweep = src.chain_fvg_created_after_sweep;
    dst.chain_distance_to_fvg_points = src.chain_distance_to_fvg_points;
    dst.chain_reasons = src.chain_reasons;
+   dst.chain_reaction_failure_reason = src.chain_reaction_failure_reason;
+   dst.chain_reaction_close_price = src.chain_reaction_close_price;
+   dst.chain_reaction_level = src.chain_reaction_level;
+   dst.chain_reaction_bars_checked = src.chain_reaction_bars_checked;
   }
 
 //+------------------------------------------------------------------+
@@ -1275,6 +1293,150 @@ void MapzLiqDistributeQualityParts(const int targetTotal,
   }
 
 //+------------------------------------------------------------------+
+//| E5.10.6: closed-candle reaction window — first 3 bars after sweep.|
+//| Bull low sweep: close > level OR close back into pre-sweep bar    |
+//| range (bar j+1). Bear high sweep: close < level OR same range.    |
+//+------------------------------------------------------------------+
+bool MapzLiquidityClosedReactionWindowOk(const string sym,
+                                         const ENUM_TIMEFRAMES tf,
+                                         const int j,
+                                         const ENUM_MAPZ_SETUP_DIR setupDir,
+                                         const string ev_type,
+                                         const double level,
+                                         double &outClosePx,
+                                         int &outBarsChecked)
+  {
+   outClosePx = 0.0;
+   outBarsChecked = 0;
+   const double pt = SymbolInfoDouble(sym, SYMBOL_POINT);
+   if(pt <= 0.0 || j < 2)
+      return false;
+
+   const bool wantLong = (setupDir == MAPZ_SETUP_LONG);
+   const bool wantShort = (setupDir == MAPZ_SETUP_SHORT);
+   const bool pairLow = (ev_type == "PDL_SWEEP" || ev_type == "LOCAL_SWING_LOW_SWEEP");
+   const bool pairHigh = (ev_type == "PDH_SWEEP" || ev_type == "LOCAL_SWING_HIGH_SWEEP");
+   if(!(wantLong && pairLow) && !(wantShort && pairHigh))
+      return false;
+
+   const int barsTot = Bars(sym, tf);
+   const bool havePre = (j + 1 < barsTot);
+   double preLo = 0.0;
+   double preHi = 0.0;
+   if(havePre)
+     {
+      preLo = iLow(sym, tf, j + 1);
+      preHi = iHigh(sym, tf, j + 1);
+     }
+
+   const double eps = 2.0 * pt;
+   for(int idx = 1; idx <= 3; idx++)
+     {
+      const int k = j - idx;
+      if(k < 1)
+         break;
+      outBarsChecked++;
+      const double cls = iClose(sym, tf, k);
+      bool okBar = false;
+      if(wantLong && pairLow)
+        {
+         const bool above = (cls > level + eps);
+         bool inPre = false;
+         if(havePre)
+            inPre = (cls >= preLo - eps && cls <= preHi + eps);
+         okBar = (above || inPre);
+        }
+      else if(wantShort && pairHigh)
+        {
+         const bool below = (cls < level - eps);
+         bool inPre = false;
+         if(havePre)
+            inPre = (cls >= preLo - eps && cls <= preHi + eps);
+         okBar = (below || inPre);
+        }
+      if(okBar)
+        {
+         outClosePx = cls;
+         return true;
+        }
+     }
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+//| E5.10.6: audit counters + per-trade reaction diagnostics (obs).   |
+//+------------------------------------------------------------------+
+void MapzLiquidityReactionAudit(const string sym,
+                                const ENUM_TIMEFRAMES tf,
+                                const int S,
+                                const ENUM_MAPZ_SETUP_DIR setupDir,
+                                MapzLiquiditySnapshot &io)
+  {
+   io.chain_reaction_confirmed = false;
+   io.chain_reaction_failure_reason = "liquidity_chain_reaction_not_applicable";
+   io.chain_reaction_close_price = 0.0;
+   io.chain_reaction_level = io.level;
+   io.chain_reaction_bars_checked = 0;
+
+   if(!InpEnableLiquiditySweepDetection)
+      return;
+
+   const bool opp = (StringFind(io.direction, "opposite") >= 0);
+   const bool wantLong = (setupDir == MAPZ_SETUP_LONG);
+   const bool wantShort = (setupDir == MAPZ_SETUP_SHORT);
+   const bool pairLow = (io.ev_type == "PDL_SWEEP" || io.ev_type == "LOCAL_SWING_LOW_SWEEP");
+   const bool pairHigh = (io.ev_type == "PDH_SWEEP" || io.ev_type == "LOCAL_SWING_HIGH_SWEEP");
+
+   if(opp || (!wantLong && !wantShort) || (wantLong && !pairLow) || (wantShort && !pairHigh))
+     {
+      io.chain_reaction_failure_reason = "liquidity_chain_reaction_fail_wrong_level";
+      g_chain_rx_fail_wrong_level++;
+      return;
+     }
+
+   if(S < 1 || io.sweep_bar_shift < 0)
+     {
+      io.chain_reaction_failure_reason = "liquidity_chain_reaction_fail_other";
+      g_chain_rx_fail_other++;
+      return;
+     }
+
+   const int j = io.sweep_bar_shift;
+
+   if(j <= S)
+     {
+      io.chain_reaction_failure_reason = "liquidity_chain_reaction_fail_sweep_after_fvg";
+      g_chain_rx_fail_sweep_after_fvg++;
+      return;
+     }
+
+   if(j < 2)
+     {
+      io.chain_reaction_failure_reason = "liquidity_chain_reaction_fail_no_candle_after_sweep";
+      g_chain_rx_fail_no_candle++;
+      return;
+     }
+
+   g_chain_rx_checked_count++;
+
+   double clsPx = 0.0;
+   int nBars = 0;
+   const bool ok = MapzLiquidityClosedReactionWindowOk(sym, tf, j, setupDir, io.ev_type, io.level, clsPx, nBars);
+   io.chain_reaction_close_price = clsPx;
+   io.chain_reaction_bars_checked = nBars;
+
+   if(ok)
+     {
+      io.chain_reaction_confirmed = true;
+      io.chain_reaction_failure_reason = "liquidity_chain_reaction_ok";
+      return;
+     }
+
+   io.chain_reaction_failure_reason = "liquidity_chain_reaction_fail_close_not_back_inside";
+   g_chain_rx_fail_close_not_back_inside++;
+  }
+
+//+------------------------------------------------------------------+
 void MapzLiquidityFinalizeQuality(const string sym,
                                   const ENUM_TIMEFRAMES tf,
                                   const int S,
@@ -1365,36 +1527,13 @@ void MapzLiquidityFinalizeQuality(const string sym,
    else
      {
       const int j = io.sweep_bar_shift;
+      double rxCls = 0.0;
+      int rxBars = 0;
       bool okReact = false;
-      const double eps = 2.0 * pt;
-      if(wantLong && (io.ev_type == "PDL_SWEEP" || io.ev_type == "LOCAL_SWING_LOW_SWEEP"))
-        {
-         for(int k = j - 1; k >= S + 1; k--)
-           {
-            if(k < 1)
-               break;
-            const double cls = iClose(sym, tf, k);
-            if(cls > io.level + eps)
-              {
-               okReact = true;
-               break;
-              }
-           }
-        }
-      else if(wantShort && (io.ev_type == "PDH_SWEEP" || io.ev_type == "LOCAL_SWING_HIGH_SWEEP"))
-        {
-         for(int k = j - 1; k >= S + 1; k--)
-           {
-            if(k < 1)
-               break;
-            const double cls = iClose(sym, tf, k);
-            if(cls < io.level - eps)
-              {
-               okReact = true;
-               break;
-              }
-           }
-        }
+      if(j > S && j >= 2)
+         okReact = MapzLiquidityClosedReactionWindowOk(sym, tf, j, setupDir, io.ev_type, io.level, rxCls, rxBars);
+      else
+         flag_no_rx = true;
 
       if(okReact)
          react = 5;
@@ -1609,40 +1748,12 @@ int MapzLiquidityComputeSelectPri(const string sym,
    else
       pri -= 140;
 
-   const bool wantLong = (setupDir == MAPZ_SETUP_LONG);
-   const bool wantShort = (setupDir == MAPZ_SETUP_SHORT);
    const int j = sweep_shift;
    bool okReact = false;
-   const double eps = 2.0 * pt;
-   if(j >= S + 1)
-     {
-      if(wantLong && (ev_type == "PDL_SWEEP" || ev_type == "LOCAL_SWING_LOW_SWEEP"))
-        {
-         for(int k = j - 1; k >= S + 1; k--)
-           {
-            if(k < 1)
-               break;
-            if(iClose(sym, tf, k) > level + eps)
-              {
-               okReact = true;
-               break;
-              }
-           }
-        }
-      else if(wantShort && (ev_type == "PDH_SWEEP" || ev_type == "LOCAL_SWING_HIGH_SWEEP"))
-        {
-         for(int k = j - 1; k >= S + 1; k--)
-           {
-            if(k < 1)
-               break;
-            if(iClose(sym, tf, k) < level - eps)
-              {
-               okReact = true;
-               break;
-              }
-           }
-        }
-     }
+   double rxCls = 0.0;
+   int rxBars = 0;
+   if(j > S && j >= 2)
+      okReact = MapzLiquidityClosedReactionWindowOk(sym, tf, j, setupDir, ev_type, level, rxCls, rxBars);
    if(okReact)
       pri += 110;
 
@@ -1670,10 +1781,19 @@ void MapzLiquidityFinalizeChain(const string sym,
    io.chain_fvg_created_after_sweep = false;
    io.chain_distance_to_fvg_points = 0;
    io.chain_reasons = "";
+   io.chain_reaction_failure_reason = "";
+   io.chain_reaction_close_price = 0.0;
+   io.chain_reaction_level = 0.0;
+   io.chain_reaction_bars_checked = 0;
 
    if(!io.detected || io.ev_type == "none")
      {
       MapzLiqAppendQualityReason(io.chain_reasons, "liquidity_chain_none");
+      io.chain_reaction_failure_reason = "liquidity_chain_reaction_not_applicable";
+      io.chain_reaction_close_price = 0.0;
+      io.chain_reaction_level = 0.0;
+      io.chain_reaction_bars_checked = 0;
+      io.chain_reaction_confirmed = false;
       return;
      }
 
@@ -1687,14 +1807,15 @@ void MapzLiquidityFinalizeChain(const string sym,
    io.chain_sweep_to_setup_bars = io.age_bars;
    io.chain_sweep_to_fvg_bars = io.age_bars;
 
+   MapzLiquidityReactionAudit(sym, tf, S, setupDir, io);
+
    const bool opp = (StringFind(io.direction, "opposite") >= 0);
-   const bool rxOk = (io.reaction_score >= 4);
+   const bool rxOk = io.chain_reaction_confirmed;
    const bool dispOk = (io.displacement_score >= 2);
    const bool proxOk = (io.distance_score >= 1);
    const bool dirOk = (io.directional_score >= 4);
    const bool fvgAfter = (S >= 1 && io.sweep_bar_shift > S);
 
-   io.chain_reaction_confirmed = rxOk;
    io.chain_displacement_confirmed = dispOk;
    io.chain_fvg_created_after_sweep = fvgAfter;
 
@@ -2407,6 +2528,10 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + (g_vt.liq.chain_fvg_created_after_sweep ? "true" : "false")
           + "," + IntegerToString((int)g_vt.liq.chain_distance_to_fvg_points)
           + "," + g_vt.liq.chain_reasons
+          + "," + g_vt.liq.chain_reaction_failure_reason
+          + "," + DoubleToString(g_vt.liq.chain_reaction_close_price, _Digits)
+          + "," + DoubleToString(g_vt.liq.chain_reaction_level, _Digits)
+          + "," + IntegerToString(g_vt.liq.chain_reaction_bars_checked)
           + "," + eqp.session_bucket
           + "," + eqp.trade_window_status
           + "," + eqp.spread_status
@@ -3191,6 +3316,7 @@ string WriteSummaryJson(void)
    json += "  \"has_liquidity_sweep_v1_logic\": true,\r\n";
    json += "  \"has_liquidity_sweep_quality_v1_logic\": true,\r\n";
    json += "  \"has_liquidity_chain_v1_logic\": true,\r\n";
+   json += "  \"has_liquidity_chain_reaction_audit_v1_logic\": true,\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
    json += "  \"score_gate_enabled\": false,\r\n";
@@ -3295,6 +3421,12 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"liquidity_chain_reaction_confirmed_count\": %I64d,\r\n", g_chain_reaction_confirmed_count);
    json += StringFormat("  \"liquidity_chain_displacement_confirmed_count\": %I64d,\r\n", g_chain_displacement_confirmed_count);
    json += StringFormat("  \"liquidity_chain_fvg_after_sweep_count\": %I64d,\r\n", g_chain_fvg_after_sweep_count);
+   json += StringFormat("  \"liquidity_chain_reaction_checked_count\": %I64d,\r\n", g_chain_rx_checked_count);
+   json += StringFormat("  \"liquidity_chain_reaction_fail_close_not_back_inside_count\": %I64d,\r\n", g_chain_rx_fail_close_not_back_inside);
+   json += StringFormat("  \"liquidity_chain_reaction_fail_no_candle_after_sweep_count\": %I64d,\r\n", g_chain_rx_fail_no_candle);
+   json += StringFormat("  \"liquidity_chain_reaction_fail_wrong_level_count\": %I64d,\r\n", g_chain_rx_fail_wrong_level);
+   json += StringFormat("  \"liquidity_chain_reaction_fail_sweep_after_fvg_count\": %I64d,\r\n", g_chain_rx_fail_sweep_after_fvg);
+   json += StringFormat("  \"liquidity_chain_reaction_fail_other_count\": %I64d,\r\n", g_chain_rx_fail_other);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -3323,7 +3455,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+

@@ -223,6 +223,20 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(t.liquidityChainReasons).toBe("liquidity_chain_ok");
   });
 
+  it("parses optional E5.10.6 liquidity chain reaction audit columns when present", () => {
+    const header =
+      "trade_id,direction,entry_time,exit_time,entry,exit_price,result_r,result_money,liquidity_event_score,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked";
+    const row =
+      "t_rx,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,2005,1,0,14,liquidity_chain_ok,liquidity_chain_reaction_ok,2000.5,1999.0,2";
+    const r = importBacktestTradesFromCsv(`${header}\n${row}`, testeaOpts);
+    expect(r.ok).toBe(true);
+    const t = r.trades[0]!;
+    expect(t.liquidityChainReactionFailureReason).toBe("liquidity_chain_reaction_ok");
+    expect(t.liquidityChainReactionClosePrice).toBe(2000.5);
+    expect(t.liquidityChainReactionLevel).toBe(1999.0);
+    expect(t.liquidityChainReactionBarsChecked).toBe(2);
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);

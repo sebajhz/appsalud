@@ -485,6 +485,10 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     const lcFvgRaw = pick(cells, col, "liquidity_chain_fvg_created_after_sweep");
     const lcDistRaw = pick(cells, col, "liquidity_chain_distance_to_fvg_points");
     const lcRsnRaw = pick(cells, col, "liquidity_chain_reasons");
+    const lcRxFailRaw = pick(cells, col, "liquidity_chain_reaction_failure_reason");
+    const lcRxClsRaw = pick(cells, col, "liquidity_chain_reaction_close_price");
+    const lcRxLvlRaw = pick(cells, col, "liquidity_chain_reaction_level");
+    const lcRxBarsRaw = pick(cells, col, "liquidity_chain_reaction_bars_checked");
 
     if (lcDetRaw !== undefined && lcDetRaw.trim() !== "") {
       const b = parseOptionalCsvBool(lcDetRaw, "liquidity_chain_detected", rowNum);
@@ -528,6 +532,23 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
     }
     if (lcRsnRaw?.trim()) trade.liquidityChainReasons = lcRsnRaw.trim();
+
+    if (lcRxFailRaw?.trim()) trade.liquidityChainReactionFailureReason = lcRxFailRaw.trim();
+    if (lcRxClsRaw !== undefined && lcRxClsRaw.trim() !== "") {
+      const p = parseNumber(lcRxClsRaw, "liquidity_chain_reaction_close_price", rowNum);
+      if (p.ok) trade.liquidityChainReactionClosePrice = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (lcRxLvlRaw !== undefined && lcRxLvlRaw.trim() !== "") {
+      const p = parseNumber(lcRxLvlRaw, "liquidity_chain_reaction_level", rowNum);
+      if (p.ok) trade.liquidityChainReactionLevel = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (lcRxBarsRaw !== undefined && lcRxBarsRaw.trim() !== "") {
+      const p = parseNumber(lcRxBarsRaw, "liquidity_chain_reaction_bars_checked", rowNum);
+      if (p.ok) trade.liquidityChainReactionBarsChecked = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
 
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({

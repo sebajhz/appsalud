@@ -926,6 +926,75 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_liquidity_chain_reaction_audit_v1_logic"] === true) {
+          const rxAuditSummaryKeys = [
+            "liquidity_chain_reaction_checked_count",
+            "liquidity_chain_reaction_fail_close_not_back_inside_count",
+            "liquidity_chain_reaction_fail_no_candle_after_sweep_count",
+            "liquidity_chain_reaction_fail_wrong_level_count",
+            "liquidity_chain_reaction_fail_sweep_after_fvg_count",
+            "liquidity_chain_reaction_fail_other_count",
+          ] as const;
+          for (const k of rxAuditSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6_KEY",
+                  `E5.10.6: when has_liquidity_chain_reaction_audit_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const v = summaryJson[k];
+              if (typeof v !== "number" || !Number.isFinite(v)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6_NUM",
+                    `E5.10.6: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(v) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const rxCols = [
+              "liquidity_chain_reaction_failure_reason",
+              "liquidity_chain_reaction_close_price",
+              "liquidity_chain_reaction_level",
+              "liquidity_chain_reaction_bars_checked",
+            ] as const;
+            for (const col of rxCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6",
+                    `E5.10.6: backtest_trades.csv header must include "${col}" when has_liquidity_chain_reaction_audit_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_LIQUIDITY_CHAIN_REACTION_AUDIT_HEADER_CHECK",
+                "has_liquidity_chain_reaction_audit_v1_logic is true but backtest_trades.csv missing — cannot verify E5.10.6 reaction audit columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

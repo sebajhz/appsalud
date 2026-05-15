@@ -29,7 +29,7 @@ Secuencia esperada en el **TF de ejecución** (p. ej. M15):
 | `liquidity_chain_detected` | `true` solo si la cadena mínima razonable está presente |
 | `liquidity_chain_grade` / `liquidity_chain_score` | Grado y puntuación **0–20** de la cadena (no sustituye los subscores legacy de calidad sweep) |
 | `liquidity_chain_sweep_to_setup_bars`, `liquidity_chain_sweep_to_fvg_bars` | Separación temporal (ahora iguales a `age_bars` del sweep; reservado para extensiones) |
-| `liquidity_chain_reaction_confirmed` | Coherente con reacción suficiente en calidad |
+| `liquidity_chain_reaction_confirmed` | **E5.10.6+:** ventana cerrada dedicada + audit; ya no equivale solo a “subscore distribuido ≥ 4” — ver [`LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md`](./LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md) |
 | `liquidity_chain_displacement_confirmed` | Coherente con desplazamiento suficiente |
 | `liquidity_chain_fvg_created_after_sweep` | FVG (vela setup **S**) estrictamente **después** de la vela del sweep |
 | `liquidity_chain_distance_to_fvg_points` | Distancia nivel de liquidez ↔ centro del FVG (puntos) |
@@ -55,4 +55,4 @@ Si el CSV incluye columnas numéricas de cadena (`liquidity_chain_score`, barras
 
 ## Próximo paso recomendado
 
-**E5.10.5** — Smoke Strategy Tester tras recompilar **`MZP_TestEA_E5_10_4`**, exportar bundle, validar CLI y comparar distribución de `liquidity_chain_*` por outcome (sin esperar tuning artificial de A/B).
+**E5.10.7** — Smoke Strategy Tester tras recompilar **`MZP_TestEA_E5_10_6`**, revisar contadores `liquidity_chain_reaction_*` y narrativa causal (sin tuning artificial de A/B). Detalle audit/heurística: [`LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md`](./LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md).

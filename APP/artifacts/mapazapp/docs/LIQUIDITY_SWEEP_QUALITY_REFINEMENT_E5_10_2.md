@@ -43,7 +43,7 @@ Subscores (suma máx. **20** puntos en el componente de liquidez que alimenta `e
 
 ## Integración con Entry Quality Score
 
-**E5.10.4:** si **`has_liquidity_chain_v1_logic`** está activo en la exportación, **`liquidity_event_score`** puede seguir **`liquidity_chain_score`** cuando la cadena causal está confirmada; sin cadena cualificada, el componente usa la calidad sweep **capada** (ver [`LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md`](./LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md)).
+**E5.10.4:** si **`has_liquidity_chain_v1_logic`** está activo en la exportación, **`liquidity_event_score`** puede seguir **`liquidity_chain_score`** cuando la cadena causal está confirmada; sin cadena cualificada, el componente usa la calidad sweep **capada** (ver [`LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md`](./LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md)). **E5.10.6** refina **`liquidity_chain_reaction_confirmed`** + diagnósticos `liquidity_chain_reaction_*` — [`LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md`](./LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md).
 
 **E5.10.2–E5.10.3:** se pretendía **`liquidity_event_score` = `liquidity_sweep_quality_score`** (total 0–20 del bloque de calidad) cuando `InpLiquiditySweepScoreEnabled` está activo, para que el **Entry Quality Score** se beneficie del refinamiento de calidad. Si el score de liquidez está desactivado, `liquidity_event_score` puede seguir en 0 en el paquete de scoring, pero las columnas de calidad en CSV siguen exportándose para diagnóstico (según detección habilitada).
 

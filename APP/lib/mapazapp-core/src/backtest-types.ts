@@ -91,6 +91,11 @@ export interface BacktestTrade {
   liquidityChainFvgCreatedAfterSweep?: boolean | undefined;
   liquidityChainDistanceToFvgPoints?: number | undefined;
   liquidityChainReasons?: string | undefined;
+  /** E5.10.6 reaction audit diagnostics (optional; older CSV). */
+  liquidityChainReactionFailureReason?: string | undefined;
+  liquidityChainReactionClosePrice?: number | undefined;
+  liquidityChainReactionLevel?: number | undefined;
+  liquidityChainReactionBarsChecked?: number | undefined;
 }
 
 export interface BacktestImportWarning {
