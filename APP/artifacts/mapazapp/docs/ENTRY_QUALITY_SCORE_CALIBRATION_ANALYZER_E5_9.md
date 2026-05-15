@@ -92,14 +92,11 @@ Cada token listado en el CSV (separadores `,`, `;`, `|`) se cuenta. Aparece la c
 
 ---
 
-## 8. Siguiente paso recomendado (**E5.9.1**)
+## 8. Evidencia operador (**E5.9.1**)
 
-Run **operador** del CLI sobre:
+**Cerrado (docs):** evidencia del CLI sobre el bundle smoke **E5.8.1** (`SET001_FVG2_…`), métricas agregadas, bandas relativas, decisión de gobierno y roadmap de componentes — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md). Artefactos JSON/CSV locales del operador siguen siendo **opcionales** y **no** deben versionarse si llevan sufijo `*_DO_NOT_COMMIT.csv`.
 
-1. El bundle del smoke **E5.8.1** (mismo `SET001_FVG2_…`), y  
-2. Cuando exista matriz de campaña, **varios** bundles E55 con score,
-
-y documentar resultados en un doc de evidencia **E5.9.1** (solo documentación + artefactos locales no versionados si el operador lo desea). El repo no necesita CSV de MT5.
+**Opcional:** repetir el CLI sobre **varios** bundles E55 cuando exista matriz de campaña, para comprobar estabilidad de señal entre cohortes (mismo analizador; sin MT5 desde repo).
 
 ---
 
@@ -117,3 +114,4 @@ y documentar resultados en un doc de evidencia **E5.9.1** (solo documentación +
 | Versión | Nota |
 |---------|------|
 | E5.9 v1 | Analizador core + CLI + tests + documentación; bandas relativas y flags diagnósticos. |
+| E5.9.1 | Evidencia operador smoke + decisión componentes — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md). |

@@ -118,6 +118,8 @@ Sobre cohortes exportadas (p. ej. bundles de campaña o smoke ampliado), medir c
 
 **Implementación repo (analizador off-line):** [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md) — CLI `mapazapp:testea-score-calibration` (sin MT5).
 
+**E5.9.1 (evidencia):** mismo bundle smoke; salida JSON post–**E5.9.0.1** (`ambiguous_rate` de cohorte); interpretación A/B=0 + decisión “mejorar componentes, no relajar umbrales” — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md).
+
 ---
 
 ## 9. No objetivos (E5.8.1)
@@ -135,3 +137,4 @@ Sobre cohortes exportadas (p. ej. bundles de campaña o smoke ampliado), medir c
 |---------|------|
 | E5.8.1 v1 | Evidencia smoke operador + interpretación A/B=0 + dirección E5.9 calibración; docs-only. |
 | E5.8.1 v1.1 | Enlace al analizador **E5.9** en repo — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md). |
+| E5.8.1 v1.2 | Puntero a evidencia operador **E5.9.1** — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md). |

@@ -71,7 +71,7 @@ El importador acepta el alias de cabecera **`entry_quality_score`** → `scoreTo
 
 **E5.9** incluye el analizador TypeScript + CLI **solo post-proceso** (sin MT5, sin cambiar TestEA): [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md). Comando: `pnpm --filter @workspace/scripts mapazapp:testea-score-calibration`.
 
-Métricas: percentiles, outcome/`ambiguous`, bandas relativas (P10–P90), frecuencia de `missing_quality_components`, flags diagnósticos — **sin** aprobación de umbrales (contrato E5.7 §5 sigue **no aprobado**). Evidencia operador sobre bundles reales → checkpoint doc **E5.9.1** (futuro).
+Métricas: percentiles, outcome/`ambiguous`, bandas relativas (P10–P90), frecuencia de `missing_quality_components`, flags diagnósticos — **sin** aprobación de umbrales (contrato E5.7 §5 sigue **no aprobado**). Evidencia operador (smoke **E5.8.1**) — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md).
 
 ---
 
@@ -88,3 +88,4 @@ Métricas: percentiles, outcome/`ambiguous`, bandas relativas (P10–P90), frecu
 | E5.8 v1 | Primera exportación observación-only en `Mapazapp_TestEA.mq5` + docs + muestras + validador. |
 | E5.8.1 | Evidencia smoke operador + caveat A/B=0 (calibración); ver [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md). |
 | E5.9 | Analizador core + CLI post-proceso bundles — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md). |
+| E5.9.1 | Evidencia calibración smoke + decisión componentes — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md). |
