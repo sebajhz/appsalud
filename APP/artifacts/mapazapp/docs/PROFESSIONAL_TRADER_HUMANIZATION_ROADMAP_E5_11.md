@@ -31,18 +31,10 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## A. Validación inmediata
 
-### E5.10.7 — Liquidity Chain Reaction smoke evidence
+### E5.10.7 — Liquidity Chain Reaction smoke evidence (**cerrado — docs**)
 
-- Operador **recompila** `MZP_TestEA_E5_10_6` en MetaEditor.
-- Ejecutar el mismo **smoke XAUUSD M15 / D1** acordado en campañas previas.
-- **Validar bundle** (`mapazapp:testea-export-validate` / CLI equivalente).
-- Medir en exports/summary:
-  - `liquidity_chain_reaction_confirmed_count` (y coherencia con `liquidity_chain_reaction_checked_count`)
-  - distribución de **`liquidity_chain_reaction_failure_reason`** y contadores `liquidity_chain_reaction_fail_*`
-  - relación del **score de cadena / liquidez** (cuando aplique en CSV) **por outcome**, sin claims de rentabilidad
-- **Decisión:** valorar si la heurística de reacción está **equilibrada** o sigue **demasiado estricta / permisiva** — solo con evidencia reproducible.
-
-**Referencia técnica E5.10.6:** [`LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md`](./LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md).
+- **Evidencia registrada:** [`LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md`](./LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md) — build `MZP_TestEA_E5_10_6`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, validación OK con warning `BUNDLE_EVENTS_LARGE`; **PASS técnico**; reacción ya no queda tan restrictiva como en E5.10.5 (~5 confirmaciones → 1504) pero **no separa wins/losses**; `liquidity_chain_detected_count` sigue desalineado frente a FVG tras sweep → **cadena solo diagnóstico**, sin compuerta dura; sin cambios EQ / live / A/B fabricados.
+- **Referencia técnica E5.10.6:** [`LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md`](./LIQUIDITY_CHAIN_REACTION_AUDIT_E5_10_6.md).
 
 ---
 
@@ -263,6 +255,7 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## Documentos relacionados
 
+- [`LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md`](./LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)

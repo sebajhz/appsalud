@@ -79,19 +79,8 @@ La **calidad sweep** (`liquidity_sweep_reaction_score`) usa la misma ventana geo
 - Bundles **solo E5.10.4** sin `has_liquidity_chain_reaction_audit_v1_logic` siguen siendo válidos para import opcional.
 - Bundles **E5.10.6+** con el flag activo deben incluir los nuevos agregados y columnas (validador TS de muestra oficial).
 
-## Siguiente paso operativo — E5.10.7 (Liquidity Chain Reaction smoke evidence)
+## Evidencia operador — E5.10.7 (Liquidity Chain Reaction smoke)
 
-**Objetivo:** obtener evidencia reproducible de que la heurística de reacción **E5.10.6** es útil como narrativa/diagnóstico (sin convertirla aún en compuerta dura).
+**Cerrado (docs):** smoke post–**E5.10.6** con build **`MZP_TestEA_E5_10_6`** — métricas, outcome tables, interpretación y decisión explícita (PASS técnico; sin compuerta dura; siguiente **E5.11**) en [`LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md`](./LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md).
 
-1. Operador: recompilar **`MZP_TestEA_E5_10_6`** en MetaEditor.
-2. Ejecutar el mismo **smoke XAUUSD M15 / D1** usado en evidencias previas de cadena (coherencia temporal entre runs).
-3. Exportar bundle y validar con CLI `mapazapp:testea-export-validate` (o comando equivalente documentado en E4.1).
-4. Medir y registrar (sin claims de rentabilidad):
-   - `liquidity_chain_reaction_checked_count`
-   - `liquidity_chain_reaction_confirmed_count` vs distribución de **`liquidity_chain_reaction_failure_reason`** y contadores agregados `liquidity_chain_reaction_fail_*`
-   - relación del **score de cadena / liquidez** (columnas existentes cuando apliquen) **por outcome** (`win` / `loss` / `ambiguous` / etc., según exports del run)
-5. **Decisión:** valorar si la heurística está **equilibrada** o sigue **demasiado estricta / permisiva** para la siguiente iteración de documentación o implementación observacional.
-
-**Confirmaciones de producto/seguridad:** la cadena permanece **observation-only**; **no** se aprueba trading live; **no** se bajan umbrales globales de Entry Quality para fabricar A/B; los campos deben **explicar** fallos de forma auditable.
-
-**Contexto de roadmap:** tras E5.10.7, la línea **E5.11–E5.19** describe la humanización «trader profesional» medible — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md).
+**Contexto de roadmap:** la línea **E5.11–E5.19** describe la humanización «trader profesional» medible — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md).
