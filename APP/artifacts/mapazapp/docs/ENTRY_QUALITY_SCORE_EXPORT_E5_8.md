@@ -2,6 +2,7 @@
 
 **Tipo:** checkpoint de implementación (MQL5 + contrato de export + validadores TS + muestras).  
 **Contrato de diseño:** [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) (**E5.7**).  
+**Evidencia smoke operador (calibración / A/B=0):** [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md) (**E5.8.1**).  
 **Build TestEA:** `MZP_TestEA_E5_8_0` (`#define TESTEA_BUILD`).
 
 ---
@@ -66,9 +67,11 @@ El importador acepta el alias de cabecera **`entry_quality_score`** → `scoreTo
 
 ---
 
-## 5. E5.9 — siguiente paso
+## 5. E5.9 — calibración y distribución (siguiente paso)
 
-Campaña de **distribución** del score sobre candidatos reales (recompilar TestEA, smoke export seguro, analizar bins A/B/C vs métricas del contrato E5.7 §8). **Ningún umbral de producto** se aprueba hasta contar con evidencia de campaña y revisión humana.
+**E5.9** se orienta como **calibración y análisis de distribución** del score (no como aprobación inmediata de compuerta). Ver checklist de métricas y no-objetivos en [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md) §8–§9.
+
+Resumen: medir mín/máx/media, percentiles (P10–P90), score por outcome y por `ambiguous`, por parámetro FVG, colas top/bottom, frecuencia de `missing_quality_components`, y si el score **separa** resultados y modifica tasa `ambiguous` o trades/día — **antes** de fijar umbrales (contrato E5.7 §5 sigue **no aprobado** como política).
 
 ---
 
@@ -83,3 +86,4 @@ Campaña de **distribución** del score sobre candidatos reales (recompilar Test
 | Versión | Nota |
 |---------|------|
 | E5.8 v1 | Primera exportación observación-only en `Mapazapp_TestEA.mq5` + docs + muestras + validador. |
+| E5.8.1 | Evidencia smoke operador + caveat A/B=0 (calibración); ver [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md). |

@@ -3,6 +3,7 @@
 **Tipo:** checkpoint **solo documentación** (contrato formal).  
 **Estado:** **no** implementa puntuación en MQL5 ni TypeScript en este ID; define semántica, componentes, export futuro y cadena de evidencia.  
 **Contexto:** post–**E5.6.2** ([`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md)); alineado a auditoría [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md).  
+**Post–E5.8 smoke:** evidencia operador y caveat de calibración (A/B=0) — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md) (**E5.8.1**).  
 **Relacionado:** [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md).
 
 ---
@@ -363,7 +364,7 @@ XAUUSD solo ya mostró **alta frecuencia** de candidatos; multi-símbolo amplifi
 |----|-----------|
 | **E5.7** | Contrato **Entry Quality Score V1** (este documento). |
 | **E5.8** | Implementar **export** de score y componentes en **TestEA** — **solo observación**; sin bloqueo de trades. |
-| **E5.9** | **Campaña de distribución** del score sobre candidatos FVG existentes; análisis off-line vs métricas §8. |
+| **E5.9** | **Calibración y campaña de distribución** del score sobre candidatos FVG existentes; percentiles, outcome/`ambiguous`, FVGMin, frecuencia de componentes faltantes, separación y trades/día — análisis off-line vs métricas §8; **sin** aprobación de umbrales hasta evidencia (ver **E5.8.1** §8). |
 | **E5.10** | **Detección y export** de liquidity sweep (flags/tipos); sin compuerta dura inicial. |
 | **E5.11** | Filtros / inputs configurables de **sesión** y **noticias**. |
 | **E5.12** | Contrato **BridgeEA** de **setup-state** alineado a TestEA. |
@@ -388,3 +389,4 @@ XAUUSD solo ya mostró **alta frecuencia** de candidatos; multi-símbolo amplifi
 |---------|------|
 | E5.7 v1 | Contrato formal: 7 componentes (100 pt borrador), grades provisionales, exports §9, métricas §8, parity BridgeEA §10. |
 | E5.7 v1.1 | **E5.8** implementa la primera exportación en TestEA (observación) — ver [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md). |
+| E5.7 v1.2 | **E5.8.1** smoke operador + interpretación A/B=0; **E5.9** renombrado en docs como calibración/distribución — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md). |

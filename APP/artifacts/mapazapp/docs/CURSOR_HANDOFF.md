@@ -32,7 +32,8 @@
 - **E5.6.2 cerrado (docs):** evidencia operador — 7 bundles E55; `neutral_zero` / `skip_ambiguous` positivos; `conservative_loss` negativo en todos los FVG — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md).
 - **E5.7 cerrado (docs-only):** contrato **Entry Quality Score V1** — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md).
 - **E5.8 cerrado (repo):** export **Entry Quality Score V1** en `Mapazapp_TestEA` — build **`MZP_TestEA_E5_8_0`**; columnas CSV + flags summary (`has_entry_quality_score_logic`, `score_observation_only`, `score_gate_enabled: false`); eventos `eq_*` en `details`; validador TS; doc [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md).
-- **Siguiente paso canónico:** **E5.9** — campaña de distribución del score; **E5.10**–**E5.13** en audit/roadmap. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte** — ver **E5.5.2** §15.
+- **E5.8.1 cerrado (docs):** evidencia smoke operador (bundle E55 SET001; `ok=true`; solo `BUNDLE_EVENTS_LARGE`); PASS técnico; A/B=0 = hallazgo de calibración; gate y umbrales **no** aprobados — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md).
+- **Siguiente paso canónico:** **E5.9** — **calibración y distribución** del score (percentiles, separación outcome/`ambiguous`, FVGMin, faltantes); **E5.10**–**E5.13** en audit/roadmap. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte** — ver **E5.5.2** §15.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

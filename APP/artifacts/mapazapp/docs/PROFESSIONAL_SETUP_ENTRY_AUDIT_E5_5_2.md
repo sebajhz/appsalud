@@ -3,7 +3,7 @@
 **Tipo:** documento vivo (auditoría de estrategia, decisiones de operador, dudas, hoja de ruta).  
 **Alcance:** solo documentación. **No** sustituye informes numéricos por parámetro en la plantilla de campaña.  
 **Contexto de campaña:** primera campaña válida de barrido FVG en XAUUSD M15/D1 con `Mapazapp_TestEA` build **`MZP_TestEA_E5_5_0_5`**; siete bundles exportados y validados (`ok=true`, `errors=0`); único warning recurrente: `BUNDLE_EVENTS_LARGE`.  
-**Relacionado:** [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md), [`XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md), [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md).
+**Relacionado:** [`XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_RUNBOOK_E5_5.md), [`XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md`](./XAUUSD_OUTCOME_CAMPAIGN_REPORT_TEMPLATE_E5_5.md), [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md), [`AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md`](./AMBIGUITY_SENSITIVITY_DIAGNOSTICS_E5_6.md), [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md) (**E5.8.1** smoke score).
 
 **Objetivo del documento:** que sesiones futuras (Cursor, ChatGPT u operador) puedan **reanudar** sin perder: estado técnico, interpretación de resultados, **límites de lo probado** (tester vs live), decisiones explícitas y siguiente secuencia de checkpoints.
 
@@ -279,7 +279,8 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | **E5.6.2** | Evidencia CLI sensibilidad ambigüedad sobre bundles E5.5.1 (E55) — [`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md). |
 | **E5.7** | Contrato **Entry Quality Score V1** (observación únicamente; sin compuerta dura) — [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md). |
 | **E5.8** | **Repo cerrado:** export de score/componentes en `Mapazapp_TestEA` **`MZP_TestEA_E5_8_0`** — [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md); **sin** gate de trading (`InpEntryQualityScoreGateEnabled=false`). |
-| **E5.9** | Campaña de **distribución** de score y análisis off-line. |
+| **E5.8.1** | **Evidencia smoke operador** (export score OK; A/B=0 = calibración, no veredicto estrategia) — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md). |
+| **E5.9** | **Calibración y distribución** del score (percentiles, outcome/`ambiguous`, FVGMin, componentes faltantes); **sin** aprobación de umbrales hasta evidencia — ver **E5.8.1** §8. |
 | **E5.10** | Detección/export de **liquidity sweep** (sin bloqueo inicial). |
 | **E5.11** | Filtros/config **sesión + noticias** (inputs acordados). |
 | **E5.12** | Contrato BridgeEA de **setup-state** alineado a TestEA. |
@@ -324,3 +325,4 @@ Toda mejora se compara contra **baseline** de la campaña aprobada como referenc
 | E5.5.2 v1.3 | Puntero a contrato **E5.7** Entry Quality Score V1. |
 | E5.5.2 v1.4 | §6: enlace explícito al contrato **E5.7** como fuente formal (weights, §8–§9, `ambiguous_risk_*`). |
 | E5.5.2 v1.5 | §15: **E5.8** marcado como cerrado en repo (export score observación; build `MZP_TestEA_E5_8_0`). |
+| E5.5.2 v1.6 | §15: **E5.8.1** evidencia smoke + **E5.9** como calibración/distribución (enlace [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md)). |
