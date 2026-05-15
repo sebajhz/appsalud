@@ -191,6 +191,74 @@ describe("testea-score-calibration", () => {
     expect(rows.length).toBe(2);
   });
 
+  it("summaryRows ambiguous_rate matches all-cohort ambiguous share (not ambiguous-slice rate)", () => {
+    const headers = [
+      "trade_id",
+      "direction",
+      "entry_time",
+      "exit_time",
+      "entry_price",
+      "exit_price",
+      "result_r",
+      "symbol",
+      "strategy_id",
+      "parameter_set_id",
+      "outcome",
+      "entry_quality_score",
+      "entry_quality_grade",
+      "htf_narrative_score",
+      "liquidity_event_score",
+      "displacement_fvg_quality_score",
+      "entry_confirmation_score",
+      "target_quality_score",
+      "session_news_spread_score",
+      "risk_overtrading_score",
+      "ambiguous_risk_score",
+      "missing_quality_components",
+    ].join(",");
+    const row = (id: string, day: string, outcome: string, r: string) =>
+      [
+        id,
+        "BUY",
+        `2026-01-${day}T10:00:00Z`,
+        `2026-01-${day}T11:00:00Z`,
+        "1",
+        "1",
+        r,
+        "XAUUSD",
+        "IFVG_X",
+        "SET_SC",
+        outcome,
+        "50",
+        "C",
+        "10",
+        "0",
+        "8",
+        "5",
+        "6",
+        "0",
+        "4",
+        "35",
+        "",
+      ].join(",");
+    const csv = [headers, row("t0", "01", "win", "1"), row("t1", "02", "win", "1"), row("t2", "03", "win", "1"), row("t3", "04", "ambiguous", "0")].join("\n");
+    const a = analyzeTestEaScoreCalibrationFromTexts({
+      bundleName: "four",
+      summaryJsonText: JSON.stringify({ ...SUMMARY_BASE, score_c_count: 4 }),
+      tradesCsvText: csv,
+    });
+    expect(a.ok).toBe(true);
+    expect(a.outcome_by_score?.all?.count).toBe(4);
+    expect(a.outcome_by_score?.all?.ambiguous_rate).toBeCloseTo(0.25, 10);
+    expect(a.outcome_by_score?.ambiguous?.ambiguous_rate).toBe(1);
+    const camp = analyzeTestEaScoreCampaignCalibrationFromTexts([
+      { bundleName: "four", summaryJsonText: JSON.stringify({ ...SUMMARY_BASE, score_c_count: 4 }), tradesCsvText: csv },
+    ]);
+    const rows = summarizeScoreCalibration(camp);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.ambiguous_rate).toBeCloseTo(0.25, 10);
+  });
+
   it("tokenizeMissingComponents splits known tokens", () => {
     expect(tokenizeMissingComponents("a|b,c")).toEqual(["a", "b", "c"]);
   });

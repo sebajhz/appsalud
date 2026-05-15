@@ -39,6 +39,34 @@ const TRADES_SCORE = [
   "t2,BUY,2026-01-02T10:00:00Z,2026-01-02T11:00:00Z,1,1,0,XAUUSD,IFVG_X,P1,ambiguous,55,C,8,0,4,4,4,0,3,50,",
 ].join("\n");
 
+const SUMMARY_FOUR = `{
+  "schema_version": "backtest_ea_v1",
+  "run_id": "RUN_CLI_4",
+  "effective_run_id": "RUN_CLI_4",
+  "campaign_id": "C",
+  "parameter_set_id": "P1",
+  "strategy_id": "IFVG_X",
+  "symbol": "XAUUSD",
+  "has_entry_quality_score_logic": true,
+  "score_observation_only": true,
+  "score_gate_enabled": false,
+  "score_a_count": 0,
+  "score_b_count": 0,
+  "score_c_count": 4,
+  "score_rejected_count": 0,
+  "optimization_parameters": { "virtual_min_trade_fvg_points": 10 },
+  "tester_from": "2026-01-01T00:00:00Z",
+  "tester_to": "2026-01-10T00:00:00Z"
+}`;
+
+const TRADES_FOUR_ONE_AMB = [
+  "trade_id,direction,entry_time,exit_time,entry_price,exit_price,result_r,symbol,strategy_id,parameter_set_id,outcome,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,missing_quality_components",
+  "t1,BUY,2026-01-01T10:00:00Z,2026-01-01T11:00:00Z,1,1,1.5,XAUUSD,IFVG_X,P1,win,60,C,10,0,5,5,5,0,4,40,",
+  "t2,BUY,2026-01-02T10:00:00Z,2026-01-02T11:00:00Z,1,1,1.5,XAUUSD,IFVG_X,P1,win,61,C,10,0,5,5,5,0,4,41,",
+  "t3,BUY,2026-01-03T10:00:00Z,2026-01-03T11:00:00Z,1,1,1.5,XAUUSD,IFVG_X,P1,win,62,C,10,0,5,5,5,0,4,42,",
+  "t4,BUY,2026-01-04T10:00:00Z,2026-01-04T11:00:00Z,1,1,0,XAUUSD,IFVG_X,P1,ambiguous,55,C,8,0,4,4,4,0,3,50,",
+].join("\n");
+
 function realIo(capture?: { out: string; err: string }): ScoreCalibrationCliIo {
   const cap = capture ?? { out: "", err: "" };
   return {
@@ -54,6 +82,47 @@ function realIo(capture?: { out: string; err: string }): ScoreCalibrationCliIo {
     writeFileUtf8: (p, d) => writeFileSync(p, d, "utf8"),
   };
 }
+
+test("CLI JSON summaryRows ambiguous_rate is cohort all slice (4 trades, 1 ambiguous)", () => {
+  const dir = mkdtempSync(join(tmpdir(), "mzp-sc-amb-"));
+  const cap = { out: "", err: "" };
+  try {
+    writeFileSync(join(dir, "backtest_summary.json"), SUMMARY_FOUR, "utf8");
+    writeFileSync(join(dir, "backtest_trades.csv"), TRADES_FOUR_ONE_AMB, "utf8");
+    const code = runMapazappTesteaScoreCalibrationCli(["--bundle", dir, "--json"], realIo(cap));
+    assert.equal(code, 0);
+    const j = JSON.parse(cap.out) as {
+      summaryRows: { ambiguous_rate: number | null }[];
+      bundles: { outcome_by_score?: { all?: { ambiguous_rate: number }; ambiguous?: { ambiguous_rate: number } } }[];
+    };
+    assert.equal(j.summaryRows.length, 1);
+    assert.equal(j.summaryRows[0]!.ambiguous_rate, 0.25);
+    assert.equal(j.bundles[0]!.outcome_by_score?.all?.ambiguous_rate, 0.25);
+    assert.equal(j.bundles[0]!.outcome_by_score?.ambiguous?.ambiguous_rate, 1);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("csv-output ambiguous_rate column matches cohort rate", () => {
+  const dir = mkdtempSync(join(tmpdir(), "mzp-sc-ambcsv-"));
+  try {
+    writeFileSync(join(dir, "backtest_summary.json"), SUMMARY_FOUR, "utf8");
+    writeFileSync(join(dir, "backtest_trades.csv"), TRADES_FOUR_ONE_AMB, "utf8");
+    const outPath = join(dir, "out.csv");
+    const code = runMapazappTesteaScoreCalibrationCli(["--bundle", dir, "--csv-output", outPath], realIo({ out: "", err: "" }));
+    assert.equal(code, 0);
+    const txt = readFileSync(outPath, "utf8");
+    const [hdr, row1] = txt.trim().split("\n");
+    const cols = hdr.split(",");
+    const ambIdx = cols.indexOf("ambiguous_rate");
+    assert.ok(ambIdx >= 0);
+    const val = row1!.split(",")[ambIdx];
+    assert.equal(val, "0.25");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
 
 test("CLI help exits 0", () => {
   const cap = { out: "", err: "" };

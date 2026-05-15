@@ -61,6 +61,8 @@ Opciones adicionales:
 
 Incluye `bundlesAnalyzed`, `skipped`, `summaryRows` y `bundles` con el análisis completo por bundle (stats, bandas, outcomes, frecuencias, `diagnostic_flags`).
 
+**E5.9.0.1 — `ambiguous_rate` en resumen:** En `summaryRows` y en el CSV de `--csv-output`, el campo **`ambiguous_rate`** es la misma métrica que **`outcome_by_score.all.ambiguous_rate`**: proporción de trades con outcome `ambiguous` sobre el **total** de trades del bundle. **No** debe confundirse con el `ambiguous_rate` del slice `outcome_by_score.ambiguous` (dentro de ese subconjunto suele ser **1.0** y no sirve como indicador de cohorte).
+
 ---
 
 ## 4. Interpretación (solo diagnóstico)

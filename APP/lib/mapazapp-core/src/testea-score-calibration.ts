@@ -789,7 +789,7 @@ export function analyzeTestEaScoreCampaignCalibrationFromTexts(
 
 function rowFromBundle(a: TestEaScoreCalibrationBundleAnalysis): TestEaScoreCalibrationSummaryRow | null {
   if (!a.ok || !a.general || !a.score_stats) return null;
-  const amb = a.outcome_by_score?.ambiguous?.ambiguous_rate ?? null;
+  const amb = a.outcome_by_score?.all?.ambiguous_rate ?? null;
   return {
     bundleName: a.bundleName,
     fvgMin: a.general.fvgMin,
