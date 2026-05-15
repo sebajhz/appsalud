@@ -3,7 +3,7 @@
 **Tipo:** checkpoint de implementación (MQL5 + contrato de export + validadores TS + muestras).  
 **Contrato de diseño:** [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) (**E5.7**).  
 **Evidencia smoke operador (calibración / A/B=0):** [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md) (**E5.8.1**).  
-**Build TestEA:** `MZP_TestEA_E5_10_2_1` (`#define TESTEA_BUILD`) — incluye **Liquidity Sweep V1 + Quality V1** (E5.10.2 + **E5.10.2.1** razones/topes) observación/export; ver [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md) y [`LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md`](./LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md).  
+**Build TestEA:** `MZP_TestEA_E5_10_4` (`#define TESTEA_BUILD`) — incluye **Liquidity Sweep V1 + Quality V1 + Causal Liquidity Chain V1** observación/export; ver [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md), [`LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md`](./LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md) y [`LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md`](./LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md).  
 **Post–E5.10.1:** evidencia smoke operador + calibración + caveat (liquidez V1 demasiado permisiva como separador) — [`LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md`](./LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md).
 
 ---

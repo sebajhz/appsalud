@@ -276,10 +276,12 @@ describe("V2-12 export sample validation", () => {
     );
     expect(r.summaryJson?.["has_liquidity_sweep_v1_logic"]).toBe(true);
     expect(r.summaryJson?.["has_liquidity_sweep_quality_v1_logic"]).toBe(true);
+    expect(r.summaryJson?.["has_liquidity_chain_v1_logic"]).toBe(true);
     expect(r.summaryOk).toBe(true);
     expect(r.status === "valid" || r.status === "valid_with_warnings").toBe(true);
     expect(r.tradesImport?.ok).toBe(true);
     expect(r.tradeCount).toBe(3);
     expect(r.tradesImport?.trades[0]?.liquidityEventDetected).toBe(true);
+    expect(r.tradesImport?.trades[0]?.liquidityChainScore).toBe(14);
   });
 });

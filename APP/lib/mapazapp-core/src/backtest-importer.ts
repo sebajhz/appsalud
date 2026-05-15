@@ -26,6 +26,14 @@ export const MAPZ_TESTEA_TRADE_OUTCOMES = [
 
 const OUTCOME_SET = new Set<string>(MAPZ_TESTEA_TRADE_OUTCOMES);
 
+function parseOptionalCsvBool(raw: string | undefined, colLabel: string, rowNum: number): { ok: true; val: boolean } | { ok: false; message: string } {
+  if (raw === undefined || raw.trim() === "") return { ok: true, val: false };
+  const u = raw.trim().toLowerCase();
+  if (u === "true" || u === "1") return { ok: true, val: true };
+  if (u === "false" || u === "0") return { ok: true, val: false };
+  return { ok: false, message: `Row ${rowNum}: ${colLabel} must be true/false/0/1` };
+}
+
 const REQUIRED_HEADERS = [
   "trade_id",
   "direction",
@@ -466,6 +474,60 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
     }
     if (liqQRsnRaw?.trim()) trade.liquiditySweepQualityReasons = liqQRsnRaw.trim();
+
+    const lcDetRaw = pick(cells, col, "liquidity_chain_detected");
+    const lcGradeRaw = pick(cells, col, "liquidity_chain_grade");
+    const lcScoreRaw = pick(cells, col, "liquidity_chain_score");
+    const lcStRaw = pick(cells, col, "liquidity_chain_sweep_to_setup_bars");
+    const lcSfRaw = pick(cells, col, "liquidity_chain_sweep_to_fvg_bars");
+    const lcRxRaw = pick(cells, col, "liquidity_chain_reaction_confirmed");
+    const lcDpRaw = pick(cells, col, "liquidity_chain_displacement_confirmed");
+    const lcFvgRaw = pick(cells, col, "liquidity_chain_fvg_created_after_sweep");
+    const lcDistRaw = pick(cells, col, "liquidity_chain_distance_to_fvg_points");
+    const lcRsnRaw = pick(cells, col, "liquidity_chain_reasons");
+
+    if (lcDetRaw !== undefined && lcDetRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(lcDetRaw, "liquidity_chain_detected", rowNum);
+      if (b.ok) trade.liquidityChainDetected = b.val;
+      else warnings.push({ code: "CSV_CHAIN_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (lcGradeRaw?.trim()) trade.liquidityChainGrade = lcGradeRaw.trim();
+    if (lcScoreRaw !== undefined && lcScoreRaw.trim() !== "") {
+      const p = parseNumber(lcScoreRaw, "liquidity_chain_score", rowNum);
+      if (p.ok) trade.liquidityChainScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (lcStRaw !== undefined && lcStRaw.trim() !== "") {
+      const p = parseNumber(lcStRaw, "liquidity_chain_sweep_to_setup_bars", rowNum);
+      if (p.ok) trade.liquidityChainSweepToSetupBars = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (lcSfRaw !== undefined && lcSfRaw.trim() !== "") {
+      const p = parseNumber(lcSfRaw, "liquidity_chain_sweep_to_fvg_bars", rowNum);
+      if (p.ok) trade.liquidityChainSweepToFvgBars = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (lcRxRaw !== undefined && lcRxRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(lcRxRaw, "liquidity_chain_reaction_confirmed", rowNum);
+      if (b.ok) trade.liquidityChainReactionConfirmed = b.val;
+      else warnings.push({ code: "CSV_CHAIN_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (lcDpRaw !== undefined && lcDpRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(lcDpRaw, "liquidity_chain_displacement_confirmed", rowNum);
+      if (b.ok) trade.liquidityChainDisplacementConfirmed = b.val;
+      else warnings.push({ code: "CSV_CHAIN_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (lcFvgRaw !== undefined && lcFvgRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(lcFvgRaw, "liquidity_chain_fvg_created_after_sweep", rowNum);
+      if (b.ok) trade.liquidityChainFvgCreatedAfterSweep = b.val;
+      else warnings.push({ code: "CSV_CHAIN_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (lcDistRaw !== undefined && lcDistRaw.trim() !== "") {
+      const p = parseNumber(lcDistRaw, "liquidity_chain_distance_to_fvg_points", rowNum);
+      if (p.ok) trade.liquidityChainDistanceToFvgPoints = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (lcRsnRaw?.trim()) trade.liquidityChainReasons = lcRsnRaw.trim();
 
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({

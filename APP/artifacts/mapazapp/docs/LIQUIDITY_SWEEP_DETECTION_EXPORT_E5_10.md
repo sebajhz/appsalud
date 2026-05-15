@@ -2,7 +2,7 @@
 
 ## Propósito
 
-Añadir a **Mapazapp_TestEA** un componente **profesional de observación** que describa si, antes de la vela de setup, el precio **barrió niveles de liquidez** relevantes (PDH/PDL del día previo completado y swings locales en M15). Los resultados se exportan en CSV/JSON y alimentan **`liquidity_event_score`** dentro del **Entry Quality Score**, **sin bloquear trades** y **sin usar liquidez como compuerta dura**. **E5.10.2** refinó el significado de `liquidity_event_score` hacia un **modelo de calidad** (subscores + columnas `liquidity_sweep_quality_*`) — ver [`LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md`](./LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md).
+Añadir a **Mapazapp_TestEA** un componente **profesional de observación** que describa si, antes de la vela de setup, el precio **barrió niveles de liquidez** relevantes (PDH/PDL del día previo completado y swings locales en M15). Los resultados se exportan en CSV/JSON y alimentan **`liquidity_event_score`** dentro del **Entry Quality Score**, **sin bloquear trades** y **sin usar liquidez como compuerta dura**. **E5.10.2** refinó el significado de `liquidity_event_score` hacia un **modelo de calidad** (subscores + columnas `liquidity_sweep_quality_*`) — ver [`LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md`](./LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md). **E5.10.4** añade la **cadena causal** observación (`liquidity_chain_*`) y alinea el componente de liquidez al **score de cadena** cuando aplica — [`LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md`](./LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md).
 
 ## Por qué importa la liquidez
 

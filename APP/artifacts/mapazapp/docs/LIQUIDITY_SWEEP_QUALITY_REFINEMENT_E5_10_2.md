@@ -43,13 +43,15 @@ Subscores (suma máx. **20** puntos en el componente de liquidez que alimenta `e
 
 ## Integración con Entry Quality Score
 
-Se prefiere **`liquidity_event_score` = `liquidity_sweep_quality_score`** (total 0–20 del bloque de calidad) cuando `InpLiquiditySweepScoreEnabled` está activo, para que el **Entry Quality Score** se beneficie del refinamiento. Si el score de liquidez está desactivado, `liquidity_event_score` puede seguir en 0 en el paquete de scoring, pero las columnas de calidad en CSV siguen exportándose para diagnóstico (según detección habilitada).
+**E5.10.4:** si **`has_liquidity_chain_v1_logic`** está activo en la exportación, **`liquidity_event_score`** puede seguir **`liquidity_chain_score`** cuando la cadena causal está confirmada; sin cadena cualificada, el componente usa la calidad sweep **capada** (ver [`LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md`](./LIQUIDITY_CHAIN_REFINEMENT_E5_10_4.md)).
+
+**E5.10.2–E5.10.3:** se pretendía **`liquidity_event_score` = `liquidity_sweep_quality_score`** (total 0–20 del bloque de calidad) cuando `InpLiquiditySweepScoreEnabled` está activo, para que el **Entry Quality Score** se beneficie del refinamiento de calidad. Si el score de liquidez está desactivado, `liquidity_event_score` puede seguir en 0 en el paquete de scoring, pero las columnas de calidad en CSV siguen exportándose para diagnóstico (según detección habilitada).
 
 ## Validación TS y analizador E5.9
 
 - `validateTestEaExportSample`: si `has_liquidity_sweep_quality_v1_logic === true`, exige cabecera y campos de resumen E5.10.2.
 - Bundles **antiguos** sin esas columnas **siguen parseando**.
-- `testea-score-calibration`: si el CSV incluye columnas numéricas de calidad, rellena `liquidity_quality_component_stats` (min/max/media y *slices* por outcome cuando aplica).
+- `testea-score-calibration`: si el CSV incluye columnas numéricas de calidad, rellena `liquidity_quality_component_stats` (min/max/media y *slices* por outcome cuando aplica). **E5.10.4:** si existen columnas `liquidity_chain_*` numéricas, también `liquidity_chain_component_stats`.
 
 ## Próximo smoke recomendado — E5.10.3
 

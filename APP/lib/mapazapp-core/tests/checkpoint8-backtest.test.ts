@@ -205,6 +205,24 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(t.liquiditySweepQualityReasons).toBe("liquidity_sweep_quality_ok");
   });
 
+  it("parses optional E5.10.4 liquidity chain columns when present", () => {
+    const header =
+      "trade_id,direction,entry_time,exit_time,entry,exit_price,result_r,result_money,liquidity_event_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons";
+    const row =
+      "t_chain,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,2005,1,0,14,ok,true,C,15,5,5,true,true,true,40,liquidity_chain_ok";
+    const r = importBacktestTradesFromCsv(`${header}\n${row}`, testeaOpts);
+    expect(r.ok).toBe(true);
+    const t = r.trades[0]!;
+    expect(t.liquidityChainDetected).toBe(true);
+    expect(t.liquidityChainGrade).toBe("C");
+    expect(t.liquidityChainScore).toBe(15);
+    expect(t.liquidityChainSweepToSetupBars).toBe(5);
+    expect(t.liquidityChainReactionConfirmed).toBe(true);
+    expect(t.liquidityChainDisplacementConfirmed).toBe(true);
+    expect(t.liquidityChainFvgCreatedAfterSweep).toBe(true);
+    expect(t.liquidityChainReasons).toBe("liquidity_chain_ok");
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);

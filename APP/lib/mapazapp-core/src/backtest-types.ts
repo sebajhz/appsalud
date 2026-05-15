@@ -80,6 +80,17 @@ export interface BacktestTrade {
   liquiditySweepDisplacementScore?: number | undefined;
   liquiditySweepDistanceScore?: number | undefined;
   liquiditySweepQualityReasons?: string | undefined;
+  /** E5.10.4 Causal Liquidity Chain V1 (optional; mirrors CSV columns). */
+  liquidityChainDetected?: boolean | undefined;
+  liquidityChainGrade?: string | undefined;
+  liquidityChainScore?: number | undefined;
+  liquidityChainSweepToSetupBars?: number | undefined;
+  liquidityChainSweepToFvgBars?: number | undefined;
+  liquidityChainReactionConfirmed?: boolean | undefined;
+  liquidityChainDisplacementConfirmed?: boolean | undefined;
+  liquidityChainFvgCreatedAfterSweep?: boolean | undefined;
+  liquidityChainDistanceToFvgPoints?: number | undefined;
+  liquidityChainReasons?: string | undefined;
 }
 
 export interface BacktestImportWarning {
