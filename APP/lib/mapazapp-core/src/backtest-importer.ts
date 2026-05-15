@@ -426,6 +426,47 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     }
     if (liqRsnRaw?.trim()) trade.liquidityEventReasons = liqRsnRaw.trim();
 
+    const liqQRaw = pick(cells, col, "liquidity_sweep_quality_score");
+    const liqQGradeRaw = pick(cells, col, "liquidity_sweep_quality_grade");
+    const liqQRecRaw = pick(cells, col, "liquidity_sweep_recency_score");
+    const liqQDirRaw = pick(cells, col, "liquidity_sweep_directional_score");
+    const liqQReactRaw = pick(cells, col, "liquidity_sweep_reaction_score");
+    const liqQDispRaw = pick(cells, col, "liquidity_sweep_displacement_score");
+    const liqQDistRaw = pick(cells, col, "liquidity_sweep_distance_score");
+    const liqQRsnRaw = pick(cells, col, "liquidity_sweep_quality_reasons");
+    if (liqQRaw !== undefined && liqQRaw.trim() !== "") {
+      const p = parseNumber(liqQRaw, "liquidity_sweep_quality_score", rowNum);
+      if (p.ok) trade.liquiditySweepQualityScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqQGradeRaw?.trim()) trade.liquiditySweepQualityGrade = liqQGradeRaw.trim();
+    if (liqQRecRaw !== undefined && liqQRecRaw.trim() !== "") {
+      const p = parseNumber(liqQRecRaw, "liquidity_sweep_recency_score", rowNum);
+      if (p.ok) trade.liquiditySweepRecencyScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqQDirRaw !== undefined && liqQDirRaw.trim() !== "") {
+      const p = parseNumber(liqQDirRaw, "liquidity_sweep_directional_score", rowNum);
+      if (p.ok) trade.liquiditySweepDirectionalScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqQReactRaw !== undefined && liqQReactRaw.trim() !== "") {
+      const p = parseNumber(liqQReactRaw, "liquidity_sweep_reaction_score", rowNum);
+      if (p.ok) trade.liquiditySweepReactionScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqQDispRaw !== undefined && liqQDispRaw.trim() !== "") {
+      const p = parseNumber(liqQDispRaw, "liquidity_sweep_displacement_score", rowNum);
+      if (p.ok) trade.liquiditySweepDisplacementScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqQDistRaw !== undefined && liqQDistRaw.trim() !== "") {
+      const p = parseNumber(liqQDistRaw, "liquidity_sweep_distance_score", rowNum);
+      if (p.ok) trade.liquiditySweepDistanceScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqQRsnRaw?.trim()) trade.liquiditySweepQualityReasons = liqQRsnRaw.trim();
+
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({
         code: "CSV_GEOMETRY_LONG_SL",

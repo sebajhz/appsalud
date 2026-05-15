@@ -739,6 +739,88 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_liquidity_sweep_quality_v1_logic"] === true) {
+          const liqQSummaryKeys = [
+            "average_liquidity_sweep_quality_score",
+            "liquidity_sweep_quality_a_count",
+            "liquidity_sweep_quality_b_count",
+            "liquidity_sweep_quality_c_count",
+            "liquidity_sweep_quality_weak_count",
+            "liquidity_sweep_quality_none_count",
+            "average_liquidity_sweep_recency_score",
+            "average_liquidity_sweep_reaction_score",
+            "average_liquidity_sweep_displacement_score",
+            "average_liquidity_sweep_directional_score",
+            "average_liquidity_sweep_distance_score",
+            "average_liquidity_sweep_quality_score_win",
+            "average_liquidity_sweep_quality_score_loss",
+            "average_liquidity_sweep_quality_score_ambiguous",
+            "average_liquidity_sweep_quality_score_expired_unfilled",
+          ] as const;
+          for (const k of liqQSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_LIQUIDITY_QUALITY_E5_10_2_KEY",
+                  `E5.10.2: when has_liquidity_sweep_quality_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const v = summaryJson[k];
+              if (typeof v !== "number" || !Number.isFinite(v)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_LIQUIDITY_QUALITY_NUM",
+                    `E5.10.2: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(v) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const qualityCols = [
+              "liquidity_sweep_quality_score",
+              "liquidity_sweep_quality_grade",
+              "liquidity_sweep_recency_score",
+              "liquidity_sweep_directional_score",
+              "liquidity_sweep_reaction_score",
+              "liquidity_sweep_displacement_score",
+              "liquidity_sweep_distance_score",
+              "liquidity_sweep_quality_reasons",
+            ] as const;
+            for (const col of qualityCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_LIQUIDITY_QUALITY_E5_10_2",
+                    `E5.10.2: backtest_trades.csv header must include "${col}" when has_liquidity_sweep_quality_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_LIQUIDITY_QUALITY_HEADER_CHECK",
+                "has_liquidity_sweep_quality_v1_logic is true but backtest_trades.csv missing — cannot verify E5.10.2 trade columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

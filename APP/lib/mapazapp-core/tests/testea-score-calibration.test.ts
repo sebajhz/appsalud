@@ -267,6 +267,146 @@ describe("testea-score-calibration", () => {
     const csv = buildTradesWithScores(2);
     const p = parseTradeScoreAuxiliaryByTradeId(csv);
     expect(p.hasEntryQualityScoreColumn).toBe(true);
+    expect(p.hasLiquidityQualityColumns).toBe(false);
     expect(p.byTradeId.get("t0")?.score).toBe(40);
+  });
+
+  it("parseTradeScoreAuxiliaryByTradeId maps E5.10.2 liquidity quality columns when present", () => {
+    const headers = [
+      "trade_id",
+      "direction",
+      "entry_time",
+      "exit_time",
+      "entry_price",
+      "exit_price",
+      "result_r",
+      "symbol",
+      "strategy_id",
+      "parameter_set_id",
+      "outcome",
+      "entry_quality_score",
+      "entry_quality_grade",
+      "htf_narrative_score",
+      "liquidity_event_score",
+      "displacement_fvg_quality_score",
+      "entry_confirmation_score",
+      "target_quality_score",
+      "session_news_spread_score",
+      "risk_overtrading_score",
+      "ambiguous_risk_score",
+      "missing_quality_components",
+      "liquidity_sweep_quality_score",
+      "liquidity_sweep_recency_score",
+      "liquidity_sweep_reaction_score",
+      "liquidity_sweep_displacement_score",
+      "liquidity_sweep_directional_score",
+      "liquidity_sweep_distance_score",
+    ].join(",");
+    const row = [
+      "t0",
+      "BUY",
+      "2026-01-01T10:00:00Z",
+      "2026-01-01T11:00:00Z",
+      "1",
+      "1",
+      "1",
+      "XAUUSD",
+      "IFVG_X",
+      "SET_SC",
+      "win",
+      "70",
+      "A",
+      "10",
+      "14",
+      "5",
+      "8",
+      "7",
+      "0",
+      "5",
+      "25",
+      "",
+      "14",
+      "4",
+      "5",
+      "2",
+      "4",
+      "2",
+    ].join(",");
+    const p = parseTradeScoreAuxiliaryByTradeId([headers, row].join("\n"));
+    expect(p.hasLiquidityQualityColumns).toBe(true);
+    expect(p.byTradeId.get("t0")?.liquidity_quality?.liquidity_sweep_quality_score).toBe(14);
+    expect(p.byTradeId.get("t0")?.liquidity_quality?.liquidity_sweep_recency_score).toBe(4);
+  });
+
+  it("analyzeTestEaScoreCalibrationFromTexts fills liquidity_quality_component_stats when quality columns exist", () => {
+    const headers = [
+      "trade_id",
+      "direction",
+      "entry_time",
+      "exit_time",
+      "entry_price",
+      "exit_price",
+      "result_r",
+      "symbol",
+      "strategy_id",
+      "parameter_set_id",
+      "outcome",
+      "entry_quality_score",
+      "entry_quality_grade",
+      "htf_narrative_score",
+      "liquidity_event_score",
+      "displacement_fvg_quality_score",
+      "entry_confirmation_score",
+      "target_quality_score",
+      "session_news_spread_score",
+      "risk_overtrading_score",
+      "ambiguous_risk_score",
+      "missing_quality_components",
+      "liquidity_sweep_quality_score",
+      "liquidity_sweep_recency_score",
+      "liquidity_sweep_reaction_score",
+      "liquidity_sweep_displacement_score",
+      "liquidity_sweep_directional_score",
+      "liquidity_sweep_distance_score",
+    ].join(",");
+    const row = [
+      "t0",
+      "BUY",
+      "2026-01-01T10:00:00Z",
+      "2026-01-01T11:00:00Z",
+      "1",
+      "1",
+      "1",
+      "XAUUSD",
+      "IFVG_X",
+      "SET_SC",
+      "win",
+      "70",
+      "A",
+      "10",
+      "14",
+      "5",
+      "8",
+      "7",
+      "0",
+      "5",
+      "25",
+      "",
+      "14",
+      "4",
+      "5",
+      "2",
+      "4",
+      "2",
+    ].join(",");
+    const csv = [headers, row].join("\n");
+    const r = analyzeTestEaScoreCalibrationFromTexts({
+      bundleName: "lq",
+      summaryJsonText: JSON.stringify(SUMMARY_BASE),
+      tradesCsvText: csv,
+    });
+    expect(r.ok).toBe(true);
+    expect(r.liquidity_quality_component_stats?.liquidity_sweep_quality_score?.average).toBe(14);
+    expect(r.liquidity_quality_component_stats?.liquidity_sweep_recency_score?.min).toBe(4);
   });
 });

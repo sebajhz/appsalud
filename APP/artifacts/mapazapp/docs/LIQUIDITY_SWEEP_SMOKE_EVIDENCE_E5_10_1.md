@@ -2,7 +2,7 @@
 
 **Tipo:** documentación **docs-only** (evidencia operador + interpretación + decisión de gobierno).  
 **Sin:** ejecución MT5 ni Strategy Tester desde este repo; cambios de código; `OrderSend`; `CTrade`; trading en vivo; API; dashboard; supervisor; launcher; wrapper.  
-**Contexto:** implementación **E5.10** — [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md); calibración score **E5.9** — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md); evidencia calibración previa **E5.9.1** — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md).
+**Contexto:** implementación **E5.10** — [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md); **E5.10.2** refinamiento de calidad — [`LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md`](./LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md); calibración score **E5.9** — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md); evidencia calibración previa **E5.9.1** — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md).
 
 ---
 

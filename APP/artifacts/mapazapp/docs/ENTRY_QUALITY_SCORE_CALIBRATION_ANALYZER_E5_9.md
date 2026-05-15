@@ -17,6 +17,7 @@ Ofrecer un analizador **determinista y solo lectura** que, a partir de `backtest
 - **Bandas relativas** (top 10%, top 25%, “middle 50%”, bottom 25%, bottom 10%) por **percentiles del score en la cohorte**, no por umbrales A/B aprobados.
 - Frecuencia de tokens en `missing_quality_components`.
 - Estadísticas por **componente** de score (min/max/media y media por outcome).
+- **E5.10.2:** si el CSV incluye columnas numéricas `liquidity_sweep_quality_score` / subscores, el analizador añade **`liquidity_quality_component_stats`** (misma forma que los componentes principales); los bundles sin esas columnas **no** fallan.
 
 La salida sirve para decidir si el score **separa** resultados y si las bandas altas **reducen** `ambiguous_rate` o mejoran expectancy **antes** de fijar políticas de producto.
 

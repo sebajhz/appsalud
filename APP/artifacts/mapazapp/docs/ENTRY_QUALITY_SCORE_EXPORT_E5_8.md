@@ -3,7 +3,7 @@
 **Tipo:** checkpoint de implementación (MQL5 + contrato de export + validadores TS + muestras).  
 **Contrato de diseño:** [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) (**E5.7**).  
 **Evidencia smoke operador (calibración / A/B=0):** [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md) (**E5.8.1**).  
-**Build TestEA:** `MZP_TestEA_E5_10_0` (`#define TESTEA_BUILD`) — incluye **Liquidity Sweep V1** observación/export; ver [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md).  
+**Build TestEA:** `MZP_TestEA_E5_10_2` (`#define TESTEA_BUILD`) — incluye **Liquidity Sweep V1 + Quality V1** observación/export; ver [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md) y [`LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md`](./LIQUIDITY_SWEEP_QUALITY_REFINEMENT_E5_10_2.md).  
 **Post–E5.10.1:** evidencia smoke operador + calibración + caveat (liquidez V1 demasiado permisiva como separador) — [`LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md`](./LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md).
 
 ---
@@ -21,7 +21,7 @@
 | Componente | Estado E5.8 | Notas |
 |------------|-------------|--------|
 | **HTF narrative** | Parcial | Alineación **sesgo D1** vs dirección del setup (+ peso). Si `InpUseH4Context` o `InpUseH1Context` → `missing_h4_h1_structure` (no se simula estructura H4/H1). |
-| **Liquidity event** | **E5.10 (V1)** | PDH/PDL + swings M15; columnas `liquidity_event_*` en trades; `liquidity_event_score` con bandas simples; **sin** gate duro. Detección off → `liquidity_sweep_detection_disabled` en faltantes. |
+| **Liquidity event** | **E5.10 (V1) + E5.10.2 (Quality)** | PDH/PDL + swings M15; columnas `liquidity_event_*` y `liquidity_sweep_quality_*`; `liquidity_event_score` = total de calidad (0–20) cuando el score de liquidez está habilitado; **sin** gate duro. Detección off → `liquidity_sweep_detection_disabled` en faltantes. |
 | **Displacement / FVG quality** | Parcial | Bandas por tamaño de FVG vs `InpVirtualMinTradeFvgPoints` + razón `fvg_size_bucket=…`. |
 | **Entry / retest** | Parcial | Midpoint sin confirmación de vela → puntuación parcial + `confirmation_not_implemented`; sin fill → `entry_not_filled`. |
 | **Target quality** | Parcial | Geometría y RR coherentes con `InpVirtualRiskReward` → parcial; `target_liquidity_not_implemented`. |

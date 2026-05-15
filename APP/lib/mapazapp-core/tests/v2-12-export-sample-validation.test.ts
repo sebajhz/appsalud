@@ -275,6 +275,7 @@ describe("V2-12 export sample validation", () => {
       { ...testEaImportOpts, importOptions: { ...testEaImportOpts.importOptions, runId: "TESTEA_SAMPLE_RUN" } },
     );
     expect(r.summaryJson?.["has_liquidity_sweep_v1_logic"]).toBe(true);
+    expect(r.summaryJson?.["has_liquidity_sweep_quality_v1_logic"]).toBe(true);
     expect(r.summaryOk).toBe(true);
     expect(r.status === "valid" || r.status === "valid_with_warnings").toBe(true);
     expect(r.tradesImport?.ok).toBe(true);

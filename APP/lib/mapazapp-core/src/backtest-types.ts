@@ -71,6 +71,15 @@ export interface BacktestTrade {
   liquidityEventReasons?: string | undefined;
   /** Raw `liquidity_event_score` column when present (E5.8+). */
   liquidityEventScore?: number | undefined;
+  /** E5.10.2 Liquidity Sweep Quality V1 (optional; mirrors CSV columns). */
+  liquiditySweepQualityScore?: number | undefined;
+  liquiditySweepQualityGrade?: string | undefined;
+  liquiditySweepRecencyScore?: number | undefined;
+  liquiditySweepDirectionalScore?: number | undefined;
+  liquiditySweepReactionScore?: number | undefined;
+  liquiditySweepDisplacementScore?: number | undefined;
+  liquiditySweepDistanceScore?: number | undefined;
+  liquiditySweepQualityReasons?: string | undefined;
 }
 
 export interface BacktestImportWarning {

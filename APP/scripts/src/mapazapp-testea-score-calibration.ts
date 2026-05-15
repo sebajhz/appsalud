@@ -78,6 +78,7 @@ export function analyzeTestEaBundleScoreCalibration(
       relative_bands: null,
       missing_component_frequency: {},
       component_stats: {},
+      liquidity_quality_component_stats: null,
     };
   }
   return analyzeTestEaScoreCalibrationFromTexts({
