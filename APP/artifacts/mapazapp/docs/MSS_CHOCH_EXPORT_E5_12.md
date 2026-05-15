@@ -36,9 +36,11 @@ Counts are **non-exclusive at summary level** only where defined by export aggre
 
 `wick_break_only` highlights liquidity grabs or spikes that **failed** closed-candle confirmation for the exported MSS/CHoCH story.
 
-## Expected smoke
+## Smoke evidence
 
-**E5.12.1** — technical/export smoke on real Strategy Tester output (recompile EA, single-symbol campaign, verify CSV + summary keys + sample validator CLI).
+**E5.12.1** — cerrado en docs: evidencia operador sobre bundle real (`BUNDLE_EVENTS_LARGE` como warning esperado) — [`MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md`](./MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md).
+
+**Investigación opcional siguiente:** relevancia temporal MSS/CHoCH (**E5.12.2**) y/o **E5.13** Premium/Discount según roadmap.
 
 ## Related inputs (EA)
 

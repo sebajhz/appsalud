@@ -60,7 +60,9 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 **Referencia técnica:** [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md) — columnas CSV, summary, sufijo compacto en eventos (`msc_en=…`), score observación separado (`mss_choch_score`, máx. 15 V1), inputs y `optimization_parameters`; **sin** compuerta dura; **sin** modificar outcome logic ni EQ gate.
 
-**Smoke siguiente:** **E5.12.1** — evidencia técnica sobre bundle real del Strategy Tester con build `MZP_TestEA_E5_12`.
+**Smoke cerrado (docs):** **E5.12.1** — [`MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md`](./MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md) — build `MZP_TestEA_E5_12`, mismo bundle benchmark que HTF smoke; **PASS técnico**; MSS/CHoCH score **no** separa wins/losses → **no** compuerta; ambiguous con score/detection MSS más bajos → señal útil de **ruido**, no de edge standalone.
+
+**Siguiente (opcional/repo):** **E5.12.2** relevancia temporal MSS/CHoCH **o** **E5.13** Premium/Discount.
 
 ## D. Premium / Discount / zona de precio
 
