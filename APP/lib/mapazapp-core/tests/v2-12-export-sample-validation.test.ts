@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   inferExportSampleFileKind,
@@ -253,5 +255,30 @@ describe("V2-12 export sample validation", () => {
       testEaImportOpts,
     );
     expect(r.testEa?.tradesImport?.ok).toBe(true);
+  });
+
+  it("I. Repo Mapazapp_TestEA samples — E5.10 liquidity sweep summary + trades header", () => {
+    const sampleDir = join(__dirname, "../../../artifacts/mt5/experts/Mapazapp_TestEA/samples");
+    const summaryJson = readFileSync(join(sampleDir, "backtest_summary.json"), "utf8");
+    const eventsCsv = readFileSync(join(sampleDir, "backtest_events.csv"), "utf8");
+    const tradesCsv = readFileSync(join(sampleDir, "backtest_trades.csv"), "utf8");
+    const r = validateTestEaExportSample(
+      {
+        bundleKind: "testea_export_bundle",
+        files: [
+          { fileName: "backtest_summary.json", text: summaryJson },
+          { fileName: "backtest_events.csv", text: eventsCsv },
+          { fileName: "backtest_trades.csv", text: tradesCsv },
+        ],
+        privacyMode: "relaxed",
+      },
+      { ...testEaImportOpts, importOptions: { ...testEaImportOpts.importOptions, runId: "TESTEA_SAMPLE_RUN" } },
+    );
+    expect(r.summaryJson?.["has_liquidity_sweep_v1_logic"]).toBe(true);
+    expect(r.summaryOk).toBe(true);
+    expect(r.status === "valid" || r.status === "valid_with_warnings").toBe(true);
+    expect(r.tradesImport?.ok).toBe(true);
+    expect(r.tradeCount).toBe(3);
+    expect(r.tradesImport?.trades[0]?.liquidityEventDetected).toBe(true);
   });
 });

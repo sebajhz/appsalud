@@ -95,8 +95,12 @@ Incluye (lista en `parseBacktestEventsCsv`):
 - **Cabecera E5.3 (cuando hay simulación virtual):**  
   `run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode`
 - **Cabecera E5.8 (extensión observación — columnas añadidas al final):**  
-  `entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_type,session_bucket,trade_window_status,spread_status,news_mode`  
-  Los bundles **anteriores** sin estas columnas siguen siendo válidos (importador TS: columnas opcionales). Cuando existan, `validateTestEaExportSample` exige coherencia con `has_entry_quality_score_logic` / `score_observation_only` / `score_gate_enabled` en `backtest_summary.json` (ver validador en `@workspace/mapazapp-core`).
+  `entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons`
+- **Cabecera E5.10 (liquidity sweep V1 — columnas de contexto, sin gate duro):** inmediatamente después de `ambiguous_risk_reasons`, antes de `session_bucket`:  
+  `liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons`  
+  Cierre de fila (sin cambios respecto E5.8 salvo desplazamiento): `session_bucket,trade_window_status,spread_status,news_mode`.  
+  `liquidity_event_type`: `none` \| `PDH_SWEEP` \| `PDL_SWEEP` \| `LOCAL_SWING_HIGH_SWEEP` \| `LOCAL_SWING_LOW_SWEEP`. `liquidity_event_detected`: `true` \| `false`.  
+  Los bundles **anteriores** sin columnas E5.8/E5.10 siguen siendo válidos (importador TS: columnas opcionales). Cuando existan columnas E5.8, `validateTestEaExportSample` exige coherencia con `has_entry_quality_score_logic` / `score_observation_only` / `score_gate_enabled`. Cuando `has_liquidity_sweep_v1_logic` es **true** en el summary, el validador exige las columnas E5.10 en la cabecera de trades y los contadores/resumen de liquidez documentados en [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](../../../mapazapp/docs/LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md).
 - **Filas de datos:** **ninguna** si la corrida no produce trades virtuales cerrados — **válido header-only**. Las filas deben corresponder a **cierres** de la simulación virtual (win/loss/expired/ambiguous/…); **no** filas sintéticas sin lógica del EA.
 - **Dirección:** `BUY`/`SELL` o `LONG`/`SHORT` (normaliza el importador TS).
 
@@ -136,8 +140,10 @@ Para bundles **`MZP_TESTEA_V1`** / filas con métricas opcionales, ver columnas 
 | `has_entry_quality_score_logic` | boolean | **E5.8:** **true** cuando el EA exporta el modelo Entry Quality Score V1 (observación; no compuerta de trades). |
 | `score_observation_only` | boolean | **E5.8:** debe ser **true** si `has_entry_quality_score_logic` es true (sin bloqueo por score). |
 | `score_gate_enabled` | boolean | **E5.8:** debe ser **false** en modo observación (sin veto automático por umbral de score). |
-| `entry_quality_score_export_enabled` | boolean | Eco de `InpEntryQualityScoreEnabled` (export numérico activo o filas en ceros con marca `off`). |
-| Agregados score (E5.8) | number | `score_a_count`, `score_b_count`, `score_c_count`, `score_rejected_count`, `average_entry_quality_score`, `average_ambiguous_risk_score`, `average_score_win`, `average_score_loss`, `average_score_ambiguous` (promedios 0 si no hubo trades en esa categoría). |
+| `has_liquidity_sweep_v1_logic` | boolean | **E5.10:** **true** — el EA incluye detección/export de **Liquidity Sweep V1** (PDH/PDL + swings locales M15) en modo **observación**; no es compuerta de trades. |
+| `liquidity_sweep_detection_enabled` | boolean | Eco de `InpEnableLiquiditySweepDetection`. |
+| `liquidity_sweep_score_enabled` | boolean | Eco de `InpLiquiditySweepScoreEnabled` (puede estar en off y seguir exportando columnas de evento). |
+| Agregados liquidez (E5.10) | number | `average_liquidity_event_score`, `liquidity_sweep_detected_count`, `liquidity_sweep_relevant_count`, `liquidity_sweep_opposite_count`, `liquidity_sweep_missing_count`, `liquidity_sweep_pdh_count`, `liquidity_sweep_pdl_count`, `liquidity_sweep_local_high_count`, `liquidity_sweep_local_low_count`. |
 | `trade_count` | number | **Debe igualar** el número de filas de datos en `backtest_trades.csv`. Con simulación virtual **E5.4.1+**, conviene que **`virtual_trade_count`** coincida con **`trade_count`** (paridad candidato/fila documentada en `TESTEA_VIRTUAL_OUTCOME_GEOMETRY_FIX_E5_4_1.md`). |
 | Contadores / métricas virtuales (E5.3) | number | p. ej. `virtual_trade_count`, `filled_trade_count`, `win_count`, `loss_count`, `unresolved_count` (E5.4.1), `total_r`, `average_r`, `winrate`, `expectancy_r`, `max_drawdown_r`, … — ver implementación E5.3 / E5.4.1. |
 | Contadores bias | number | `total_bias_evaluated`, `bullish_bias_count`, `bearish_bias_count`, `neutral_bias_count`, `unknown_bias_count`. |
@@ -163,7 +169,7 @@ Ver tabla en versiones anteriores de este contrato y en tests `V2_12_TESTEA_BACK
 
 ## 5. Limitaciones actuales (no sobreprometer)
 
-- **No** pipeline IFVG completo en MQL5: **no** FVG→IFVG como en `tryConvertFvgToIfvg`, **no** filtros ATR del pipeline IFVG del core, **no** sweeps, **no** target liquidity.
+- **No** pipeline IFVG completo en MQL5: **no** FVG→IFVG como en `tryConvertFvgToIfvg`, **no** filtros ATR del pipeline IFVG del core, **no** target liquidity del pipeline IFVG. **E5.10** añade solo **contexto de barrido de liquidez** (PDH/PDL D1 previo + swings M15) para score/export — **no** sweeps de sesión Asia/London, **no** equal highs/lows, **no** compuerta dura por liquidez.
 - **Sí** detección **FVG candidata** / **Setup V1 candidato** + **Daily Bias gate** + **simulación virtual de outcome** (E5.3) sobre velas cerradas, **sin** ticks de orden intra-barra y **sin** órdenes MT5.
 
 ---

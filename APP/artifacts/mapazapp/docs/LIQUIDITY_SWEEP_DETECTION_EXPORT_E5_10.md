@@ -1,0 +1,61 @@
+# Liquidity Sweep V1 — detección y export (E5.10)
+
+## Propósito
+
+Añadir a **Mapazapp_TestEA** un componente **profesional de observación** que describa si, antes de la vela de setup, el precio **barrió niveles de liquidez** relevantes (PDH/PDL del día previo completado y swings locales en M15). Los resultados se exportan en CSV/JSON y alimentan **`liquidity_event_score`** dentro del **Entry Quality Score**, **sin bloquear trades** y **sin usar liquidez como compuerta dura**.
+
+## Por qué importa la liquidez
+
+En marcos institucionales, los retrocesos o entradas suelen alinearse con **pools de liquidez** (máximos/mínimos previos, equal highs/lows, liquidez de sesión). Incorporar señal de **barrido previo** reduce el componente “ciego” del score que E5.9.1 mostró como `liquidity_event_not_implemented` en todos los trades.
+
+## Alcance V1 (implementado)
+
+- **PDH sweep:** antes de la vela de setup, en una ventana de **M15** de `InpLiquiditySweepLookbackBars`, el precio superó el **máximo D1 del día previo completado** (más `InpLiquiditySweepBufferPoints` en puntos).
+- **PDL sweep:** análogo por debajo del **mínimo D1** del día previo completado.
+- **Swing alto local (M15):** pivote swing high en M15 tomado por encima antes de un setup **bearish**.
+- **Swing bajo local (M15):** pivote swing low en M15 tomado por debajo antes de un setup **bullish**.
+- Solo **velas cerradas**. Un único evento “mejor” por setup: prioridad direccional favorable, luego **más reciente**.
+
+## Fuera de alcance V1 (no implementado)
+
+- Sweeps por **sesión** (Asia / London), equal highs/lows, filtros de noticias, veto por spread en este bloque.
+- Cualquier **OrderSend**, **CTrade** o lógica live.
+
+## Integración con el score (observación)
+
+- Con **`InpEnableLiquiditySweepDetection = false`**: no se evalúa barrido; `missing_quality_components` puede incluir `liquidity_sweep_detection_disabled`; razón de calidad `liquidity_sweep_disabled`.
+- Con detección **on** y **`InpLiquiditySweepScoreEnabled`**: PDH/PDL favorable → banda **15–20** según edad; swing local favorable → **10–15**; sin evento → **0** y `liquidity_sweep_not_found`; contexto **opuesto** → **0–5** y `opposite_liquidity_sweep`.
+- **No** se rebajan umbrales globales del score para fabricar A/B; **no** se aprueba el score como compuerta de entrada.
+
+## Exportes
+
+### `backtest_trades.csv`
+
+Columnas: `liquidity_event_detected`, `liquidity_event_type`, `liquidity_event_direction`, `liquidity_event_age_bars`, `liquidity_event_level`, `liquidity_event_sweep_price`, `liquidity_event_distance_points`, `liquidity_event_reasons`.
+
+### `backtest_events.csv`
+
+En `setup_allowed` y `virtual_trade_candidate_created` (y detalles de simulación que reutilizan el mismo sufijo), campos `liq_ev_det`, `liq_ev_type`, `liq_ev_dir`, `liq_age`, `liq_lvl`, `liq_sweep_px`, `liq_dist_pts`, `liq_rsn` junto al bloque `eq_*`.
+
+### `backtest_summary.json`
+
+- `has_liquidity_sweep_v1_logic`: **true** (build actual).
+- `liquidity_sweep_detection_enabled`, `liquidity_sweep_score_enabled`.
+- Contadores: `liquidity_sweep_*_count`, `average_liquidity_event_score`.
+- `optimization_parameters`: eco de lookbacks y buffer.
+
+## Compatibilidad hacia atrás
+
+Bundles sin columnas de liquidez: el importador TypeScript las trata como **opcionales**. `has_liquidity_sweep_v1_logic` ausente o **false** no activa la validación estricta de cabecera E5.10.
+
+## Validación E5.10.1 (humo sugerido)
+
+1. Recompilar **TestEA** (`MZP_TestEA_E5_10_0`) en MetaEditor.
+2. Una corrida **safe-export** con detección activa; comprobar columnas de liquidez en `backtest_trades.csv` y flags en `backtest_summary.json`.
+3. `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<ruta_al_bundle>" --json`
+4. Repetir **calibración de score** (E5.9.x) sobre bundles nuevos para medir dispersión de `liquidity_event_score` y correlación con `ambiguous_rate`.
+
+## Referencias
+
+- Contrato: [`EXPORT_CONTRACT.md`](../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md)
+- Evidencia calibración previa: [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md)

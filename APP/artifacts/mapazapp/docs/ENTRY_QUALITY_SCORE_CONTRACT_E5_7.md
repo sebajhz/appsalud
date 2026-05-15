@@ -4,9 +4,8 @@
 **Estado:** **no** implementa puntuación en MQL5 ni TypeScript en este ID; define semántica, componentes, export futuro y cadena de evidencia.  
 **Contexto:** post–**E5.6.2** ([`AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md`](./AMBIGUITY_SENSITIVITY_EVIDENCE_E5_6_2.md)); alineado a auditoría [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md).  
 **Post–E5.8 smoke:** evidencia operador y caveat de calibración (A/B=0) — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md) (**E5.8.1**).  
+**Post–E5.10:** componente de liquidez **V1** (observación/export) — [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md).  
 **Relacionado:** [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md), [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md), [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md).
-
----
 
 ## 1. Purpose
 

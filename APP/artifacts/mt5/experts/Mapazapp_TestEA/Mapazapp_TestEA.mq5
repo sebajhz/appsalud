@@ -7,7 +7,7 @@
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
 #property version   "1.11"
-#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.8 observation-only Entry Quality Score V1 export; E5.5.0.5 short physical export folders + full JSON ids; E5.5.0.3 FileOpen-safe export writes (no orders)."
+#property description "Strategy Tester only: official TestEA. Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10 Liquidity Sweep V1 (observation/export); E5.8 observation-only Entry Quality Score V1 export; E5.5.0.5 short physical export folders + full JSON ids; E5.5.0.3 FileOpen-safe export writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -51,7 +51,13 @@ input bool              InpWriteVirtualTrades        = true;
 input bool              InpEntryQualityScoreEnabled      = true;
 input bool              InpEntryQualityScoreGateEnabled = false;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_8_0"
+input bool              InpEnableLiquiditySweepDetection = true;
+input int               InpLiquiditySweepLookbackBars    = 48;
+input int               InpLocalSwingLookbackBars      = 20;
+input int               InpLiquiditySweepBufferPoints  = 0;
+input bool              InpLiquiditySweepScoreEnabled   = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_10_0"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -159,6 +165,28 @@ long            g_eq_count_loss_scored = 0;
 double          g_eq_sum_entry_quality_ambiguous = 0.0;
 long            g_eq_count_ambiguous_scored = 0;
 
+long            g_liq_detected_count = 0;
+long            g_liq_relevant_count = 0;
+long            g_liq_opposite_count = 0;
+long            g_liq_missing_count = 0;
+long            g_liq_pdh_count = 0;
+long            g_liq_pdl_count = 0;
+long            g_liq_local_high_count = 0;
+long            g_liq_local_low_count = 0;
+double          g_liq_sum_liquidity_score = 0.0;
+
+struct MapzLiquiditySnapshot
+  {
+   bool     detected;
+   string   ev_type;
+   string   direction;
+   int      age_bars;
+   double   level;
+   double   sweep_price;
+   long     distance_pts;
+   string   reasons;
+  };
+
 struct MapzEqScorePack
   {
    int               entry_quality_score;
@@ -210,6 +238,7 @@ struct MapzVirtualTrade
    double               result_r;
    string               exit_reason;
    string               setup_reason_tag;
+   MapzLiquiditySnapshot liq;
   };
 
 MapzVirtualTrade g_vt;
@@ -994,6 +1023,263 @@ void MapzEqRegisterGradeBucket(const string grade)
   }
 
 //+------------------------------------------------------------------+
+void MapzLiquiditySnapshotClear(MapzLiquiditySnapshot &o)
+  {
+   o.detected = false;
+   o.ev_type = "none";
+   o.direction = "neutral";
+   o.age_bars = 0;
+   o.level = 0.0;
+   o.sweep_price = 0.0;
+   o.distance_pts = 0;
+   o.reasons = "";
+  }
+
+//+------------------------------------------------------------------+
+void MapzLiquiditySnapshotCopy(MapzLiquiditySnapshot &dst, const MapzLiquiditySnapshot &src)
+  {
+   dst.detected = src.detected;
+   dst.ev_type = src.ev_type;
+   dst.direction = src.direction;
+   dst.age_bars = src.age_bars;
+   dst.level = src.level;
+   dst.sweep_price = src.sweep_price;
+   dst.distance_pts = src.distance_pts;
+   dst.reasons = src.reasons;
+  }
+
+//+------------------------------------------------------------------+
+//| Liquidity Sweep V1 (E5.10): PDH/PDL + local M15 swing sweeps.    |
+//| Closed candles only; observation-only — no trade blocking.       |
+//+------------------------------------------------------------------+
+void MapzLiquidityEvaluate(const string sym,
+                           const ENUM_TIMEFRAMES tfExec,
+                           const datetime setupTime,
+                           const ENUM_MAPZ_SETUP_DIR setupDir,
+                           MapzLiquiditySnapshot &out)
+  {
+   MapzLiquiditySnapshotClear(out);
+   if(!InpEnableLiquiditySweepDetection)
+     {
+      out.reasons = "liquidity_sweep_detection_disabled";
+      return;
+     }
+
+   const double pt = SymbolInfoDouble(sym, SYMBOL_POINT);
+   if(pt <= 0.0 || setupTime <= 0)
+     {
+      out.reasons = "liquidity_sweep_not_found";
+      return;
+     }
+
+   const int S = iBarShift(sym, tfExec, setupTime, false);
+   if(S < 1)
+     {
+      out.reasons = "liquidity_sweep_not_found";
+      return;
+     }
+
+   const int barsTf = Bars(sym, tfExec);
+   if(barsTf < S + 3)
+     {
+      out.reasons = "liquidity_sweep_not_found";
+      return;
+     }
+
+   const double buf = (double)InpLiquiditySweepBufferPoints * pt;
+   const int lbSweep = (InpLiquiditySweepLookbackBars > 1 ? InpLiquiditySweepLookbackBars : 1);
+   const int lbSwing = (InpLocalSwingLookbackBars > 3 ? InpLocalSwingLookbackBars : 3);
+
+   double pdh = 0.0;
+   double pdl = 0.0;
+   bool havePd = false;
+   const int dSh = iBarShift(sym, PERIOD_D1, setupTime, false);
+   if(dSh >= 0 && (dSh + 1) < Bars(sym, PERIOD_D1))
+     {
+      pdh = iHigh(sym, PERIOD_D1, dSh + 1);
+      pdl = iLow(sym, PERIOD_D1, dSh + 1);
+      havePd = true;
+     }
+
+   int bestPri = -999999;
+   MapzLiquiditySnapshot best;
+   MapzLiquiditySnapshotClear(best);
+
+   const bool wantLong = (setupDir == MAPZ_SETUP_LONG);
+   const bool wantShort = (setupDir == MAPZ_SETUP_SHORT);
+
+   // --- PDH / PDL sweeps in M15 lookback before setup bar (shifts S+1 ..) ---
+   if(havePd)
+     {
+      const int jEnd = MathMin(S + lbSweep, barsTf - 1);
+      for(int j = S + 1; j <= jEnd; j++)
+        {
+         const double hi = iHigh(sym, tfExec, j);
+         const double lo = iLow(sym, tfExec, j);
+         const int age = j - S;
+
+         if(hi >= pdh + buf)
+           {
+            const long dist = (long)MathRound((hi - pdh) / pt);
+            int pri = 0;
+            string dirW = "neutral";
+            if(wantShort)
+              {
+               pri = 200 - age;
+               dirW = "bearish_context";
+              }
+            else if(wantLong)
+              {
+               pri = 50 - age;
+               dirW = "opposite";
+              }
+            if(pri > bestPri)
+              {
+               bestPri = pri;
+               best.detected = true;
+               best.ev_type = "PDH_SWEEP";
+               best.direction = dirW;
+               best.age_bars = age;
+               best.level = pdh;
+               best.sweep_price = hi;
+               best.distance_pts = dist;
+               best.reasons = (wantShort ? "pdh_sweep_favorable" : "opposite_liquidity_sweep");
+              }
+           }
+
+         if(lo <= pdl - buf)
+           {
+            const long dist = (long)MathRound((pdl - lo) / pt);
+            int pri = 0;
+            string dirW = "neutral";
+            if(wantLong)
+              {
+               pri = 200 - age;
+               dirW = "bullish_context";
+              }
+            else if(wantShort)
+              {
+               pri = 50 - age;
+               dirW = "opposite";
+              }
+            if(pri > bestPri)
+              {
+               bestPri = pri;
+               best.detected = true;
+               best.ev_type = "PDL_SWEEP";
+               best.direction = dirW;
+               best.age_bars = age;
+               best.level = pdl;
+               best.sweep_price = lo;
+               best.distance_pts = dist;
+               best.reasons = (wantLong ? "pdl_sweep_favorable" : "opposite_liquidity_sweep");
+              }
+           }
+        }
+     }
+
+   // --- Local M15 swing sweeps ---
+   const int spMax = MathMin(S + lbSwing, barsTf - 2);
+   for(int sp = S + 2; sp <= spMax; sp++)
+     {
+      if(sp + 1 >= barsTf)
+         break;
+      const double hC = iHigh(sym, tfExec, sp);
+      const double hN = iHigh(sym, tfExec, sp - 1);
+      const double hP = iHigh(sym, tfExec, sp + 1);
+      const double lC = iLow(sym, tfExec, sp);
+      const double lN = iLow(sym, tfExec, sp - 1);
+      const double lP = iLow(sym, tfExec, sp + 1);
+
+      const bool swingHi = (hC >= hN && hC >= hP);
+      const bool swingLo = (lC <= lN && lC <= lP);
+
+      if(swingHi)
+        {
+         for(int j = S + 1; j <= sp - 1; j++)
+           {
+            const double hi = iHigh(sym, tfExec, j);
+            if(hi >= hC + buf)
+              {
+               const int age = j - S;
+               const long dist = (long)MathRound((hi - hC) / pt);
+               int pri = 0;
+               string dirW = "neutral";
+               if(wantShort)
+                 {
+                  pri = 160 - age;
+                  dirW = "bearish_context";
+                 }
+               else if(wantLong)
+                 {
+                  pri = 40 - age;
+                  dirW = "opposite";
+                 }
+               if(pri > bestPri)
+                 {
+                  bestPri = pri;
+                  best.detected = true;
+                  best.ev_type = "LOCAL_SWING_HIGH_SWEEP";
+                  best.direction = dirW;
+                  best.age_bars = age;
+                  best.level = hC;
+                  best.sweep_price = hi;
+                  best.distance_pts = dist;
+                  best.reasons = (wantShort ? "local_swing_high_sweep_favorable" : "opposite_liquidity_sweep");
+                 }
+               break;
+              }
+           }
+        }
+
+      if(swingLo)
+        {
+         for(int j = S + 1; j <= sp - 1; j++)
+           {
+            const double lo = iLow(sym, tfExec, j);
+            if(lo <= lC - buf)
+              {
+               const int age = j - S;
+               const long dist = (long)MathRound((lC - lo) / pt);
+               int pri = 0;
+               string dirW = "neutral";
+               if(wantLong)
+                 {
+                  pri = 160 - age;
+                  dirW = "bullish_context";
+                 }
+               else if(wantShort)
+                 {
+                  pri = 40 - age;
+                  dirW = "opposite";
+                 }
+               if(pri > bestPri)
+                 {
+                  bestPri = pri;
+                  best.detected = true;
+                  best.ev_type = "LOCAL_SWING_LOW_SWEEP";
+                  best.direction = dirW;
+                  best.age_bars = age;
+                  best.level = lC;
+                  best.sweep_price = lo;
+                  best.distance_pts = dist;
+                  best.reasons = (wantLong ? "local_swing_low_sweep_favorable" : "opposite_liquidity_sweep");
+                 }
+               break;
+              }
+           }
+        }
+     }
+
+   if(best.detected)
+      MapzLiquiditySnapshotCopy(out, best);
+   else
+     {
+      out.reasons = "liquidity_sweep_not_found";
+     }
+  }
+
+//+------------------------------------------------------------------+
 void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
                                   const ENUM_MAPZ_BIAS biasEnum,
                                   const long fvgPts,
@@ -1003,6 +1289,7 @@ void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
                                   const double riskAbs,
                                   const bool filled,
                                   const string outcome,
+                                  const MapzLiquiditySnapshot &liq,
                                   MapzEqScorePack &out)
   {
    out.entry_quality_score = 0;
@@ -1059,7 +1346,66 @@ void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
       out.missing_quality_components += "missing_h4_h1_structure|";
 
    out.liquidity_event_score = 0;
-   out.missing_quality_components += "liquidity_event_not_implemented|";
+   out.liquidity_event_type = liq.ev_type;
+   if(!InpEnableLiquiditySweepDetection)
+     {
+      out.missing_quality_components += "liquidity_sweep_detection_disabled|";
+      out.quality_reasons += "liquidity_sweep_disabled|";
+     }
+   else
+     {
+      if(InpLiquiditySweepScoreEnabled)
+        {
+         if(!liq.detected || liq.ev_type == "none")
+           {
+            out.quality_reasons += "liquidity_sweep_not_found|";
+           }
+         else if(StringFind(liq.direction, "opposite") >= 0)
+           {
+            int os = 5;
+            long dp = liq.distance_pts;
+            if(dp > 80)
+               dp = 80;
+            os = os - (int)(dp / 20);
+            if(os < 0)
+               os = 0;
+            if(os > 5)
+               os = 5;
+            out.liquidity_event_score = os;
+            out.quality_reasons += "opposite_liquidity_sweep|";
+           }
+         else if(StringFind(liq.direction, "bullish_context") >= 0 || StringFind(liq.direction, "bearish_context") >= 0)
+           {
+            int base = 18;
+            if(liq.ev_type == "PDH_SWEEP" || liq.ev_type == "PDL_SWEEP")
+              {
+               base = 20 - liq.age_bars / 4;
+               if(base < 15)
+                  base = 15;
+               if(base > 20)
+                  base = 20;
+              }
+            else
+              {
+               base = 15 - liq.age_bars / 5;
+               if(base < 10)
+                  base = 10;
+               if(base > 15)
+                  base = 15;
+              }
+            out.liquidity_event_score = base;
+            out.quality_reasons += "liquidity_sweep_favorable|";
+           }
+         else
+           {
+            out.quality_reasons += "liquidity_neutral_context|";
+           }
+        }
+      else
+        {
+         out.quality_reasons += "liquidity_sweep_score_disabled|";
+        }
+     }
 
    const int vmin = (InpVirtualMinTradeFvgPoints > 0 ? InpVirtualMinTradeFvgPoints : 1);
    const double ratio = (double)fvgPts / (double)vmin;
@@ -1196,10 +1542,11 @@ void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
   }
 
 //+------------------------------------------------------------------+
-string MapzEqScoresToDetailsSuffix(const MapzEqScorePack &p)
+string MapzEqScoresToDetailsSuffix(const MapzEqScorePack &p, const MapzLiquiditySnapshot &lx)
   {
    return StringFormat(
-             "eq_score=%d eq_grade=%s eq_htf=%d eq_liq=%d eq_disp=%d eq_entry=%d eq_tgt=%d eq_sess=%d eq_risk=%d eq_amb_risk=%d eq_miss=%s eq_qual=%s eq_amb_rsn=%s liq_type=%s sess_bucket=%s tw=%s spr=%s news=%s",
+             "eq_score=%d eq_grade=%s eq_htf=%d eq_liq=%d eq_disp=%d eq_entry=%d eq_tgt=%d eq_sess=%d eq_risk=%d eq_amb_risk=%d eq_miss=%s eq_qual=%s eq_amb_rsn=%s liq_type=%s "
+             "liq_ev_det=%s liq_ev_type=%s liq_ev_dir=%s liq_age=%d liq_lvl=%.5f liq_sweep_px=%.5f liq_dist_pts=%I64d liq_rsn=%s sess_bucket=%s tw=%s spr=%s news=%s",
              p.entry_quality_score,
              JsonStringEscape(p.entry_quality_grade),
              p.htf_narrative_score,
@@ -1214,6 +1561,14 @@ string MapzEqScoresToDetailsSuffix(const MapzEqScorePack &p)
              JsonStringEscape(p.quality_reasons),
              JsonStringEscape(p.ambiguous_risk_reasons),
              JsonStringEscape(p.liquidity_event_type),
+             (lx.detected ? "true" : "false"),
+             JsonStringEscape(lx.ev_type),
+             JsonStringEscape(lx.direction),
+             lx.age_bars,
+             lx.level,
+             lx.sweep_price,
+             lx.distance_pts,
+             JsonStringEscape(lx.reasons),
              JsonStringEscape(p.session_bucket),
              JsonStringEscape(p.trade_window_status),
              JsonStringEscape(p.spread_status),
@@ -1233,6 +1588,7 @@ string VirtualBuildDetailsCore(void)
                                 g_vt.risk_abs,
                                 g_vt.filled,
                                 g_vt.outcome,
+                                g_vt.liq,
                                 eqp);
    const string base = StringFormat(
              "trade_id=%s setup_event_id=%s entry=%.5f sl=%.5f tp=%.5f rr=%.2f fvg_low=%.5f fvg_high=%.5f fvg_points=%I64d outcome=%s result_r=%.3f bars_waiting_entry=%d bars_held=%d reason=%s",
@@ -1245,7 +1601,7 @@ string VirtualBuildDetailsCore(void)
              g_vt.bars_waiting_entry,
              g_vt.bars_held,
              JsonStringEscape(g_vt.exit_reason));
-   return base + " " + MapzEqScoresToDetailsSuffix(eqp);
+   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq);
   }
 
 //+------------------------------------------------------------------+
@@ -1323,6 +1679,7 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
                                 g_vt.risk_abs,
                                 g_vt.filled,
                                 g_vt.outcome,
+                                g_vt.liq,
                                 eqp);
    row += "," + IntegerToString(eqp.entry_quality_score)
           + "," + eqp.entry_quality_grade
@@ -1337,7 +1694,14 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + eqp.quality_reasons
           + "," + eqp.missing_quality_components
           + "," + eqp.ambiguous_risk_reasons
-          + "," + eqp.liquidity_event_type
+          + "," + (g_vt.liq.detected ? "true" : "false")
+          + "," + g_vt.liq.ev_type
+          + "," + g_vt.liq.direction
+          + "," + IntegerToString(g_vt.liq.age_bars)
+          + "," + DoubleToString(g_vt.liq.level, _Digits)
+          + "," + DoubleToString(g_vt.liq.sweep_price, _Digits)
+          + "," + IntegerToString((int)g_vt.liq.distance_pts)
+          + "," + g_vt.liq.reasons
           + "," + eqp.session_bucket
           + "," + eqp.trade_window_status
           + "," + eqp.spread_status
@@ -1365,6 +1729,31 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
         }
      }
 
+   g_liq_sum_liquidity_score += (double)eqp.liquidity_event_score;
+   if(InpEnableLiquiditySweepDetection)
+     {
+      if(g_vt.liq.detected)
+        {
+         g_liq_detected_count++;
+         if(StringFind(g_vt.liq.direction, "opposite") >= 0)
+            g_liq_opposite_count++;
+         else if(g_vt.liq.direction == "bullish_context" || g_vt.liq.direction == "bearish_context")
+            g_liq_relevant_count++;
+         if(g_vt.liq.ev_type == "PDH_SWEEP")
+            g_liq_pdh_count++;
+         else if(g_vt.liq.ev_type == "PDL_SWEEP")
+            g_liq_pdl_count++;
+         else if(g_vt.liq.ev_type == "LOCAL_SWING_HIGH_SWEEP")
+            g_liq_local_high_count++;
+         else if(g_vt.liq.ev_type == "LOCAL_SWING_LOW_SWEEP")
+            g_liq_local_low_count++;
+        }
+      else
+        {
+         g_liq_missing_count++;
+        }
+     }
+
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
    g_tradesDataLines += row;
@@ -1378,6 +1767,7 @@ void VirtualClearTrade(void)
    g_vt.filled = false;
    g_vt.bars_waiting_entry = 0;
    g_vt.bars_held = 0;
+   MapzLiquiditySnapshotClear(g_vt.liq);
   }
 
 //+------------------------------------------------------------------+
@@ -1526,7 +1916,8 @@ void VirtualOnSetupAllowed(const string setupEventId,
                            const double fHi,
                            const long gapPts,
                            const datetime cTime,
-                           const string setupGeomReason)
+                           const string setupGeomReason,
+                           const MapzLiquiditySnapshot &liqInit)
   {
    if(!InpEnableVirtualTrades)
       return;
@@ -1579,6 +1970,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    g_vt.result_r = 0.0;
    g_vt.exit_reason = "";
    g_vt.setup_reason_tag = setupGeomReason;
+   MapzLiquiditySnapshotCopy(g_vt.liq, liqInit);
 
    g_virtual_trade_count++;
    const string detC = VirtualBuildDetailsCore();
@@ -1897,17 +2289,19 @@ void TryDetectIfvgOnNewExecClosedBar(void)
                             TimeUtcIso(cTime),
                             JsonStringEscape(g_lastBiasReason),
                             gate);
+      MapzLiquiditySnapshot liqWork;
+      MapzLiquidityEvaluate(g_brokerSymbol, InpExecutionTimeframe, cTime, sdir, liqWork);
       double entP = 0.0, slP = 0.0, tpP = 0.0, rAbsP = 0.0, fLoP = 0.0, fHiP = 0.0;
       long fvgPtsP = 0;
       string rjP = "";
       if(VirtualPrepareTradePrices(sdir, fLo, fHi, entP, slP, tpP, rAbsP, fLoP, fHiP, fvgPtsP, rjP))
         {
          MapzEqScorePack eqSetup;
-         MapzEqComputeScoresFromState(sdir, g_lastBiasEnum, fvgPtsP, entP, slP, tpP, rAbsP, false, "", eqSetup);
-         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup);
+         MapzEqComputeScoresFromState(sdir, g_lastBiasEnum, fvgPtsP, entP, slP, tpP, rAbsP, false, "", liqWork, eqSetup);
+         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork);
         }
       const string evAllow = ExportSetupEvent(EVT_SETUP_ALLOWED, setupW, gate, "daily_bias_aligned", detA);
-      VirtualOnSetupAllowed(evAllow, setupW, sdir, fLo, fHi, gapPts, cTime, rsn);
+      VirtualOnSetupAllowed(evAllow, setupW, sdir, fLo, fHi, gapPts, cTime, rsn, liqWork);
      }
    else if(gate == "rejected_by_daily_bias")
      {
@@ -1968,13 +2362,14 @@ void RefreshSetupSummaryNotes(void)
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    const long tcRows = g_trades_csv_row_count;
    g_exportNotes = StringFormat(
-                       "E5.8 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; entry_quality_score_export=%s (observation-only); "
+                       "E5.10 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); "
                        "setup_inputs: enable=%s min_fvg_pts=%d virtual_min_trade_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
                        TfToWire(InpExecutionTimeframe),
                        (InpEnableVirtualTrades ? "on" : "off"),
                        gateNone,
+                       (InpEnableLiquiditySweepDetection ? "on" : "off"),
                        (InpEntryQualityScoreEnabled ? "on" : "off"),
                        (InpEnableSetupDetection ? "true" : "false"),
                        InpMinFvgPoints,
@@ -2026,10 +2421,13 @@ string WriteSummaryJson(void)
    json += "  \"has_full_ifvg_pipeline\": false,\r\n";
    json += "  \"has_real_daily_bias_logic\": true,\r\n";
    json += "  \"has_real_virtual_trade_logic\": " + (InpEnableVirtualTrades ? "true" : "false") + ",\r\n";
+   json += "  \"has_liquidity_sweep_v1_logic\": true,\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
    json += "  \"score_gate_enabled\": false,\r\n";
    json += "  \"entry_quality_score_export_enabled\": " + (InpEntryQualityScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "  \"liquidity_sweep_detection_enabled\": " + (InpEnableLiquiditySweepDetection ? "true" : "false") + ",\r\n";
+   json += "  \"liquidity_sweep_score_enabled\": " + (InpLiquiditySweepScoreEnabled ? "true" : "false") + ",\r\n";
    json += "  \"has_real_trading_orders\": false,\r\n";
    json += StringFormat("  \"trade_count\": %I64d,\r\n", tcRows);
    json += StringFormat("  \"virtual_trade_count\": %I64d,\r\n", g_virtual_trade_count);
@@ -2080,6 +2478,16 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"average_score_win\": %.6f,\r\n", avgEqWin);
    json += StringFormat("  \"average_score_loss\": %.6f,\r\n", avgEqLoss);
    json += StringFormat("  \"average_score_ambiguous\": %.6f,\r\n", avgEqAmb);
+   const double avgLiq = (tcRows > 0 ? g_liq_sum_liquidity_score / (double)tcRows : 0.0);
+   json += StringFormat("  \"average_liquidity_event_score\": %.6f,\r\n", avgLiq);
+   json += StringFormat("  \"liquidity_sweep_detected_count\": %I64d,\r\n", g_liq_detected_count);
+   json += StringFormat("  \"liquidity_sweep_relevant_count\": %I64d,\r\n", g_liq_relevant_count);
+   json += StringFormat("  \"liquidity_sweep_opposite_count\": %I64d,\r\n", g_liq_opposite_count);
+   json += StringFormat("  \"liquidity_sweep_missing_count\": %I64d,\r\n", g_liq_missing_count);
+   json += StringFormat("  \"liquidity_sweep_pdh_count\": %I64d,\r\n", g_liq_pdh_count);
+   json += StringFormat("  \"liquidity_sweep_pdl_count\": %I64d,\r\n", g_liq_pdl_count);
+   json += StringFormat("  \"liquidity_sweep_local_high_count\": %I64d,\r\n", g_liq_local_high_count);
+   json += StringFormat("  \"liquidity_sweep_local_low_count\": %I64d,\r\n", g_liq_local_low_count);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -2092,7 +2500,12 @@ string WriteSummaryJson(void)
    json += StringFormat("    \"daily_bias_min_body_points\": %d,\r\n", InpDailyBiasMinBodyPoints);
    json += "    \"require_daily_bias_alignment\": " + (InpRequireDailyBiasAlignment ? "true" : "false") + ",\r\n";
    json += "    \"entry_quality_score_enabled\": " + (InpEntryQualityScoreEnabled ? "true" : "false") + ",\r\n";
-   json += "    \"entry_quality_score_gate_enabled\": " + (InpEntryQualityScoreGateEnabled ? "true" : "false") + "\r\n";
+   json += "    \"entry_quality_score_gate_enabled\": " + (InpEntryQualityScoreGateEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"liquidity_sweep_detection_enabled\": " + (InpEnableLiquiditySweepDetection ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"liquidity_sweep_lookback_bars\": %d,\r\n", InpLiquiditySweepLookbackBars);
+   json += StringFormat("    \"local_swing_lookback_bars\": %d,\r\n", InpLocalSwingLookbackBars);
+   json += StringFormat("    \"liquidity_sweep_buffer_points\": %d,\r\n", InpLiquiditySweepBufferPoints);
+   json += "    \"liquidity_sweep_score_enabled\": " + (InpLiquiditySweepScoreEnabled ? "true" : "false") + "\r\n";
    json += "  },\r\n";
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
@@ -2103,7 +2516,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_type,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+
@@ -2225,7 +2638,7 @@ int OnInit()
    PrintFormat("Mapazapp_TestEA export layout: trades path: %s\\backtest_trades.csv", g_baseRelPath);
 
    g_initOk = true;
-   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + virtual trades + E5.8 Entry Quality Score (observation-only, no orders); outputs under MQL5\\Files\\", g_baseRelPath);
+   Print("Mapazapp_TestEA: official tester EA; Daily Bias V1 + FVG/Setup V1 + virtual trades + E5.10 Liquidity Sweep V1 + E5.8 Entry Quality Score (observation-only, no orders); outputs under MQL5\\Files\\", g_baseRelPath);
 
    ExportLifecycleEvent("lifecycle_init", "ok", "OnInit", "paths_ready");
    ExportLifecycleEvent("skeleton_ready", "noop", "E5.5.0",

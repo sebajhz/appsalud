@@ -35,7 +35,8 @@
 - **E5.8.1 cerrado (docs):** evidencia smoke operador (bundle E55 SET001; `ok=true`; solo `BUNDLE_EVENTS_LARGE`); PASS técnico; A/B=0 = hallazgo de calibración; gate y umbrales **no** aprobados — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md).
 - **E5.9 cerrado (repo):** analizador **calibración/distribución** del score (`testea-score-calibration.ts`, CLI `mapazapp:testea-score-calibration`, tests) — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md). **E5.9.0.1:** corrección de `summaryRows` / CSV resumen — `ambiguous_rate` alineado a `outcome_by_score.all.ambiguous_rate` (no al slice `ambiguous`).
 - **E5.9.1 cerrado (docs):** evidencia operador smoke + decisión componentes — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md).
-- **Siguiente paso canónico:** **E5.10+** — capacidades de score (roadmap en doc E5.9.1 §12); reconciliar IDs con contrato §13 y **E5.5.2** §15. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte**.
+- **E5.10 cerrado (repo):** **Liquidity Sweep V1** (PDH/PDL + swings M15) en `Mapazapp_TestEA` — build **`MZP_TestEA_E5_10_0`**; columnas `liquidity_event_*`, `liquidity_event_score` integrado; `has_liquidity_sweep_v1_logic`; validador TS cuando el flag es true — [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md).
+- **Siguiente paso canónico:** **E5.10.1+** — smoke operador post-recompilación + rerun calibración score sobre bundles con liquidez; reconciliar IDs con contrato §13 y **E5.5.2** §15. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte**.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

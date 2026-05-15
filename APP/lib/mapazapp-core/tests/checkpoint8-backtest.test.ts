@@ -168,6 +168,25 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(r.trades[0]!.scoreTotal).toBe(0.72);
   });
 
+  it("parses optional E5.10 liquidity sweep columns when present", () => {
+    const csv = [
+      "trade_id,direction,entry_time,exit_time,entry,exit_price,result_r,result_money,liquidity_event_score,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons",
+      "t_liq,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,2005,1,0,16,true,LOCAL_SWING_LOW_SWEEP,bullish_context,4,2650.25,2650.18,7,local_swing_low_sweep_favorable",
+    ].join("\n");
+    const r = importBacktestTradesFromCsv(csv, testeaOpts);
+    expect(r.ok).toBe(true);
+    const t = r.trades[0]!;
+    expect(t.liquidityEventScore).toBe(16);
+    expect(t.liquidityEventDetected).toBe(true);
+    expect(t.liquidityEventType).toBe("LOCAL_SWING_LOW_SWEEP");
+    expect(t.liquidityEventDirection).toBe("bullish_context");
+    expect(t.liquidityEventAgeBars).toBe(4);
+    expect(t.liquidityEventLevel).toBeCloseTo(2650.25, 5);
+    expect(t.liquidityEventSweepPrice).toBeCloseTo(2650.18, 5);
+    expect(t.liquidityEventDistancePoints).toBe(7);
+    expect(t.liquidityEventReasons).toBe("local_swing_low_sweep_favorable");
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);

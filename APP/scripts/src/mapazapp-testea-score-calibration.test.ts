@@ -35,7 +35,7 @@ const SUMMARY_SCORE = `{
 
 const TRADES_SCORE = [
   "trade_id,direction,entry_time,exit_time,entry_price,exit_price,result_r,symbol,strategy_id,parameter_set_id,outcome,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,missing_quality_components",
-  "t1,BUY,2026-01-01T10:00:00Z,2026-01-01T11:00:00Z,1,1,2,XAUUSD,IFVG_X,P1,win,70,A,10,0,5,5,5,0,4,40,liquidity_event_not_implemented",
+  "t1,BUY,2026-01-01T10:00:00Z,2026-01-01T11:00:00Z,1,1,2,XAUUSD,IFVG_X,P1,win,70,A,10,0,5,5,5,0,4,40,liquidity_sweep_not_found",
   "t2,BUY,2026-01-02T10:00:00Z,2026-01-02T11:00:00Z,1,1,0,XAUUSD,IFVG_X,P1,ambiguous,55,C,8,0,4,4,4,0,3,50,",
 ].join("\n");
 

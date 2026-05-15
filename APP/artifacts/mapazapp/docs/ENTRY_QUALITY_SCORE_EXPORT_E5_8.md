@@ -3,7 +3,7 @@
 **Tipo:** checkpoint de implementación (MQL5 + contrato de export + validadores TS + muestras).  
 **Contrato de diseño:** [`ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md`](./ENTRY_QUALITY_SCORE_CONTRACT_E5_7.md) (**E5.7**).  
 **Evidencia smoke operador (calibración / A/B=0):** [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md) (**E5.8.1**).  
-**Build TestEA:** `MZP_TestEA_E5_8_0` (`#define TESTEA_BUILD`).
+**Build TestEA:** `MZP_TestEA_E5_10_0` (`#define TESTEA_BUILD`) — incluye **Liquidity Sweep V1** observación/export; ver [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md).
 
 ---
 
@@ -20,7 +20,7 @@
 | Componente | Estado E5.8 | Notas |
 |------------|-------------|--------|
 | **HTF narrative** | Parcial | Alineación **sesgo D1** vs dirección del setup (+ peso). Si `InpUseH4Context` o `InpUseH1Context` → `missing_h4_h1_structure` (no se simula estructura H4/H1). |
-| **Liquidity event** | No implementado | Puntuación **0**, `liquidity_event_type=none`, `liquidity_event_not_implemented` en faltantes. |
+| **Liquidity event** | **E5.10 (V1)** | PDH/PDL + swings M15; columnas `liquidity_event_*` en trades; `liquidity_event_score` con bandas simples; **sin** gate duro. Detección off → `liquidity_sweep_detection_disabled` en faltantes. |
 | **Displacement / FVG quality** | Parcial | Bandas por tamaño de FVG vs `InpVirtualMinTradeFvgPoints` + razón `fvg_size_bucket=…`. |
 | **Entry / retest** | Parcial | Midpoint sin confirmación de vela → puntuación parcial + `confirmation_not_implemented`; sin fill → `entry_not_filled`. |
 | **Target quality** | Parcial | Geometría y RR coherentes con `InpVirtualRiskReward` → parcial; `target_liquidity_not_implemented`. |
@@ -36,7 +36,7 @@
 
 Columnas añadidas al **final** de cada fila (cabecera actualizada en el EA):
 
-`entry_quality_score`, `entry_quality_grade`, `htf_narrative_score`, `liquidity_event_score`, `displacement_fvg_quality_score`, `entry_confirmation_score`, `target_quality_score`, `session_news_spread_score`, `risk_overtrading_score`, `ambiguous_risk_score`, `quality_reasons`, `missing_quality_components`, `ambiguous_risk_reasons`, `liquidity_event_type`, `session_bucket`, `trade_window_status`, `spread_status`, `news_mode`
+`entry_quality_score`, …, `ambiguous_risk_reasons`, **`liquidity_event_detected`**, **`liquidity_event_type`**, **`liquidity_event_direction`**, **`liquidity_event_age_bars`**, **`liquidity_event_level`**, **`liquidity_event_sweep_price`**, **`liquidity_event_distance_points`**, **`liquidity_event_reasons`** (E5.10), `session_bucket`, `trade_window_status`, `spread_status`, `news_mode`
 
 Los **bundles antiguos** sin estas columnas siguen siendo válidos para el importador (columnas opcionales).
 

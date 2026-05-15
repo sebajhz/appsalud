@@ -60,6 +60,17 @@ export interface BacktestTrade {
   exitReason?: string | undefined;
   /** TestEA E5.3+ virtual outcome when present in CSV (`outcome` column). */
   outcome?: string | undefined;
+  /** TestEA E5.10+ liquidity sweep observation columns (optional for legacy CSV). */
+  liquidityEventDetected?: boolean | undefined;
+  liquidityEventType?: string | undefined;
+  liquidityEventDirection?: string | undefined;
+  liquidityEventAgeBars?: number | undefined;
+  liquidityEventLevel?: number | undefined;
+  liquidityEventSweepPrice?: number | undefined;
+  liquidityEventDistancePoints?: number | undefined;
+  liquidityEventReasons?: string | undefined;
+  /** Raw `liquidity_event_score` column when present (E5.8+). */
+  liquidityEventScore?: number | undefined;
 }
 
 export interface BacktestImportWarning {

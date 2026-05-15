@@ -61,7 +61,7 @@ function buildTradesWithScores(n: number): string {
     const r = outcome === "ambiguous" ? 0 : outcome === "loss" ? -1 : 1.5;
     const miss =
       i % 2 === 0
-        ? "liquidity_event_not_implemented,session_news_spread_not_implemented"
+        ? "liquidity_sweep_not_found,session_news_spread_not_implemented"
         : "missing_h4_h1_structure";
     lines.push(
       [
@@ -144,7 +144,7 @@ describe("testea-score-calibration", () => {
       tradesCsvText: csv,
     });
     expect(r.ok).toBe(true);
-    expect(r.missing_component_frequency["liquidity_event_not_implemented"] ?? 0).toBeGreaterThan(0);
+    expect(r.missing_component_frequency["liquidity_sweep_not_found"] ?? 0).toBeGreaterThan(0);
     expect(r.missing_component_frequency["missing_h4_h1_structure"] ?? 0).toBeGreaterThan(0);
   });
 

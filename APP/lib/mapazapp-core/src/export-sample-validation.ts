@@ -614,6 +614,131 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "invalid");
           }
         }
+        if (summaryJson["has_liquidity_sweep_v1_logic"] === true) {
+          const liqSummaryKeys = [
+            "liquidity_sweep_detection_enabled",
+            "liquidity_sweep_score_enabled",
+            "average_liquidity_event_score",
+            "liquidity_sweep_detected_count",
+            "liquidity_sweep_relevant_count",
+            "liquidity_sweep_opposite_count",
+            "liquidity_sweep_missing_count",
+            "liquidity_sweep_pdh_count",
+            "liquidity_sweep_pdl_count",
+            "liquidity_sweep_local_high_count",
+            "liquidity_sweep_local_low_count",
+          ] as const;
+          for (const k of liqSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_LIQUIDITY_SWEEP_E5_10_KEY",
+                  `E5.10: when has_liquidity_sweep_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          const detEn = summaryJson["liquidity_sweep_detection_enabled"];
+          if (detEn !== undefined && typeof detEn !== "boolean") {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_LIQUIDITY_DETECTION_ENABLED_TYPE",
+                "liquidity_sweep_detection_enabled must be boolean",
+                { fileName: sj.fileName, detail: String(detEn) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          const scoreEn = summaryJson["liquidity_sweep_score_enabled"];
+          if (scoreEn !== undefined && typeof scoreEn !== "boolean") {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_LIQUIDITY_SCORE_ENABLED_TYPE",
+                "liquidity_sweep_score_enabled must be boolean",
+                { fileName: sj.fileName, detail: String(scoreEn) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          const liqAvg = summaryJson["average_liquidity_event_score"];
+          if (liqAvg !== undefined && (typeof liqAvg !== "number" || !Number.isFinite(liqAvg))) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_LIQUIDITY_AVG_SCORE",
+                "average_liquidity_event_score must be a finite number",
+                { fileName: sj.fileName, detail: String(liqAvg) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          const liqCounters = [
+            "liquidity_sweep_detected_count",
+            "liquidity_sweep_relevant_count",
+            "liquidity_sweep_opposite_count",
+            "liquidity_sweep_missing_count",
+            "liquidity_sweep_pdh_count",
+            "liquidity_sweep_pdl_count",
+            "liquidity_sweep_local_high_count",
+            "liquidity_sweep_local_low_count",
+          ] as const;
+          for (const k of liqCounters) {
+            const v = summaryJson[k];
+            if (v !== undefined && (typeof v !== "number" || !Number.isFinite(v) || v < 0)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_LIQUIDITY_COUNTER",
+                  `E5.10: "${k}" must be a non-negative finite number`,
+                  { fileName: sj.fileName, detail: String(v) },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const requiredCols = [
+              "liquidity_event_detected",
+              "liquidity_event_type",
+              "liquidity_event_direction",
+              "liquidity_event_age_bars",
+              "liquidity_event_level",
+              "liquidity_event_sweep_price",
+              "liquidity_event_distance_points",
+              "liquidity_event_reasons",
+            ] as const;
+            for (const col of requiredCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_LIQUIDITY_E5_10",
+                    `E5.10: backtest_trades.csv header must include "${col}" when has_liquidity_sweep_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_LIQUIDITY_HEADER_CHECK",
+                "has_liquidity_sweep_v1_logic is true but backtest_trades.csv missing — cannot verify E5.10 trade columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

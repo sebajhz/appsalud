@@ -348,6 +348,23 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
     }
 
+    const liqScoreRaw = pick(cells, col, "liquidity_event_score");
+    let liquidityEventScore: number | undefined;
+    if (liqScoreRaw !== undefined && liqScoreRaw.trim() !== "") {
+      const p = parseNumber(liqScoreRaw, "liquidity_event_score", rowNum);
+      if (p.ok) liquidityEventScore = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+
+    const liqDetRaw = pick(cells, col, "liquidity_event_detected");
+    const liqTypeRaw = pick(cells, col, "liquidity_event_type");
+    const liqDirRaw = pick(cells, col, "liquidity_event_direction");
+    const liqAgeRaw = pick(cells, col, "liquidity_event_age_bars");
+    const liqLvlRaw = pick(cells, col, "liquidity_event_level");
+    const liqSweepPxRaw = pick(cells, col, "liquidity_event_sweep_price");
+    const liqDistRaw = pick(cells, col, "liquidity_event_distance_points");
+    const liqRsnRaw = pick(cells, col, "liquidity_event_reasons");
+
     const trade: BacktestTrade = {
       tradeId: tradeIdRaw.trim() as BacktestTradeId,
       runId: tradeRunId,
@@ -373,6 +390,41 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     if (spreadAtEntry !== undefined) trade.spreadAtEntry = spreadAtEntry;
     if (scoreTotal !== undefined) trade.scoreTotal = scoreTotal;
     if (outcomeRaw !== "") trade.outcome = outcomeRaw;
+    if (liquidityEventScore !== undefined) trade.liquidityEventScore = liquidityEventScore;
+    if (liqDetRaw !== undefined && liqDetRaw.trim() !== "") {
+      const u = liqDetRaw.trim().toLowerCase();
+      if (u === "true" || u === "1") trade.liquidityEventDetected = true;
+      else if (u === "false" || u === "0") trade.liquidityEventDetected = false;
+      else
+        warnings.push({
+          code: "CSV_LIQUIDITY_DETECTED_INVALID",
+          message: `Row ${rowNum}: liquidity_event_detected must be true/false/0/1`,
+          row: rowNum,
+        });
+    }
+    if (liqTypeRaw?.trim()) trade.liquidityEventType = liqTypeRaw.trim();
+    if (liqDirRaw?.trim()) trade.liquidityEventDirection = liqDirRaw.trim();
+    if (liqAgeRaw !== undefined && liqAgeRaw.trim() !== "") {
+      const p = parseNumber(liqAgeRaw, "liquidity_event_age_bars", rowNum);
+      if (p.ok) trade.liquidityEventAgeBars = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqLvlRaw !== undefined && liqLvlRaw.trim() !== "") {
+      const p = parseNumber(liqLvlRaw, "liquidity_event_level", rowNum);
+      if (p.ok) trade.liquidityEventLevel = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqSweepPxRaw !== undefined && liqSweepPxRaw.trim() !== "") {
+      const p = parseNumber(liqSweepPxRaw, "liquidity_event_sweep_price", rowNum);
+      if (p.ok) trade.liquidityEventSweepPrice = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqDistRaw !== undefined && liqDistRaw.trim() !== "") {
+      const p = parseNumber(liqDistRaw, "liquidity_event_distance_points", rowNum);
+      if (p.ok) trade.liquidityEventDistancePoints = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (liqRsnRaw?.trim()) trade.liquidityEventReasons = liqRsnRaw.trim();
 
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({

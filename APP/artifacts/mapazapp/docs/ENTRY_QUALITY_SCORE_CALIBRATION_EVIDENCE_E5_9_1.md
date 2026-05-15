@@ -93,7 +93,7 @@ Interpretación: la cola superior de score **supera** en expectancy a la cola in
 En **E5.8**, varios componentes del contrato aún **no están implementados** en el EA; el CSV etiqueta trades con los mismos marcadores. Frecuencias típicas del orden de **1697** (una vez por trade) para tokens como:
 
 - `missing_h4_h1_structure`
-- `liquidity_event_not_implemented`
+- `liquidity_event_not_implemented` *(bundles **anteriores** a E5.10; builds E5.10+ con detección activa ya no emiten este token — ver [`LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md`](./LIQUIDITY_SWEEP_DETECTION_EXPORT_E5_10.md))*
 - `confirmation_not_implemented`
 - `target_liquidity_not_implemented`
 - `session_news_spread_not_implemented`
