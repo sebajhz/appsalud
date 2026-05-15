@@ -3,7 +3,7 @@
 **Tipo:** implementación de **observación / diagnóstico** en `Mapazapp_TestEA` (sin compuerta de trading).  
 **Build TestEA:** `MZP_TestEA_E5_11` (`#define TESTEA_BUILD`).  
 **Roadmap conceptual:** [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md).  
-**Smoke operador esperado:** **E5.11.1** (recompilar en MetaEditor, correr Strategy Tester, validar bundle con `mapazapp:testea-export-validate`).
+**Smoke operador:** **E5.11.1** — evidencia cerrada en [`HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md`](./HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md) (recompilar en MetaEditor, correr Strategy Tester, validar bundle con `mapazapp:testea-export-validate`).
 
 ---
 
@@ -83,8 +83,12 @@ En **`setup_allowed`** (cuando hay preview EQ + geometría) y **`virtual_trade_c
 
 ---
 
-## 9. Próximo paso
+## 9. Evidencia smoke E5.11.1
 
-**E5.11.1:** operador recompila `Mapazapp_TestEA`, ejecuta un run corto en Strategy Tester y valida el bundle real con:
+Operador: recompilar `Mapazapp_TestEA`, ejecutar Strategy Tester y validar el bundle con:
 
 `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<ruta_bundle>" --json`
+
+Resultado registrado (PASS técnico; observación-only; sin compuerta): [`HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md`](./HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md).
+
+**Siguiente track humanización:** **E5.12 — MSS / CHoCH V1** ([`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §C).

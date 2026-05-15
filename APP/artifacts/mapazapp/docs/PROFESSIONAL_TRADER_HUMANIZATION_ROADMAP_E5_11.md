@@ -46,7 +46,9 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 **Referencia técnica:** [`HTF_STRUCTURE_EXPORT_E5_11.md`](./HTF_STRUCTURE_EXPORT_E5_11.md) — columnas CSV, summary, sufijo eventos, score observación 0–20, inputs; **sin** compuerta dura.
 
-**Smoke operador siguiente:** **E5.11.1**.
+### E5.11.1 — HTF Structure smoke evidence (**cerrado — docs**)
+
+- **Evidencia registrada:** [`HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md`](./HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md) — build `MZP_TestEA_E5_11`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, validación OK con warning `BUNDLE_EVENTS_LARGE`; **PASS técnico**; contexto HTF útil; separación leve wins vs ambiguous/expired en media de score HTF; losses con score HTF alto → **no** compuerta dura ni filtro standalone; `protected_level_missing` dominante → **observación-only**; sin cambios EQ / live / A/B fabricados ni tune solo por este bundle.
 
 ---
 
@@ -245,6 +247,7 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## Documentos relacionados
 
+- [`HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md`](./HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md)
 - [`LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md`](./LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
