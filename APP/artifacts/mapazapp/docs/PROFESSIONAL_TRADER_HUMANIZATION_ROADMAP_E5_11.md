@@ -54,31 +54,13 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## C. Confirmación MSS / CHoCH
 
-### E5.12 — MSS / CHoCH V1
+### E5.12 — MSS / CHoCH V1 (**export cerrado en repo**)
 
-**Propósito:** evitar tratar **cada retest de FVG** como entrada válida; exigir **confirmación estructural** medible.
+**Propósito:** complementar FVG + liquidez + HTF con **confirmación de estructura interna en el timeframe de ejecución** (por defecto M15), usando **solo velas cerradas** para MSS/CHoCH confirmados y marcando **wick-only** como diagnóstico.
 
-**Idea técnica (borrador):**
+**Referencia técnica:** [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md) — columnas CSV, summary, sufijo compacto en eventos (`msc_en=…`), score observación separado (`mss_choch_score`, máx. 15 V1), inputs y `optimization_parameters`; **sin** compuerta dura; **sin** modificar outcome logic ni EQ gate.
 
-- `bullish_mss` solo si una **vela cerrada** rompe **por encima** del **swing alto interno confirmado**.
-- `bearish_mss` solo si una **vela cerrada** rompe **por debajo** del **swing bajo interno confirmado**.
-- Roturas **solo por mecha** → **diagnóstico**, no confirmación operativa.
-
-**Campos planificados:**
-
-| Campo |
-|-------|
-| `mss_detected` |
-| `mss_direction` |
-| `mss_break_level` |
-| `mss_close_price` |
-| `mss_bars_after_sweep` |
-| `mss_valid_close` |
-| `choch_detected` |
-| `choch_direction` |
-| `mss_reason_codes` |
-
----
+**Smoke siguiente:** **E5.12.1** — evidencia técnica sobre bundle real del Strategy Tester con build `MZP_TestEA_E5_12`.
 
 ## D. Premium / Discount / zona de precio
 

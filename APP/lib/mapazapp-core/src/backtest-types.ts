@@ -115,6 +115,27 @@ export interface BacktestTrade {
   h1ExternalLiquidityHigh?: number | undefined;
   h1ExternalLiquidityLow?: number | undefined;
   htfStructureReasons?: string | undefined;
+  /** E5.12 MSS / CHoCH V1 execution-TF observation columns (optional; older CSV). */
+  mssChochEnabled?: boolean | undefined;
+  mssDetected?: boolean | undefined;
+  mssDirection?: string | undefined;
+  mssBreakLevel?: number | undefined;
+  mssClosePrice?: number | undefined;
+  mssBarsAfterSweep?: number | undefined;
+  mssBarsBeforeEntry?: number | undefined;
+  mssValidClose?: boolean | undefined;
+  chochDetected?: boolean | undefined;
+  chochDirection?: string | undefined;
+  chochBreakLevel?: number | undefined;
+  chochClosePrice?: number | undefined;
+  chochValidClose?: boolean | undefined;
+  wickBreakOnly?: boolean | undefined;
+  internalSwingHigh?: number | undefined;
+  internalSwingLow?: number | undefined;
+  internalSwingHighAgeBars?: number | undefined;
+  internalSwingLowAgeBars?: number | undefined;
+  mssChochScore?: number | undefined;
+  mssChochReasons?: string | undefined;
 }
 
 export interface BacktestImportWarning {

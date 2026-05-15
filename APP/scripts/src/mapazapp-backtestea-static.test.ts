@@ -86,6 +86,7 @@ test("G — summary flags: IFVG on; daily bias on; tester orders off; pipeline n
   assert.match(src, /\\"has_liquidity_chain_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_liquidity_chain_reaction_audit_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_htf_structure_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /\\"has_mss_choch_v1_logic\\"\s*:\s*true/);
 });
 
 test("H — Daily Bias V1 + gate markers", () => {
@@ -185,6 +186,8 @@ test("Q — samples: summary has_full false; events include setup + virtual flow
   assert.equal(summary["has_liquidity_chain_reaction_audit_v1_logic"], true);
   assert.equal(summary["has_htf_structure_v1_logic"], true);
   assert.equal(summary["htf_structure_enabled"], true);
+  assert.equal(summary["has_mss_choch_v1_logic"], true);
+  assert.equal(summary["mss_choch_enabled"], true);
   assert.equal(summary["score_observation_only"], true);
   assert.equal(summary["score_gate_enabled"], false);
   assert.equal(summary["trade_count"], 3);
@@ -195,6 +198,7 @@ test("Q — samples: summary has_full false; events include setup + virtual flow
   assert.match(events, /virtual_trade_/);
   assert.match(events, /liq_q=/);
   assert.match(events, /htf_en=/);
+  assert.match(events, /msc_en=/);
   const trades = readFileSync(SAMPLE_TRADES_PATH, "utf8").trimEnd().split(/\r?\n/);
   assert.ok(trades.length >= 2);
   assert.ok(trades[0]!.includes("trade_id") && trades[0]!.includes("exit_price"));
@@ -209,6 +213,9 @@ test("Q — samples: summary has_full false; events include setup + virtual flow
   );
   assert.ok(trades[0]!.includes("liquidity_chain_reaction_failure_reason"));
   assert.ok(trades[0]!.includes("htf_structure_score"));
+  assert.ok(trades[0]!.includes("mss_choch_score"));
+  assert.ok(trades[0]!.includes("mss_detected"));
+  assert.ok(trades[0]!.includes("choch_detected"));
   assert.ok(trades[0]!.includes("h4_structure_state"));
   assert.ok(trades[0]!.includes("h1_structure_state"));
   assert.ok(trades[0]!.includes("htf_structure_aligned"));
@@ -289,9 +296,14 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
   assert.match(src, /Mapazapp_TestEA export error: FileMove failed for/);
 });
 
-test("X — E5.11 + E5.10.6 + E5.5.0.5: build marker, HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
+test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_11"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_12"/);
+  assert.match(src, /input bool\s+InpEnableMssChochV1\s*=\s*true/);
+  assert.match(src, /input int\s+InpMssChochSwingLookbackBars\s*=\s*2/);
+  assert.match(src, /input int\s+InpMssChochMaxBars\s*=\s*200/);
+  assert.match(src, /input bool\s+InpMssChochRequireCloseBreak\s*=\s*true/);
+  assert.match(src, /input bool\s+InpMssChochScoreEnabled\s*=\s*true/);
   assert.match(src, /input bool\s+InpEnableHtfStructureV1\s*=\s*true/);
   assert.match(src, /input int\s+InpHtfStructureSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpHtfStructureMaxBars\s*=\s*300/);
@@ -382,6 +394,9 @@ test("Z — E5.8 + E5.10 + E5.10.2 + E5.10.4: score field tokens + liquidity cha
   assert.match(src, /MapzLiquidityClosedReactionWindowOk/);
   assert.match(src, /liquidity_chain_reaction_failure_reason/);
   assert.match(src, /liquidity_chain_reaction_checked_count/);
+  assert.match(src, /has_mss_choch_v1_logic/);
+  assert.match(src, /mss_choch_score/);
+  assert.match(src, /MapzMssChochBuildTradeSnap/);
   assert.match(src, /has_htf_structure_v1_logic/);
   assert.match(src, /htf_structure_score/);
   assert.match(src, /h4_structure_state/);

@@ -1106,6 +1106,123 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_mss_choch_v1_logic"] === true) {
+          if (!("mss_choch_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_MSS_CHOCH_E5_12_KEY",
+                `E5.12: when has_mss_choch_v1_logic is true, summary must include "mss_choch_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else {
+            const men = summaryJson["mss_choch_enabled"];
+            if (typeof men !== "boolean") {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_MSS_CHOCH_E5_12_BOOL",
+                  `E5.12: "mss_choch_enabled" must be a boolean`,
+                  { fileName: sj.fileName, detail: String(men) },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          const mscNumericSummaryKeys = [
+            "mss_detected_count",
+            "bullish_mss_count",
+            "bearish_mss_count",
+            "choch_detected_count",
+            "bullish_choch_count",
+            "bearish_choch_count",
+            "wick_break_only_count",
+            "mss_valid_close_count",
+            "choch_valid_close_count",
+            "mss_aligned_with_trade_count",
+            "mss_against_trade_count",
+            "choch_aligned_with_trade_count",
+            "choch_against_trade_count",
+            "average_mss_choch_score",
+          ] as const;
+          for (const k of mscNumericSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_MSS_CHOCH_E5_12_KEY",
+                  `E5.12: when has_mss_choch_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const v = summaryJson[k];
+              if (typeof v !== "number" || !Number.isFinite(v)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_MSS_CHOCH_E5_12_NUM",
+                    `E5.12: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(v) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const mscCols = [
+              "mss_choch_enabled",
+              "mss_detected",
+              "mss_direction",
+              "mss_break_level",
+              "mss_close_price",
+              "mss_bars_after_sweep",
+              "mss_bars_before_entry",
+              "mss_valid_close",
+              "choch_detected",
+              "choch_direction",
+              "choch_break_level",
+              "choch_close_price",
+              "choch_valid_close",
+              "wick_break_only",
+              "internal_swing_high",
+              "internal_swing_low",
+              "internal_swing_high_age_bars",
+              "internal_swing_low_age_bars",
+              "mss_choch_score",
+              "mss_choch_reasons",
+            ] as const;
+            for (const col of mscCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_MSS_CHOCH_E5_12",
+                    `E5.12: backtest_trades.csv header must include "${col}" when has_mss_choch_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_MSS_CHOCH_HEADER_CHECK",
+                "has_mss_choch_v1_logic is true but backtest_trades.csv missing — cannot verify E5.12 MSS/CHoCH columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

@@ -19,6 +19,7 @@ Ofrecer un analizador **determinista y solo lectura** que, a partir de `backtest
 - Estadísticas por **componente** de score (min/max/media y media por outcome).
 - **E5.10.2:** si el CSV incluye columnas numéricas `liquidity_sweep_quality_score` / subscores, el analizador añade **`liquidity_quality_component_stats`** (misma forma que los componentes principales); los bundles sin esas columnas **no** fallan.
 - **E5.10.4:** si el CSV incluye columnas numéricas `liquidity_chain_score` / barras / distancia a FVG, el analizador añade **`liquidity_chain_component_stats`**; sin esas columnas el análisis principal **no** cambia.
+- **E5.12:** si el CSV incluye columna numérica `mss_choch_score`, el analizador añade **`mss_choch_component_stats`** (forma paralela a otros componentes opcionales); bundles sin esa columna **no** fallan — [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md).
 
 La salida sirve para decidir si el score **separa** resultados y si las bandas altas **reducen** `ambiguous_rate` o mejoran expectancy **antes** de fijar políticas de producto.
 

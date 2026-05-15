@@ -43,7 +43,8 @@
 - **E5.10.7 cerrado (docs):** smoke post–**E5.10.6** — [`LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md`](./LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md); PASS técnico; cadena/reacción **solo diagnóstico** (sin compuerta dura ni live).
 - **E5.11 cerrado (repo):** **HTF Structure V1** observación/export (`MZP_TestEA_E5_11`) — [`HTF_STRUCTURE_EXPORT_E5_11.md`](./HTF_STRUCTURE_EXPORT_E5_11.md); columnas `htf_structure_*`, summary `has_htf_structure_v1_logic`, sufijo eventos `htf_*`; validadores TS + calibración opcional por columna `htf_structure_score`; **sin** gate ni órdenes.
 - **E5.11.1 cerrado (docs):** smoke HTF post–**E5.11** — [`HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md`](./HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md); PASS técnico (`BUNDLE_EVENTS_LARGE` warning); observación-only; sin compuerta/live/EQ threshold.
-- **Siguiente paso canónico:** **E5.12 — MSS / CHoCH V1** — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §C. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte**.
+- **E5.12 cerrado (repo):** **MSS / CHoCH V1** observación/export en timeframe de ejecución (`MZP_TestEA_E5_12`) — [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md); columnas `mss_*` / `choch_*` / `mss_choch_*`; summary `has_mss_choch_v1_logic`; sufijo compacto `msc_en` en eventos; analizador E5.9 opcional por columna `mss_choch_score`; **sin** gate ni órdenes.
+- **Siguiente paso canónico:** **E5.12.1 — MSS / CHoCH smoke evidence** (operador; post–**E5.12**) — [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md). **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte**.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

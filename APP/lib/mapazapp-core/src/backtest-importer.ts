@@ -634,6 +634,116 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     }
     if (htfRsnRaw?.trim()) trade.htfStructureReasons = htfRsnRaw.trim();
 
+    const mscEnRaw = pick(cells, col, "mss_choch_enabled");
+    const mssDetRaw = pick(cells, col, "mss_detected");
+    const mssDirRaw = pick(cells, col, "mss_direction");
+    const mssLvlRaw = pick(cells, col, "mss_break_level");
+    const mssClsRaw = pick(cells, col, "mss_close_price");
+    const mssAfterRaw = pick(cells, col, "mss_bars_after_sweep");
+    const mssBeforeRaw = pick(cells, col, "mss_bars_before_entry");
+    const mssVcRaw = pick(cells, col, "mss_valid_close");
+    const chochDetRaw = pick(cells, col, "choch_detected");
+    const chochDirRaw = pick(cells, col, "choch_direction");
+    const chochLvlRaw = pick(cells, col, "choch_break_level");
+    const chochClsRaw = pick(cells, col, "choch_close_price");
+    const chochVcRaw = pick(cells, col, "choch_valid_close");
+    const wickOnlyRaw = pick(cells, col, "wick_break_only");
+    const ishRaw = pick(cells, col, "internal_swing_high");
+    const islRaw = pick(cells, col, "internal_swing_low");
+    const ishAgeRaw = pick(cells, col, "internal_swing_high_age_bars");
+    const islAgeRaw = pick(cells, col, "internal_swing_low_age_bars");
+    const mscScrRaw = pick(cells, col, "mss_choch_score");
+    const mscRsnRaw = pick(cells, col, "mss_choch_reasons");
+
+    if (mscEnRaw !== undefined && mscEnRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(mscEnRaw, "mss_choch_enabled", rowNum);
+      if (b.ok) trade.mssChochEnabled = b.val;
+      else warnings.push({ code: "CSV_MSC_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (mssDetRaw !== undefined && mssDetRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(mssDetRaw, "mss_detected", rowNum);
+      if (b.ok) trade.mssDetected = b.val;
+      else warnings.push({ code: "CSV_MSC_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (mssDirRaw?.trim()) trade.mssDirection = mssDirRaw.trim();
+    if (mssLvlRaw !== undefined && mssLvlRaw.trim() !== "") {
+      const p = parseNumber(mssLvlRaw, "mss_break_level", rowNum);
+      if (p.ok) trade.mssBreakLevel = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (mssClsRaw !== undefined && mssClsRaw.trim() !== "") {
+      const p = parseNumber(mssClsRaw, "mss_close_price", rowNum);
+      if (p.ok) trade.mssClosePrice = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (mssAfterRaw !== undefined && mssAfterRaw.trim() !== "") {
+      const p = parseNumber(mssAfterRaw, "mss_bars_after_sweep", rowNum);
+      if (p.ok) trade.mssBarsAfterSweep = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (mssBeforeRaw !== undefined && mssBeforeRaw.trim() !== "") {
+      const p = parseNumber(mssBeforeRaw, "mss_bars_before_entry", rowNum);
+      if (p.ok) trade.mssBarsBeforeEntry = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (mssVcRaw !== undefined && mssVcRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(mssVcRaw, "mss_valid_close", rowNum);
+      if (b.ok) trade.mssValidClose = b.val;
+      else warnings.push({ code: "CSV_MSC_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (chochDetRaw !== undefined && chochDetRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(chochDetRaw, "choch_detected", rowNum);
+      if (b.ok) trade.chochDetected = b.val;
+      else warnings.push({ code: "CSV_MSC_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (chochDirRaw?.trim()) trade.chochDirection = chochDirRaw.trim();
+    if (chochLvlRaw !== undefined && chochLvlRaw.trim() !== "") {
+      const p = parseNumber(chochLvlRaw, "choch_break_level", rowNum);
+      if (p.ok) trade.chochBreakLevel = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (chochClsRaw !== undefined && chochClsRaw.trim() !== "") {
+      const p = parseNumber(chochClsRaw, "choch_close_price", rowNum);
+      if (p.ok) trade.chochClosePrice = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (chochVcRaw !== undefined && chochVcRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(chochVcRaw, "choch_valid_close", rowNum);
+      if (b.ok) trade.chochValidClose = b.val;
+      else warnings.push({ code: "CSV_MSC_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (wickOnlyRaw !== undefined && wickOnlyRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(wickOnlyRaw, "wick_break_only", rowNum);
+      if (b.ok) trade.wickBreakOnly = b.val;
+      else warnings.push({ code: "CSV_MSC_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (ishRaw !== undefined && ishRaw.trim() !== "") {
+      const p = parseNumber(ishRaw, "internal_swing_high", rowNum);
+      if (p.ok) trade.internalSwingHigh = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (islRaw !== undefined && islRaw.trim() !== "") {
+      const p = parseNumber(islRaw, "internal_swing_low", rowNum);
+      if (p.ok) trade.internalSwingLow = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (ishAgeRaw !== undefined && ishAgeRaw.trim() !== "") {
+      const p = parseNumber(ishAgeRaw, "internal_swing_high_age_bars", rowNum);
+      if (p.ok) trade.internalSwingHighAgeBars = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (islAgeRaw !== undefined && islAgeRaw.trim() !== "") {
+      const p = parseNumber(islAgeRaw, "internal_swing_low_age_bars", rowNum);
+      if (p.ok) trade.internalSwingLowAgeBars = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (mscScrRaw !== undefined && mscScrRaw.trim() !== "") {
+      const p = parseNumber(mscScrRaw, "mss_choch_score", rowNum);
+      if (p.ok) trade.mssChochScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (mscRsnRaw?.trim()) trade.mssChochReasons = mscRsnRaw.trim();
+
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({
         code: "CSV_GEOMETRY_LONG_SL",

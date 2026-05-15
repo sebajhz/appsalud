@@ -405,6 +405,28 @@ describe("testea-score-calibration", () => {
     expect(p.byTradeId.get("t_htf")?.htf_structure?.htf_structure_score).toBe(14);
   });
 
+  it("parseTradeScoreAuxiliaryByTradeId maps E5.12 mss_choch_score when present", () => {
+    const headers = [
+      "trade_id",
+      "direction",
+      "entry_time",
+      "exit_time",
+      "entry_price",
+      "exit_price",
+      "result_r",
+      "symbol",
+      "strategy_id",
+      "parameter_set_id",
+      "outcome",
+      "entry_quality_score",
+      "mss_choch_score",
+    ].join(",");
+    const row = ["t_msc", "BUY", "2026-01-01T10:00:00Z", "2026-01-01T11:00:00Z", "1", "1", "1", "XAUUSD", "IFVG_X", "SET_SC", "win", "70", "11"].join(",");
+    const p = parseTradeScoreAuxiliaryByTradeId([headers, row].join("\n"));
+    expect(p.hasMssChochScoreColumn).toBe(true);
+    expect(p.byTradeId.get("t_msc")?.mss_choch?.mss_choch_score).toBe(11);
+  });
+
   it("analyzeTestEaScoreCalibrationFromTexts fills liquidity_quality_component_stats when quality columns exist", () => {
     const headers = [
       "trade_id",
@@ -440,6 +462,7 @@ describe("testea-score-calibration", () => {
       "liquidity_chain_sweep_to_setup_bars",
       "liquidity_chain_sweep_to_fvg_bars",
       "liquidity_chain_distance_to_fvg_points",
+      "mss_choch_score",
     ].join(",");
     const row = [
       "t0",
@@ -475,6 +498,7 @@ describe("testea-score-calibration", () => {
       "8",
       "8",
       "50",
+      "12",
     ].join(",");
     const csv = [headers, row].join("\n");
     const r = analyzeTestEaScoreCalibrationFromTexts({
@@ -488,5 +512,6 @@ describe("testea-score-calibration", () => {
     expect(r.liquidity_chain_component_stats?.liquidity_chain_score?.average).toBe(19);
     expect(r.liquidity_chain_component_stats?.liquidity_chain_sweep_to_setup_bars?.min).toBe(8);
     expect(r.htf_structure_component_stats?.htf_structure_score?.average).toBe(18);
+    expect(r.mss_choch_component_stats?.mss_choch_score?.average).toBe(12);
   });
 });

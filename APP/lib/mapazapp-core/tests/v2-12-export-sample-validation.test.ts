@@ -280,6 +280,8 @@ describe("V2-12 export sample validation", () => {
     expect(r.summaryJson?.["has_liquidity_chain_reaction_audit_v1_logic"]).toBe(true);
     expect(r.summaryJson?.["has_htf_structure_v1_logic"]).toBe(true);
     expect(r.summaryJson?.["htf_structure_enabled"]).toBe(true);
+    expect(r.summaryJson?.["has_mss_choch_v1_logic"]).toBe(true);
+    expect(r.summaryJson?.["mss_choch_enabled"]).toBe(true);
     expect(r.summaryOk).toBe(true);
     expect(r.status === "valid" || r.status === "valid_with_warnings").toBe(true);
     expect(r.tradesImport?.ok).toBe(true);
@@ -289,5 +291,7 @@ describe("V2-12 export sample validation", () => {
     expect(r.tradesImport?.trades[0]?.liquidityChainReactionFailureReason).toBe("liquidity_chain_reaction_ok");
     expect(r.tradesImport?.trades[0]?.htfStructureScore).toBe(18);
     expect(r.tradesImport?.trades[0]?.h4StructureState).toBe("bullish_structure");
+    expect(r.tradesImport?.trades[0]?.mssChochScore).toBe(15);
+    expect(r.tradesImport?.trades[0]?.mssDetected).toBe(true);
   });
 });

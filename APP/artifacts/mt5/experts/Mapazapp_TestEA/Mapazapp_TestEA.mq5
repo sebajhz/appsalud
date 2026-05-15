@@ -6,8 +6,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.12"
-#property description "Strategy Tester only: official TestEA. E5.11 HTF Structure V1 (H4/H1 observation/export); Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit + causal chain (observation/export); E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 Entry Quality Score V1 observation-only; E5.5.0.5 short paths + full JSON ids; E5.5.0.3 FileOpen-safe writes (no orders)."
+#property version   "1.13"
+#property description "Strategy Tester only: official TestEA. E5.12 MSS/CHoCH V1 (execution TF observation/export; closed candles); E5.11 HTF Structure V1 (H4/H1 observation/export); Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit + causal chain (observation/export); E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 Entry Quality Score V1 observation-only; E5.5.0.5 short paths + full JSON ids; E5.5.0.3 FileOpen-safe writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -62,7 +62,13 @@ input int               InpHtfStructureSwingLookbackBars = 2;
 input int               InpHtfStructureMaxBars           = 300;
 input bool              InpHtfStructureScoreEnabled     = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_11"
+input bool              InpEnableMssChochV1           = true;
+input int               InpMssChochSwingLookbackBars  = 2;
+input int               InpMssChochMaxBars            = 200;
+input bool              InpMssChochRequireCloseBreak  = true;
+input bool              InpMssChochScoreEnabled       = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_12"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -229,6 +235,21 @@ long            g_htf_h1_bear = 0;
 long            g_htf_h1_range = 0;
 long            g_htf_h1_trans = 0;
 
+double          g_mss_choch_sum_score = 0.0;
+long            g_mss_detected_count = 0;
+long            g_mss_bullish_count = 0;
+long            g_mss_bearish_count = 0;
+long            g_choch_detected_count = 0;
+long            g_choch_bullish_count = 0;
+long            g_choch_bearish_count = 0;
+long            g_wick_break_only_count = 0;
+long            g_mss_valid_close_count = 0;
+long            g_choch_valid_close_count = 0;
+long            g_mss_aligned_with_trade_count = 0;
+long            g_mss_against_trade_count = 0;
+long            g_choch_aligned_with_trade_count = 0;
+long            g_choch_against_trade_count = 0;
+
 struct MapzHtfTradeSnap
   {
    bool              enabled;
@@ -248,6 +269,30 @@ struct MapzHtfTradeSnap
    double            h1_external_liquidity_high;
    double            h1_external_liquidity_low;
    string            htf_structure_reasons;
+  };
+
+struct MapzMssChochTradeSnap
+  {
+   bool              enabled;
+   bool              mss_detected;
+   string            mss_direction;
+   double            mss_break_level;
+   double            mss_close_price;
+   int               mss_bars_after_sweep;
+   int               mss_bars_before_entry;
+   bool              mss_valid_close;
+   bool              choch_detected;
+   string            choch_direction;
+   double            choch_break_level;
+   double            choch_close_price;
+   bool              choch_valid_close;
+   bool              wick_break_only;
+   double            internal_swing_high;
+   double            internal_swing_low;
+   int               internal_swing_high_age_bars;
+   int               internal_swing_low_age_bars;
+   int               mss_choch_score;
+   string            mss_choch_reasons;
   };
 
 struct MapzLiquiditySnapshot
@@ -338,6 +383,7 @@ struct MapzVirtualTrade
    string               setup_reason_tag;
    MapzLiquiditySnapshot liq;
    MapzHtfTradeSnap     htf;
+   MapzMssChochTradeSnap msc;
   };
 
 MapzVirtualTrade g_vt;
@@ -2519,6 +2565,692 @@ void MapzHtfBuildTradeSnap(const string sym, const ENUM_MAPZ_SETUP_DIR dir, cons
   }
 
 //+------------------------------------------------------------------+
+bool MapzMscIsSwingHigh(const string sym, const ENUM_TIMEFRAMES tf, const int s, const int N)
+  {
+   const int bars = Bars(sym, tf);
+   if(bars <= 0 || s < 1 || (s + N) >= bars || (s - N) < 1)
+      return false;
+   const double h = iHigh(sym, tf, s);
+   for(int k = 1; k <= N; k++)
+     {
+      if(iHigh(sym, tf, s - k) >= h)
+         return false;
+      if(iHigh(sym, tf, s + k) >= h)
+         return false;
+     }
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzMscIsSwingLow(const string sym, const ENUM_TIMEFRAMES tf, const int s, const int N)
+  {
+   const int bars = Bars(sym, tf);
+   if(bars <= 0 || s < 1 || (s + N) >= bars || (s - N) < 1)
+      return false;
+   const double lv = iLow(sym, tf, s);
+   for(int k = 1; k <= N; k++)
+     {
+      if(iLow(sym, tf, s - k) <= lv)
+         return false;
+      if(iLow(sym, tf, s + k) <= lv)
+         return false;
+     }
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzMscFindLatestSwingHigh(const string sym,
+                                const ENUM_TIMEFRAMES tf,
+                                const int refShift,
+                                const int N,
+                                const int maxSpan,
+                                int &outShift,
+                                double &outPrice)
+  {
+   outShift = -1;
+   outPrice = 0.0;
+   const int bars = Bars(sym, tf);
+   if(bars <= 0 || refShift < 1 || N < 1)
+      return false;
+   const int lim = MathMin(refShift + maxSpan, bars - N - 1);
+   for(int ps = refShift + N + 1; ps <= lim; ps++)
+     {
+      if(ps + N >= bars)
+         continue;
+      if(MapzMscIsSwingHigh(sym, tf, ps, N))
+        {
+         outShift = ps;
+         outPrice = iHigh(sym, tf, ps);
+         return true;
+        }
+     }
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzMscFindLatestSwingLow(const string sym,
+                               const ENUM_TIMEFRAMES tf,
+                               const int refShift,
+                               const int N,
+                               const int maxSpan,
+                               int &outShift,
+                               double &outPrice)
+  {
+   outShift = -1;
+   outPrice = 0.0;
+   const int bars = Bars(sym, tf);
+   if(bars <= 0 || refShift < 1 || N < 1)
+      return false;
+   const int lim = MathMin(refShift + maxSpan, bars - N - 1);
+   for(int ps = refShift + N + 1; ps <= lim; ps++)
+     {
+      if(ps + N >= bars)
+         continue;
+      if(MapzMscIsSwingLow(sym, tf, ps, N))
+        {
+         outShift = ps;
+         outPrice = iLow(sym, tf, ps);
+         return true;
+        }
+     }
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+void MapzMscSnapClear(MapzMssChochTradeSnap &o)
+  {
+   o.enabled = false;
+   o.mss_detected = false;
+   o.mss_direction = "none";
+   o.mss_break_level = 0.0;
+   o.mss_close_price = 0.0;
+   o.mss_bars_after_sweep = -1;
+   o.mss_bars_before_entry = -1;
+   o.mss_valid_close = false;
+   o.choch_detected = false;
+   o.choch_direction = "none";
+   o.choch_break_level = 0.0;
+   o.choch_close_price = 0.0;
+   o.choch_valid_close = false;
+   o.wick_break_only = false;
+   o.internal_swing_high = 0.0;
+   o.internal_swing_low = 0.0;
+   o.internal_swing_high_age_bars = -1;
+   o.internal_swing_low_age_bars = -1;
+   o.mss_choch_score = 0;
+   o.mss_choch_reasons = "";
+  }
+
+//+------------------------------------------------------------------+
+bool MapzMscCtxBullishMssAlignedLong(const ENUM_MAPZ_BIAS bias, const MapzLiquiditySnapshot &liq)
+  {
+   if(bias == MAPZ_BIAS_BEARISH || bias == MAPZ_BIAS_NEUTRAL || bias == MAPZ_BIAS_UNKNOWN)
+      return true;
+   if(liq.detected)
+      return true;
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzMscCtxBearishMssAgainstLong(const ENUM_MAPZ_BIAS bias, const MapzLiquiditySnapshot &liq)
+  {
+   if(bias == MAPZ_BIAS_BULLISH || bias == MAPZ_BIAS_NEUTRAL || bias == MAPZ_BIAS_UNKNOWN)
+      return true;
+   if(liq.detected)
+      return true;
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzMscCtxBearishMssAlignedShort(const ENUM_MAPZ_BIAS bias, const MapzLiquiditySnapshot &liq)
+  {
+   if(bias == MAPZ_BIAS_BULLISH || bias == MAPZ_BIAS_NEUTRAL || bias == MAPZ_BIAS_UNKNOWN)
+      return true;
+   if(liq.detected)
+      return true;
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzMscCtxBullishMssAgainstShort(const ENUM_MAPZ_BIAS bias, const MapzLiquiditySnapshot &liq)
+  {
+   if(bias == MAPZ_BIAS_BEARISH || bias == MAPZ_BIAS_NEUTRAL || bias == MAPZ_BIAS_UNKNOWN)
+      return true;
+   if(liq.detected)
+      return true;
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+void MapzMscFinalizeScore(MapzMssChochTradeSnap &o,
+                          const ENUM_MAPZ_SETUP_DIR dir,
+                          const bool saw_wick_touch_break_level)
+  {
+   const bool longDir = (dir == MAPZ_SETUP_LONG);
+   const bool shortDir = (dir == MAPZ_SETUP_SHORT);
+
+   bool aligned_mss = false;
+   if(o.mss_detected && o.mss_valid_close)
+     {
+      if(longDir && o.mss_direction == "bullish")
+         aligned_mss = true;
+      else if(shortDir && o.mss_direction == "bearish")
+         aligned_mss = true;
+     }
+
+   bool aligned_choch = false;
+   if(o.choch_detected && o.choch_valid_close && !o.mss_detected)
+     {
+      if(longDir && o.choch_direction == "bullish")
+         aligned_choch = true;
+      else if(shortDir && o.choch_direction == "bearish")
+         aligned_choch = true;
+     }
+
+   o.wick_break_only = (saw_wick_touch_break_level && (!o.mss_valid_close && !o.choch_valid_close));
+
+   if(!InpMssChochScoreEnabled)
+     {
+      o.mss_choch_score = 0;
+      MapzHtfAppendToken(o.mss_choch_reasons, "mss_choch_score_disabled");
+      return;
+     }
+
+   int sc = 0;
+   if(StringFind(o.mss_choch_reasons, "insufficient_internal_swings") >= 0)
+     {
+      sc = 5;
+     }
+   else if(o.mss_detected && o.mss_valid_close)
+     {
+      sc = (aligned_mss ? 15 : 4);
+      MapzHtfAppendToken(o.mss_choch_reasons, aligned_mss ? "mss_aligned_with_trade" : "mss_against_trade");
+      MapzHtfAppendToken(o.mss_choch_reasons, "mss_valid_close");
+     }
+   else if(o.choch_detected && o.choch_valid_close)
+     {
+      sc = (aligned_choch ? 10 : 4);
+      MapzHtfAppendToken(o.mss_choch_reasons, aligned_choch ? "choch_aligned_with_trade" : "choch_against_trade");
+      MapzHtfAppendToken(o.mss_choch_reasons, "choch_valid_close");
+     }
+   else if(o.wick_break_only)
+     {
+      sc = 3;
+      MapzHtfAppendToken(o.mss_choch_reasons, "wick_break_only");
+     }
+   else if(sc == 0)
+     {
+      sc = 6;
+      MapzHtfAppendToken(o.mss_choch_reasons, "mss_not_found");
+      MapzHtfAppendToken(o.mss_choch_reasons, "choch_not_found");
+      MapzHtfAppendToken(o.mss_choch_reasons, "structure_confirmation_unknown");
+     }
+
+   if(sc > 15)
+      sc = 15;
+   if(sc < 0)
+      sc = 0;
+   o.mss_choch_score = sc;
+  }
+
+//+------------------------------------------------------------------+
+void MapzMssChochBuildTradeSnap(const string sym,
+                                const ENUM_TIMEFRAMES tf,
+                                const ENUM_MAPZ_SETUP_DIR dir,
+                                const ENUM_MAPZ_BIAS bias,
+                                const MapzLiquiditySnapshot &liq,
+                                const datetime setupTime,
+                                MapzMssChochTradeSnap &out)
+  {
+   MapzMscSnapClear(out);
+   out.enabled = InpEnableMssChochV1;
+   if(!InpEnableMssChochV1)
+     {
+      MapzHtfAppendToken(out.mss_choch_reasons, "mss_choch_disabled");
+      out.mss_choch_score = 0;
+      if(InpMssChochScoreEnabled)
+         MapzHtfAppendToken(out.mss_choch_reasons, "mss_choch_score_disabled");
+      return;
+     }
+
+   const int refShift = iBarShift(sym, tf, setupTime, false);
+   if(refShift < 1)
+     {
+      MapzHtfAppendToken(out.mss_choch_reasons, "structure_confirmation_unknown");
+      out.mss_choch_score = (InpMssChochScoreEnabled ? 5 : 0);
+      if(InpMssChochScoreEnabled)
+         MapzHtfAppendToken(out.mss_choch_reasons, "break_level_missing");
+      return;
+     }
+
+   int Nmaj = InpMssChochSwingLookbackBars;
+   if(Nmaj < 1)
+      Nmaj = 1;
+   if(Nmaj > 5)
+      Nmaj = 5;
+   int Nmin = Nmaj - 1;
+   if(Nmin < 1)
+      Nmin = 1;
+
+   int mx = InpMssChochMaxBars;
+   if(mx < 40)
+      mx = 40;
+
+   int phShift = -1, plShift = -1;
+   double phPrice = 0.0, plPrice = 0.0;
+   const bool hasHigh = MapzMscFindLatestSwingHigh(sym, tf, refShift, Nmaj, mx, phShift, phPrice);
+   const bool hasLow = MapzMscFindLatestSwingLow(sym, tf, refShift, Nmaj, mx, plShift, plPrice);
+
+   out.internal_swing_high = phPrice;
+   out.internal_swing_low = plPrice;
+   out.internal_swing_high_age_bars = (hasHigh ? phShift - refShift : -1);
+   out.internal_swing_low_age_bars = (hasLow ? plShift - refShift : -1);
+
+   if(!hasHigh && !hasLow)
+     {
+      MapzHtfAppendToken(out.mss_choch_reasons, "insufficient_internal_swings");
+      MapzMscFinalizeScore(out, dir, false);
+      return;
+     }
+
+   int mhMinShift = -1;
+   double mhMinPrice = 0.0;
+   const bool hasMinorHigh = MapzMscFindLatestSwingHigh(sym, tf, refShift, Nmin, mx, mhMinShift, mhMinPrice);
+
+   int mlMinShift = -1;
+   double mlMinPrice = 0.0;
+   const bool hasMinorLow = MapzMscFindLatestSwingLow(sym, tf, refShift, Nmin, mx, mlMinShift, mlMinPrice);
+
+   bool saw_wick = false;
+
+   const bool reqClose = InpMssChochRequireCloseBreak;
+
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      bool bull_ok = false;
+      int brk = -1;
+      double brkCls = 0.0;
+      if(hasHigh && MapzMscCtxBullishMssAlignedLong(bias, liq))
+        {
+         for(int k = refShift; k >= 1; k--)
+           {
+            if(k >= phShift)
+               continue;
+            const double hi = iHigh(sym, tf, k);
+            const double cl = iClose(sym, tf, k);
+            if(reqClose)
+              {
+               if(hi > phPrice && cl <= phPrice)
+                  saw_wick = true;
+               if(cl > phPrice)
+                 {
+                  bull_ok = true;
+                  brk = k;
+                  brkCls = cl;
+                  break;
+                 }
+              }
+            else
+              {
+               if(hi > phPrice)
+                 {
+                  bull_ok = true;
+                  brk = k;
+                  brkCls = cl;
+                  break;
+                 }
+              }
+           }
+        }
+
+      bool bear_against = false;
+      int brkB = -1;
+      double brkClsB = 0.0;
+      if(!bull_ok && hasLow && MapzMscCtxBearishMssAgainstLong(bias, liq))
+        {
+         for(int k = refShift; k >= 1; k--)
+           {
+            if(k >= plShift)
+               continue;
+            const double lo = iLow(sym, tf, k);
+            const double cl = iClose(sym, tf, k);
+            if(reqClose)
+              {
+               if(lo < plPrice && cl >= plPrice)
+                  saw_wick = true;
+               if(cl < plPrice)
+                 {
+                  bear_against = true;
+                  brkB = k;
+                  brkClsB = cl;
+                  break;
+                 }
+              }
+            else
+              {
+               if(lo < plPrice)
+                 {
+                  bear_against = true;
+                  brkB = k;
+                  brkClsB = cl;
+                  break;
+                 }
+              }
+           }
+        }
+
+      if(bull_ok)
+        {
+         out.mss_detected = true;
+         out.mss_direction = "bullish";
+         out.mss_break_level = phPrice;
+         out.mss_close_price = brkCls;
+         out.mss_valid_close = true;
+         if(liq.sweep_bar_shift >= 0 && brk >= 0)
+            out.mss_bars_after_sweep = MathAbs(liq.sweep_bar_shift - brk);
+         else
+            out.mss_bars_after_sweep = -1;
+         out.mss_bars_before_entry = (brk >= 0 ? refShift - brk : -1);
+        }
+      else if(bear_against)
+        {
+         out.mss_detected = true;
+         out.mss_direction = "bearish";
+         out.mss_break_level = plPrice;
+         out.mss_close_price = brkClsB;
+         out.mss_valid_close = true;
+         if(liq.sweep_bar_shift >= 0 && brkB >= 0)
+            out.mss_bars_after_sweep = MathAbs(liq.sweep_bar_shift - brkB);
+         else
+            out.mss_bars_after_sweep = -1;
+         out.mss_bars_before_entry = (brkB >= 0 ? refShift - brkB : -1);
+        }
+
+      if(!out.mss_detected && hasMinorHigh && mhMinShift >= 0 && mhMinShift != phShift)
+        {
+         bool ch_ok = false;
+         int ck = -1;
+         double ccls = 0.0;
+         for(int k = refShift; k >= 1; k--)
+           {
+            if(k >= mhMinShift)
+               continue;
+            const double hi = iHigh(sym, tf, k);
+            const double cl = iClose(sym, tf, k);
+            if(reqClose)
+              {
+               if(hi > mhMinPrice && cl <= mhMinPrice)
+                  saw_wick = true;
+               if(cl > mhMinPrice)
+                 {
+                  ch_ok = true;
+                  ck = k;
+                  ccls = cl;
+                  break;
+                 }
+              }
+            else if(hi > mhMinPrice)
+              {
+               ch_ok = true;
+               ck = k;
+               ccls = cl;
+               break;
+              }
+           }
+         if(ch_ok)
+           {
+            out.choch_detected = true;
+            out.choch_direction = "bullish";
+            out.choch_break_level = mhMinPrice;
+            out.choch_close_price = ccls;
+            out.choch_valid_close = true;
+           }
+        }
+
+      if(!out.mss_detected && !out.choch_detected && hasMinorLow && mlMinShift >= 0 && mlMinShift != plShift)
+        {
+         bool ch_bad = false;
+         int ck = -1;
+         double ccls = 0.0;
+         for(int k = refShift; k >= 1; k--)
+           {
+            if(k >= mlMinShift)
+               continue;
+            const double lo = iLow(sym, tf, k);
+            const double cl = iClose(sym, tf, k);
+            if(reqClose)
+              {
+               if(lo < mlMinPrice && cl >= mlMinPrice)
+                  saw_wick = true;
+               if(cl < mlMinPrice)
+                 {
+                  ch_bad = true;
+                  ck = k;
+                  ccls = cl;
+                  break;
+                 }
+              }
+            else if(lo < mlMinPrice)
+              {
+               ch_bad = true;
+               ck = k;
+               ccls = cl;
+               break;
+              }
+           }
+         if(ch_bad)
+           {
+            out.choch_detected = true;
+            out.choch_direction = "bearish";
+            out.choch_break_level = mlMinPrice;
+            out.choch_close_price = ccls;
+            out.choch_valid_close = true;
+           }
+        }
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      bool bear_ok = false;
+      int brk = -1;
+      double brkCls = 0.0;
+      if(hasLow && MapzMscCtxBearishMssAlignedShort(bias, liq))
+        {
+         for(int k = refShift; k >= 1; k--)
+           {
+            if(k >= plShift)
+               continue;
+            const double lo = iLow(sym, tf, k);
+            const double cl = iClose(sym, tf, k);
+            if(reqClose)
+              {
+               if(lo < plPrice && cl >= plPrice)
+                  saw_wick = true;
+               if(cl < plPrice)
+                 {
+                  bear_ok = true;
+                  brk = k;
+                  brkCls = cl;
+                  break;
+                 }
+              }
+            else
+              {
+               if(lo < plPrice)
+                 {
+                  bear_ok = true;
+                  brk = k;
+                  brkCls = cl;
+                  break;
+                 }
+              }
+           }
+        }
+
+      bool bull_against = false;
+      int brkB = -1;
+      double brkClsB = 0.0;
+      if(!bear_ok && hasHigh && MapzMscCtxBullishMssAgainstShort(bias, liq))
+        {
+         for(int k = refShift; k >= 1; k--)
+           {
+            if(k >= phShift)
+               continue;
+            const double hi = iHigh(sym, tf, k);
+            const double cl = iClose(sym, tf, k);
+            if(reqClose)
+              {
+               if(hi > phPrice && cl <= phPrice)
+                  saw_wick = true;
+               if(cl > phPrice)
+                 {
+                  bull_against = true;
+                  brkB = k;
+                  brkClsB = cl;
+                  break;
+                 }
+              }
+            else
+              {
+               if(hi > phPrice)
+                 {
+                  bull_against = true;
+                  brkB = k;
+                  brkClsB = cl;
+                  break;
+                 }
+              }
+           }
+        }
+
+      if(bear_ok)
+        {
+         out.mss_detected = true;
+         out.mss_direction = "bearish";
+         out.mss_break_level = plPrice;
+         out.mss_close_price = brkCls;
+         out.mss_valid_close = true;
+         if(liq.sweep_bar_shift >= 0 && brk >= 0)
+            out.mss_bars_after_sweep = MathAbs(liq.sweep_bar_shift - brk);
+         else
+            out.mss_bars_after_sweep = -1;
+         out.mss_bars_before_entry = (brk >= 0 ? refShift - brk : -1);
+        }
+      else if(bull_against)
+        {
+         out.mss_detected = true;
+         out.mss_direction = "bullish";
+         out.mss_break_level = phPrice;
+         out.mss_close_price = brkClsB;
+         out.mss_valid_close = true;
+         if(liq.sweep_bar_shift >= 0 && brkB >= 0)
+            out.mss_bars_after_sweep = MathAbs(liq.sweep_bar_shift - brkB);
+         else
+            out.mss_bars_after_sweep = -1;
+         out.mss_bars_before_entry = (brkB >= 0 ? refShift - brkB : -1);
+        }
+
+      if(!out.mss_detected && hasMinorLow && mlMinShift >= 0 && mlMinShift != plShift)
+        {
+         bool ch_ok = false;
+         int ck = -1;
+         double ccls = 0.0;
+         for(int k = refShift; k >= 1; k--)
+           {
+            if(k >= mlMinShift)
+               continue;
+            const double lo = iLow(sym, tf, k);
+            const double cl = iClose(sym, tf, k);
+            if(reqClose)
+              {
+               if(lo < mlMinPrice && cl >= mlMinPrice)
+                  saw_wick = true;
+               if(cl < mlMinPrice)
+                 {
+                  ch_ok = true;
+                  ck = k;
+                  ccls = cl;
+                  break;
+                 }
+              }
+            else if(lo < mlMinPrice)
+              {
+               ch_ok = true;
+               ck = k;
+               ccls = cl;
+               break;
+              }
+           }
+         if(ch_ok)
+           {
+            out.choch_detected = true;
+            out.choch_direction = "bearish";
+            out.choch_break_level = mlMinPrice;
+            out.choch_close_price = ccls;
+            out.choch_valid_close = true;
+           }
+        }
+
+      if(!out.mss_detected && !out.choch_detected && hasMinorHigh && mhMinShift >= 0 && mhMinShift != phShift)
+        {
+         bool ch_bad = false;
+         int ck = -1;
+         double ccls = 0.0;
+         for(int k = refShift; k >= 1; k--)
+           {
+            if(k >= mhMinShift)
+               continue;
+            const double hi = iHigh(sym, tf, k);
+            const double cl = iClose(sym, tf, k);
+            if(reqClose)
+              {
+               if(hi > mhMinPrice && cl <= mhMinPrice)
+                  saw_wick = true;
+               if(cl > mhMinPrice)
+                 {
+                  ch_bad = true;
+                  ck = k;
+                  ccls = cl;
+                  break;
+                 }
+              }
+            else if(hi > mhMinPrice)
+              {
+               ch_bad = true;
+               ck = k;
+               ccls = cl;
+               break;
+              }
+           }
+         if(ch_bad)
+           {
+            out.choch_detected = true;
+            out.choch_direction = "bullish";
+            out.choch_break_level = mhMinPrice;
+            out.choch_close_price = ccls;
+            out.choch_valid_close = true;
+           }
+        }
+     }
+
+   MapzMscFinalizeScore(out, dir, saw_wick);
+  }
+
+//+------------------------------------------------------------------+
+string MapzMscCompactSuffix(const MapzMssChochTradeSnap &m)
+  {
+   const string dirW = (m.mss_detected ? m.mss_direction : (m.choch_detected ? m.choch_direction : "none"));
+   const bool vc = (m.mss_valid_close || m.choch_valid_close);
+   return StringFormat("msc_en=%s mss=%d choch=%d dir=%s valid_close=%s wick_only=%s score=%d",
+                       (m.enabled ? "true" : "false"),
+                       (m.mss_detected ? 1 : 0),
+                       (m.choch_detected ? 1 : 0),
+                       JsonStringEscape(dirW),
+                       (vc ? "true" : "false"),
+                       (m.wick_break_only ? "true" : "false"),
+                       m.mss_choch_score);
+  }
+
+//+------------------------------------------------------------------+
 void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
                                   const ENUM_MAPZ_BIAS biasEnum,
                                   const long fvgPts,
@@ -2872,7 +3604,7 @@ string VirtualBuildDetailsCore(void)
              g_vt.bars_waiting_entry,
              g_vt.bars_held,
              JsonStringEscape(g_vt.exit_reason));
-   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf);
+   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc);
   }
 
 //+------------------------------------------------------------------+
@@ -3013,6 +3745,26 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + DoubleToString(g_vt.htf.h1_external_liquidity_high, _Digits)
           + "," + DoubleToString(g_vt.htf.h1_external_liquidity_low, _Digits)
           + "," + g_vt.htf.htf_structure_reasons
+          + "," + (g_vt.msc.enabled ? "true" : "false")
+          + "," + (g_vt.msc.mss_detected ? "true" : "false")
+          + "," + g_vt.msc.mss_direction
+          + "," + DoubleToString(g_vt.msc.mss_break_level, _Digits)
+          + "," + DoubleToString(g_vt.msc.mss_close_price, _Digits)
+          + "," + IntegerToString(g_vt.msc.mss_bars_after_sweep)
+          + "," + IntegerToString(g_vt.msc.mss_bars_before_entry)
+          + "," + (g_vt.msc.mss_valid_close ? "true" : "false")
+          + "," + (g_vt.msc.choch_detected ? "true" : "false")
+          + "," + g_vt.msc.choch_direction
+          + "," + DoubleToString(g_vt.msc.choch_break_level, _Digits)
+          + "," + DoubleToString(g_vt.msc.choch_close_price, _Digits)
+          + "," + (g_vt.msc.choch_valid_close ? "true" : "false")
+          + "," + (g_vt.msc.wick_break_only ? "true" : "false")
+          + "," + DoubleToString(g_vt.msc.internal_swing_high, _Digits)
+          + "," + DoubleToString(g_vt.msc.internal_swing_low, _Digits)
+          + "," + IntegerToString(g_vt.msc.internal_swing_high_age_bars)
+          + "," + IntegerToString(g_vt.msc.internal_swing_low_age_bars)
+          + "," + IntegerToString(g_vt.msc.mss_choch_score)
+          + "," + g_vt.msc.mss_choch_reasons
           + "," + eqp.session_bucket
           + "," + eqp.trade_window_status
           + "," + eqp.spread_status
@@ -3154,6 +3906,51 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
          g_htf_h1_trans++;
      }
 
+   if(g_vt.msc.enabled)
+     {
+      g_mss_choch_sum_score += (double)g_vt.msc.mss_choch_score;
+      if(g_vt.msc.wick_break_only)
+         g_wick_break_only_count++;
+      if(g_vt.msc.mss_valid_close)
+         g_mss_valid_close_count++;
+      if(g_vt.msc.choch_valid_close)
+         g_choch_valid_close_count++;
+      if(g_vt.msc.mss_detected)
+        {
+         g_mss_detected_count++;
+         if(g_vt.msc.mss_direction == "bullish")
+            g_mss_bullish_count++;
+         else if(g_vt.msc.mss_direction == "bearish")
+            g_mss_bearish_count++;
+         if(g_vt.msc.mss_valid_close)
+           {
+            const bool msAl = (g_vt.dir == MAPZ_SETUP_LONG && g_vt.msc.mss_direction == "bullish")
+                           || (g_vt.dir == MAPZ_SETUP_SHORT && g_vt.msc.mss_direction == "bearish");
+            if(msAl)
+               g_mss_aligned_with_trade_count++;
+            else
+               g_mss_against_trade_count++;
+           }
+        }
+      if(g_vt.msc.choch_detected && !g_vt.msc.mss_detected)
+        {
+         g_choch_detected_count++;
+         if(g_vt.msc.choch_direction == "bullish")
+            g_choch_bullish_count++;
+         else if(g_vt.msc.choch_direction == "bearish")
+            g_choch_bearish_count++;
+         if(g_vt.msc.choch_valid_close)
+           {
+            const bool chAl = (g_vt.dir == MAPZ_SETUP_LONG && g_vt.msc.choch_direction == "bullish")
+                           || (g_vt.dir == MAPZ_SETUP_SHORT && g_vt.msc.choch_direction == "bearish");
+            if(chAl)
+               g_choch_aligned_with_trade_count++;
+            else
+               g_choch_against_trade_count++;
+           }
+        }
+     }
+
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
    g_tradesDataLines += row;
@@ -3169,6 +3966,7 @@ void VirtualClearTrade(void)
    g_vt.bars_held = 0;
    MapzLiquiditySnapshotClear(g_vt.liq);
    MapzHtfSnapClear(g_vt.htf);
+   MapzMscSnapClear(g_vt.msc);
   }
 
 //+------------------------------------------------------------------+
@@ -3373,6 +4171,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    g_vt.setup_reason_tag = setupGeomReason;
    MapzLiquiditySnapshotCopy(g_vt.liq, liqInit);
    MapzHtfBuildTradeSnap(g_brokerSymbol, sdir, g_lastBiasEnum, g_vt.htf);
+   MapzMssChochBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, g_lastBiasEnum, liqInit, cTime, g_vt.msc);
 
    g_virtual_trade_count++;
    const string detC = VirtualBuildDetailsCore();
@@ -3702,7 +4501,9 @@ void TryDetectIfvgOnNewExecClosedBar(void)
          MapzHtfBuildTradeSnap(g_brokerSymbol, sdir, g_lastBiasEnum, htfPrev);
          MapzEqScorePack eqSetup;
          MapzEqComputeScoresFromState(sdir, g_lastBiasEnum, fvgPtsP, entP, slP, tpP, rAbsP, false, "", liqWork, htfPrev, eqSetup);
-         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev);
+         MapzMssChochTradeSnap mscPrev;
+         MapzMssChochBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, g_lastBiasEnum, liqWork, cTime, mscPrev);
+         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev) + " " + MapzMscCompactSuffix(mscPrev);
         }
       const string evAllow = ExportSetupEvent(EVT_SETUP_ALLOWED, setupW, gate, "daily_bias_aligned", detA);
       VirtualOnSetupAllowed(evAllow, setupW, sdir, fLo, fHi, gapPts, cTime, rsn, liqWork);
@@ -3766,7 +4567,7 @@ void RefreshSetupSummaryNotes(void)
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    const long tcRows = g_trades_csv_row_count;
    g_exportNotes = StringFormat(
-                       "E5.11 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); "
+                       "E5.12 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); mss_choch_v1_exec_tf=%s (observation-only; closed candles; no gate); "
                        "setup_inputs: enable=%s min_fvg_pts=%d virtual_min_trade_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
@@ -3776,6 +4577,7 @@ void RefreshSetupSummaryNotes(void)
                        (InpEnableLiquiditySweepDetection ? "on" : "off"),
                        (InpEntryQualityScoreEnabled ? "on" : "off"),
                        (InpEnableHtfStructureV1 ? "on" : "off"),
+                       (InpEnableMssChochV1 ? "on" : "off"),
                        (InpEnableSetupDetection ? "true" : "false"),
                        InpMinFvgPoints,
                        InpVirtualMinTradeFvgPoints,
@@ -3831,6 +4633,7 @@ string WriteSummaryJson(void)
    json += "  \"has_liquidity_chain_v1_logic\": true,\r\n";
    json += "  \"has_liquidity_chain_reaction_audit_v1_logic\": true,\r\n";
    json += "  \"has_htf_structure_v1_logic\": true,\r\n";
+   json += "  \"has_mss_choch_v1_logic\": true,\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
    json += "  \"score_gate_enabled\": false,\r\n";
@@ -3838,6 +4641,7 @@ string WriteSummaryJson(void)
    json += "  \"liquidity_sweep_detection_enabled\": " + (InpEnableLiquiditySweepDetection ? "true" : "false") + ",\r\n";
    json += "  \"liquidity_sweep_score_enabled\": " + (InpLiquiditySweepScoreEnabled ? "true" : "false") + ",\r\n";
    json += "  \"htf_structure_enabled\": " + (InpEnableHtfStructureV1 ? "true" : "false") + ",\r\n";
+   json += "  \"mss_choch_enabled\": " + (InpEnableMssChochV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_real_trading_orders\": false,\r\n";
    json += StringFormat("  \"trade_count\": %I64d,\r\n", tcRows);
    json += StringFormat("  \"virtual_trade_count\": %I64d,\r\n", g_virtual_trade_count);
@@ -3954,6 +4758,21 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"htf_structure_h1_range_count\": %I64d,\r\n", g_htf_h1_range);
    json += StringFormat("  \"htf_structure_h1_transition_count\": %I64d,\r\n", g_htf_h1_trans);
    json += StringFormat("  \"average_htf_structure_score\": %.6f,\r\n", avgHtfStruct);
+   const double avgMsc = (tcRows > 0 ? g_mss_choch_sum_score / (double)tcRows : 0.0);
+   json += StringFormat("  \"mss_detected_count\": %I64d,\r\n", g_mss_detected_count);
+   json += StringFormat("  \"bullish_mss_count\": %I64d,\r\n", g_mss_bullish_count);
+   json += StringFormat("  \"bearish_mss_count\": %I64d,\r\n", g_mss_bearish_count);
+   json += StringFormat("  \"choch_detected_count\": %I64d,\r\n", g_choch_detected_count);
+   json += StringFormat("  \"bullish_choch_count\": %I64d,\r\n", g_choch_bullish_count);
+   json += StringFormat("  \"bearish_choch_count\": %I64d,\r\n", g_choch_bearish_count);
+   json += StringFormat("  \"wick_break_only_count\": %I64d,\r\n", g_wick_break_only_count);
+   json += StringFormat("  \"mss_valid_close_count\": %I64d,\r\n", g_mss_valid_close_count);
+   json += StringFormat("  \"choch_valid_close_count\": %I64d,\r\n", g_choch_valid_close_count);
+   json += StringFormat("  \"mss_aligned_with_trade_count\": %I64d,\r\n", g_mss_aligned_with_trade_count);
+   json += StringFormat("  \"mss_against_trade_count\": %I64d,\r\n", g_mss_against_trade_count);
+   json += StringFormat("  \"choch_aligned_with_trade_count\": %I64d,\r\n", g_choch_aligned_with_trade_count);
+   json += StringFormat("  \"choch_against_trade_count\": %I64d,\r\n", g_choch_against_trade_count);
+   json += StringFormat("  \"average_mss_choch_score\": %.6f,\r\n", avgMsc);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -3975,7 +4794,12 @@ string WriteSummaryJson(void)
    json += "    \"htf_structure_v1_enabled\": " + (InpEnableHtfStructureV1 ? "true" : "false") + ",\r\n";
    json += StringFormat("    \"htf_structure_swing_lookback_bars\": %d,\r\n", InpHtfStructureSwingLookbackBars);
    json += StringFormat("    \"htf_structure_max_bars\": %d,\r\n", InpHtfStructureMaxBars);
-   json += "    \"htf_structure_score_enabled\": " + (InpHtfStructureScoreEnabled ? "true" : "false") + "\r\n";
+   json += "    \"htf_structure_score_enabled\": " + (InpHtfStructureScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"mss_choch_v1_enabled\": " + (InpEnableMssChochV1 ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"mss_choch_swing_lookback_bars\": %d,\r\n", InpMssChochSwingLookbackBars);
+   json += StringFormat("    \"mss_choch_max_bars\": %d,\r\n", InpMssChochMaxBars);
+   json += "    \"mss_choch_require_close_break\": " + (InpMssChochRequireCloseBreak ? "true" : "false") + ",\r\n";
+   json += "    \"mss_choch_score_enabled\": " + (InpMssChochScoreEnabled ? "true" : "false") + "\r\n";
    json += "  },\r\n";
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
@@ -3986,7 +4810,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+

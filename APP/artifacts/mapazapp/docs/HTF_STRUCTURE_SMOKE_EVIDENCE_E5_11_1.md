@@ -4,7 +4,7 @@
 
 Smoke ejecutado por el operador **después de E5.11 — HTF Structure V1**, con build **`MZP_TestEA_E5_11`**. Objetivo: evidencia reproducible de que el export HTF (estructura H4/H1, scores observacionales y razones) funciona en bundle real y permite analizar correlación con outcomes **sin** tratarlo como compuerta de trading.
 
-**Referencias:** implementación y campos — [`HTF_STRUCTURE_EXPORT_E5_11.md`](./HTF_STRUCTURE_EXPORT_E5_11.md); roadmap siguiente — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md).
+**Referencias:** implementación y campos — [`HTF_STRUCTURE_EXPORT_E5_11.md`](./HTF_STRUCTURE_EXPORT_E5_11.md); roadmap siguiente — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md); ejecución TF MSS/CHoCH — [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md).
 
 ---
 
