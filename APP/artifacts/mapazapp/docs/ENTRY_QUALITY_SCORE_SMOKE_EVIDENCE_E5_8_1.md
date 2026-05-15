@@ -116,6 +116,8 @@ Sobre cohortes exportadas (p. ej. bundles de campaña o smoke ampliado), medir c
 
 **Prerequisito implícito:** contrastar el **máximo alcanzable** con los componentes **actuales** frente al techo teórico de 100 pt del contrato, para no “condenar” umbrales antes de completar pesos y señales.
 
+**Implementación repo (analizador off-line):** [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md) — CLI `mapazapp:testea-score-calibration` (sin MT5).
+
 ---
 
 ## 9. No objetivos (E5.8.1)
@@ -132,3 +134,4 @@ Sobre cohortes exportadas (p. ej. bundles de campaña o smoke ampliado), medir c
 | Versión | Nota |
 |---------|------|
 | E5.8.1 v1 | Evidencia smoke operador + interpretación A/B=0 + dirección E5.9 calibración; docs-only. |
+| E5.8.1 v1.1 | Enlace al analizador **E5.9** en repo — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md). |

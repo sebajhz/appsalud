@@ -364,7 +364,8 @@ XAUUSD solo ya mostró **alta frecuencia** de candidatos; multi-símbolo amplifi
 |----|-----------|
 | **E5.7** | Contrato **Entry Quality Score V1** (este documento). |
 | **E5.8** | Implementar **export** de score y componentes en **TestEA** — **solo observación**; sin bloqueo de trades. |
-| **E5.9** | **Calibración y campaña de distribución** del score sobre candidatos FVG existentes; percentiles, outcome/`ambiguous`, FVGMin, frecuencia de componentes faltantes, separación y trades/día — análisis off-line vs métricas §8; **sin** aprobación de umbrales hasta evidencia (ver **E5.8.1** §8). |
+| **E5.9** | **Calibración / distribución** del score: analizador TypeScript + CLI `mapazapp:testea-score-calibration` sobre bundles existentes (percentiles, outcome/`ambiguous`, FVGMin, faltantes, bandas relativas, flags diagnósticos); **sin** aprobación de umbrales — doc [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md). Evidencia operador agregada → **E5.9.1** (docs). |
+| **E5.9.1** | **Evidencia operador** (runs CLI sobre smoke E5.8.1 / campaña E55); documentación de hallazgos — *pendiente operador*. |
 | **E5.10** | **Detección y export** de liquidity sweep (flags/tipos); sin compuerta dura inicial. |
 | **E5.11** | Filtros / inputs configurables de **sesión** y **noticias**. |
 | **E5.12** | Contrato **BridgeEA** de **setup-state** alineado a TestEA. |
@@ -390,3 +391,4 @@ XAUUSD solo ya mostró **alta frecuencia** de candidatos; multi-símbolo amplifi
 | E5.7 v1 | Contrato formal: 7 componentes (100 pt borrador), grades provisionales, exports §9, métricas §8, parity BridgeEA §10. |
 | E5.7 v1.1 | **E5.8** implementa la primera exportación en TestEA (observación) — ver [`ENTRY_QUALITY_SCORE_EXPORT_E5_8.md`](./ENTRY_QUALITY_SCORE_EXPORT_E5_8.md). |
 | E5.7 v1.2 | **E5.8.1** smoke operador + interpretación A/B=0; **E5.9** renombrado en docs como calibración/distribución — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md). |
+| E5.7 v1.3 | **E5.9** analizador + CLI en repo — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md); **E5.9.1** reservado para evidencia operador. |
