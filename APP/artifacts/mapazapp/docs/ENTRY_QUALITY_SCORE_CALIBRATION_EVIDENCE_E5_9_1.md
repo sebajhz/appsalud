@@ -2,7 +2,8 @@
 
 **Tipo:** documentación **docs-only** (evidencia operador + decisión de gobierno).  
 **Sin:** MT5, Strategy Tester, cambios en `Mapazapp_TestEA.mq5`, aprobación de umbrales A/B/C, compuerta de score, trading en vivo, `OrderSend`, `CTrade`, API, dashboard, supervisor, launcher, wrapper.  
-**Contexto:** analizador **E5.9** — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md); corrección resumen **`ambiguous_rate`** — **E5.9.0.1** (`summaryRows` / CSV = `outcome_by_score.all.ambiguous_rate`); smoke **E5.8.1** — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md).
+**Contexto:** analizador **E5.9** — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md); corrección resumen **`ambiguous_rate`** — **E5.9.0.1** (`summaryRows` / CSV = `outcome_by_score.all.ambiguous_rate`); smoke **E5.8.1** — [`ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md`](./ENTRY_QUALITY_SCORE_SMOKE_EVIDENCE_E5_8_1.md).  
+**Post–E5.10:** rerun de calibración sobre bundle con **Liquidity Sweep V1** y caveat de calidad (V1 permisiva) — [`LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md`](./LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md).
 
 ---
 

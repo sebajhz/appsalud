@@ -48,14 +48,12 @@ En `setup_allowed` y `virtual_trade_candidate_created` (y detalles de simulació
 
 Bundles sin columnas de liquidez: el importador TypeScript las trata como **opcionales**. `has_liquidity_sweep_v1_logic` ausente o **false** no activa la validación estricta de cabecera E5.10.
 
-## Validación E5.10.1 (humo sugerido)
+## Evidencia operador (E5.10.1)
 
-1. Recompilar **TestEA** (`MZP_TestEA_E5_10_0`) en MetaEditor.
-2. Una corrida **safe-export** con detección activa; comprobar columnas de liquidez en `backtest_trades.csv` y flags en `backtest_summary.json`.
-3. `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<ruta_al_bundle>" --json`
-4. Repetir **calibración de score** (E5.9.x) sobre bundles nuevos para medir dispersión de `liquidity_event_score` y correlación con `ambiguous_rate`.
+El **humo safe-export** del operador (XAUUSD M15/D1, bundle bajo `Mapazapp\TestEA\E55\SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`), la validación de bundle y el **rerun de calibración** post–liquidez están documentados en [`LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md`](./LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md), incluido el **caveat**: la V1 actual es **demasiado permisiva** como separador de calidad por outcome. El siguiente hito planificado es **E5.10.2 — Liquidity Sweep Quality Refinement**.
 
 ## Referencias
 
 - Contrato: [`EXPORT_CONTRACT.md`](../../mt5/experts/Mapazapp_TestEA/EXPORT_CONTRACT.md)
 - Evidencia calibración previa: [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md)
+- Evidencia smoke + calibración post–E5.10: [`LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md`](./LIQUIDITY_SWEEP_SMOKE_EVIDENCE_E5_10_1.md)
