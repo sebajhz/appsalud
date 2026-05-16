@@ -87,6 +87,7 @@ test("G — summary flags: IFVG on; daily bias on; tester orders off; pipeline n
   assert.match(src, /\\"has_liquidity_chain_reaction_audit_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_htf_structure_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_mss_choch_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /\\"has_mss_choch_temporal_relevance_v1_logic\\"\s*:\s*true/);
 });
 
 test("H — Daily Bias V1 + gate markers", () => {
@@ -187,6 +188,8 @@ test("Q — samples: summary has_full false; events include setup + virtual flow
   assert.equal(summary["has_htf_structure_v1_logic"], true);
   assert.equal(summary["htf_structure_enabled"], true);
   assert.equal(summary["has_mss_choch_v1_logic"], true);
+  assert.equal(summary["has_mss_choch_temporal_relevance_v1_logic"], true);
+  assert.equal(summary["average_mss_temporal_relevance_score"], 5.0);
   assert.equal(summary["mss_choch_enabled"], true);
   assert.equal(summary["score_observation_only"], true);
   assert.equal(summary["score_gate_enabled"], false);
@@ -200,6 +203,16 @@ test("Q — samples: summary has_full false; events include setup + virtual flow
   assert.match(events, /htf_en=/);
   assert.match(events, /msc_en=/);
   const trades = readFileSync(SAMPLE_TRADES_PATH, "utf8").trimEnd().split(/\r?\n/);
+  assert.ok(trades[0]!.includes("mss_temporal_relevance_score"));
+  assert.ok(trades[0]!.includes("choch_temporal_relevance_score"));
+  assert.ok(trades[0]!.includes("mss_after_sweep"));
+  assert.ok(trades[0]!.includes("mss_before_entry"));
+  assert.ok(trades[0]!.includes("mss_too_early"));
+  assert.ok(trades[0]!.includes("mss_too_late"));
+  assert.ok(trades[0]!.includes("choch_after_sweep"));
+  assert.ok(trades[0]!.includes("choch_before_entry"));
+  assert.ok(trades[0]!.includes("choch_too_early"));
+  assert.ok(trades[0]!.includes("choch_too_late"));
   assert.ok(trades.length >= 2);
   assert.ok(trades[0]!.includes("trade_id") && trades[0]!.includes("exit_price"));
   assert.ok(trades[0]!.includes("entry_quality_score") && trades[0]!.includes("ambiguous_risk_score"));
@@ -298,7 +311,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_12"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_12_2"/);
   assert.match(src, /input bool\s+InpEnableMssChochV1\s*=\s*true/);
   assert.match(src, /input int\s+InpMssChochSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpMssChochMaxBars\s*=\s*200/);
@@ -395,7 +408,11 @@ test("Z — E5.8 + E5.10 + E5.10.2 + E5.10.4: score field tokens + liquidity cha
   assert.match(src, /liquidity_chain_reaction_failure_reason/);
   assert.match(src, /liquidity_chain_reaction_checked_count/);
   assert.match(src, /has_mss_choch_v1_logic/);
+  assert.match(src, /has_mss_choch_temporal_relevance_v1_logic/);
   assert.match(src, /mss_choch_score/);
+  assert.match(src, /mss_temporal_relevance_score/);
+  assert.match(src, /choch_temporal_relevance_score/);
+  assert.match(src, /MapzMscComputeTemporalDiagnostics/);
   assert.match(src, /MapzMssChochBuildTradeSnap/);
   assert.match(src, /has_htf_structure_v1_logic/);
   assert.match(src, /htf_structure_score/);

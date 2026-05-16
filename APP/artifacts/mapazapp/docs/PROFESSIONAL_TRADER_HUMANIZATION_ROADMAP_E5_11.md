@@ -58,11 +58,13 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 **Propósito:** complementar FVG + liquidez + HTF con **confirmación de estructura interna en el timeframe de ejecución** (por defecto M15), usando **solo velas cerradas** para MSS/CHoCH confirmados y marcando **wick-only** como diagnóstico.
 
-**Referencia técnica:** [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md) — columnas CSV, summary, sufijo compacto en eventos (`msc_en=…`), score observación separado (`mss_choch_score`, máx. 15 V1), inputs y `optimization_parameters`; **sin** compuerta dura; **sin** modificar outcome logic ni EQ gate.
+**Referencia técnica:** [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md) — columnas CSV, summary, sufijo compacto en eventos (`msc_en=…`), score observación separado (`mss_choch_score`, máx. 15 V1), **E5.12.2** scores temporales (`mss_temporal_relevance_score`, `choch_temporal_relevance_score`, 0–10), inputs y `optimization_parameters`; **sin** compuerta dura; **sin** modificar outcome logic ni EQ gate.
 
 **Smoke cerrado (docs):** **E5.12.1** — [`MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md`](./MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md) — build `MZP_TestEA_E5_12`, mismo bundle benchmark que HTF smoke; **PASS técnico**; MSS/CHoCH score **no** separa wins/losses → **no** compuerta; ambiguous con score/detection MSS más bajos → señal útil de **ruido**, no de edge standalone.
 
-**Siguiente (opcional/repo):** **E5.12.2** relevancia temporal MSS/CHoCH **o** **E5.13** Premium/Discount.
+**Siguiente (repo / operador):** **E5.12.3** smoke post–**E5.12.2** (recompilar `MZP_TestEA_E5_12_2`, validar bundle) **o** **E5.13** Premium/Discount.
+
+**Referencia E5.12.2 (repo):** [`MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md) — columnas temporales + summary `has_mss_choch_temporal_relevance_v1_logic`; sigue **sin** compuerta.
 
 ## D. Premium / Discount / zona de precio
 

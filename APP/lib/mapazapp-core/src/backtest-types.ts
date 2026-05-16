@@ -136,6 +136,9 @@ export interface BacktestTrade {
   internalSwingLowAgeBars?: number | undefined;
   mssChochScore?: number | undefined;
   mssChochReasons?: string | undefined;
+  /** E5.12.2 temporal relevance observation scores (optional; older CSV). */
+  mssTemporalRelevanceScore?: number | undefined;
+  chochTemporalRelevanceScore?: number | undefined;
 }
 
 export interface BacktestImportWarning {

@@ -654,6 +654,8 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     const islAgeRaw = pick(cells, col, "internal_swing_low_age_bars");
     const mscScrRaw = pick(cells, col, "mss_choch_score");
     const mscRsnRaw = pick(cells, col, "mss_choch_reasons");
+    const mssTempScrRaw = pick(cells, col, "mss_temporal_relevance_score");
+    const chochTempScrRaw = pick(cells, col, "choch_temporal_relevance_score");
 
     if (mscEnRaw !== undefined && mscEnRaw.trim() !== "") {
       const b = parseOptionalCsvBool(mscEnRaw, "mss_choch_enabled", rowNum);
@@ -743,6 +745,16 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
     }
     if (mscRsnRaw?.trim()) trade.mssChochReasons = mscRsnRaw.trim();
+    if (mssTempScrRaw !== undefined && mssTempScrRaw.trim() !== "") {
+      const p = parseNumber(mssTempScrRaw, "mss_temporal_relevance_score", rowNum);
+      if (p.ok) trade.mssTemporalRelevanceScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (chochTempScrRaw !== undefined && chochTempScrRaw.trim() !== "") {
+      const p = parseNumber(chochTempScrRaw, "choch_temporal_relevance_score", rowNum);
+      if (p.ok) trade.chochTemporalRelevanceScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
 
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({

@@ -135,5 +135,5 @@ Smoke ejecutado por el operador **después de E5.12 — MSS / CHoCH V1**, con bu
 
 ## Siguiente paso recomendado
 
-- **E5.12.2** — auditoría / refinamiento de **relevancia temporal** MSS/CHoCH (investigación opcional), **o**
+- **E5.12.3** — smoke operador post–**E5.12.2** (rebuild `MZP_TestEA_E5_12_2`, validar bundle), **o**
 - **E5.13 — Premium/Discount Context V1** — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.

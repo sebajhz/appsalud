@@ -62,6 +62,16 @@ export const MSS_CHOCH_CALIBRATION_COLUMNS = ["mss_choch_score"] as const;
 
 export type MssChochCalibrationColumn = (typeof MSS_CHOCH_CALIBRATION_COLUMNS)[number];
 
+/** E5.12.2 optional MSS temporal relevance score when CSV includes `mss_temporal_relevance_score`. */
+export const MSS_TEMPORAL_RELEVANCE_CALIBRATION_COLUMNS = ["mss_temporal_relevance_score"] as const;
+
+export type MssTemporalRelevanceCalibrationColumn = (typeof MSS_TEMPORAL_RELEVANCE_CALIBRATION_COLUMNS)[number];
+
+/** E5.12.2 optional CHoCH temporal relevance score when CSV includes `choch_temporal_relevance_score`. */
+export const CHOCH_TEMPORAL_RELEVANCE_CALIBRATION_COLUMNS = ["choch_temporal_relevance_score"] as const;
+
+export type ChochTemporalRelevanceCalibrationColumn = (typeof CHOCH_TEMPORAL_RELEVANCE_CALIBRATION_COLUMNS)[number];
+
 export type TestEaScoreOutcomeGroup =
   | "all"
   | "wins"
@@ -172,6 +182,14 @@ export interface TestEaScoreCalibrationBundleAnalysis {
   htf_structure_component_stats: Partial<Record<HtfStructureCalibrationColumn, TestEaScoreComponentStats>> | null;
   /** Present when trades CSV includes E5.12 `mss_choch_score`. */
   mss_choch_component_stats: Partial<Record<MssChochCalibrationColumn, TestEaScoreComponentStats>> | null;
+  /** Present when trades CSV includes E5.12.2 `mss_temporal_relevance_score`. */
+  mss_temporal_relevance_component_stats: Partial<
+    Record<MssTemporalRelevanceCalibrationColumn, TestEaScoreComponentStats>
+  > | null;
+  /** Present when trades CSV includes E5.12.2 `choch_temporal_relevance_score`. */
+  choch_temporal_relevance_component_stats: Partial<
+    Record<ChochTemporalRelevanceCalibrationColumn, TestEaScoreComponentStats>
+  > | null;
 }
 
 export interface TestEaScoreCalibrationBundleTextInput {
@@ -324,6 +342,10 @@ export interface TradeScoreAuxiliary {
   htf_structure: Partial<Record<HtfStructureCalibrationColumn, number | null>> | null;
   /** E5.12 optional MSS/CHoCH observation score when CSV includes `mss_choch_score`. */
   mss_choch: Partial<Record<MssChochCalibrationColumn, number | null>> | null;
+  /** E5.12.2 optional MSS temporal relevance when CSV includes `mss_temporal_relevance_score`. */
+  mss_temporal: Partial<Record<MssTemporalRelevanceCalibrationColumn, number | null>> | null;
+  /** E5.12.2 optional CHoCH temporal relevance when CSV includes `choch_temporal_relevance_score`. */
+  choch_temporal: Partial<Record<ChochTemporalRelevanceCalibrationColumn, number | null>> | null;
   missing_raw: string;
   missing_tokens: string[];
 }
@@ -336,6 +358,8 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   hasLiquidityChainColumns: boolean;
   hasHtfStructureScoreColumn: boolean;
   hasMssChochScoreColumn: boolean;
+  hasMssTemporalRelevanceScoreColumn: boolean;
+  hasChochTemporalRelevanceScoreColumn: boolean;
   warnings: string[];
 } {
   const warnings: string[] = [];
@@ -350,6 +374,8 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       hasLiquidityChainColumns: false,
       hasHtfStructureScoreColumn: false,
       hasMssChochScoreColumn: false,
+      hasMssTemporalRelevanceScoreColumn: false,
+      hasChochTemporalRelevanceScoreColumn: false,
       warnings,
     };
   }
@@ -360,6 +386,8 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   const hasLiquidityChainColumns = col.has("liquidity_chain_score");
   const hasHtfStructureScoreColumn = col.has("htf_structure_score");
   const hasMssChochScoreColumn = col.has("mss_choch_score");
+  const hasMssTemporalRelevanceScoreColumn = col.has("mss_temporal_relevance_score");
+  const hasChochTemporalRelevanceScoreColumn = col.has("choch_temporal_relevance_score");
 
   const emptyComponents = (): Record<ScoreComponentColumn, number | null> => ({
     htf_narrative_score: null,
@@ -418,6 +446,22 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       }
     }
 
+    let mss_temporal: Partial<Record<MssTemporalRelevanceCalibrationColumn, number | null>> | null = null;
+    if (hasMssTemporalRelevanceScoreColumn) {
+      mss_temporal = {};
+      for (const c of MSS_TEMPORAL_RELEVANCE_CALIBRATION_COLUMNS) {
+        mss_temporal[c] = parseFiniteNumber(pick(cells, col, c));
+      }
+    }
+
+    let choch_temporal: Partial<Record<ChochTemporalRelevanceCalibrationColumn, number | null>> | null = null;
+    if (hasChochTemporalRelevanceScoreColumn) {
+      choch_temporal = {};
+      for (const c of CHOCH_TEMPORAL_RELEVANCE_CALIBRATION_COLUMNS) {
+        choch_temporal[c] = parseFiniteNumber(pick(cells, col, c));
+      }
+    }
+
     const aux: TradeScoreAuxiliary = {
       entry_quality_grade: pick(cells, col, "entry_quality_grade")?.trim() ?? null,
       score: parseFiniteNumber(pick(cells, col, "score_total")),
@@ -427,6 +471,8 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       liquidity_chain,
       htf_structure,
       mss_choch,
+      mss_temporal,
+      choch_temporal,
       missing_raw: missingRaw,
       missing_tokens,
     };
@@ -440,6 +486,8 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
     hasLiquidityChainColumns,
     hasHtfStructureScoreColumn,
     hasMssChochScoreColumn,
+    hasMssTemporalRelevanceScoreColumn,
+    hasChochTemporalRelevanceScoreColumn,
     warnings,
   };
 }
@@ -769,6 +817,94 @@ function buildMssChochComponentStats(
   return any ? out : null;
 }
 
+function buildMssTemporalRelevanceComponentStats(
+  rows: { trade: BacktestTrade; aux: TradeScoreAuxiliary | undefined }[],
+): Partial<Record<MssTemporalRelevanceCalibrationColumn, TestEaScoreComponentStats>> | null {
+  const out: Partial<Record<MssTemporalRelevanceCalibrationColumn, TestEaScoreComponentStats>> = {};
+  let any = false;
+  for (const col of MSS_TEMPORAL_RELEVANCE_CALIBRATION_COLUMNS) {
+    const vals: number[] = [];
+    const byOutcome: Partial<Record<TestEaScoreOutcomeGroup, { sum: number; count: number }>> = {};
+    let allSum = 0;
+    let allCnt = 0;
+    for (const { trade, aux } of rows) {
+      const v = aux?.mss_temporal?.[col];
+      if (v == null || !Number.isFinite(v)) continue;
+      any = true;
+      vals.push(v);
+      allSum += v;
+      allCnt += 1;
+      const g = outcomeGroup(trade);
+      const cur = byOutcome[g] ?? { sum: 0, count: 0 };
+      cur.sum += v;
+      cur.count += 1;
+      byOutcome[g] = cur;
+    }
+    const byOutFin: TestEaScoreComponentStats["by_outcome"] = {};
+    if (allCnt > 0) byOutFin.all = { count: allCnt, average: allSum / allCnt };
+    for (const [k, v] of Object.entries(byOutcome)) {
+      const og = k as TestEaScoreOutcomeGroup;
+      byOutFin[og] = { count: v!.count, average: v!.count > 0 ? v!.sum / v!.count : null };
+    }
+    if (vals.length === 0) {
+      out[col] = { min: null, max: null, average: null, by_outcome: byOutFin };
+    } else {
+      const sorted = [...vals].sort((a, b) => a - b);
+      out[col] = {
+        min: sorted[0]!,
+        max: sorted[sorted.length - 1]!,
+        average: average(vals),
+        by_outcome: byOutFin,
+      };
+    }
+  }
+  return any ? out : null;
+}
+
+function buildChochTemporalRelevanceComponentStats(
+  rows: { trade: BacktestTrade; aux: TradeScoreAuxiliary | undefined }[],
+): Partial<Record<ChochTemporalRelevanceCalibrationColumn, TestEaScoreComponentStats>> | null {
+  const out: Partial<Record<ChochTemporalRelevanceCalibrationColumn, TestEaScoreComponentStats>> = {};
+  let any = false;
+  for (const col of CHOCH_TEMPORAL_RELEVANCE_CALIBRATION_COLUMNS) {
+    const vals: number[] = [];
+    const byOutcome: Partial<Record<TestEaScoreOutcomeGroup, { sum: number; count: number }>> = {};
+    let allSum = 0;
+    let allCnt = 0;
+    for (const { trade, aux } of rows) {
+      const v = aux?.choch_temporal?.[col];
+      if (v == null || !Number.isFinite(v)) continue;
+      any = true;
+      vals.push(v);
+      allSum += v;
+      allCnt += 1;
+      const g = outcomeGroup(trade);
+      const cur = byOutcome[g] ?? { sum: 0, count: 0 };
+      cur.sum += v;
+      cur.count += 1;
+      byOutcome[g] = cur;
+    }
+    const byOutFin: TestEaScoreComponentStats["by_outcome"] = {};
+    if (allCnt > 0) byOutFin.all = { count: allCnt, average: allSum / allCnt };
+    for (const [k, v] of Object.entries(byOutcome)) {
+      const og = k as TestEaScoreOutcomeGroup;
+      byOutFin[og] = { count: v!.count, average: v!.count > 0 ? v!.sum / v!.count : null };
+    }
+    if (vals.length === 0) {
+      out[col] = { min: null, max: null, average: null, by_outcome: byOutFin };
+    } else {
+      const sorted = [...vals].sort((a, b) => a - b);
+      out[col] = {
+        min: sorted[0]!,
+        max: sorted[sorted.length - 1]!,
+        average: average(vals),
+        by_outcome: byOutFin,
+      };
+    }
+  }
+  return any ? out : null;
+}
+
 function missingFrequency(rows: { aux: TradeScoreAuxiliary | undefined }[]): Record<string, number> {
   const freq: Record<string, number> = {};
   for (const { aux } of rows) {
@@ -849,6 +985,8 @@ export function analyzeTestEaScoreCalibrationFromTexts(
     liquidity_chain_component_stats: null,
     htf_structure_component_stats: null,
     mss_choch_component_stats: null,
+    mss_temporal_relevance_component_stats: null,
+    choch_temporal_relevance_component_stats: null,
   };
 
   let summary: Record<string, unknown>;
@@ -1065,6 +1203,12 @@ export function analyzeTestEaScoreCalibrationFromTexts(
       ? buildHtfStructureComponentStats(merged)
       : null,
     mss_choch_component_stats: auxParse.hasMssChochScoreColumn ? buildMssChochComponentStats(merged) : null,
+    mss_temporal_relevance_component_stats: auxParse.hasMssTemporalRelevanceScoreColumn
+      ? buildMssTemporalRelevanceComponentStats(merged)
+      : null,
+    choch_temporal_relevance_component_stats: auxParse.hasChochTemporalRelevanceScoreColumn
+      ? buildChochTemporalRelevanceComponentStats(merged)
+      : null,
   };
 
   analysis.diagnostic_flags = deriveDiagnosticFlags(analysis, merged);

@@ -40,7 +40,11 @@ Counts are **non-exclusive at summary level** only where defined by export aggre
 
 **E5.12.1** — cerrado en docs: evidencia operador sobre bundle real (`BUNDLE_EVENTS_LARGE` como warning esperado) — [`MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md`](./MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md).
 
-**Investigación opcional siguiente:** relevancia temporal MSS/CHoCH (**E5.12.2**) y/o **E5.13** Premium/Discount según roadmap.
+**Investigación opcional siguiente:** ~~relevancia temporal MSS/CHoCH (**E5.12.2**)~~ **cerrada en repo** — [`MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md); siguiente smoke operador **E5.12.3**; y/o **E5.13** Premium/Discount según roadmap.
+
+## E5.12.2 — Temporal relevance (export add-on)
+
+Adds **separate** 0–10 scores (`mss_temporal_relevance_score`, `choch_temporal_relevance_score`), text grades, boolean timing flags, bar-distance columns, and tokenized `*_temporal_relevance_reasons` on each trade row. Summary includes `has_mss_choch_temporal_relevance_v1_logic` plus aggregate counters/averages. Full rationale and reason-code list: [`MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md).
 
 ## Related inputs (EA)
 

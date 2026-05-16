@@ -1223,6 +1223,107 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_mss_choch_temporal_relevance_v1_logic"] === true) {
+          const temporalSummaryKeys = [
+            "average_mss_temporal_relevance_score",
+            "average_choch_temporal_relevance_score",
+            "mss_after_sweep_count",
+            "mss_before_entry_count",
+            "mss_near_entry_window_count",
+            "mss_too_early_count",
+            "mss_too_late_count",
+            "mss_after_fvg_count",
+            "mss_before_fvg_count",
+            "choch_after_sweep_count",
+            "choch_before_entry_count",
+            "choch_near_entry_window_count",
+            "choch_too_early_count",
+            "choch_too_late_count",
+            "choch_after_fvg_count",
+            "choch_before_fvg_count",
+          ] as const;
+          for (const k of temporalSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_MSS_CHOCH_TEMPORAL_E5_12_2_KEY",
+                  `E5.12.2: when has_mss_choch_temporal_relevance_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const v = summaryJson[k];
+              if (typeof v !== "number" || !Number.isFinite(v)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_MSS_CHOCH_TEMPORAL_E5_12_2_NUM",
+                    `E5.12.2: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(v) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const temporalCols = [
+              "mss_temporal_relevance_score",
+              "mss_temporal_relevance_grade",
+              "mss_after_sweep",
+              "mss_before_entry",
+              "mss_near_entry_window",
+              "mss_too_early",
+              "mss_too_late",
+              "mss_after_fvg",
+              "mss_before_fvg",
+              "mss_sweep_to_mss_bars",
+              "mss_fvg_to_mss_bars",
+              "mss_mss_to_entry_bars",
+              "mss_temporal_relevance_reasons",
+              "choch_temporal_relevance_score",
+              "choch_temporal_relevance_grade",
+              "choch_after_sweep",
+              "choch_before_entry",
+              "choch_near_entry_window",
+              "choch_too_early",
+              "choch_too_late",
+              "choch_after_fvg",
+              "choch_before_fvg",
+              "choch_sweep_to_choch_bars",
+              "choch_fvg_to_choch_bars",
+              "choch_choch_to_entry_bars",
+              "choch_temporal_relevance_reasons",
+            ] as const;
+            for (const col of temporalCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_MSS_CHOCH_TEMPORAL_E5_12_2",
+                    `E5.12.2: backtest_trades.csv header must include "${col}" when has_mss_choch_temporal_relevance_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_MSS_CHOCH_TEMPORAL_HEADER_CHECK",
+                "has_mss_choch_temporal_relevance_v1_logic is true but backtest_trades.csv missing — cannot verify E5.12.2 temporal columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

@@ -6,8 +6,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.13"
-#property description "Strategy Tester only: official TestEA. E5.12 MSS/CHoCH V1 (execution TF observation/export; closed candles); E5.11 HTF Structure V1 (H4/H1 observation/export); Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit + causal chain (observation/export); E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 Entry Quality Score V1 observation-only; E5.5.0.5 short paths + full JSON ids; E5.5.0.3 FileOpen-safe writes (no orders)."
+#property version   "1.14"
+#property description "Strategy Tester only: official TestEA. E5.12.2 MSS/CHoCH temporal relevance diagnostics (observation/export; closed candles; no gate); E5.12 MSS/CHoCH V1; E5.11 HTF Structure V1; Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit; E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 Entry Quality Score V1 observation-only; E5.5.0.5 short paths + full JSON ids; E5.5.0.3 FileOpen-safe writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -68,7 +68,7 @@ input int               InpMssChochMaxBars            = 200;
 input bool              InpMssChochRequireCloseBreak  = true;
 input bool              InpMssChochScoreEnabled       = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_12"
+#define TESTEA_BUILD            "MZP_TestEA_E5_12_2"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -250,6 +250,23 @@ long            g_mss_against_trade_count = 0;
 long            g_choch_aligned_with_trade_count = 0;
 long            g_choch_against_trade_count = 0;
 
+double          g_mss_temporal_sum_score = 0.0;
+double          g_choch_temporal_sum_score = 0.0;
+long            g_mss_after_sweep_count = 0;
+long            g_mss_before_entry_count = 0;
+long            g_mss_near_entry_window_count = 0;
+long            g_mss_too_early_count = 0;
+long            g_mss_too_late_count = 0;
+long            g_mss_after_fvg_count = 0;
+long            g_mss_before_fvg_count = 0;
+long            g_choch_after_sweep_count = 0;
+long            g_choch_before_entry_count = 0;
+long            g_choch_near_entry_window_count = 0;
+long            g_choch_too_early_count = 0;
+long            g_choch_too_late_count = 0;
+long            g_choch_after_fvg_count = 0;
+long            g_choch_before_fvg_count = 0;
+
 struct MapzHtfTradeSnap
   {
    bool              enabled;
@@ -293,6 +310,35 @@ struct MapzMssChochTradeSnap
    int               internal_swing_low_age_bars;
    int               mss_choch_score;
    string            mss_choch_reasons;
+   int               ctx_setup_bar_shift;
+   int               mss_break_bar_shift;
+   int               choch_break_bar_shift;
+   int               mss_temporal_relevance_score;
+   string            mss_temporal_relevance_grade;
+   bool              mss_after_sweep;
+   bool              mss_before_entry;
+   bool              mss_near_entry_window;
+   bool              mss_too_early;
+   bool              mss_too_late;
+   bool              mss_after_fvg;
+   bool              mss_before_fvg;
+   int               mss_sweep_to_mss_bars;
+   int               mss_fvg_to_mss_bars;
+   int               mss_mss_to_entry_bars;
+   string            mss_temporal_relevance_reasons;
+   int               choch_temporal_relevance_score;
+   string            choch_temporal_relevance_grade;
+   bool              choch_after_sweep;
+   bool              choch_before_entry;
+   bool              choch_near_entry_window;
+   bool              choch_too_early;
+   bool              choch_too_late;
+   bool              choch_after_fvg;
+   bool              choch_before_fvg;
+   int               choch_sweep_to_choch_bars;
+   int               choch_fvg_to_choch_bars;
+   int               choch_choch_to_entry_bars;
+   string            choch_temporal_relevance_reasons;
   };
 
 struct MapzLiquiditySnapshot
@@ -2679,6 +2725,35 @@ void MapzMscSnapClear(MapzMssChochTradeSnap &o)
    o.internal_swing_low_age_bars = -1;
    o.mss_choch_score = 0;
    o.mss_choch_reasons = "";
+   o.ctx_setup_bar_shift = -1;
+   o.mss_break_bar_shift = -1;
+   o.choch_break_bar_shift = -1;
+   o.mss_temporal_relevance_score = 0;
+   o.mss_temporal_relevance_grade = "None";
+   o.mss_after_sweep = false;
+   o.mss_before_entry = false;
+   o.mss_near_entry_window = false;
+   o.mss_too_early = false;
+   o.mss_too_late = false;
+   o.mss_after_fvg = false;
+   o.mss_before_fvg = false;
+   o.mss_sweep_to_mss_bars = -1;
+   o.mss_fvg_to_mss_bars = -1;
+   o.mss_mss_to_entry_bars = -1;
+   o.mss_temporal_relevance_reasons = "";
+   o.choch_temporal_relevance_score = 0;
+   o.choch_temporal_relevance_grade = "None";
+   o.choch_after_sweep = false;
+   o.choch_before_entry = false;
+   o.choch_near_entry_window = false;
+   o.choch_too_early = false;
+   o.choch_too_late = false;
+   o.choch_after_fvg = false;
+   o.choch_before_fvg = false;
+   o.choch_sweep_to_choch_bars = -1;
+   o.choch_fvg_to_choch_bars = -1;
+   o.choch_choch_to_entry_bars = -1;
+   o.choch_temporal_relevance_reasons = "";
   }
 
 //+------------------------------------------------------------------+
@@ -2823,6 +2898,10 @@ void MapzMssChochBuildTradeSnap(const string sym,
       return;
      }
 
+   out.ctx_setup_bar_shift = refShift;
+   out.mss_break_bar_shift = -1;
+   out.choch_break_bar_shift = -1;
+
    int Nmaj = InpMssChochSwingLookbackBars;
    if(Nmaj < 1)
       Nmaj = 1;
@@ -2946,6 +3025,7 @@ void MapzMssChochBuildTradeSnap(const string sym,
          out.mss_break_level = phPrice;
          out.mss_close_price = brkCls;
          out.mss_valid_close = true;
+         out.mss_break_bar_shift = brk;
          if(liq.sweep_bar_shift >= 0 && brk >= 0)
             out.mss_bars_after_sweep = MathAbs(liq.sweep_bar_shift - brk);
          else
@@ -2959,6 +3039,7 @@ void MapzMssChochBuildTradeSnap(const string sym,
          out.mss_break_level = plPrice;
          out.mss_close_price = brkClsB;
          out.mss_valid_close = true;
+         out.mss_break_bar_shift = brkB;
          if(liq.sweep_bar_shift >= 0 && brkB >= 0)
             out.mss_bars_after_sweep = MathAbs(liq.sweep_bar_shift - brkB);
          else
@@ -3004,6 +3085,7 @@ void MapzMssChochBuildTradeSnap(const string sym,
             out.choch_break_level = mhMinPrice;
             out.choch_close_price = ccls;
             out.choch_valid_close = true;
+            out.choch_break_bar_shift = ck;
            }
         }
 
@@ -3045,6 +3127,7 @@ void MapzMssChochBuildTradeSnap(const string sym,
             out.choch_break_level = mlMinPrice;
             out.choch_close_price = ccls;
             out.choch_valid_close = true;
+            out.choch_break_bar_shift = ck;
            }
         }
      }
@@ -3129,6 +3212,7 @@ void MapzMssChochBuildTradeSnap(const string sym,
          out.mss_break_level = plPrice;
          out.mss_close_price = brkCls;
          out.mss_valid_close = true;
+         out.mss_break_bar_shift = brk;
          if(liq.sweep_bar_shift >= 0 && brk >= 0)
             out.mss_bars_after_sweep = MathAbs(liq.sweep_bar_shift - brk);
          else
@@ -3142,6 +3226,7 @@ void MapzMssChochBuildTradeSnap(const string sym,
          out.mss_break_level = phPrice;
          out.mss_close_price = brkClsB;
          out.mss_valid_close = true;
+         out.mss_break_bar_shift = brkB;
          if(liq.sweep_bar_shift >= 0 && brkB >= 0)
             out.mss_bars_after_sweep = MathAbs(liq.sweep_bar_shift - brkB);
          else
@@ -3187,6 +3272,7 @@ void MapzMssChochBuildTradeSnap(const string sym,
             out.choch_break_level = mlMinPrice;
             out.choch_close_price = ccls;
             out.choch_valid_close = true;
+            out.choch_break_bar_shift = ck;
            }
         }
 
@@ -3228,6 +3314,7 @@ void MapzMssChochBuildTradeSnap(const string sym,
             out.choch_break_level = mhMinPrice;
             out.choch_close_price = ccls;
             out.choch_valid_close = true;
+            out.choch_break_bar_shift = ck;
            }
         }
      }
@@ -3248,6 +3335,278 @@ string MapzMscCompactSuffix(const MapzMssChochTradeSnap &m)
                        (vc ? "true" : "false"),
                        (m.wick_break_only ? "true" : "false"),
                        m.mss_choch_score);
+  }
+
+//+------------------------------------------------------------------+
+string MapzMscTemporalGradeFromScore(const int sc)
+  {
+   if(sc >= 8)
+      return "A";
+   if(sc >= 6)
+      return "B";
+   if(sc >= 3)
+      return "C";
+   if(sc >= 1)
+      return "Weak";
+   return "None";
+  }
+
+//+------------------------------------------------------------------+
+void MapzMscComputeTemporalDiagnostics(const string sym,
+                                      const ENUM_TIMEFRAMES tf,
+                                      const MapzLiquiditySnapshot &liq,
+                                      const ENUM_MAPZ_SETUP_DIR tradeDir,
+                                      const bool filled,
+                                      const datetime entry_time,
+                                      MapzMssChochTradeSnap &m)
+  {
+   m.mss_temporal_relevance_score = 0;
+   m.mss_temporal_relevance_grade = "None";
+   m.mss_after_sweep = false;
+   m.mss_before_entry = false;
+   m.mss_near_entry_window = false;
+   m.mss_too_early = false;
+   m.mss_too_late = false;
+   m.mss_after_fvg = false;
+   m.mss_before_fvg = false;
+   m.mss_sweep_to_mss_bars = -1;
+   m.mss_fvg_to_mss_bars = -1;
+   m.mss_mss_to_entry_bars = -1;
+   m.mss_temporal_relevance_reasons = "";
+
+   m.choch_temporal_relevance_score = 0;
+   m.choch_temporal_relevance_grade = "None";
+   m.choch_after_sweep = false;
+   m.choch_before_entry = false;
+   m.choch_near_entry_window = false;
+   m.choch_too_early = false;
+   m.choch_too_late = false;
+   m.choch_after_fvg = false;
+   m.choch_before_fvg = false;
+   m.choch_sweep_to_choch_bars = -1;
+   m.choch_fvg_to_choch_bars = -1;
+   m.choch_choch_to_entry_bars = -1;
+   m.choch_temporal_relevance_reasons = "";
+
+   if(!m.enabled)
+     {
+      MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_temporal_unknown");
+      MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_temporal_unknown");
+      return;
+     }
+
+   const int ref = m.ctx_setup_bar_shift;
+   const int brk = m.mss_break_bar_shift;
+   const int ck = m.choch_break_bar_shift;
+   const int sweep = liq.sweep_bar_shift;
+   const bool sweepOk = (liq.detected && sweep >= 0);
+   int entryS = -1;
+   if(filled && entry_time > 0)
+      entryS = iBarShift(sym, tf, entry_time, false);
+
+   if(m.mss_detected && brk >= 1 && ref >= 1)
+     {
+      if(brk < ref)
+        {
+         m.mss_after_fvg = true;
+         MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_after_fvg");
+        }
+      else if(brk > ref)
+        {
+         m.mss_before_fvg = true;
+         MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_before_fvg");
+        }
+
+      if(sweepOk)
+        {
+         if(brk < sweep)
+           {
+            m.mss_after_sweep = true;
+            MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_after_sweep");
+           }
+         else if(brk > sweep)
+           {
+            MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_before_sweep");
+           }
+        }
+
+      const int dRef = MathAbs(brk - ref);
+      m.mss_fvg_to_mss_bars = dRef;
+      if(sweepOk)
+         m.mss_sweep_to_mss_bars = MathAbs(sweep - brk);
+      if(filled && entryS >= 1)
+         m.mss_mss_to_entry_bars = MathAbs(brk - entryS);
+
+      if(dRef <= 8)
+        {
+         m.mss_near_entry_window = true;
+         MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_near_entry_window");
+        }
+      if(dRef > 24)
+        {
+         m.mss_too_early = true;
+         MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_too_early");
+        }
+
+      if(filled && entryS >= 1)
+        {
+         if(brk > entryS)
+           {
+            m.mss_before_entry = true;
+            MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_before_entry");
+           }
+         if(brk < entryS)
+           {
+            MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_after_entry");
+            m.mss_too_late = true;
+            MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_too_late");
+           }
+        }
+      else
+        {
+         if(brk >= 1 && brk <= ref)
+           {
+            m.mss_before_entry = true;
+            MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_before_entry");
+           }
+        }
+
+      int sc = 0;
+      if(m.mss_after_sweep)
+         sc += 2;
+      if(m.mss_before_entry)
+         sc += 2;
+      if(m.mss_near_entry_window && !m.mss_too_late)
+         sc += 2;
+      if(m.mss_too_early)
+         sc -= 2;
+      if(m.mss_too_late)
+         sc -= 2;
+      const bool al = (tradeDir == MAPZ_SETUP_LONG && m.mss_direction == "bullish")
+                   || (tradeDir == MAPZ_SETUP_SHORT && m.mss_direction == "bearish");
+      if(al && m.mss_valid_close)
+         sc += 2;
+      if(m.mss_valid_close && !m.wick_break_only)
+         sc += 1;
+      if(m.wick_break_only && !m.mss_valid_close)
+         sc -= 1;
+      if(sc < 0)
+         sc = 0;
+      if(sc > 10)
+         sc = 10;
+
+      if(m.mss_after_sweep && m.mss_before_entry && m.mss_near_entry_window && !m.mss_too_early && !m.mss_too_late && al && m.mss_valid_close)
+         MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_temporally_relevant");
+
+      m.mss_temporal_relevance_score = sc;
+      m.mss_temporal_relevance_grade = MapzMscTemporalGradeFromScore(sc);
+     }
+   else
+     {
+      MapzHtfAppendToken(m.mss_temporal_relevance_reasons, "mss_temporal_unknown");
+     }
+
+   if(m.choch_detected && !m.mss_detected && ck >= 1 && ref >= 1)
+     {
+      if(ck < ref)
+        {
+         m.choch_after_fvg = true;
+         MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_after_fvg");
+        }
+      else if(ck > ref)
+        {
+         m.choch_before_fvg = true;
+         MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_before_fvg");
+        }
+
+      if(sweepOk)
+        {
+         if(ck < sweep)
+           {
+            m.choch_after_sweep = true;
+            MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_after_sweep");
+           }
+         else if(ck > sweep)
+           {
+            MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_before_sweep");
+           }
+        }
+
+      const int dCk = MathAbs(ck - ref);
+      m.choch_fvg_to_choch_bars = dCk;
+      if(sweepOk)
+         m.choch_sweep_to_choch_bars = MathAbs(sweep - ck);
+      if(filled && entryS >= 1)
+         m.choch_choch_to_entry_bars = MathAbs(ck - entryS);
+
+      if(dCk <= 8)
+        {
+         m.choch_near_entry_window = true;
+         MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_near_entry_window");
+        }
+      if(dCk > 24)
+        {
+         m.choch_too_early = true;
+         MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_too_early");
+        }
+
+      if(filled && entryS >= 1)
+        {
+         if(ck > entryS)
+           {
+            m.choch_before_entry = true;
+            MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_before_entry");
+           }
+         if(ck < entryS)
+           {
+            MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_after_entry");
+            m.choch_too_late = true;
+            MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_too_late");
+           }
+        }
+      else
+        {
+         if(ck >= 1 && ck <= ref)
+           {
+            m.choch_before_entry = true;
+            MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_before_entry");
+           }
+        }
+
+      int scC = 0;
+      if(m.choch_after_sweep)
+         scC += 2;
+      if(m.choch_before_entry)
+         scC += 2;
+      if(m.choch_near_entry_window && !m.choch_too_late)
+         scC += 2;
+      if(m.choch_too_early)
+         scC -= 2;
+      if(m.choch_too_late)
+         scC -= 2;
+      const bool alC = (tradeDir == MAPZ_SETUP_LONG && m.choch_direction == "bullish")
+                    || (tradeDir == MAPZ_SETUP_SHORT && m.choch_direction == "bearish");
+      if(alC && m.choch_valid_close)
+         scC += 2;
+      if(m.choch_valid_close && !m.wick_break_only)
+         scC += 1;
+      if(m.wick_break_only && !m.choch_valid_close)
+         scC -= 1;
+      if(scC < 0)
+         scC = 0;
+      if(scC > 10)
+         scC = 10;
+
+      if(m.choch_after_sweep && m.choch_before_entry && m.choch_near_entry_window && !m.choch_too_early && !m.choch_too_late && alC && m.choch_valid_close)
+         MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_temporally_relevant");
+
+      m.choch_temporal_relevance_score = scC;
+      m.choch_temporal_relevance_grade = MapzMscTemporalGradeFromScore(scC);
+     }
+   else
+     {
+      MapzHtfAppendToken(m.choch_temporal_relevance_reasons, "choch_temporal_unknown");
+     }
   }
 
 //+------------------------------------------------------------------+
@@ -3685,6 +4044,7 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
                                 g_vt.liq,
                                 g_vt.htf,
                                 eqp);
+   MapzMscComputeTemporalDiagnostics(g_brokerSymbol, InpExecutionTimeframe, g_vt.liq, g_vt.dir, g_vt.filled, g_vt.entry_time, g_vt.msc);
    row += "," + IntegerToString(eqp.entry_quality_score)
           + "," + eqp.entry_quality_grade
           + "," + IntegerToString(eqp.htf_narrative_score)
@@ -3765,6 +4125,32 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + IntegerToString(g_vt.msc.internal_swing_low_age_bars)
           + "," + IntegerToString(g_vt.msc.mss_choch_score)
           + "," + g_vt.msc.mss_choch_reasons
+          + "," + IntegerToString(g_vt.msc.mss_temporal_relevance_score)
+          + "," + g_vt.msc.mss_temporal_relevance_grade
+          + "," + (g_vt.msc.mss_after_sweep ? "true" : "false")
+          + "," + (g_vt.msc.mss_before_entry ? "true" : "false")
+          + "," + (g_vt.msc.mss_near_entry_window ? "true" : "false")
+          + "," + (g_vt.msc.mss_too_early ? "true" : "false")
+          + "," + (g_vt.msc.mss_too_late ? "true" : "false")
+          + "," + (g_vt.msc.mss_after_fvg ? "true" : "false")
+          + "," + (g_vt.msc.mss_before_fvg ? "true" : "false")
+          + "," + IntegerToString(g_vt.msc.mss_sweep_to_mss_bars)
+          + "," + IntegerToString(g_vt.msc.mss_fvg_to_mss_bars)
+          + "," + IntegerToString(g_vt.msc.mss_mss_to_entry_bars)
+          + "," + g_vt.msc.mss_temporal_relevance_reasons
+          + "," + IntegerToString(g_vt.msc.choch_temporal_relevance_score)
+          + "," + g_vt.msc.choch_temporal_relevance_grade
+          + "," + (g_vt.msc.choch_after_sweep ? "true" : "false")
+          + "," + (g_vt.msc.choch_before_entry ? "true" : "false")
+          + "," + (g_vt.msc.choch_near_entry_window ? "true" : "false")
+          + "," + (g_vt.msc.choch_too_early ? "true" : "false")
+          + "," + (g_vt.msc.choch_too_late ? "true" : "false")
+          + "," + (g_vt.msc.choch_after_fvg ? "true" : "false")
+          + "," + (g_vt.msc.choch_before_fvg ? "true" : "false")
+          + "," + IntegerToString(g_vt.msc.choch_sweep_to_choch_bars)
+          + "," + IntegerToString(g_vt.msc.choch_fvg_to_choch_bars)
+          + "," + IntegerToString(g_vt.msc.choch_choch_to_entry_bars)
+          + "," + g_vt.msc.choch_temporal_relevance_reasons
           + "," + eqp.session_bucket
           + "," + eqp.trade_window_status
           + "," + eqp.spread_status
@@ -3948,6 +4334,43 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
             else
                g_choch_against_trade_count++;
            }
+        }
+
+      g_mss_temporal_sum_score += (double)g_vt.msc.mss_temporal_relevance_score;
+      g_choch_temporal_sum_score += (double)g_vt.msc.choch_temporal_relevance_score;
+      if(g_vt.msc.mss_detected)
+        {
+         if(g_vt.msc.mss_after_sweep)
+            g_mss_after_sweep_count++;
+         if(g_vt.msc.mss_before_entry)
+            g_mss_before_entry_count++;
+         if(g_vt.msc.mss_near_entry_window)
+            g_mss_near_entry_window_count++;
+         if(g_vt.msc.mss_too_early)
+            g_mss_too_early_count++;
+         if(g_vt.msc.mss_too_late)
+            g_mss_too_late_count++;
+         if(g_vt.msc.mss_after_fvg)
+            g_mss_after_fvg_count++;
+         if(g_vt.msc.mss_before_fvg)
+            g_mss_before_fvg_count++;
+        }
+      if(g_vt.msc.choch_detected && !g_vt.msc.mss_detected)
+        {
+         if(g_vt.msc.choch_after_sweep)
+            g_choch_after_sweep_count++;
+         if(g_vt.msc.choch_before_entry)
+            g_choch_before_entry_count++;
+         if(g_vt.msc.choch_near_entry_window)
+            g_choch_near_entry_window_count++;
+         if(g_vt.msc.choch_too_early)
+            g_choch_too_early_count++;
+         if(g_vt.msc.choch_too_late)
+            g_choch_too_late_count++;
+         if(g_vt.msc.choch_after_fvg)
+            g_choch_after_fvg_count++;
+         if(g_vt.msc.choch_before_fvg)
+            g_choch_before_fvg_count++;
         }
      }
 
@@ -4567,7 +4990,7 @@ void RefreshSetupSummaryNotes(void)
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    const long tcRows = g_trades_csv_row_count;
    g_exportNotes = StringFormat(
-                       "E5.12 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); mss_choch_v1_exec_tf=%s (observation-only; closed candles; no gate); "
+                       "E5.12.2 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); mss_choch_v1_exec_tf=%s (E5.12.2 incl. temporal relevance diagnostics; observation-only; closed candles; no gate); "
                        "setup_inputs: enable=%s min_fvg_pts=%d virtual_min_trade_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
@@ -4634,6 +5057,7 @@ string WriteSummaryJson(void)
    json += "  \"has_liquidity_chain_reaction_audit_v1_logic\": true,\r\n";
    json += "  \"has_htf_structure_v1_logic\": true,\r\n";
    json += "  \"has_mss_choch_v1_logic\": true,\r\n";
+   json += "  \"has_mss_choch_temporal_relevance_v1_logic\": true,\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
    json += "  \"score_gate_enabled\": false,\r\n";
@@ -4773,6 +5197,24 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"choch_aligned_with_trade_count\": %I64d,\r\n", g_choch_aligned_with_trade_count);
    json += StringFormat("  \"choch_against_trade_count\": %I64d,\r\n", g_choch_against_trade_count);
    json += StringFormat("  \"average_mss_choch_score\": %.6f,\r\n", avgMsc);
+   const double avgMssTemp = (tcRows > 0 ? g_mss_temporal_sum_score / (double)tcRows : 0.0);
+   const double avgChTemp = (tcRows > 0 ? g_choch_temporal_sum_score / (double)tcRows : 0.0);
+   json += StringFormat("  \"average_mss_temporal_relevance_score\": %.6f,\r\n", avgMssTemp);
+   json += StringFormat("  \"average_choch_temporal_relevance_score\": %.6f,\r\n", avgChTemp);
+   json += StringFormat("  \"mss_after_sweep_count\": %I64d,\r\n", g_mss_after_sweep_count);
+   json += StringFormat("  \"mss_before_entry_count\": %I64d,\r\n", g_mss_before_entry_count);
+   json += StringFormat("  \"mss_near_entry_window_count\": %I64d,\r\n", g_mss_near_entry_window_count);
+   json += StringFormat("  \"mss_too_early_count\": %I64d,\r\n", g_mss_too_early_count);
+   json += StringFormat("  \"mss_too_late_count\": %I64d,\r\n", g_mss_too_late_count);
+   json += StringFormat("  \"mss_after_fvg_count\": %I64d,\r\n", g_mss_after_fvg_count);
+   json += StringFormat("  \"mss_before_fvg_count\": %I64d,\r\n", g_mss_before_fvg_count);
+   json += StringFormat("  \"choch_after_sweep_count\": %I64d,\r\n", g_choch_after_sweep_count);
+   json += StringFormat("  \"choch_before_entry_count\": %I64d,\r\n", g_choch_before_entry_count);
+   json += StringFormat("  \"choch_near_entry_window_count\": %I64d,\r\n", g_choch_near_entry_window_count);
+   json += StringFormat("  \"choch_too_early_count\": %I64d,\r\n", g_choch_too_early_count);
+   json += StringFormat("  \"choch_too_late_count\": %I64d,\r\n", g_choch_too_late_count);
+   json += StringFormat("  \"choch_after_fvg_count\": %I64d,\r\n", g_choch_after_fvg_count);
+   json += StringFormat("  \"choch_before_fvg_count\": %I64d,\r\n", g_choch_before_fvg_count);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -4810,7 +5252,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+
