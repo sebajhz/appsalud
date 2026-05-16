@@ -139,6 +139,27 @@ export interface BacktestTrade {
   /** E5.12.2 temporal relevance observation scores (optional; older CSV). */
   mssTemporalRelevanceScore?: number | undefined;
   chochTemporalRelevanceScore?: number | undefined;
+  /** E5.13 Premium/Discount V1 observation columns (optional; older CSV). */
+  premiumDiscountEnabled?: boolean | undefined;
+  pdRangeSource?: string | undefined;
+  pdRangeHigh?: number | undefined;
+  pdRangeLow?: number | undefined;
+  pdMidpoint50?: number | undefined;
+  pdPositionPct?: number | undefined;
+  pdEntryZone?: string | undefined;
+  pdEntryInPremium?: boolean | undefined;
+  pdEntryInDiscount?: boolean | undefined;
+  pdEntryInEquilibrium?: boolean | undefined;
+  pdEntryOutsideRange?: boolean | undefined;
+  pdEntryZoneValidForDirection?: boolean | undefined;
+  pdEntryZoneConflict?: boolean | undefined;
+  pdEntryTooDeep?: boolean | undefined;
+  pdEntryTooShallow?: boolean | undefined;
+  pdRangeSizePoints?: number | undefined;
+  pdEntryDistanceToMidpointPoints?: number | undefined;
+  premiumDiscountScore?: number | undefined;
+  premiumDiscountGrade?: string | undefined;
+  premiumDiscountReasons?: string | undefined;
 }
 
 export interface BacktestImportWarning {

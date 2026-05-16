@@ -6,8 +6,8 @@
 //+------------------------------------------------------------------+
 #property copyright "Mapazapp"
 #property link      "https://mapazapp"
-#property version   "1.14"
-#property description "Strategy Tester only: official TestEA. E5.12.2 MSS/CHoCH temporal relevance diagnostics (observation/export; closed candles; no gate); E5.12 MSS/CHoCH V1; E5.11 HTF Structure V1; Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit; E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 Entry Quality Score V1 observation-only; E5.5.0.5 short paths + full JSON ids; E5.5.0.3 FileOpen-safe writes (no orders)."
+#property version   "1.15"
+#property description "Strategy Tester only: official TestEA. E5.13 Premium/Discount Context V1 (observation/export; closed candles; no gate); E5.12.2 MSS/CHoCH temporal relevance; E5.12 MSS/CHoCH V1; E5.11 HTF Structure V1; Daily Bias V1 + FVG/Setup V1 + virtual trade simulation; E5.10.6 Liquidity Chain Reaction Audit; E5.10.2 Liquidity Sweep Quality V1; E5.10 Liquidity Sweep V1; E5.8 Entry Quality Score V1 observation-only; E5.5.0.5 short paths + full JSON ids; E5.5.0.3 FileOpen-safe writes (no orders)."
 #property strict
 
 input string            InpSchemaVersion           = "backtest_ea_v1";
@@ -68,7 +68,13 @@ input int               InpMssChochMaxBars            = 200;
 input bool              InpMssChochRequireCloseBreak  = true;
 input bool              InpMssChochScoreEnabled       = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_12_2"
+input bool              InpEnablePremiumDiscountV1        = true;
+input int               InpPremiumDiscountSwingLookbackBars = 2;
+input int               InpPremiumDiscountMaxBars          = 200;
+input int               InpPremiumDiscountEquilibriumBandPct = 10;
+input bool              InpPremiumDiscountScoreEnabled    = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_13"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -267,6 +273,20 @@ long            g_choch_too_late_count = 0;
 long            g_choch_after_fvg_count = 0;
 long            g_choch_before_fvg_count = 0;
 
+double          g_pd_sum_score = 0.0;
+double          g_pd_sum_position_pct = 0.0;
+double          g_pd_sum_range_size_points = 0.0;
+long            g_pd_valid_range_count = 0;
+long            g_pd_missing_range_count = 0;
+long            g_pd_entry_premium_count = 0;
+long            g_pd_entry_discount_count = 0;
+long            g_pd_entry_equilibrium_count = 0;
+long            g_pd_entry_outside_range_count = 0;
+long            g_pd_zone_valid_dir_count = 0;
+long            g_pd_zone_conflict_count = 0;
+long            g_pd_too_deep_count = 0;
+long            g_pd_too_shallow_count = 0;
+
 struct MapzHtfTradeSnap
   {
    bool              enabled;
@@ -339,6 +359,31 @@ struct MapzMssChochTradeSnap
    int               choch_fvg_to_choch_bars;
    int               choch_choch_to_entry_bars;
    string            choch_temporal_relevance_reasons;
+  };
+
+struct MapzPremiumDiscountTradeSnap
+  {
+   bool              log_enabled;
+   string            range_source;
+   double            range_high;
+   double            range_low;
+   double            midpoint;
+   double            position_pct;
+   string            entry_zone;
+   bool              in_premium;
+   bool              in_discount;
+   bool              in_equilibrium;
+   bool              outside_range;
+   bool              zone_valid_for_direction;
+   bool              zone_conflict;
+   bool              entry_too_deep;
+   bool              entry_too_shallow;
+   double            range_size_points;
+   double            distance_mid_points;
+   int               score;
+   string            grade;
+   string            reasons;
+   bool              range_geometry_ok;
   };
 
 struct MapzLiquiditySnapshot
@@ -430,6 +475,7 @@ struct MapzVirtualTrade
    MapzLiquiditySnapshot liq;
    MapzHtfTradeSnap     htf;
    MapzMssChochTradeSnap msc;
+   MapzPremiumDiscountTradeSnap pd;
   };
 
 MapzVirtualTrade g_vt;
@@ -3610,6 +3656,292 @@ void MapzMscComputeTemporalDiagnostics(const string sym,
   }
 
 //+------------------------------------------------------------------+
+void MapzPdSnapClear(MapzPremiumDiscountTradeSnap &o)
+  {
+   o.log_enabled = false;
+   o.range_source = "";
+   o.range_high = 0.0;
+   o.range_low = 0.0;
+   o.midpoint = 0.0;
+   o.position_pct = 0.0;
+   o.entry_zone = "unknown";
+   o.in_premium = false;
+   o.in_discount = false;
+   o.in_equilibrium = false;
+   o.outside_range = false;
+   o.zone_valid_for_direction = false;
+   o.zone_conflict = false;
+   o.entry_too_deep = false;
+   o.entry_too_shallow = false;
+   o.range_size_points = 0.0;
+   o.distance_mid_points = 0.0;
+   o.score = 0;
+   o.grade = "None";
+   o.reasons = "";
+   o.range_geometry_ok = false;
+  }
+
+//+------------------------------------------------------------------+
+string MapzPdGradeFromScore(const int sc)
+  {
+   if(sc >= 12)
+      return "A";
+   if(sc >= 9)
+      return "B";
+   if(sc >= 6)
+      return "C";
+   if(sc >= 2)
+      return "Weak";
+   return "None";
+  }
+
+//+------------------------------------------------------------------+
+string MapzPdCompactSuffix(const MapzPremiumDiscountTradeSnap &p)
+  {
+   return StringFormat("pd_en=%s pd_zone=%s pd_pos=%.2f pd_valid=%s pd_conflict=%s pd_score=%d",
+                       (p.log_enabled ? "true" : "false"),
+                       JsonStringEscape(p.entry_zone),
+                       p.position_pct,
+                       (p.zone_valid_for_direction ? "true" : "false"),
+                       (p.zone_conflict ? "true" : "false"),
+                       p.score);
+  }
+
+//+------------------------------------------------------------------+
+void MapzPremiumDiscountBuildTradeSnap(const string sym,
+                                       const ENUM_TIMEFRAMES tf,
+                                       const ENUM_MAPZ_SETUP_DIR dir,
+                                       const datetime setupTime,
+                                       const double entryPrice,
+                                       const MapzHtfTradeSnap &htf,
+                                       MapzPremiumDiscountTradeSnap &out)
+  {
+   MapzPdSnapClear(out);
+   out.log_enabled = InpEnablePremiumDiscountV1;
+   if(!InpEnablePremiumDiscountV1)
+     {
+      MapzHtfAppendToken(out.reasons, "pd_unknown");
+      return;
+     }
+
+   const double pt = SymbolInfoDouble(sym, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+
+   int N = InpPremiumDiscountSwingLookbackBars;
+   if(N < 1)
+      N = 1;
+   if(N > 5)
+      N = 5;
+   int mx = InpPremiumDiscountMaxBars;
+   if(mx < 40)
+      mx = 40;
+   if(mx > 800)
+      mx = 800;
+
+   int bandPct = InpPremiumDiscountEquilibriumBandPct;
+   if(bandPct < 1)
+      bandPct = 1;
+   if(bandPct > 25)
+      bandPct = 25;
+
+   const int refShift = iBarShift(sym, tf, setupTime, false);
+   if(refShift < 1)
+     {
+      MapzHtfAppendToken(out.reasons, "pd_missing_range");
+      return;
+     }
+
+   int shShift = -1, slShift = -1;
+   double shPrice = 0.0, slPrice = 0.0;
+   const bool hasHigh = MapzMscFindLatestSwingHigh(sym, tf, refShift, N, mx, shShift, shPrice);
+   const bool hasLow = MapzMscFindLatestSwingLow(sym, tf, refShift, N, mx, slShift, slPrice);
+
+   double rh = 0.0, rl = 0.0;
+   string src = "";
+
+   if(hasHigh && hasLow && shPrice > slPrice + ptSafe * 0.5)
+     {
+      rh = shPrice;
+      rl = slPrice;
+      src = "exec_tf_latest_swings";
+     }
+   else if(InpEnableHtfStructureV1 && htf.enabled
+           && htf.h4_protected_high > htf.h4_protected_low + ptSafe * 0.5
+           && MathIsValidNumber(htf.h4_protected_high)
+           && MathIsValidNumber(htf.h4_protected_low))
+     {
+      rh = htf.h4_protected_high;
+      rl = htf.h4_protected_low;
+      src = "htf_h4_protected_range";
+     }
+   else if(hasHigh && hasLow)
+     {
+      rh = shPrice;
+      rl = slPrice;
+      src = "exec_tf_latest_swings";
+      MapzHtfAppendToken(out.reasons, "pd_invalid_range");
+     }
+   else
+     {
+      MapzHtfAppendToken(out.reasons, "pd_missing_range");
+     }
+
+   if(StringFind(out.reasons, "pd_missing_range") >= 0)
+      return;
+
+   if(StringFind(out.reasons, "pd_invalid_range") >= 0 || !(rh > rl + ptSafe * 0.5))
+     {
+      out.range_high = rh;
+      out.range_low = rl;
+      out.range_source = src;
+      return;
+     }
+
+   out.range_geometry_ok = true;
+   out.range_high = rh;
+   out.range_low = rl;
+   out.range_source = src;
+   out.midpoint = (rh + rl) / 2.0;
+   out.range_size_points = (rh - rl) / ptSafe;
+   out.distance_mid_points = MathAbs(entryPrice - out.midpoint) / ptSafe;
+
+   out.position_pct = 100.0 * (entryPrice - rl) / (rh - rl);
+
+   const double lowBand = 50.0 - (double)bandPct;
+   const double highBand = 50.0 + (double)bandPct;
+
+   out.outside_range = (entryPrice < rl - ptSafe * 0.5 || entryPrice > rh + ptSafe * 0.5);
+
+   if(out.outside_range)
+     {
+      out.entry_zone = "unknown";
+      MapzHtfAppendToken(out.reasons, "pd_entry_outside_range");
+     }
+   else if(out.position_pct < lowBand)
+     {
+      out.entry_zone = "discount";
+      out.in_discount = true;
+      MapzHtfAppendToken(out.reasons, "pd_entry_discount");
+     }
+   else if(out.position_pct > highBand)
+     {
+      out.entry_zone = "premium";
+      out.in_premium = true;
+      MapzHtfAppendToken(out.reasons, "pd_entry_premium");
+     }
+   else
+     {
+      out.entry_zone = "equilibrium";
+      out.in_equilibrium = true;
+      MapzHtfAppendToken(out.reasons, "pd_entry_equilibrium");
+     }
+
+   const bool longDir = (dir == MAPZ_SETUP_LONG);
+   const bool shortDir = (dir == MAPZ_SETUP_SHORT);
+
+   if(out.in_discount && longDir)
+     {
+      out.zone_valid_for_direction = true;
+      MapzHtfAppendToken(out.reasons, "pd_zone_valid_for_long");
+     }
+   else if(out.in_premium && shortDir)
+     {
+      out.zone_valid_for_direction = true;
+      MapzHtfAppendToken(out.reasons, "pd_zone_valid_for_short");
+     }
+   else if(out.in_premium && longDir)
+     {
+      out.zone_conflict = true;
+      MapzHtfAppendToken(out.reasons, "pd_zone_conflict_long_in_premium");
+     }
+   else if(out.in_discount && shortDir)
+     {
+      out.zone_conflict = true;
+      MapzHtfAppendToken(out.reasons, "pd_zone_conflict_short_in_discount");
+     }
+
+   if(out.range_geometry_ok)
+      MapzHtfAppendToken(out.reasons, "pd_valid_range");
+
+   if(out.range_size_points > 0.0 && out.range_size_points < 15.0)
+      MapzHtfAppendToken(out.reasons, "pd_range_too_small");
+   if(out.range_size_points > 50000.0)
+      MapzHtfAppendToken(out.reasons, "pd_range_too_large");
+
+   if(longDir)
+     {
+      if(out.outside_range && entryPrice < rl - ptSafe * 0.5)
+         out.entry_too_deep = true;
+      else if(!out.outside_range && out.in_discount && out.position_pct < 10.0)
+         out.entry_too_deep = true;
+      else if(!out.outside_range && out.in_discount && out.position_pct > 40.0)
+         out.entry_too_shallow = true;
+     }
+   else if(shortDir)
+     {
+      if(out.outside_range && entryPrice > rh + ptSafe * 0.5)
+         out.entry_too_deep = true;
+      else if(!out.outside_range && out.in_premium && out.position_pct > 90.0)
+         out.entry_too_deep = true;
+      else if(!out.outside_range && out.in_premium && out.position_pct < 60.0)
+         out.entry_too_shallow = true;
+     }
+
+   if(out.entry_too_deep)
+      MapzHtfAppendToken(out.reasons, "pd_entry_too_deep");
+   if(out.entry_too_shallow)
+      MapzHtfAppendToken(out.reasons, "pd_entry_too_shallow");
+
+   if(!InpPremiumDiscountScoreEnabled)
+     {
+      out.score = 0;
+      out.grade = "None";
+      MapzHtfAppendToken(out.reasons, "pd_score_disabled");
+      return;
+     }
+
+   int sc = 0;
+   if(out.outside_range)
+     {
+      sc = 3;
+     }
+   else if(out.in_equilibrium)
+     {
+      sc = 6;
+     }
+   else if(out.zone_conflict)
+     {
+      sc = 4;
+     }
+   else if(out.zone_valid_for_direction)
+     {
+      sc = 13;
+      if(!out.entry_too_deep && !out.entry_too_shallow)
+         sc = 15;
+     }
+   else
+     {
+      sc = 5;
+     }
+
+   if(StringFind(out.reasons, "pd_range_too_small") >= 0)
+      sc -= 2;
+   if(StringFind(out.reasons, "pd_range_too_large") >= 0)
+      sc -= 1;
+   if(out.entry_too_deep)
+      sc -= 2;
+   if(out.entry_too_shallow)
+      sc -= 1;
+
+   if(sc < 0)
+      sc = 0;
+   if(sc > 15)
+      sc = 15;
+   out.score = sc;
+   out.grade = MapzPdGradeFromScore(sc);
+  }
+
+//+------------------------------------------------------------------+
 void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
                                   const ENUM_MAPZ_BIAS biasEnum,
                                   const long fvgPts,
@@ -3963,7 +4295,7 @@ string VirtualBuildDetailsCore(void)
              g_vt.bars_waiting_entry,
              g_vt.bars_held,
              JsonStringEscape(g_vt.exit_reason));
-   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc);
+   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc) + " " + MapzPdCompactSuffix(g_vt.pd);
   }
 
 //+------------------------------------------------------------------+
@@ -4151,6 +4483,26 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + IntegerToString(g_vt.msc.choch_fvg_to_choch_bars)
           + "," + IntegerToString(g_vt.msc.choch_choch_to_entry_bars)
           + "," + g_vt.msc.choch_temporal_relevance_reasons
+          + "," + (g_vt.pd.log_enabled ? "true" : "false")
+          + "," + g_vt.pd.range_source
+          + "," + DoubleToString(g_vt.pd.range_high, _Digits)
+          + "," + DoubleToString(g_vt.pd.range_low, _Digits)
+          + "," + DoubleToString(g_vt.pd.midpoint, _Digits)
+          + "," + DoubleToString(g_vt.pd.position_pct, 2)
+          + "," + g_vt.pd.entry_zone
+          + "," + (g_vt.pd.in_premium ? "true" : "false")
+          + "," + (g_vt.pd.in_discount ? "true" : "false")
+          + "," + (g_vt.pd.in_equilibrium ? "true" : "false")
+          + "," + (g_vt.pd.outside_range ? "true" : "false")
+          + "," + (g_vt.pd.zone_valid_for_direction ? "true" : "false")
+          + "," + (g_vt.pd.zone_conflict ? "true" : "false")
+          + "," + (g_vt.pd.entry_too_deep ? "true" : "false")
+          + "," + (g_vt.pd.entry_too_shallow ? "true" : "false")
+          + "," + DoubleToString(g_vt.pd.range_size_points, 2)
+          + "," + DoubleToString(g_vt.pd.distance_mid_points, 2)
+          + "," + IntegerToString(g_vt.pd.score)
+          + "," + g_vt.pd.grade
+          + "," + g_vt.pd.reasons
           + "," + eqp.session_bucket
           + "," + eqp.trade_window_status
           + "," + eqp.spread_status
@@ -4374,6 +4726,37 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
         }
      }
 
+   if(InpEnablePremiumDiscountV1)
+     {
+      g_pd_sum_score += (double)g_vt.pd.score;
+      g_pd_sum_position_pct += g_vt.pd.position_pct;
+      g_pd_sum_range_size_points += g_vt.pd.range_size_points;
+      if(g_vt.pd.range_geometry_ok)
+        {
+         g_pd_valid_range_count++;
+         if(g_vt.pd.in_premium)
+            g_pd_entry_premium_count++;
+         if(g_vt.pd.in_discount)
+            g_pd_entry_discount_count++;
+         if(g_vt.pd.in_equilibrium)
+            g_pd_entry_equilibrium_count++;
+         if(g_vt.pd.outside_range)
+            g_pd_entry_outside_range_count++;
+         if(g_vt.pd.zone_valid_for_direction)
+            g_pd_zone_valid_dir_count++;
+         if(g_vt.pd.zone_conflict)
+            g_pd_zone_conflict_count++;
+         if(g_vt.pd.entry_too_deep)
+            g_pd_too_deep_count++;
+         if(g_vt.pd.entry_too_shallow)
+            g_pd_too_shallow_count++;
+        }
+      else
+        {
+         g_pd_missing_range_count++;
+        }
+     }
+
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
    g_tradesDataLines += row;
@@ -4390,6 +4773,7 @@ void VirtualClearTrade(void)
    MapzLiquiditySnapshotClear(g_vt.liq);
    MapzHtfSnapClear(g_vt.htf);
    MapzMscSnapClear(g_vt.msc);
+   MapzPdSnapClear(g_vt.pd);
   }
 
 //+------------------------------------------------------------------+
@@ -4595,6 +4979,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    MapzLiquiditySnapshotCopy(g_vt.liq, liqInit);
    MapzHtfBuildTradeSnap(g_brokerSymbol, sdir, g_lastBiasEnum, g_vt.htf);
    MapzMssChochBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, g_lastBiasEnum, liqInit, cTime, g_vt.msc);
+   MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, g_vt.entry, g_vt.htf, g_vt.pd);
 
    g_virtual_trade_count++;
    const string detC = VirtualBuildDetailsCore();
@@ -4926,7 +5311,9 @@ void TryDetectIfvgOnNewExecClosedBar(void)
          MapzEqComputeScoresFromState(sdir, g_lastBiasEnum, fvgPtsP, entP, slP, tpP, rAbsP, false, "", liqWork, htfPrev, eqSetup);
          MapzMssChochTradeSnap mscPrev;
          MapzMssChochBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, g_lastBiasEnum, liqWork, cTime, mscPrev);
-         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev) + " " + MapzMscCompactSuffix(mscPrev);
+         MapzPremiumDiscountTradeSnap pdPrev;
+         MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, entP, htfPrev, pdPrev);
+         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev) + " " + MapzMscCompactSuffix(mscPrev) + " " + MapzPdCompactSuffix(pdPrev);
         }
       const string evAllow = ExportSetupEvent(EVT_SETUP_ALLOWED, setupW, gate, "daily_bias_aligned", detA);
       VirtualOnSetupAllowed(evAllow, setupW, sdir, fLo, fHi, gapPts, cTime, rsn, liqWork);
@@ -4990,7 +5377,7 @@ void RefreshSetupSummaryNotes(void)
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    const long tcRows = g_trades_csv_row_count;
    g_exportNotes = StringFormat(
-                       "E5.12.2 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); mss_choch_v1_exec_tf=%s (E5.12.2 incl. temporal relevance diagnostics; observation-only; closed candles; no gate); "
+                       "E5.13 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); mss_choch_v1_exec_tf=%s (E5.12.2 incl. temporal relevance; observation-only; closed candles; no gate); premium_discount_v1=%s (E5.13; observation-only; no gate); "
                        "setup_inputs: enable=%s min_fvg_pts=%d virtual_min_trade_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
@@ -5001,6 +5388,7 @@ void RefreshSetupSummaryNotes(void)
                        (InpEntryQualityScoreEnabled ? "on" : "off"),
                        (InpEnableHtfStructureV1 ? "on" : "off"),
                        (InpEnableMssChochV1 ? "on" : "off"),
+                       (InpEnablePremiumDiscountV1 ? "on" : "off"),
                        (InpEnableSetupDetection ? "true" : "false"),
                        InpMinFvgPoints,
                        InpVirtualMinTradeFvgPoints,
@@ -5058,6 +5446,8 @@ string WriteSummaryJson(void)
    json += "  \"has_htf_structure_v1_logic\": true,\r\n";
    json += "  \"has_mss_choch_v1_logic\": true,\r\n";
    json += "  \"has_mss_choch_temporal_relevance_v1_logic\": true,\r\n";
+   json += "  \"has_premium_discount_v1_logic\": true,\r\n";
+   json += "  \"premium_discount_enabled\": " + (InpEnablePremiumDiscountV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
    json += "  \"score_gate_enabled\": false,\r\n";
@@ -5215,6 +5605,22 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"choch_too_late_count\": %I64d,\r\n", g_choch_too_late_count);
    json += StringFormat("  \"choch_after_fvg_count\": %I64d,\r\n", g_choch_after_fvg_count);
    json += StringFormat("  \"choch_before_fvg_count\": %I64d,\r\n", g_choch_before_fvg_count);
+   const double avgPdScore = (tcRows > 0 ? g_pd_sum_score / (double)tcRows : 0.0);
+   const double avgPdPos = (tcRows > 0 ? g_pd_sum_position_pct / (double)tcRows : 0.0);
+   const double avgPdRangePts = (tcRows > 0 ? g_pd_sum_range_size_points / (double)tcRows : 0.0);
+   json += StringFormat("  \"pd_valid_range_count\": %I64d,\r\n", g_pd_valid_range_count);
+   json += StringFormat("  \"pd_missing_range_count\": %I64d,\r\n", g_pd_missing_range_count);
+   json += StringFormat("  \"pd_entry_premium_count\": %I64d,\r\n", g_pd_entry_premium_count);
+   json += StringFormat("  \"pd_entry_discount_count\": %I64d,\r\n", g_pd_entry_discount_count);
+   json += StringFormat("  \"pd_entry_equilibrium_count\": %I64d,\r\n", g_pd_entry_equilibrium_count);
+   json += StringFormat("  \"pd_entry_outside_range_count\": %I64d,\r\n", g_pd_entry_outside_range_count);
+   json += StringFormat("  \"pd_entry_zone_valid_for_direction_count\": %I64d,\r\n", g_pd_zone_valid_dir_count);
+   json += StringFormat("  \"pd_entry_zone_conflict_count\": %I64d,\r\n", g_pd_zone_conflict_count);
+   json += StringFormat("  \"pd_entry_too_deep_count\": %I64d,\r\n", g_pd_too_deep_count);
+   json += StringFormat("  \"pd_entry_too_shallow_count\": %I64d,\r\n", g_pd_too_shallow_count);
+   json += StringFormat("  \"average_premium_discount_score\": %.6f,\r\n", avgPdScore);
+   json += StringFormat("  \"average_pd_position_pct\": %.6f,\r\n", avgPdPos);
+   json += StringFormat("  \"average_pd_range_size_points\": %.6f,\r\n", avgPdRangePts);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -5241,7 +5647,12 @@ string WriteSummaryJson(void)
    json += StringFormat("    \"mss_choch_swing_lookback_bars\": %d,\r\n", InpMssChochSwingLookbackBars);
    json += StringFormat("    \"mss_choch_max_bars\": %d,\r\n", InpMssChochMaxBars);
    json += "    \"mss_choch_require_close_break\": " + (InpMssChochRequireCloseBreak ? "true" : "false") + ",\r\n";
-   json += "    \"mss_choch_score_enabled\": " + (InpMssChochScoreEnabled ? "true" : "false") + "\r\n";
+   json += "    \"mss_choch_score_enabled\": " + (InpMssChochScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"premium_discount_v1_enabled\": " + (InpEnablePremiumDiscountV1 ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"premium_discount_swing_lookback_bars\": %d,\r\n", InpPremiumDiscountSwingLookbackBars);
+   json += StringFormat("    \"premium_discount_max_bars\": %d,\r\n", InpPremiumDiscountMaxBars);
+   json += StringFormat("    \"premium_discount_equilibrium_band_pct\": %d,\r\n", InpPremiumDiscountEquilibriumBandPct);
+   json += "    \"premium_discount_score_enabled\": " + (InpPremiumDiscountScoreEnabled ? "true" : "false") + "\r\n";
    json += "  },\r\n";
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
@@ -5252,7 +5663,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+

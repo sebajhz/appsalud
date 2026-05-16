@@ -111,6 +111,8 @@ Cada token listado en el CSV (separadores `,`, `;`, `|`) se cuenta. Aparece la c
 - No MT5 / Strategy Tester desde el repo.  
 - No `POST`, endpoints de acciones, expansión de dashboard ni launcher.
 
+Cuando el CSV incluye la columna `premium_discount_score` (E5.13), el analizador expone opcionalmente `premium_discount_component_stats` en el resultado de calibración (misma semántica post-hoc; sin gate).
+
 ---
 
 ## Historial
@@ -119,3 +121,4 @@ Cada token listado en el CSV (separadores `,`, `;`, `|`) se cuenta. Aparece la c
 |---------|------|
 | E5.9 v1 | Analizador core + CLI + tests + documentación; bandas relativas y flags diagnósticos. |
 | E5.9.1 | Evidencia operador smoke + decisión componentes — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md). |
+| E5.13 | Si el bundle incluye `premium_discount_score`, se agrega `premium_discount_component_stats` al análisis (opcional; bundles antiguos sin cambios). |

@@ -1,6 +1,6 @@
 {
   "schema_version": "backtest_ea_v1",
-  "ea_build": "MZP_TestEA_E5_12_2_sample",
+  "ea_build": "MZP_TestEA_E5_13_sample",
   "run_id": "TESTEA_SAMPLE_RUN",
   "campaign_id": "",
   "optimization_safe_exports": false,
@@ -26,7 +26,12 @@
     "mss_choch_swing_lookback_bars": 2,
     "mss_choch_max_bars": 200,
     "mss_choch_require_close_break": true,
-    "mss_choch_score_enabled": true
+    "mss_choch_score_enabled": true,
+    "premium_discount_v1_enabled": true,
+    "premium_discount_swing_lookback_bars": 2,
+    "premium_discount_max_bars": 200,
+    "premium_discount_equilibrium_band_pct": 10,
+    "premium_discount_score_enabled": true
   },
   "strategy_id": "IFVG_XAUUSD_V1",
   "parameter_set_id": "default",
@@ -51,6 +56,8 @@
   "has_htf_structure_v1_logic": true,
   "has_mss_choch_v1_logic": true,
   "has_mss_choch_temporal_relevance_v1_logic": true,
+  "has_premium_discount_v1_logic": true,
+  "premium_discount_enabled": true,
   "has_entry_quality_score_logic": true,
   "score_observation_only": true,
   "score_gate_enabled": false,
@@ -186,6 +193,19 @@
   "choch_too_late_count": 0,
   "choch_after_fvg_count": 0,
   "choch_before_fvg_count": 0,
+  "pd_valid_range_count": 3,
+  "pd_missing_range_count": 0,
+  "pd_entry_premium_count": 1,
+  "pd_entry_discount_count": 1,
+  "pd_entry_equilibrium_count": 1,
+  "pd_entry_outside_range_count": 0,
+  "pd_entry_zone_valid_for_direction_count": 2,
+  "pd_entry_zone_conflict_count": 0,
+  "pd_entry_too_deep_count": 0,
+  "pd_entry_too_shallow_count": 0,
+  "average_premium_discount_score": 10.666667,
+  "average_pd_position_pct": 47.766667,
+  "average_pd_range_size_points": 406.666667,
   "exported_at_utc": "2026-01-15T10:00:00Z",
-  "notes": "Fictional E5.12.2 sample bundle — not Strategy Tester output. MSS/CHoCH V1 + temporal relevance diagnostics (observation-only; no gate). No MSS/CHoCH gate; score_observation_only=true; score_gate_enabled=false."
+  "notes": "Fictional E5.13 sample bundle — not Strategy Tester output. Includes Premium/Discount V1 observation export (E5.13; no gate). MSS/CHoCH V1 + temporal relevance (observation-only). score_observation_only=true; score_gate_enabled=false."
 }

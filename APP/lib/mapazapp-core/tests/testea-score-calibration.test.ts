@@ -456,6 +456,28 @@ describe("testea-score-calibration", () => {
     expect(p.byTradeId.get("t_tr")?.choch_temporal?.choch_temporal_relevance_score).toBe(5);
   });
 
+  it("parseTradeScoreAuxiliaryByTradeId maps E5.13 premium_discount_score when present", () => {
+    const headers = [
+      "trade_id",
+      "direction",
+      "entry_time",
+      "exit_time",
+      "entry_price",
+      "exit_price",
+      "result_r",
+      "symbol",
+      "strategy_id",
+      "parameter_set_id",
+      "outcome",
+      "entry_quality_score",
+      "premium_discount_score",
+    ].join(",");
+    const row = ["t_pd", "BUY", "2026-01-01T10:00:00Z", "2026-01-01T11:00:00Z", "1", "1", "1", "XAUUSD", "IFVG_X", "SET_SC", "win", "70", "13"].join(",");
+    const p = parseTradeScoreAuxiliaryByTradeId([headers, row].join("\n"));
+    expect(p.hasPremiumDiscountScoreColumn).toBe(true);
+    expect(p.byTradeId.get("t_pd")?.premium_discount?.premium_discount_score).toBe(13);
+  });
+
   it("analyzeTestEaScoreCalibrationFromTexts fills liquidity_quality_component_stats when quality columns exist", () => {
     const headers = [
       "trade_id",
@@ -494,6 +516,7 @@ describe("testea-score-calibration", () => {
       "mss_choch_score",
       "mss_temporal_relevance_score",
       "choch_temporal_relevance_score",
+      "premium_discount_score",
     ].join(",");
     const row = [
       "t0",
@@ -532,6 +555,7 @@ describe("testea-score-calibration", () => {
       "12",
       "9",
       "4",
+      "13",
     ].join(",");
     const csv = [headers, row].join("\n");
     const r = analyzeTestEaScoreCalibrationFromTexts({
@@ -548,5 +572,6 @@ describe("testea-score-calibration", () => {
     expect(r.mss_choch_component_stats?.mss_choch_score?.average).toBe(12);
     expect(r.mss_temporal_relevance_component_stats?.mss_temporal_relevance_score?.average).toBe(9);
     expect(r.choch_temporal_relevance_component_stats?.choch_temporal_relevance_score?.average).toBe(4);
+    expect(r.premium_discount_component_stats?.premium_discount_score?.average).toBe(13);
   });
 });

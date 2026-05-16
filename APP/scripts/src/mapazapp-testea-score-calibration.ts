@@ -84,6 +84,7 @@ export function analyzeTestEaBundleScoreCalibration(
       mss_choch_component_stats: null,
       mss_temporal_relevance_component_stats: null,
       choch_temporal_relevance_component_stats: null,
+      premium_discount_component_stats: null,
     };
   }
   return analyzeTestEaScoreCalibrationFromTexts({

@@ -756,6 +756,112 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
     }
 
+    const pdEnRaw = pick(cells, col, "premium_discount_enabled");
+    const pdSrcRaw = pick(cells, col, "pd_range_source");
+    const pdHiRaw = pick(cells, col, "pd_range_high");
+    const pdLoRaw = pick(cells, col, "pd_range_low");
+    const pdMidRaw = pick(cells, col, "pd_midpoint_50");
+    const pdPosRaw = pick(cells, col, "pd_position_pct");
+    const pdZoneRaw = pick(cells, col, "pd_entry_zone");
+    const pdPrRaw = pick(cells, col, "pd_entry_in_premium");
+    const pdDisRaw = pick(cells, col, "pd_entry_in_discount");
+    const pdEqRaw = pick(cells, col, "pd_entry_in_equilibrium");
+    const pdOutRaw = pick(cells, col, "pd_entry_outside_range");
+    const pdValDirRaw = pick(cells, col, "pd_entry_zone_valid_for_direction");
+    const pdCnfRaw = pick(cells, col, "pd_entry_zone_conflict");
+    const pdDeepRaw = pick(cells, col, "pd_entry_too_deep");
+    const pdShalRaw = pick(cells, col, "pd_entry_too_shallow");
+    const pdSzRaw = pick(cells, col, "pd_range_size_points");
+    const pdDistMidRaw = pick(cells, col, "pd_entry_distance_to_midpoint_points");
+    const pdScrRaw = pick(cells, col, "premium_discount_score");
+    const pdGrdRaw = pick(cells, col, "premium_discount_grade");
+    const pdRsnRaw = pick(cells, col, "premium_discount_reasons");
+
+    if (pdEnRaw !== undefined && pdEnRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdEnRaw, "premium_discount_enabled", rowNum);
+      if (b.ok) trade.premiumDiscountEnabled = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdSrcRaw?.trim()) trade.pdRangeSource = pdSrcRaw.trim();
+    if (pdHiRaw !== undefined && pdHiRaw.trim() !== "") {
+      const p = parseNumber(pdHiRaw, "pd_range_high", rowNum);
+      if (p.ok) trade.pdRangeHigh = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (pdLoRaw !== undefined && pdLoRaw.trim() !== "") {
+      const p = parseNumber(pdLoRaw, "pd_range_low", rowNum);
+      if (p.ok) trade.pdRangeLow = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (pdMidRaw !== undefined && pdMidRaw.trim() !== "") {
+      const p = parseNumber(pdMidRaw, "pd_midpoint_50", rowNum);
+      if (p.ok) trade.pdMidpoint50 = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (pdPosRaw !== undefined && pdPosRaw.trim() !== "") {
+      const p = parseNumber(pdPosRaw, "pd_position_pct", rowNum);
+      if (p.ok) trade.pdPositionPct = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (pdZoneRaw?.trim()) trade.pdEntryZone = pdZoneRaw.trim();
+    if (pdPrRaw !== undefined && pdPrRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdPrRaw, "pd_entry_in_premium", rowNum);
+      if (b.ok) trade.pdEntryInPremium = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdDisRaw !== undefined && pdDisRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdDisRaw, "pd_entry_in_discount", rowNum);
+      if (b.ok) trade.pdEntryInDiscount = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdEqRaw !== undefined && pdEqRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdEqRaw, "pd_entry_in_equilibrium", rowNum);
+      if (b.ok) trade.pdEntryInEquilibrium = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdOutRaw !== undefined && pdOutRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdOutRaw, "pd_entry_outside_range", rowNum);
+      if (b.ok) trade.pdEntryOutsideRange = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdValDirRaw !== undefined && pdValDirRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdValDirRaw, "pd_entry_zone_valid_for_direction", rowNum);
+      if (b.ok) trade.pdEntryZoneValidForDirection = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdCnfRaw !== undefined && pdCnfRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdCnfRaw, "pd_entry_zone_conflict", rowNum);
+      if (b.ok) trade.pdEntryZoneConflict = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdDeepRaw !== undefined && pdDeepRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdDeepRaw, "pd_entry_too_deep", rowNum);
+      if (b.ok) trade.pdEntryTooDeep = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdShalRaw !== undefined && pdShalRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(pdShalRaw, "pd_entry_too_shallow", rowNum);
+      if (b.ok) trade.pdEntryTooShallow = b.val;
+      else warnings.push({ code: "CSV_PD_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (pdSzRaw !== undefined && pdSzRaw.trim() !== "") {
+      const p = parseNumber(pdSzRaw, "pd_range_size_points", rowNum);
+      if (p.ok) trade.pdRangeSizePoints = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (pdDistMidRaw !== undefined && pdDistMidRaw.trim() !== "") {
+      const p = parseNumber(pdDistMidRaw, "pd_entry_distance_to_midpoint_points", rowNum);
+      if (p.ok) trade.pdEntryDistanceToMidpointPoints = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (pdScrRaw !== undefined && pdScrRaw.trim() !== "") {
+      const p = parseNumber(pdScrRaw, "premium_discount_score", rowNum);
+      if (p.ok) trade.premiumDiscountScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (pdGrdRaw?.trim()) trade.premiumDiscountGrade = pdGrdRaw.trim();
+    if (pdRsnRaw?.trim()) trade.premiumDiscountReasons = pdRsnRaw.trim();
+
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({
         code: "CSV_GEOMETRY_LONG_SL",

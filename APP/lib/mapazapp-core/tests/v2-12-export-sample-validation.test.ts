@@ -282,6 +282,8 @@ describe("V2-12 export sample validation", () => {
     expect(r.summaryJson?.["htf_structure_enabled"]).toBe(true);
     expect(r.summaryJson?.["has_mss_choch_v1_logic"]).toBe(true);
     expect(r.summaryJson?.["has_mss_choch_temporal_relevance_v1_logic"]).toBe(true);
+    expect(r.summaryJson?.["has_premium_discount_v1_logic"]).toBe(true);
+    expect(r.summaryJson?.["premium_discount_enabled"]).toBe(true);
     expect(r.summaryJson?.["average_mss_temporal_relevance_score"]).toBe(5);
     expect(r.summaryJson?.["mss_choch_enabled"]).toBe(true);
     expect(r.summaryOk).toBe(true);
@@ -296,5 +298,7 @@ describe("V2-12 export sample validation", () => {
     expect(r.tradesImport?.trades[0]?.mssChochScore).toBe(15);
     expect(r.tradesImport?.trades[0]?.mssTemporalRelevanceScore).toBe(8);
     expect(r.tradesImport?.trades[0]?.mssDetected).toBe(true);
+    expect(r.tradesImport?.trades[0]?.premiumDiscountScore).toBe(14);
+    expect(r.tradesImport?.trades[0]?.pdEntryZone).toBe("discount");
   });
 });

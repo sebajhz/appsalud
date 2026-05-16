@@ -138,7 +138,8 @@ Smoke ejecutado por el operador **después de E5.12.2 — MSS/CHoCH temporal rel
 - **No** cambios a umbrales globales de Entry Quality.
 - **No** fabricar grados A/B.
 - **No** seguir afinando MSS/CHoCH **a ciegas** solo por este bundle.
-- **Siguiente recomendado:** **E5.13 — Premium/Discount Context V1**, con atención a **calidad de zona de entrada** y a si las entradas son **demasiado profundas o tardías** respecto al contexto de precio.
+- **E5.13 (repo) — cerrado:** **Premium/Discount Context V1** — [`PREMIUM_DISCOUNT_EXPORT_E5_13.md`](./PREMIUM_DISCOUNT_EXPORT_E5_13.md) (`MZP_TestEA_E5_13`; calidad de zona de entrada / profundidad vs rango; observación-only).
+- **Siguiente recomendado:** **E5.13.1 — smoke Premium/Discount** (operador; post-recompile) sobre bundle representativo.
 
 ---
 

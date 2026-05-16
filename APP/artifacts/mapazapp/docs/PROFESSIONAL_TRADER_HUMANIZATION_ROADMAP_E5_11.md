@@ -64,27 +64,17 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 **Smoke cerrado (docs):** **E5.12.3** — [`MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md) — build `MZP_TestEA_E5_12_2`, mismo bundle; **PASS técnico** (`BUNDLE_EVENTS_LARGE`); relevancia temporal **observación-only**; confirma que muchas rupturas quedan **tarde o tras entrada** → explica en parte el hallazgo E5.12.1; **no** compuerta.
 
-**Siguiente (repo / operador):** **E5.13** Premium/Discount — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D (atención a zona de entrada y profundidad/timing).
+**Siguiente (repo / operador):** **E5.13.1** smoke Premium/Discount post–**E5.13** (recompile + bundle) — ver [`PREMIUM_DISCOUNT_EXPORT_E5_13.md`](./PREMIUM_DISCOUNT_EXPORT_E5_13.md) § fin.
 
 **Referencia E5.12.2 (repo):** [`MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md) — columnas temporales + summary `has_mss_choch_temporal_relevance_v1_logic`; sigue **sin** compuerta.
 
 ## D. Premium / Discount / zona de precio
 
-### E5.13 — Premium/Discount Context V1
+### E5.13 — Premium/Discount Context V1 (**export cerrado en repo**)
 
-**Propósito:** evitar largos en **premium** o cortos en **discount** salvo **justificación explícita** exportada (razones).
+**Referencia:** [`PREMIUM_DISCOUNT_EXPORT_E5_13.md`](./PREMIUM_DISCOUNT_EXPORT_E5_13.md) — `Mapazapp_TestEA.mq5` build **`MZP_TestEA_E5_13`**; columnas `premium_discount_*` y `pd_*` (rango, midpoint, posición %, zona, validez direccional, fuera de rango, too deep/shallow, score 0–15); summary `has_premium_discount_v1_logic` + contadores/agregados; `optimization_parameters` (`premium_discount_*`); sufijo compacto en eventos `setup_allowed` y `virtual_trade_candidate_created` (`pd_en`, `pd_zone`, `pd_pos`, `pd_valid`, `pd_conflict`, `pd_score`); analizador E5.9 opcional `premium_discount_component_stats` si existe `premium_discount_score`; **sin** compuerta dura; **sin** cambiar generación de trades ni outcomes.
 
-**Campos planificados (observación-first):**
-
-| Campo |
-|-------|
-| `pd_range_high` |
-| `pd_range_low` |
-| `pd_midpoint_50` |
-| `price_zone` (`premium` / `discount` / `equilibrium`) |
-| `entry_zone_valid_for_direction` |
-| `ote_zone_touched` |
-| `price_zone_reason_codes` |
+**Smoke siguiente (operador):** **E5.13.1** — recompilar EA y validar bundle representativo tras E5.13.
 
 ---
 

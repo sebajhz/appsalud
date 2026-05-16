@@ -1324,6 +1324,122 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_premium_discount_v1_logic"] === true) {
+          if (!("premium_discount_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_PD_E5_13_KEY",
+                `E5.13: when has_premium_discount_v1_logic is true, summary must include "premium_discount_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else {
+            const pden = summaryJson["premium_discount_enabled"];
+            if (typeof pden !== "boolean") {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_PD_E5_13_BOOL",
+                  `E5.13: "premium_discount_enabled" must be a boolean`,
+                  { fileName: sj.fileName, detail: String(pden) },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          const pdSummaryKeys = [
+            "pd_valid_range_count",
+            "pd_missing_range_count",
+            "pd_entry_premium_count",
+            "pd_entry_discount_count",
+            "pd_entry_equilibrium_count",
+            "pd_entry_outside_range_count",
+            "pd_entry_zone_valid_for_direction_count",
+            "pd_entry_zone_conflict_count",
+            "pd_entry_too_deep_count",
+            "pd_entry_too_shallow_count",
+            "average_premium_discount_score",
+            "average_pd_position_pct",
+            "average_pd_range_size_points",
+          ] as const;
+          for (const k of pdSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_PD_E5_13_KEY",
+                  `E5.13: when has_premium_discount_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const v = summaryJson[k];
+              if (typeof v !== "number" || !Number.isFinite(v)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_PD_E5_13_NUM",
+                    `E5.13: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(v) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const pdCols = [
+              "premium_discount_enabled",
+              "pd_range_source",
+              "pd_range_high",
+              "pd_range_low",
+              "pd_midpoint_50",
+              "pd_position_pct",
+              "pd_entry_zone",
+              "pd_entry_in_premium",
+              "pd_entry_in_discount",
+              "pd_entry_in_equilibrium",
+              "pd_entry_outside_range",
+              "pd_entry_zone_valid_for_direction",
+              "pd_entry_zone_conflict",
+              "pd_entry_too_deep",
+              "pd_entry_too_shallow",
+              "pd_range_size_points",
+              "pd_entry_distance_to_midpoint_points",
+              "premium_discount_score",
+              "premium_discount_grade",
+              "premium_discount_reasons",
+            ] as const;
+            for (const col of pdCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_PD_E5_13",
+                    `E5.13: backtest_trades.csv header must include "${col}" when has_premium_discount_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_PD_HEADER_CHECK",
+                "has_premium_discount_v1_logic is true but backtest_trades.csv missing — cannot verify E5.13 Premium/Discount columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

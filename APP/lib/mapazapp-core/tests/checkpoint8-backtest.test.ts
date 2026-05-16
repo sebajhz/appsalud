@@ -256,6 +256,22 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(t.htfStructureReasons).toBe("htf_structure_aligned");
   });
 
+  it("parses optional E5.13 Premium/Discount observation columns when present", () => {
+    const header =
+      "trade_id,direction,entry_time,exit_time,entry,exit_price,result_r,result_money,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons";
+    const row =
+      "t_pd,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,2005,1,0,true,exec_tf_latest_swings,2010,1990,2000,35.00,discount,false,true,false,false,true,false,false,false,200.00,50.00,14,A,pd_valid_range";
+    const r = importBacktestTradesFromCsv(`${header}\n${row}`, testeaOpts);
+    expect(r.ok).toBe(true);
+    const t = r.trades[0]!;
+    expect(t.premiumDiscountEnabled).toBe(true);
+    expect(t.pdRangeSource).toBe("exec_tf_latest_swings");
+    expect(t.pdPositionPct).toBeCloseTo(35, 2);
+    expect(t.pdEntryZone).toBe("discount");
+    expect(t.premiumDiscountScore).toBe(14);
+    expect(t.premiumDiscountGrade).toBe("A");
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);
