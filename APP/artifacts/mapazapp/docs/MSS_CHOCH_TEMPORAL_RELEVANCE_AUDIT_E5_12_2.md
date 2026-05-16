@@ -29,4 +29,5 @@ En lectura discrecional se espera orden **sweep → MSS/CHoCH → FVG / retest �
 
 ## Evidencia y siguiente paso
 
-- **Smoke recomendado**: **E5.12.3** (recompilar TestEA en MT5, exportar muestra real o de *Strategy Tester* según el procedimiento del proyecto; **sin** trading en esta tarea de repo).
+- **Smoke cerrado (docs):** **E5.12.3** — [`MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md) — build `MZP_TestEA_E5_12_2`, mismo bundle benchmark que E5.12.1; **PASS técnico** (`BUNDLE_EVENTS_LARGE`); temporal **observación-only**; sin compuerta.
+- **Siguiente recomendado en roadmap:** **E5.13 — Premium/Discount V1** — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.

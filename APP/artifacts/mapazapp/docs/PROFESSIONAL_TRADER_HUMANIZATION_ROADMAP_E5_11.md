@@ -62,7 +62,9 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 **Smoke cerrado (docs):** **E5.12.1** — [`MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md`](./MSS_CHOCH_SMOKE_EVIDENCE_E5_12_1.md) — build `MZP_TestEA_E5_12`, mismo bundle benchmark que HTF smoke; **PASS técnico**; MSS/CHoCH score **no** separa wins/losses → **no** compuerta; ambiguous con score/detection MSS más bajos → señal útil de **ruido**, no de edge standalone.
 
-**Siguiente (repo / operador):** **E5.12.3** smoke post–**E5.12.2** (recompilar `MZP_TestEA_E5_12_2`, validar bundle) **o** **E5.13** Premium/Discount.
+**Smoke cerrado (docs):** **E5.12.3** — [`MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md) — build `MZP_TestEA_E5_12_2`, mismo bundle; **PASS técnico** (`BUNDLE_EVENTS_LARGE`); relevancia temporal **observación-only**; confirma que muchas rupturas quedan **tarde o tras entrada** → explica en parte el hallazgo E5.12.1; **no** compuerta.
+
+**Siguiente (repo / operador):** **E5.13** Premium/Discount — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D (atención a zona de entrada y profundidad/timing).
 
 **Referencia E5.12.2 (repo):** [`MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md) — columnas temporales + summary `has_mss_choch_temporal_relevance_v1_logic`; sigue **sin** compuerta.
 

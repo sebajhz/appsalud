@@ -4,7 +4,7 @@
 
 Smoke ejecutado por el operador **después de E5.12 — MSS / CHoCH V1**, con build **`MZP_TestEA_E5_12`**. Objetivo: evidencia reproducible de que el export MSS/CHoCH (estructura interna en TF de ejecución, solo velas cerradas, `wick_break_only`, scores y razones) funciona en bundle real y permite analizar correlación con outcomes **sin** tratarlo como compuerta de trading.
 
-**Referencias:** implementación y campos — [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md); roadmap — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §C; HTF (contexto distinto) — [`HTF_STRUCTURE_EXPORT_E5_11.md`](./HTF_STRUCTURE_EXPORT_E5_11.md).
+**Referencias:** implementación y campos — [`MSS_CHOCH_EXPORT_E5_12.md`](./MSS_CHOCH_EXPORT_E5_12.md); roadmap — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §C; HTF (contexto distinto) — [`HTF_STRUCTURE_EXPORT_E5_11.md`](./HTF_STRUCTURE_EXPORT_E5_11.md). **Post–E5.12.2:** evidencia smoke **relevancia temporal** mismo bundle — [`MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md).
 
 ---
 
@@ -135,5 +135,5 @@ Smoke ejecutado por el operador **después de E5.12 — MSS / CHoCH V1**, con bu
 
 ## Siguiente paso recomendado
 
-- **E5.12.3** — smoke operador post–**E5.12.2** (rebuild `MZP_TestEA_E5_12_2`, validar bundle), **o**
+- **E5.12.3** — **cerrado (docs):** [`MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md) (smoke operador post–**E5.12.2**, build `MZP_TestEA_E5_12_2`).
 - **E5.13 — Premium/Discount Context V1** — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
