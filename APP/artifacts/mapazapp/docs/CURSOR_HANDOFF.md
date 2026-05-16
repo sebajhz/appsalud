@@ -48,7 +48,8 @@
 - **E5.12.2 cerrado (repo):** diagnóstico relevancia temporal MSS/CHoCH — [`MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md); export/validador/core alineados; **sin** MT5 en esta tarea de verificación CI.
 - **E5.12.3 cerrado (docs):** smoke temporal post–**E5.12.2** — [`MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md); build `MZP_TestEA_E5_12_2`; **PASS técnico** (`BUNDLE_EVENTS_LARGE`); observación-only; sin compuerta/live/EQ threshold.
 - **E5.13 cerrado (repo):** **Premium/Discount V1** observación/export (`MZP_TestEA_E5_13`) — [`PREMIUM_DISCOUNT_EXPORT_E5_13.md`](./PREMIUM_DISCOUNT_EXPORT_E5_13.md); columnas `premium_discount_*` / `pd_*`; summary `has_premium_discount_v1_logic`; sufijo compacto `pd_*` en eventos; analizador E5.9 opcional `premium_discount_component_stats`; **sin** gate ni órdenes.
-- **Siguiente paso canónico:** **E5.13.1 — smoke Premium/Discount** (operador; post-recompile) sobre bundle representativo — ver [`PREMIUM_DISCOUNT_EXPORT_E5_13.md`](./PREMIUM_DISCOUNT_EXPORT_E5_13.md) § fin. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte**.
+- **E5.13.1 cerrado (docs):** smoke Premium/Discount — [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md); bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; **PASS** técnico (`BUNDLE_EVENTS_LARGE`); PD observación-only; sin compuerta / sin tune solo por bundle.
+- **Siguiente paso canónico:** **E5.13.2 — Entry Zone / Fill Feasibility Audit** (implementación + contrato) — [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D; cadena **E5.14–E5.20** en tabla del mismo doc. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte**.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

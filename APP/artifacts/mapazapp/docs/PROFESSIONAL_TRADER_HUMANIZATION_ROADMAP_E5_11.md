@@ -1,4 +1,4 @@
-# Roadmap intermedio — Humanización «trader profesional» (E5.11–E5.19)
+# Roadmap intermedio — Humanización «trader profesional» (E5.11–E5.20)
 
 ## Por qué existe este roadmap
 
@@ -9,6 +9,20 @@
 - Cada concepto humano debe traducirse a **definición técnica**, **campos exportables**, **códigos de razón** y **contadores resumen**.
 - **Primera implementación:** solo **observación** (export/diagnóstico). **Sin compuerta dura** hasta evidencia. **Sin aprobación de trading live**. **Sin** `OrderSend` / `CTrade` / `PositionOpen` / `WebRequest`.
 - **Sin** bajar umbrales para fabricar grados A/B. **Sin** sobreajuste a una sola campaña.
+
+## Cadena explícita E5.13.1 → E5.20 (orden de trabajo)
+
+| ID | Nombre | Rol |
+|----|--------|-----|
+| **E5.13.1** | Premium/Discount **smoke evidence** | **cerrado — docs** — [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md) |
+| **E5.13.2** | Entry Zone / **Fill Feasibility Audit** | **siguiente** implementación recomendada (observación-first; sin gate hasta contrato) |
+| **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
+| **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
+| **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
+| **E5.17** | **Frequency / Risk / Overtrading** discipline V1 | planificado — §H |
+| **E5.18** | **BridgeEA / Dashboard** setup state contract | planificado — §I |
+| **E5.19** | **Forward demo** read-only readiness | planificado — §J |
+| **E5.20** | **Evidence-based gate / score** decision checkpoint | planificado — §K (solo tras evidencia multi-bundle; sin tuning ad-hoc) |
 
 ## Flujo humano intencional (no es señal automática)
 
@@ -64,7 +78,7 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 **Smoke cerrado (docs):** **E5.12.3** — [`MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_SMOKE_EVIDENCE_E5_12_3.md) — build `MZP_TestEA_E5_12_2`, mismo bundle; **PASS técnico** (`BUNDLE_EVENTS_LARGE`); relevancia temporal **observación-only**; confirma que muchas rupturas quedan **tarde o tras entrada** → explica en parte el hallazgo E5.12.1; **no** compuerta.
 
-**Siguiente (repo / operador):** **E5.13.1** smoke Premium/Discount post–**E5.13** (recompile + bundle) — ver [`PREMIUM_DISCOUNT_EXPORT_E5_13.md`](./PREMIUM_DISCOUNT_EXPORT_E5_13.md) § fin.
+**Cadena siguiente (precio / zona de entrada):** §D — **E5.13** (export PD) → **E5.13.1** (smoke) → **E5.13.2** (audit zona/fill).
 
 **Referencia E5.12.2 (repo):** [`MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md`](./MSS_CHOCH_TEMPORAL_RELEVANCE_AUDIT_E5_12_2.md) — columnas temporales + summary `has_mss_choch_temporal_relevance_v1_logic`; sigue **sin** compuerta.
 
@@ -74,13 +88,20 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 **Referencia:** [`PREMIUM_DISCOUNT_EXPORT_E5_13.md`](./PREMIUM_DISCOUNT_EXPORT_E5_13.md) — `Mapazapp_TestEA.mq5` build **`MZP_TestEA_E5_13`**; columnas `premium_discount_*` y `pd_*` (rango, midpoint, posición %, zona, validez direccional, fuera de rango, too deep/shallow, score 0–15); summary `has_premium_discount_v1_logic` + contadores/agregados; `optimization_parameters` (`premium_discount_*`); sufijo compacto en eventos `setup_allowed` y `virtual_trade_candidate_created` (`pd_en`, `pd_zone`, `pd_pos`, `pd_valid`, `pd_conflict`, `pd_score`); analizador E5.9 opcional `premium_discount_component_stats` si existe `premium_discount_score`; **sin** compuerta dura; **sin** cambiar generación de trades ni outcomes.
 
-**Smoke siguiente (operador):** **E5.13.1** — recompilar EA y validar bundle representativo tras E5.13.
+### E5.13.1 — Premium/Discount smoke evidence (**cerrado — docs**)
+
+- **Evidencia:** [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md) — build `MZP_TestEA_E5_13`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, `ok=true`, `status=warning` solo por `BUNDLE_EVENTS_LARGE`, `testEaStatus=valid`; **PASS** técnico.
+- **Hallazgo:** PD V1 **no** separa fuertemente wins vs losses por score medio; `expired_unfilled` con media PD más baja; muchos `zone_conflict` y `outside_range` → diagnóstico útil, **no** gate standalone.
+
+### E5.13.2 — Entry Zone / Fill Feasibility Audit (**siguiente**)
+
+**Propósito:** auditar de forma **observable** si el nivel virtual de entrada y el modelo de fill/retest son **factibles** frente a PD, liquidez, MSS/CHoCH y outcomes (especialmente `expired_unfilled`), sin cambiar umbrales EQ ni inventar A/B. Primera entrega: definición técnica + export/diagnóstico según contrato (sin compuerta hasta evidencia y **E5.20**).
 
 ---
 
 ## E. IFVG / BISI / SIBI
 
-### E5.14 — IFVG / clasificación Inversion FVG V1
+### E5.14 — IFVG / BISI / SIBI / clasificación Inversion FVG V1
 
 **Propósito:** separar FVG «regular», implicado e **inversión** (IFVG) en comportamiento exportable.
 
@@ -127,7 +148,7 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## G. Sesión / noticias / spread / volatilidad
 
-### E5.16 — Session and News Context V1
+### E5.16 — Session / News / Spread / Volatility Context V1
 
 **Propósito:** medir si los setups se comportan distinto en **Asia**, **London**, **NY**, ventanas de **noticias**, **spread alto** o **volatilidad alta**.
 
@@ -150,7 +171,7 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## H. Riesgo / sobreoperación
 
-### E5.17 — Frequency and Risk Discipline V1
+### E5.17 — Frequency / Risk / Overtrading Discipline V1
 
 **Propósito:** evitar frecuencias irreales al escalar a **múltiples símbolos**.
 
@@ -170,7 +191,7 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## I. Paridad BridgeEA / Dashboard
 
-### E5.18 — Setup State Contract (live read-only)
+### E5.18 — BridgeEA / Dashboard Setup State Contract (live read-only)
 
 **Propósito:** todo lo probado en TestEA debe ser **representable en vivo** vía BridgeEA/dashboard como **lectura**, sin ejecución.
 
@@ -215,6 +236,16 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ---
 
+## K. Compuerta basada en evidencia (checkpoint explícito)
+
+### E5.20 — Evidence-based gate / score decision checkpoint
+
+**Propósito:** punto de decisión de producto sobre **compuertas** o uso de **score** en flujo real, **solo** cuando exista evidencia acumulada (múltiples bundles, calibración E5.9.x, smokes E5.x) y criterios explícitos — **no** activar gates ni retocar umbrales desde un único run.
+
+**Postura:** reconciliar con [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md) §12 y [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md) §15 antes de cualquier «aprobación» automática.
+
+---
+
 ## Disciplina de ingeniería (invariantes)
 
 - Cada concepto nuevo: **definición técnica** + **export** + **reason codes** + **summary counters**.
@@ -225,6 +256,7 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 ## Documentos relacionados
 
+- [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md)
 - [`HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md`](./HTF_STRUCTURE_SMOKE_EVIDENCE_E5_11_1.md)
 - [`LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md`](./LIQUIDITY_CHAIN_REACTION_SMOKE_EVIDENCE_E5_10_7.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)

@@ -50,6 +50,10 @@ MSS y CHoCH describen **ruptura / cambio de carácter** en swings internos. No i
 
 Tokens concatenados (pipe `|`), incluyendo entre otros: `pd_valid_range`, `pd_missing_range`, `pd_invalid_range`, `pd_entry_discount`, `pd_entry_premium`, `pd_entry_equilibrium`, `pd_entry_outside_range`, `pd_zone_valid_for_long`, `pd_zone_valid_for_short`, `pd_zone_conflict_long_in_premium`, `pd_zone_conflict_short_in_discount`, `pd_entry_too_deep`, `pd_entry_too_shallow`, `pd_range_too_small`, `pd_range_too_large`, `pd_score_disabled`, `pd_unknown`.
 
-## Próximo humo recomendado
+## Smoke E5.13.1 (cerrado — docs)
 
-**E5.13.1** — campaña ligera en Strategy Tester (recompilar EA, exportar bundle, validar CLI) para contrastar distribución de `premium_discount_score` con outcomes y con `expired_unfilled`, sin interpretación de trading en vivo.
+**E5.13.1** — evidencia operador sobre bundle de campaña: validación CLI `mapazapp:testea-export-validate`, agregados PD y lectura por outcome — [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md) (**PASS** técnico; solo warning `BUNDLE_EVENTS_LARGE`).
+
+## Siguiente checkpoint (implementación)
+
+**E5.13.2** — **Entry Zone / Fill Feasibility Audit** — ver cadena en [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) (§D).
