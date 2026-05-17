@@ -272,6 +272,24 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(t.premiumDiscountGrade).toBe("A");
   });
 
+  it("parses optional E5.13.2 Entry Fill Feasibility diagnostic columns when present", () => {
+    const header =
+      "trade_id,direction,entry_time,exit_time,entry,exit_price,result_r,result_money,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown";
+    const row =
+      "t_eff,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,0,0,0,true,expired_unfilled,7,C,entry_fill_expired_unfilled|fvg_touch_reached,2000,2010,1990,2000,50.00,10.00,10.00,0.00,true,true,false,45.00,1995.00,5.00,5.00,2,3,-1,2,20,true,false,false,false,false,false,false,false,false";
+    const r = importBacktestTradesFromCsv(`${header}\n${row}`, testeaOpts);
+    expect(r.ok).toBe(true);
+    const t = r.trades[0]!;
+    expect(t.entryFillFeasibilityEnabled).toBe(true);
+    expect(t.entryFillStatus).toBe("expired_unfilled");
+    expect(t.entryFillFeasibilityScore).toBe(7);
+    expect(t.entryDepthInFvgPct).toBeCloseTo(50, 2);
+    expect(t.maxRetraceIntoFvgPct).toBeCloseTo(45, 2);
+    expect(t.missedEntryByPoints).toBeCloseTo(5, 2);
+    expect(t.fvgTouchReached).toBe(true);
+    expect(t.entryExpiredUnfilled).toBe(true);
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);

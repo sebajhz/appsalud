@@ -574,4 +574,52 @@ describe("testea-score-calibration", () => {
     expect(r.choch_temporal_relevance_component_stats?.choch_temporal_relevance_score?.average).toBe(4);
     expect(r.premium_discount_component_stats?.premium_discount_score?.average).toBe(13);
   });
+
+  it("parseTradeScoreAuxiliaryByTradeId maps E5.13.2 entry_fill_feasibility_score when present", () => {
+    const headers = [
+      "trade_id",
+      "direction",
+      "entry_time",
+      "exit_time",
+      "entry_price",
+      "exit_price",
+      "result_r",
+      "symbol",
+      "strategy_id",
+      "parameter_set_id",
+      "outcome",
+      "entry_quality_score",
+      "entry_fill_feasibility_score",
+    ].join(",");
+    const row = ["t_eff", "BUY", "2026-01-01T10:00:00Z", "2026-01-01T11:00:00Z", "1", "1", "1", "XAUUSD", "IFVG_X", "SET_SC", "win", "70", "12"].join(",");
+    const p = parseTradeScoreAuxiliaryByTradeId([headers, row].join("\n"));
+    expect(p.hasEntryFillFeasibilityScoreColumn).toBe(true);
+    expect(p.byTradeId.get("t_eff")?.entry_fill_feasibility?.entry_fill_feasibility_score).toBe(12);
+  });
+
+  it("analyzeTestEaScoreCalibrationFromTexts fills entry_fill_feasibility_component_stats when column exists", () => {
+    const headers = [
+      "trade_id",
+      "direction",
+      "entry_time",
+      "exit_time",
+      "entry_price",
+      "exit_price",
+      "result_r",
+      "symbol",
+      "strategy_id",
+      "parameter_set_id",
+      "outcome",
+      "entry_quality_score",
+      "entry_fill_feasibility_score",
+    ].join(",");
+    const row = ["t_eff2", "BUY", "2026-01-01T10:00:00Z", "2026-01-01T11:00:00Z", "1", "1", "1", "XAUUSD", "IFVG_X", "SET_SC", "expired_unfilled", "55", "7"].join(",");
+    const r = analyzeTestEaScoreCalibrationFromTexts({
+      bundleName: "eff",
+      summaryJsonText: JSON.stringify(SUMMARY_BASE),
+      tradesCsvText: [headers, row].join("\n"),
+    });
+    expect(r.ok).toBe(true);
+    expect(r.entry_fill_feasibility_component_stats?.entry_fill_feasibility_score?.average).toBe(7);
+  });
 });

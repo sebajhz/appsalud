@@ -54,6 +54,6 @@ Tokens concatenados (pipe `|`), incluyendo entre otros: `pd_valid_range`, `pd_mi
 
 **E5.13.1** — evidencia operador sobre bundle de campaña: validación CLI `mapazapp:testea-export-validate`, agregados PD y lectura por outcome — [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md) (**PASS** técnico; solo warning `BUNDLE_EVENTS_LARGE`).
 
-## Siguiente checkpoint (implementación)
+## Checkpoint relacionado (E5.13.2)
 
-**E5.13.2** — **Entry Zone / Fill Feasibility Audit** — ver cadena en [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) (§D).
+**E5.13.2** — **Entry Zone / Fill Feasibility Audit** — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md) (diagnóstico post-candidato; no sustituye PD). **Siguiente smoke:** E5.13.3.

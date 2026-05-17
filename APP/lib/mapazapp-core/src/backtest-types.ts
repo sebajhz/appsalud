@@ -160,6 +160,41 @@ export interface BacktestTrade {
   premiumDiscountScore?: number | undefined;
   premiumDiscountGrade?: string | undefined;
   premiumDiscountReasons?: string | undefined;
+  /** E5.13.2 Entry fill feasibility post-candidate diagnostic columns (optional; older CSV). */
+  entryFillFeasibilityEnabled?: boolean | undefined;
+  entryFillStatus?: string | undefined;
+  entryFillFeasibilityScore?: number | undefined;
+  entryFillFeasibilityGrade?: string | undefined;
+  entryFillFeasibilityReasons?: string | undefined;
+  entryPriceForFillAudit?: number | undefined;
+  fvgNearEdgePrice?: number | undefined;
+  fvgFarEdgePrice?: number | undefined;
+  fvgCePrice?: number | undefined;
+  entryDepthInFvgPct?: number | undefined;
+  entryDistanceFromNearEdgePoints?: number | undefined;
+  entryDistanceFromFarEdgePoints?: number | undefined;
+  entryDistanceFromCePoints?: number | undefined;
+  fvgTouchReached?: boolean | undefined;
+  fvgCeTouchReached?: boolean | undefined;
+  entryPriceReached?: boolean | undefined;
+  maxRetraceIntoFvgPct?: number | undefined;
+  maxRetracePrice?: number | undefined;
+  maxRetraceToEntryDistancePoints?: number | undefined;
+  missedEntryByPoints?: number | undefined;
+  barsToFvgTouch?: number | undefined;
+  barsToCeTouch?: number | undefined;
+  barsToEntryFill?: number | undefined;
+  barsToMaxRetrace?: number | undefined;
+  barsUntilExpirationOrResolution?: number | undefined;
+  entryExpiredUnfilled?: boolean | undefined;
+  entryMissedShallowRetrace?: boolean | undefined;
+  entryTooDeepForRetest?: boolean | undefined;
+  entryNearMiss?: boolean | undefined;
+  entryFilledFast?: boolean | undefined;
+  entryFilledLate?: boolean | undefined;
+  entryInvalidatedBeforeFill?: boolean | undefined;
+  entryOutsideFvg?: boolean | undefined;
+  entryGeometryUnknown?: boolean | undefined;
 }
 
 export interface BacktestImportWarning {

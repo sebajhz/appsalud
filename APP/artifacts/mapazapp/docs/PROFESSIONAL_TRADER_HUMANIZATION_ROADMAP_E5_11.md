@@ -15,7 +15,8 @@
 | ID | Nombre | Rol |
 |----|--------|-----|
 | **E5.13.1** | Premium/Discount **smoke evidence** | **cerrado — docs** — [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md) |
-| **E5.13.2** | Entry Zone / **Fill Feasibility Audit** | **siguiente** implementación recomendada (observación-first; sin gate hasta contrato) |
+| **E5.13.2** | Entry Zone / **Fill Feasibility Audit** | **cerrado — repo** — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md) |
+| **E5.13.3** | Entry Fill Feasibility **smoke evidence** | **siguiente** (recompilar + Strategy Tester; sin gate) |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -93,9 +94,13 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 - **Evidencia:** [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md) — build `MZP_TestEA_E5_13`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, `ok=true`, `status=warning` solo por `BUNDLE_EVENTS_LARGE`, `testEaStatus=valid`; **PASS** técnico.
 - **Hallazgo:** PD V1 **no** separa fuertemente wins vs losses por score medio; `expired_unfilled` con media PD más baja; muchos `zone_conflict` y `outside_range` → diagnóstico útil, **no** gate standalone.
 
-### E5.13.2 — Entry Zone / Fill Feasibility Audit (**siguiente**)
+### E5.13.2 — Entry Zone / Fill Feasibility Audit (**cerrado — repo**)
 
-**Propósito:** auditar de forma **observable** si el nivel virtual de entrada y el modelo de fill/retest son **factibles** frente a PD, liquidez, MSS/CHoCH y outcomes (especialmente `expired_unfilled`), sin cambiar umbrales EQ ni inventar A/B. Primera entrega: definición técnica + export/diagnóstico según contrato (sin compuerta hasta evidencia y **E5.20**).
+**Referencia:** [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md) — build **`MZP_TestEA_E5_13_2`**; diagnóstico **post-candidato** (retrace, near-miss, profundidad en FVG, `entry_fill_status`); summary `has_entry_fill_feasibility_v1_logic`; **no** mezclar `entry_fill_feasibility_score` con `entry_quality_score`; **sin** compuerta.
+
+### E5.13.3 — Entry Fill Feasibility smoke evidence (**siguiente**)
+
+Humo operador post–E5.13.2: recompilar EA, correr bundle benchmark, `mapazapp:testea-export-validate` + lectura de agregados `entry_fill_*` vs outcomes (especialmente `expired_unfilled`).
 
 ---
 

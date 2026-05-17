@@ -91,3 +91,4 @@ Métricas: percentiles, outcome/`ambiguous`, bandas relativas (P10–P90), frecu
 | E5.9 | Analizador core + CLI post-proceso bundles — [`ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_ANALYZER_E5_9.md). |
 | E5.9.1 | Evidencia calibración smoke + decisión componentes — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md). |
 | E5.13 | Premium/Discount V1 (observación, CSV + summary + eventos compactos); ver [`PREMIUM_DISCOUNT_EXPORT_E5_13.md`](./PREMIUM_DISCOUNT_EXPORT_E5_13.md). |
+| E5.13.2 | Entry Fill Feasibility V1 (**post-candidato**; no forma parte de `entry_quality_score`); ver [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md). |

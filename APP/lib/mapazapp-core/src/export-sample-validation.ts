@@ -1440,6 +1440,140 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_entry_fill_feasibility_v1_logic"] === true) {
+          if (!("entry_fill_feasibility_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_EFF_E5_13_2_KEY",
+                `E5.13.2: when has_entry_fill_feasibility_v1_logic is true, summary must include "entry_fill_feasibility_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else {
+            const effEn = summaryJson["entry_fill_feasibility_enabled"];
+            if (typeof effEn !== "boolean") {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_EFF_E5_13_2_BOOL",
+                  `E5.13.2: "entry_fill_feasibility_enabled" must be a boolean`,
+                  { fileName: sj.fileName, detail: String(effEn) },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          const effSummaryKeys = [
+            "entry_fill_filled_count",
+            "entry_fill_expired_unfilled_count",
+            "entry_fill_near_miss_count",
+            "entry_fill_missed_shallow_retrace_count",
+            "entry_fill_too_deep_for_retest_count",
+            "entry_fill_invalidated_before_fill_count",
+            "entry_fill_outside_fvg_count",
+            "entry_fill_geometry_unknown_count",
+            "fvg_touch_reached_count",
+            "fvg_ce_touch_reached_count",
+            "entry_price_reached_count",
+            "average_entry_fill_feasibility_score",
+            "average_entry_depth_in_fvg_pct",
+            "average_max_retrace_into_fvg_pct",
+            "average_missed_entry_by_points",
+            "average_bars_to_entry_fill",
+            "average_bars_to_max_retrace",
+          ] as const;
+          for (const k of effSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_EFF_E5_13_2_KEY",
+                  `E5.13.2: when has_entry_fill_feasibility_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const v = summaryJson[k];
+              if (typeof v !== "number" || !Number.isFinite(v)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_EFF_E5_13_2_NUM",
+                    `E5.13.2: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(v) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const effCols = [
+              "entry_fill_feasibility_enabled",
+              "entry_fill_status",
+              "entry_fill_feasibility_score",
+              "entry_fill_feasibility_grade",
+              "entry_fill_feasibility_reasons",
+              "entry_price_for_fill_audit",
+              "fvg_near_edge_price",
+              "fvg_far_edge_price",
+              "fvg_ce_price",
+              "entry_depth_in_fvg_pct",
+              "entry_distance_from_near_edge_points",
+              "entry_distance_from_far_edge_points",
+              "entry_distance_from_ce_points",
+              "fvg_touch_reached",
+              "fvg_ce_touch_reached",
+              "entry_price_reached",
+              "max_retrace_into_fvg_pct",
+              "max_retrace_price",
+              "max_retrace_to_entry_distance_points",
+              "missed_entry_by_points",
+              "bars_to_fvg_touch",
+              "bars_to_ce_touch",
+              "bars_to_entry_fill",
+              "bars_to_max_retrace",
+              "bars_until_expiration_or_resolution",
+              "entry_expired_unfilled",
+              "entry_missed_shallow_retrace",
+              "entry_too_deep_for_retest",
+              "entry_near_miss",
+              "entry_filled_fast",
+              "entry_filled_late",
+              "entry_invalidated_before_fill",
+              "entry_outside_fvg",
+              "entry_geometry_unknown",
+            ] as const;
+            for (const col of effCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_EFF_E5_13_2",
+                    `E5.13.2: backtest_trades.csv header must include "${col}" when has_entry_fill_feasibility_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_EFF_HEADER_CHECK",
+                "has_entry_fill_feasibility_v1_logic is true but backtest_trades.csv missing — cannot verify E5.13.2 Entry Fill Feasibility columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

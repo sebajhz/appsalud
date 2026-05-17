@@ -113,6 +113,8 @@ Cada token listado en el CSV (separadores `,`, `;`, `|`) se cuenta. Aparece la c
 
 Cuando el CSV incluye la columna `premium_discount_score` (E5.13), el analizador expone opcionalmente `premium_discount_component_stats` en el resultado de calibración (misma semántica post-hoc; sin gate).
 
+Cuando el CSV incluye `entry_fill_feasibility_score` (E5.13.2), el analizador expone opcionalmente `entry_fill_feasibility_component_stats`. Es un diagnóstico **post-candidato** (retrace/fill); **no** debe usarse como score pre-trade ni mezclarse con `entry_quality_score` sin un gate de forward-readiness aparte.
+
 ---
 
 ## Historial
@@ -122,3 +124,4 @@ Cuando el CSV incluye la columna `premium_discount_score` (E5.13), el analizador
 | E5.9 v1 | Analizador core + CLI + tests + documentación; bandas relativas y flags diagnósticos. |
 | E5.9.1 | Evidencia operador smoke + decisión componentes — [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md). |
 | E5.13 | Si el bundle incluye `premium_discount_score`, se agrega `premium_discount_component_stats` al análisis (opcional; bundles antiguos sin cambios). |
+| E5.13.2 | Si el bundle incluye `entry_fill_feasibility_score`, se agrega `entry_fill_feasibility_component_stats` (post-candidato; no gate). |

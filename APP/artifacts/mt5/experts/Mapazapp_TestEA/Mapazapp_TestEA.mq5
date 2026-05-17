@@ -74,7 +74,12 @@ input int               InpPremiumDiscountMaxBars          = 200;
 input int               InpPremiumDiscountEquilibriumBandPct = 10;
 input bool              InpPremiumDiscountScoreEnabled    = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_13"
+input bool              InpEnableEntryFillFeasibilityV1   = true;
+input int               InpEntryFillFeasibilityMaxBars    = 0;
+input int               InpEntryFillFeasibilityNearMissPoints = 30;
+input bool              InpEntryFillFeasibilityScoreEnabled = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_13_2"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -287,6 +292,26 @@ long            g_pd_zone_conflict_count = 0;
 long            g_pd_too_deep_count = 0;
 long            g_pd_too_shallow_count = 0;
 
+double          g_eff_sum_score = 0.0;
+double          g_eff_sum_depth_pct = 0.0;
+double          g_eff_sum_max_retrace_pct = 0.0;
+double          g_eff_sum_missed_pts = 0.0;
+double          g_eff_sum_bars_fill = 0.0;
+double          g_eff_sum_bars_max_retrace = 0.0;
+long            g_eff_filled_count = 0;
+long            g_eff_expired_unfilled_count = 0;
+long            g_eff_near_miss_count = 0;
+long            g_eff_missed_shallow_count = 0;
+long            g_eff_too_deep_count = 0;
+long            g_eff_invalidated_count = 0;
+long            g_eff_outside_fvg_count = 0;
+long            g_eff_geometry_unknown_count = 0;
+long            g_eff_fvg_touch_count = 0;
+long            g_eff_ce_touch_count = 0;
+long            g_eff_entry_touch_count = 0;
+long            g_eff_fill_fast_count = 0;
+long            g_eff_fill_late_count = 0;
+
 struct MapzHtfTradeSnap
   {
    bool              enabled;
@@ -386,6 +411,47 @@ struct MapzPremiumDiscountTradeSnap
    bool              range_geometry_ok;
   };
 
+struct MapzEntryFillFeasibilitySnap
+  {
+   bool              log_enabled;
+   double            entry_price_for_fill_audit;
+   double            fvg_near_edge_price;
+   double            fvg_far_edge_price;
+   double            fvg_ce_price;
+   double            entry_depth_in_fvg_pct;
+   double            entry_distance_from_near_edge_points;
+   double            entry_distance_from_far_edge_points;
+   double            entry_distance_from_ce_points;
+   bool              entry_outside_fvg;
+   bool              entry_geometry_unknown;
+   bool              fvg_touch_reached;
+   bool              fvg_ce_touch_reached;
+   bool              entry_price_reached;
+   double            max_retrace_into_fvg_pct;
+   double            max_retrace_price;
+   double            max_retrace_to_entry_distance_points;
+   double            missed_entry_by_points;
+   int               bars_to_fvg_touch;
+   int               bars_to_ce_touch;
+   int               bars_to_entry_fill;
+   int               bars_to_max_retrace;
+   int               bars_until_expiration_or_resolution;
+   int               bars_observed;
+   double            extreme_retrace_price;
+   bool              finalized;
+   string            fill_status;
+   int               score;
+   string            grade;
+   string            reasons;
+   bool              entry_expired_unfilled;
+   bool              entry_missed_shallow_retrace;
+   bool              entry_too_deep_for_retest;
+   bool              entry_near_miss;
+   bool              entry_filled_fast;
+   bool              entry_filled_late;
+   bool              entry_invalidated_before_fill;
+  };
+
 struct MapzLiquiditySnapshot
   {
    bool     detected;
@@ -476,6 +542,7 @@ struct MapzVirtualTrade
    MapzHtfTradeSnap     htf;
    MapzMssChochTradeSnap msc;
    MapzPremiumDiscountTradeSnap pd;
+   MapzEntryFillFeasibilitySnap eff;
   };
 
 MapzVirtualTrade g_vt;
@@ -3942,6 +4009,423 @@ void MapzPremiumDiscountBuildTradeSnap(const string sym,
   }
 
 //+------------------------------------------------------------------+
+void MapzEffSnapClear(MapzEntryFillFeasibilitySnap &o)
+  {
+   o.log_enabled = false;
+   o.entry_price_for_fill_audit = 0.0;
+   o.fvg_near_edge_price = 0.0;
+   o.fvg_far_edge_price = 0.0;
+   o.fvg_ce_price = 0.0;
+   o.entry_depth_in_fvg_pct = 0.0;
+   o.entry_distance_from_near_edge_points = 0.0;
+   o.entry_distance_from_far_edge_points = 0.0;
+   o.entry_distance_from_ce_points = 0.0;
+   o.entry_outside_fvg = false;
+   o.entry_geometry_unknown = true;
+   o.fvg_touch_reached = false;
+   o.fvg_ce_touch_reached = false;
+   o.entry_price_reached = false;
+   o.max_retrace_into_fvg_pct = 0.0;
+   o.max_retrace_price = 0.0;
+   o.max_retrace_to_entry_distance_points = 0.0;
+   o.missed_entry_by_points = 0.0;
+   o.bars_to_fvg_touch = -1;
+   o.bars_to_ce_touch = -1;
+   o.bars_to_entry_fill = -1;
+   o.bars_to_max_retrace = -1;
+   o.bars_until_expiration_or_resolution = -1;
+   o.bars_observed = 0;
+   o.extreme_retrace_price = 0.0;
+   o.finalized = false;
+   o.fill_status = "unknown";
+   o.score = 0;
+   o.grade = "None";
+   o.reasons = "";
+   o.entry_expired_unfilled = false;
+   o.entry_missed_shallow_retrace = false;
+   o.entry_too_deep_for_retest = false;
+   o.entry_near_miss = false;
+   o.entry_filled_fast = false;
+   o.entry_filled_late = false;
+   o.entry_invalidated_before_fill = false;
+  }
+
+//+------------------------------------------------------------------+
+int MapzEffMaxBars(void)
+  {
+   if(InpEntryFillFeasibilityMaxBars > 0)
+      return InpEntryFillFeasibilityMaxBars;
+   return InpVirtualEntryExpiryBars;
+  }
+
+//+------------------------------------------------------------------+
+string MapzEffGradeFromScore(const int sc)
+  {
+   if(sc >= 12)
+      return "A";
+   if(sc >= 9)
+      return "B";
+   if(sc >= 6)
+      return "C";
+   if(sc >= 2)
+      return "Weak";
+   return "None";
+  }
+
+//+------------------------------------------------------------------+
+string MapzEffCompactSuffix(const MapzEntryFillFeasibilitySnap &e)
+  {
+   return StringFormat("fill_en=%s fill_status=%s fvg_touch=%s ce_touch=%s entry_touch=%s miss_pts=%.1f depth_pct=%.1f fill_score=%d",
+                       (e.log_enabled ? "true" : "false"),
+                       JsonStringEscape(e.fill_status),
+                       (e.fvg_touch_reached ? "true" : "false"),
+                       (e.fvg_ce_touch_reached ? "true" : "false"),
+                       (e.entry_price_reached ? "true" : "false"),
+                       e.missed_entry_by_points,
+                       e.entry_depth_in_fvg_pct,
+                       e.score);
+  }
+
+//+------------------------------------------------------------------+
+void MapzEffInitGeometry(const ENUM_MAPZ_SETUP_DIR dir,
+                         const double fvgLo,
+                         const double fvgHi,
+                         const double entry,
+                         MapzEntryFillFeasibilitySnap &out)
+  {
+   MapzEffSnapClear(out);
+   out.log_enabled = InpEnableEntryFillFeasibilityV1;
+   if(!InpEnableEntryFillFeasibilityV1)
+     {
+      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+      return;
+     }
+
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   const double lo = MathMin(fvgLo, fvgHi);
+   const double hi = MathMax(fvgLo, fvgHi);
+   const double span = hi - lo;
+
+   out.entry_price_for_fill_audit = entry;
+   out.fvg_ce_price = (lo + hi) / 2.0;
+
+   if(span <= ptSafe * 0.5)
+     {
+      out.entry_geometry_unknown = true;
+      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+      return;
+     }
+
+   out.entry_geometry_unknown = false;
+
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      out.fvg_near_edge_price = hi;
+      out.fvg_far_edge_price = lo;
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      out.fvg_near_edge_price = lo;
+      out.fvg_far_edge_price = hi;
+     }
+   else
+     {
+      out.entry_geometry_unknown = true;
+      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+      return;
+     }
+
+   out.entry_depth_in_fvg_pct = 100.0 * MathAbs(entry - out.fvg_near_edge_price) / span;
+   out.entry_distance_from_near_edge_points = MathAbs(entry - out.fvg_near_edge_price) / ptSafe;
+   out.entry_distance_from_far_edge_points = MathAbs(entry - out.fvg_far_edge_price) / ptSafe;
+   out.entry_distance_from_ce_points = MathAbs(entry - out.fvg_ce_price) / ptSafe;
+
+   out.entry_outside_fvg = (entry < lo - ptSafe * 0.5 || entry > hi + ptSafe * 0.5);
+   if(out.entry_outside_fvg)
+     {
+      MapzHtfAppendToken(out.reasons, "entry_outside_fvg");
+     }
+   else
+     {
+      if(out.entry_depth_in_fvg_pct <= 35.0)
+         MapzHtfAppendToken(out.reasons, "entry_depth_reasonable");
+      else if(out.entry_depth_in_fvg_pct >= 72.0)
+        {
+         out.entry_too_deep_for_retest = true;
+         MapzHtfAppendToken(out.reasons, "entry_depth_too_deep");
+        }
+      else if(out.entry_depth_in_fvg_pct <= 18.0)
+         MapzHtfAppendToken(out.reasons, "entry_depth_too_shallow");
+      else
+         MapzHtfAppendToken(out.reasons, "entry_depth_reasonable");
+     }
+
+   out.extreme_retrace_price = entry;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEffTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
+                     const double fvgLo,
+                     const double fvgHi,
+                     const double entry,
+                     const double lo,
+                     const double hi,
+                     MapzEntryFillFeasibilitySnap &out)
+  {
+   if(!out.log_enabled || out.finalized)
+      return;
+
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   const double zoneLo = MathMin(fvgLo, fvgHi);
+   const double zoneHi = MathMax(fvgLo, fvgHi);
+   const double span = zoneHi - zoneLo;
+   if(span <= ptSafe * 0.5 || out.entry_geometry_unknown)
+      return;
+
+   out.bars_observed++;
+   const int barN = out.bars_observed;
+
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      if(out.extreme_retrace_price == 0.0 || lo < out.extreme_retrace_price)
+         out.extreme_retrace_price = lo;
+
+      if(lo <= zoneHi + ptSafe * 0.5)
+        {
+         if(!out.fvg_touch_reached)
+           {
+            out.fvg_touch_reached = true;
+            out.bars_to_fvg_touch = barN;
+            MapzHtfAppendToken(out.reasons, "fvg_touch_reached");
+           }
+        }
+      if(lo <= out.fvg_ce_price + ptSafe * 0.5)
+        {
+         if(!out.fvg_ce_touch_reached)
+           {
+            out.fvg_ce_touch_reached = true;
+            out.bars_to_ce_touch = barN;
+            MapzHtfAppendToken(out.reasons, "fvg_ce_touch_reached");
+           }
+        }
+      if(lo <= entry + ptSafe * 0.5)
+        {
+         if(!out.entry_price_reached)
+           {
+            out.entry_price_reached = true;
+            MapzHtfAppendToken(out.reasons, "entry_price_reached");
+           }
+        }
+
+      double retracePct = 0.0;
+      if(lo <= zoneHi)
+         retracePct = 100.0 * (zoneHi - lo) / span;
+      if(retracePct > out.max_retrace_into_fvg_pct)
+        {
+         out.max_retrace_into_fvg_pct = retracePct;
+         out.max_retrace_price = lo;
+         out.bars_to_max_retrace = barN;
+        }
+
+      if(lo > entry)
+        {
+         const double miss = (lo - entry) / ptSafe;
+         if(out.missed_entry_by_points == 0.0 || miss < out.missed_entry_by_points)
+            out.missed_entry_by_points = miss;
+        }
+      else
+         out.missed_entry_by_points = 0.0;
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      if(out.extreme_retrace_price == 0.0 || hi > out.extreme_retrace_price)
+         out.extreme_retrace_price = hi;
+
+      if(hi >= zoneLo - ptSafe * 0.5)
+        {
+         if(!out.fvg_touch_reached)
+           {
+            out.fvg_touch_reached = true;
+            out.bars_to_fvg_touch = barN;
+            MapzHtfAppendToken(out.reasons, "fvg_touch_reached");
+           }
+        }
+      if(hi >= out.fvg_ce_price - ptSafe * 0.5)
+        {
+         if(!out.fvg_ce_touch_reached)
+           {
+            out.fvg_ce_touch_reached = true;
+            out.bars_to_ce_touch = barN;
+            MapzHtfAppendToken(out.reasons, "fvg_ce_touch_reached");
+           }
+        }
+      if(hi >= entry - ptSafe * 0.5)
+        {
+         if(!out.entry_price_reached)
+           {
+            out.entry_price_reached = true;
+            MapzHtfAppendToken(out.reasons, "entry_price_reached");
+           }
+        }
+
+      double retracePct = 0.0;
+      if(hi >= zoneLo)
+         retracePct = 100.0 * (hi - zoneLo) / span;
+      if(retracePct > out.max_retrace_into_fvg_pct)
+        {
+         out.max_retrace_into_fvg_pct = retracePct;
+         out.max_retrace_price = hi;
+         out.bars_to_max_retrace = barN;
+        }
+
+      if(hi < entry)
+        {
+         const double miss = (entry - hi) / ptSafe;
+         if(out.missed_entry_by_points == 0.0 || miss < out.missed_entry_by_points)
+            out.missed_entry_by_points = miss;
+        }
+      else
+         out.missed_entry_by_points = 0.0;
+     }
+
+   out.max_retrace_to_entry_distance_points = out.missed_entry_by_points;
+
+   if(out.max_retrace_into_fvg_pct >= 40.0)
+      MapzHtfAppendToken(out.reasons, "max_retrace_deep_enough");
+   else if(out.fvg_touch_reached)
+      MapzHtfAppendToken(out.reasons, "max_retrace_shallow");
+  }
+
+//+------------------------------------------------------------------+
+void MapzEffFinalize(const ENUM_MAPZ_SETUP_DIR dir,
+                     const bool filled,
+                     const int barsWaitingEntry,
+                     const string outcome,
+                     const string exitReason,
+                     MapzEntryFillFeasibilitySnap &out)
+  {
+   if(!out.log_enabled || out.finalized)
+      return;
+
+   out.finalized = true;
+   out.bars_until_expiration_or_resolution = (barsWaitingEntry > 0 ? barsWaitingEntry : out.bars_observed);
+
+   if(filled)
+     {
+      out.fill_status = "filled";
+      out.bars_to_entry_fill = out.bars_until_expiration_or_resolution;
+      out.entry_price_reached = true;
+      MapzHtfAppendToken(out.reasons, "entry_fill_filled");
+      if(out.bars_to_entry_fill <= 3)
+        {
+         out.entry_filled_fast = true;
+         MapzHtfAppendToken(out.reasons, "entry_fill_fast");
+        }
+      else if(out.bars_to_entry_fill > 10)
+        {
+         out.entry_filled_late = true;
+         MapzHtfAppendToken(out.reasons, "entry_fill_late");
+        }
+     }
+   else if(out.entry_outside_fvg)
+     {
+      out.fill_status = "outside_fvg";
+      MapzHtfAppendToken(out.reasons, "entry_outside_fvg");
+     }
+   else if(out.entry_geometry_unknown)
+     {
+      out.fill_status = "unknown";
+      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+     }
+   else if(out.entry_too_deep_for_retest)
+     {
+      out.fill_status = "too_deep_for_retest";
+      MapzHtfAppendToken(out.reasons, "entry_too_deep_for_retest");
+     }
+   else if(StringFind(exitReason, "invalid") >= 0 || outcome == "invalid_risk")
+     {
+      out.fill_status = "invalidated_before_fill";
+      out.entry_invalidated_before_fill = true;
+      MapzHtfAppendToken(out.reasons, "entry_invalidated_before_fill");
+     }
+   else if(!filled && out.fvg_touch_reached && !out.entry_price_reached && out.max_retrace_into_fvg_pct < 28.0)
+     {
+      out.fill_status = "missed_shallow_retrace";
+      out.entry_missed_shallow_retrace = true;
+      MapzHtfAppendToken(out.reasons, "entry_missed_shallow_retrace");
+     }
+   else if(!filled && out.missed_entry_by_points > 0.0
+           && out.missed_entry_by_points <= (double)InpEntryFillFeasibilityNearMissPoints)
+     {
+      out.fill_status = "near_miss";
+      out.entry_near_miss = true;
+      MapzHtfAppendToken(out.reasons, "entry_fill_near_miss");
+     }
+   else if(outcome == "expired_unfilled" || StringFind(exitReason, "expired_unfilled") >= 0)
+     {
+      out.fill_status = "expired_unfilled";
+      out.entry_expired_unfilled = true;
+      MapzHtfAppendToken(out.reasons, "entry_fill_expired_unfilled");
+     }
+   else
+     {
+      out.fill_status = "unknown";
+      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+     }
+
+   if(!InpEntryFillFeasibilityScoreEnabled)
+     {
+      out.score = 0;
+      out.grade = "None";
+      return;
+     }
+
+   int sc = 6;
+   if(out.fill_status == "filled")
+     {
+      sc = 14;
+      if(out.missed_entry_by_points <= 2.0)
+         sc = 15;
+     }
+   else if(out.fill_status == "near_miss")
+     {
+      sc = 11;
+     }
+   else if(out.fill_status == "expired_unfilled")
+     {
+      sc = 7;
+      if(out.fvg_touch_reached && out.max_retrace_into_fvg_pct >= 35.0)
+         sc = 8;
+     }
+   else if(out.fill_status == "missed_shallow_retrace")
+     {
+      sc = 4;
+     }
+   else if(out.fill_status == "too_deep_for_retest" || out.fill_status == "outside_fvg")
+     {
+      sc = 3;
+     }
+   else if(out.fill_status == "invalidated_before_fill")
+     {
+      sc = 2;
+     }
+
+   if(out.entry_filled_late)
+      sc -= 1;
+   if(out.entry_too_deep_for_retest && out.fill_status != "too_deep_for_retest")
+      sc -= 2;
+
+   if(sc < 0)
+      sc = 0;
+   if(sc > 15)
+      sc = 15;
+   out.score = sc;
+   out.grade = MapzEffGradeFromScore(sc);
+  }
+
+//+------------------------------------------------------------------+
 void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
                                   const ENUM_MAPZ_BIAS biasEnum,
                                   const long fvgPts,
@@ -4295,7 +4779,7 @@ string VirtualBuildDetailsCore(void)
              g_vt.bars_waiting_entry,
              g_vt.bars_held,
              JsonStringEscape(g_vt.exit_reason));
-   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc) + " " + MapzPdCompactSuffix(g_vt.pd);
+   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc) + " " + MapzPdCompactSuffix(g_vt.pd) + " " + MapzEffCompactSuffix(g_vt.eff);
   }
 
 //+------------------------------------------------------------------+
@@ -4332,6 +4816,8 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
   {
    if(!InpWriteTradesCsv || !InpWriteVirtualTrades)
       return;
+   if(g_vt.eff.log_enabled && !g_vt.eff.finalized)
+      MapzEffFinalize(g_vt.dir, g_vt.filled, bars_to_fill_export, g_vt.outcome, g_vt.exit_reason, g_vt.eff);
    const string dirW = SetupDirectionToString(g_vt.dir);
    const string biasDirW = BiasDirectionToString(g_vt.bias_enum);
    const string setupDirW = SetupDirectionToString(g_vt.setup_dir);
@@ -4503,6 +4989,40 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + IntegerToString(g_vt.pd.score)
           + "," + g_vt.pd.grade
           + "," + g_vt.pd.reasons
+          + "," + (g_vt.eff.log_enabled ? "true" : "false")
+          + "," + g_vt.eff.fill_status
+          + "," + IntegerToString(g_vt.eff.score)
+          + "," + g_vt.eff.grade
+          + "," + g_vt.eff.reasons
+          + "," + DoubleToString(g_vt.eff.entry_price_for_fill_audit, _Digits)
+          + "," + DoubleToString(g_vt.eff.fvg_near_edge_price, _Digits)
+          + "," + DoubleToString(g_vt.eff.fvg_far_edge_price, _Digits)
+          + "," + DoubleToString(g_vt.eff.fvg_ce_price, _Digits)
+          + "," + DoubleToString(g_vt.eff.entry_depth_in_fvg_pct, 2)
+          + "," + DoubleToString(g_vt.eff.entry_distance_from_near_edge_points, 2)
+          + "," + DoubleToString(g_vt.eff.entry_distance_from_far_edge_points, 2)
+          + "," + DoubleToString(g_vt.eff.entry_distance_from_ce_points, 2)
+          + "," + (g_vt.eff.fvg_touch_reached ? "true" : "false")
+          + "," + (g_vt.eff.fvg_ce_touch_reached ? "true" : "false")
+          + "," + (g_vt.eff.entry_price_reached ? "true" : "false")
+          + "," + DoubleToString(g_vt.eff.max_retrace_into_fvg_pct, 2)
+          + "," + DoubleToString(g_vt.eff.max_retrace_price, _Digits)
+          + "," + DoubleToString(g_vt.eff.max_retrace_to_entry_distance_points, 2)
+          + "," + DoubleToString(g_vt.eff.missed_entry_by_points, 2)
+          + "," + IntegerToString(g_vt.eff.bars_to_fvg_touch)
+          + "," + IntegerToString(g_vt.eff.bars_to_ce_touch)
+          + "," + IntegerToString(g_vt.eff.bars_to_entry_fill)
+          + "," + IntegerToString(g_vt.eff.bars_to_max_retrace)
+          + "," + IntegerToString(g_vt.eff.bars_until_expiration_or_resolution)
+          + "," + (g_vt.eff.entry_expired_unfilled ? "true" : "false")
+          + "," + (g_vt.eff.entry_missed_shallow_retrace ? "true" : "false")
+          + "," + (g_vt.eff.entry_too_deep_for_retest ? "true" : "false")
+          + "," + (g_vt.eff.entry_near_miss ? "true" : "false")
+          + "," + (g_vt.eff.entry_filled_fast ? "true" : "false")
+          + "," + (g_vt.eff.entry_filled_late ? "true" : "false")
+          + "," + (g_vt.eff.entry_invalidated_before_fill ? "true" : "false")
+          + "," + (g_vt.eff.entry_outside_fvg ? "true" : "false")
+          + "," + (g_vt.eff.entry_geometry_unknown ? "true" : "false")
           + "," + eqp.session_bucket
           + "," + eqp.trade_window_status
           + "," + eqp.spread_status
@@ -4757,6 +5277,44 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
         }
      }
 
+   if(InpEnableEntryFillFeasibilityV1)
+     {
+      g_eff_sum_score += (double)g_vt.eff.score;
+      g_eff_sum_depth_pct += g_vt.eff.entry_depth_in_fvg_pct;
+      g_eff_sum_max_retrace_pct += g_vt.eff.max_retrace_into_fvg_pct;
+      g_eff_sum_missed_pts += g_vt.eff.missed_entry_by_points;
+      if(g_vt.eff.bars_to_entry_fill > 0)
+         g_eff_sum_bars_fill += (double)g_vt.eff.bars_to_entry_fill;
+      if(g_vt.eff.bars_to_max_retrace > 0)
+         g_eff_sum_bars_max_retrace += (double)g_vt.eff.bars_to_max_retrace;
+      if(g_vt.eff.fill_status == "filled")
+         g_eff_filled_count++;
+      else if(g_vt.eff.fill_status == "expired_unfilled")
+         g_eff_expired_unfilled_count++;
+      else if(g_vt.eff.fill_status == "near_miss")
+         g_eff_near_miss_count++;
+      else if(g_vt.eff.fill_status == "missed_shallow_retrace")
+         g_eff_missed_shallow_count++;
+      else if(g_vt.eff.fill_status == "too_deep_for_retest")
+         g_eff_too_deep_count++;
+      else if(g_vt.eff.fill_status == "invalidated_before_fill")
+         g_eff_invalidated_count++;
+      else if(g_vt.eff.fill_status == "outside_fvg")
+         g_eff_outside_fvg_count++;
+      else if(g_vt.eff.fill_status == "unknown")
+         g_eff_geometry_unknown_count++;
+      if(g_vt.eff.fvg_touch_reached)
+         g_eff_fvg_touch_count++;
+      if(g_vt.eff.fvg_ce_touch_reached)
+         g_eff_ce_touch_count++;
+      if(g_vt.eff.entry_price_reached)
+         g_eff_entry_touch_count++;
+      if(g_vt.eff.entry_filled_fast)
+         g_eff_fill_fast_count++;
+      if(g_vt.eff.entry_filled_late)
+         g_eff_fill_late_count++;
+     }
+
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
    g_tradesDataLines += row;
@@ -4774,6 +5332,7 @@ void VirtualClearTrade(void)
    MapzHtfSnapClear(g_vt.htf);
    MapzMscSnapClear(g_vt.msc);
    MapzPdSnapClear(g_vt.pd);
+   MapzEffSnapClear(g_vt.eff);
   }
 
 //+------------------------------------------------------------------+
@@ -4789,6 +5348,8 @@ bool VirtualTryFillCurrentBar(const double lo, const double hi, const datetime t
       g_vt.outcome = "";
       g_vt.result_r = 0.0;
       g_vt.exit_reason = "";
+      const int barsFill = (g_vt.bars_waiting_entry > 0 ? g_vt.bars_waiting_entry : g_vt.eff.bars_observed);
+      MapzEffFinalize(g_vt.dir, true, barsFill, "", "", g_vt.eff);
       const string det = VirtualBuildDetailsCore();
       AppendEventRow(EVT_VIRT_FILL,
                      BiasDirectionToString(g_vt.bias_enum),
@@ -4980,6 +5541,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    MapzHtfBuildTradeSnap(g_brokerSymbol, sdir, g_lastBiasEnum, g_vt.htf);
    MapzMssChochBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, g_lastBiasEnum, liqInit, cTime, g_vt.msc);
    MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, g_vt.entry, g_vt.htf, g_vt.pd);
+   MapzEffInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.eff);
 
    g_virtual_trade_count++;
    const string detC = VirtualBuildDetailsCore();
@@ -4993,6 +5555,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    const double lo1 = iLow(g_brokerSymbol, InpExecutionTimeframe, 1);
    const double hi1 = iHigh(g_brokerSymbol, InpExecutionTimeframe, 1);
    const datetime t1 = iTime(g_brokerSymbol, InpExecutionTimeframe, 1);
+   MapzEffTrackBar(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, lo1, hi1, g_vt.eff);
    if(!VirtualTryFillCurrentBar(lo1, hi1, t1))
      {
       g_vt.bars_waiting_entry++;
@@ -5003,6 +5566,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
          g_vt.exit_reason = "expired_unfilled";
          g_vt.exit_time = t1;
          g_vt.exit_price = 0.0;
+         MapzEffFinalize(g_vt.dir, false, g_vt.bars_waiting_entry, g_vt.outcome, g_vt.exit_reason, g_vt.eff);
          const string detE = VirtualBuildDetailsCore();
          AppendEventRow(EVT_VIRT_EXPIRED,
                         BiasDirectionToString(g_vt.bias_enum),
@@ -5036,6 +5600,7 @@ void VirtualManageOnNewClosedExecBar(void)
 
    if(!g_vt.filled)
      {
+      MapzEffTrackBar(g_vt.dir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, lo, hi, g_vt.eff);
       if(VirtualTryFillCurrentBar(lo, hi, tBar))
          return;
       g_vt.bars_waiting_entry++;
@@ -5046,6 +5611,7 @@ void VirtualManageOnNewClosedExecBar(void)
          g_vt.exit_reason = "expired_unfilled";
          g_vt.exit_time = tBar;
          g_vt.exit_price = 0.0;
+         MapzEffFinalize(g_vt.dir, false, g_vt.bars_waiting_entry, g_vt.outcome, g_vt.exit_reason, g_vt.eff);
          const string detE = VirtualBuildDetailsCore();
          AppendEventRow(EVT_VIRT_EXPIRED,
                         BiasDirectionToString(g_vt.bias_enum),
@@ -5377,7 +5943,7 @@ void RefreshSetupSummaryNotes(void)
    const string gateNone = ApplyDailyBiasGatePlaceholder("none");
    const long tcRows = g_trades_csv_row_count;
    g_exportNotes = StringFormat(
-                       "E5.13 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); mss_choch_v1_exec_tf=%s (E5.12.2 incl. temporal relevance; observation-only; closed candles; no gate); premium_discount_v1=%s (E5.13; observation-only; no gate); "
+                       "E5.13.2 Mapazapp_TestEA: Daily Bias V1 on %s (last=%s); Setup V1 FVG on %s; virtual trades=%s (export-only; no live execution); gate_placeholder=%s; liquidity_sweep_v1+quality_v1+chain_v1=%s (observation-only); entry_quality_score_export=%s (observation-only); htf_structure_v1=%s (observation-only; no gate); mss_choch_v1_exec_tf=%s (E5.12.2 incl. temporal relevance; observation-only; closed candles; no gate); premium_discount_v1=%s (E5.13; observation-only; no gate); entry_fill_feasibility_v1=%s (E5.13.2 post-candidate diagnostic; no gate); "
                        "setup_inputs: enable=%s min_fvg_pts=%d virtual_min_trade_fvg_pts=%d max_setup_age_bars=%d require_bias=%s; trade_count=%I64d (virtual rows only).",
                        TfToWire(InpDailyBiasTimeframe),
                        BiasDirectionToString(g_lastBiasEnum),
@@ -5389,6 +5955,7 @@ void RefreshSetupSummaryNotes(void)
                        (InpEnableHtfStructureV1 ? "on" : "off"),
                        (InpEnableMssChochV1 ? "on" : "off"),
                        (InpEnablePremiumDiscountV1 ? "on" : "off"),
+                       (InpEnableEntryFillFeasibilityV1 ? "on" : "off"),
                        (InpEnableSetupDetection ? "true" : "false"),
                        InpMinFvgPoints,
                        InpVirtualMinTradeFvgPoints,
@@ -5448,6 +6015,8 @@ string WriteSummaryJson(void)
    json += "  \"has_mss_choch_temporal_relevance_v1_logic\": true,\r\n";
    json += "  \"has_premium_discount_v1_logic\": true,\r\n";
    json += "  \"premium_discount_enabled\": " + (InpEnablePremiumDiscountV1 ? "true" : "false") + ",\r\n";
+   json += "  \"has_entry_fill_feasibility_v1_logic\": true,\r\n";
+   json += "  \"entry_fill_feasibility_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
    json += "  \"score_gate_enabled\": false,\r\n";
@@ -5621,6 +6190,29 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"average_premium_discount_score\": %.6f,\r\n", avgPdScore);
    json += StringFormat("  \"average_pd_position_pct\": %.6f,\r\n", avgPdPos);
    json += StringFormat("  \"average_pd_range_size_points\": %.6f,\r\n", avgPdRangePts);
+   const double avgEffScore = (tcRows > 0 ? g_eff_sum_score / (double)tcRows : 0.0);
+   const double avgEffDepth = (tcRows > 0 ? g_eff_sum_depth_pct / (double)tcRows : 0.0);
+   const double avgEffRetrace = (tcRows > 0 ? g_eff_sum_max_retrace_pct / (double)tcRows : 0.0);
+   const double avgEffMiss = (tcRows > 0 ? g_eff_sum_missed_pts / (double)tcRows : 0.0);
+   const double avgEffBarsFill = (g_eff_filled_count > 0 ? g_eff_sum_bars_fill / (double)g_eff_filled_count : 0.0);
+   const double avgEffBarsMaxRet = (tcRows > 0 ? g_eff_sum_bars_max_retrace / (double)tcRows : 0.0);
+   json += StringFormat("  \"entry_fill_filled_count\": %I64d,\r\n", g_eff_filled_count);
+   json += StringFormat("  \"entry_fill_expired_unfilled_count\": %I64d,\r\n", g_eff_expired_unfilled_count);
+   json += StringFormat("  \"entry_fill_near_miss_count\": %I64d,\r\n", g_eff_near_miss_count);
+   json += StringFormat("  \"entry_fill_missed_shallow_retrace_count\": %I64d,\r\n", g_eff_missed_shallow_count);
+   json += StringFormat("  \"entry_fill_too_deep_for_retest_count\": %I64d,\r\n", g_eff_too_deep_count);
+   json += StringFormat("  \"entry_fill_invalidated_before_fill_count\": %I64d,\r\n", g_eff_invalidated_count);
+   json += StringFormat("  \"entry_fill_outside_fvg_count\": %I64d,\r\n", g_eff_outside_fvg_count);
+   json += StringFormat("  \"entry_fill_geometry_unknown_count\": %I64d,\r\n", g_eff_geometry_unknown_count);
+   json += StringFormat("  \"fvg_touch_reached_count\": %I64d,\r\n", g_eff_fvg_touch_count);
+   json += StringFormat("  \"fvg_ce_touch_reached_count\": %I64d,\r\n", g_eff_ce_touch_count);
+   json += StringFormat("  \"entry_price_reached_count\": %I64d,\r\n", g_eff_entry_touch_count);
+   json += StringFormat("  \"average_entry_fill_feasibility_score\": %.6f,\r\n", avgEffScore);
+   json += StringFormat("  \"average_entry_depth_in_fvg_pct\": %.6f,\r\n", avgEffDepth);
+   json += StringFormat("  \"average_max_retrace_into_fvg_pct\": %.6f,\r\n", avgEffRetrace);
+   json += StringFormat("  \"average_missed_entry_by_points\": %.6f,\r\n", avgEffMiss);
+   json += StringFormat("  \"average_bars_to_entry_fill\": %.6f,\r\n", avgEffBarsFill);
+   json += StringFormat("  \"average_bars_to_max_retrace\": %.6f,\r\n", avgEffBarsMaxRet);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -5652,7 +6244,10 @@ string WriteSummaryJson(void)
    json += StringFormat("    \"premium_discount_swing_lookback_bars\": %d,\r\n", InpPremiumDiscountSwingLookbackBars);
    json += StringFormat("    \"premium_discount_max_bars\": %d,\r\n", InpPremiumDiscountMaxBars);
    json += StringFormat("    \"premium_discount_equilibrium_band_pct\": %d,\r\n", InpPremiumDiscountEquilibriumBandPct);
-   json += "    \"premium_discount_score_enabled\": " + (InpPremiumDiscountScoreEnabled ? "true" : "false") + "\r\n";
+   json += "    \"premium_discount_score_enabled\": " + (InpPremiumDiscountScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"entry_fill_feasibility_v1_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"entry_fill_feasibility_near_miss_points\": %d,\r\n", InpEntryFillFeasibilityNearMissPoints);
+   json += "    \"entry_fill_feasibility_score_enabled\": " + (InpEntryFillFeasibilityScoreEnabled ? "true" : "false") + "\r\n";
    json += "  },\r\n";
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
@@ -5663,7 +6258,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+
@@ -5693,12 +6288,15 @@ void VirtualFinalizeActiveTradeIfAny(void)
       g_vt.outcome = "unresolved";
       g_vt.exit_reason = "deinit_with_active_virtual_trade";
       g_vt.exit_price = (MathIsValidNumber(cl) ? NormalizeDouble(cl, _Digits) : g_vt.entry);
+      if(g_vt.eff.log_enabled && !g_vt.eff.finalized)
+         MapzEffFinalize(g_vt.dir, true, g_vt.bars_waiting_entry, g_vt.outcome, g_vt.exit_reason, g_vt.eff);
      }
    else
      {
       g_vt.outcome = "expired_unfilled";
       g_vt.exit_reason = "deinit_pending_virtual_entry";
       g_vt.exit_price = 0.0;
+      MapzEffFinalize(g_vt.dir, false, g_vt.bars_waiting_entry, g_vt.outcome, g_vt.exit_reason, g_vt.eff);
      }
 
    const string detU = VirtualBuildDetailsCore();

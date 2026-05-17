@@ -116,7 +116,7 @@ Orden aproximado por frecuencia (subset reportado):
 
 - **PASS** técnico del smoke.
 - Mantener Premium/Discount **solo observación**; **sin** compuerta dura, **sin** aprobación live, **sin** cambiar umbrales de Entry Quality, **sin** fabricar A/B, **sin** calibrar solo desde este bundle.
-- **Siguiente checkpoint de implementación recomendado:** **E5.13.2 — Entry Zone / Fill Feasibility Audit** (definición + export/diagnóstico acorde al roadmap profesional).
+- **Siguiente checkpoint:** **E5.13.3** — smoke Entry Fill Feasibility post–implementación **E5.13.2** — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md).
 
 ---
 

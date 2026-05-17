@@ -89,6 +89,7 @@ test("G — summary flags: IFVG on; daily bias on; tester orders off; pipeline n
   assert.match(src, /\\"has_mss_choch_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_mss_choch_temporal_relevance_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_premium_discount_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /\\"has_entry_fill_feasibility_v1_logic\\"\s*:\s*true/);
 });
 
 test("H — Daily Bias V1 + gate markers", () => {
@@ -320,7 +321,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_13"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_13_2"/);
   assert.match(src, /input bool\s+InpEnablePremiumDiscountV1\s*=\s*true/);
   assert.match(src, /input int\s+InpPremiumDiscountSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpPremiumDiscountMaxBars\s*=\s*200/);
@@ -430,6 +431,16 @@ test("Z — E5.8 + E5.10 + E5.10.2 + E5.10.4: score field tokens + liquidity cha
   assert.match(src, /premium_discount_score/);
   assert.match(src, /pd_midpoint_50/);
   assert.match(src, /has_premium_discount_v1_logic/);
+  assert.match(src, /InpEnableEntryFillFeasibilityV1/);
+  assert.match(src, /has_entry_fill_feasibility_v1_logic/);
+  assert.match(src, /entry_fill_feasibility_score/);
+  assert.match(src, /entry_depth_in_fvg_pct/);
+  assert.match(src, /max_retrace_into_fvg_pct/);
+  assert.match(src, /missed_entry_by_points/);
+  assert.match(src, /entry_missed_shallow_retrace/);
+  assert.match(src, /entry_too_deep_for_retest/);
+  assert.match(src, /entry_near_miss/);
+  assert.match(src, /MapzEffInitGeometry/);
   assert.match(src, /has_htf_structure_v1_logic/);
   assert.match(src, /htf_structure_score/);
   assert.match(src, /h4_structure_state/);

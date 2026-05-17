@@ -862,6 +862,160 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     if (pdGrdRaw?.trim()) trade.premiumDiscountGrade = pdGrdRaw.trim();
     if (pdRsnRaw?.trim()) trade.premiumDiscountReasons = pdRsnRaw.trim();
 
+    const effEnRaw = pick(cells, col, "entry_fill_feasibility_enabled");
+    const effStatRaw = pick(cells, col, "entry_fill_status");
+    const effScrRaw = pick(cells, col, "entry_fill_feasibility_score");
+    const effGrdRaw = pick(cells, col, "entry_fill_feasibility_grade");
+    const effRsnRaw = pick(cells, col, "entry_fill_feasibility_reasons");
+    const effEntryRaw = pick(cells, col, "entry_price_for_fill_audit");
+    const effNearRaw = pick(cells, col, "fvg_near_edge_price");
+    const effFarRaw = pick(cells, col, "fvg_far_edge_price");
+    const effCeRaw = pick(cells, col, "fvg_ce_price");
+    const effDepthRaw = pick(cells, col, "entry_depth_in_fvg_pct");
+    const effDistNearRaw = pick(cells, col, "entry_distance_from_near_edge_points");
+    const effDistFarRaw = pick(cells, col, "entry_distance_from_far_edge_points");
+    const effDistCeRaw = pick(cells, col, "entry_distance_from_ce_points");
+    const effFvgTouchRaw = pick(cells, col, "fvg_touch_reached");
+    const effCeTouchRaw = pick(cells, col, "fvg_ce_touch_reached");
+    const effEntryTouchRaw = pick(cells, col, "entry_price_reached");
+    const effMaxRetPctRaw = pick(cells, col, "max_retrace_into_fvg_pct");
+    const effMaxRetPxRaw = pick(cells, col, "max_retrace_price");
+    const effMaxRetDistRaw = pick(cells, col, "max_retrace_to_entry_distance_points");
+    const effMissRaw = pick(cells, col, "missed_entry_by_points");
+    const effBarsFvgRaw = pick(cells, col, "bars_to_fvg_touch");
+    const effBarsCeRaw = pick(cells, col, "bars_to_ce_touch");
+    const effBarsFillRaw = pick(cells, col, "bars_to_entry_fill");
+    const effBarsMaxRaw = pick(cells, col, "bars_to_max_retrace");
+    const effBarsUntilRaw = pick(cells, col, "bars_until_expiration_or_resolution");
+    const effExpUnfRaw = pick(cells, col, "entry_expired_unfilled");
+    const effShallowRaw = pick(cells, col, "entry_missed_shallow_retrace");
+    const effTooDeepRaw = pick(cells, col, "entry_too_deep_for_retest");
+    const effNearMissRaw = pick(cells, col, "entry_near_miss");
+    const effFillFastRaw = pick(cells, col, "entry_filled_fast");
+    const effFillLateRaw = pick(cells, col, "entry_filled_late");
+    const effInvRaw = pick(cells, col, "entry_invalidated_before_fill");
+    const effOutsideRaw = pick(cells, col, "entry_outside_fvg");
+    const effGeomUnkRaw = pick(cells, col, "entry_geometry_unknown");
+
+    if (effEnRaw !== undefined && effEnRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(effEnRaw, "entry_fill_feasibility_enabled", rowNum);
+      if (b.ok) trade.entryFillFeasibilityEnabled = b.val;
+      else warnings.push({ code: "CSV_EFF_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (effStatRaw?.trim()) trade.entryFillStatus = effStatRaw.trim();
+    if (effScrRaw !== undefined && effScrRaw.trim() !== "") {
+      const p = parseNumber(effScrRaw, "entry_fill_feasibility_score", rowNum);
+      if (p.ok) trade.entryFillFeasibilityScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (effGrdRaw?.trim()) trade.entryFillFeasibilityGrade = effGrdRaw.trim();
+    if (effRsnRaw?.trim()) trade.entryFillFeasibilityReasons = effRsnRaw.trim();
+    const effNum = (raw: string | undefined, label: string, set: (v: number) => void) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const p = parseNumber(raw, label, rowNum);
+      if (p.ok) set(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    };
+    effNum(effEntryRaw, "entry_price_for_fill_audit", (v) => {
+      trade.entryPriceForFillAudit = v;
+    });
+    effNum(effNearRaw, "fvg_near_edge_price", (v) => {
+      trade.fvgNearEdgePrice = v;
+    });
+    effNum(effFarRaw, "fvg_far_edge_price", (v) => {
+      trade.fvgFarEdgePrice = v;
+    });
+    effNum(effCeRaw, "fvg_ce_price", (v) => {
+      trade.fvgCePrice = v;
+    });
+    effNum(effDepthRaw, "entry_depth_in_fvg_pct", (v) => {
+      trade.entryDepthInFvgPct = v;
+    });
+    effNum(effDistNearRaw, "entry_distance_from_near_edge_points", (v) => {
+      trade.entryDistanceFromNearEdgePoints = v;
+    });
+    effNum(effDistFarRaw, "entry_distance_from_far_edge_points", (v) => {
+      trade.entryDistanceFromFarEdgePoints = v;
+    });
+    effNum(effDistCeRaw, "entry_distance_from_ce_points", (v) => {
+      trade.entryDistanceFromCePoints = v;
+    });
+    effNum(effMaxRetPctRaw, "max_retrace_into_fvg_pct", (v) => {
+      trade.maxRetraceIntoFvgPct = v;
+    });
+    effNum(effMaxRetPxRaw, "max_retrace_price", (v) => {
+      trade.maxRetracePrice = v;
+    });
+    effNum(effMaxRetDistRaw, "max_retrace_to_entry_distance_points", (v) => {
+      trade.maxRetraceToEntryDistancePoints = v;
+    });
+    effNum(effMissRaw, "missed_entry_by_points", (v) => {
+      trade.missedEntryByPoints = v;
+    });
+    const effInt = (raw: string | undefined, label: string, set: (v: number) => void) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const p = parseNumber(raw, label, rowNum);
+      if (p.ok) set(Math.trunc(p.value));
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    };
+    effInt(effBarsFvgRaw, "bars_to_fvg_touch", (v) => {
+      trade.barsToFvgTouch = v;
+    });
+    effInt(effBarsCeRaw, "bars_to_ce_touch", (v) => {
+      trade.barsToCeTouch = v;
+    });
+    effInt(effBarsFillRaw, "bars_to_entry_fill", (v) => {
+      trade.barsToEntryFill = v;
+    });
+    effInt(effBarsMaxRaw, "bars_to_max_retrace", (v) => {
+      trade.barsToMaxRetrace = v;
+    });
+    effInt(effBarsUntilRaw, "bars_until_expiration_or_resolution", (v) => {
+      trade.barsUntilExpirationOrResolution = v;
+    });
+    const effBool = (raw: string | undefined, label: string, set: (v: boolean) => void) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const b = parseOptionalCsvBool(raw, label, rowNum);
+      if (b.ok) set(b.val);
+      else warnings.push({ code: "CSV_EFF_BOOL_INVALID", message: b.message, row: rowNum });
+    };
+    effBool(effFvgTouchRaw, "fvg_touch_reached", (v) => {
+      trade.fvgTouchReached = v;
+    });
+    effBool(effCeTouchRaw, "fvg_ce_touch_reached", (v) => {
+      trade.fvgCeTouchReached = v;
+    });
+    effBool(effEntryTouchRaw, "entry_price_reached", (v) => {
+      trade.entryPriceReached = v;
+    });
+    effBool(effExpUnfRaw, "entry_expired_unfilled", (v) => {
+      trade.entryExpiredUnfilled = v;
+    });
+    effBool(effShallowRaw, "entry_missed_shallow_retrace", (v) => {
+      trade.entryMissedShallowRetrace = v;
+    });
+    effBool(effTooDeepRaw, "entry_too_deep_for_retest", (v) => {
+      trade.entryTooDeepForRetest = v;
+    });
+    effBool(effNearMissRaw, "entry_near_miss", (v) => {
+      trade.entryNearMiss = v;
+    });
+    effBool(effFillFastRaw, "entry_filled_fast", (v) => {
+      trade.entryFilledFast = v;
+    });
+    effBool(effFillLateRaw, "entry_filled_late", (v) => {
+      trade.entryFilledLate = v;
+    });
+    effBool(effInvRaw, "entry_invalidated_before_fill", (v) => {
+      trade.entryInvalidatedBeforeFill = v;
+    });
+    effBool(effOutsideRaw, "entry_outside_fvg", (v) => {
+      trade.entryOutsideFvg = v;
+    });
+    effBool(effGeomUnkRaw, "entry_geometry_unknown", (v) => {
+      trade.entryGeometryUnknown = v;
+    });
+
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({
         code: "CSV_GEOMETRY_LONG_SL",

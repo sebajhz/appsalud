@@ -77,6 +77,14 @@ export const PREMIUM_DISCOUNT_CALIBRATION_COLUMNS = ["premium_discount_score"] a
 
 export type PremiumDiscountCalibrationColumn = (typeof PREMIUM_DISCOUNT_CALIBRATION_COLUMNS)[number];
 
+/**
+ * E5.13.2 optional Entry Fill Feasibility post-candidate diagnostic score when CSV includes
+ * `entry_fill_feasibility_score`. Not a pre-trade operational gate.
+ */
+export const ENTRY_FILL_FEASIBILITY_CALIBRATION_COLUMNS = ["entry_fill_feasibility_score"] as const;
+
+export type EntryFillFeasibilityCalibrationColumn = (typeof ENTRY_FILL_FEASIBILITY_CALIBRATION_COLUMNS)[number];
+
 export type TestEaScoreOutcomeGroup =
   | "all"
   | "wins"
@@ -198,6 +206,13 @@ export interface TestEaScoreCalibrationBundleAnalysis {
   /** Present when trades CSV includes E5.13 `premium_discount_score`. */
   premium_discount_component_stats: Partial<
     Record<PremiumDiscountCalibrationColumn, TestEaScoreComponentStats>
+  > | null;
+  /**
+   * Present when trades CSV includes E5.13.2 `entry_fill_feasibility_score`.
+   * Post-candidate / outcome-explanation diagnostic — not for pre-trade gating.
+   */
+  entry_fill_feasibility_component_stats: Partial<
+    Record<EntryFillFeasibilityCalibrationColumn, TestEaScoreComponentStats>
   > | null;
 }
 
@@ -357,6 +372,8 @@ export interface TradeScoreAuxiliary {
   choch_temporal: Partial<Record<ChochTemporalRelevanceCalibrationColumn, number | null>> | null;
   /** E5.13 optional Premium/Discount observation score when CSV includes `premium_discount_score`. */
   premium_discount: Partial<Record<PremiumDiscountCalibrationColumn, number | null>> | null;
+  /** E5.13.2 optional Entry Fill Feasibility post-candidate diagnostic when CSV includes `entry_fill_feasibility_score`. */
+  entry_fill_feasibility: Partial<Record<EntryFillFeasibilityCalibrationColumn, number | null>> | null;
   missing_raw: string;
   missing_tokens: string[];
 }
@@ -372,6 +389,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   hasMssTemporalRelevanceScoreColumn: boolean;
   hasChochTemporalRelevanceScoreColumn: boolean;
   hasPremiumDiscountScoreColumn: boolean;
+  hasEntryFillFeasibilityScoreColumn: boolean;
   warnings: string[];
 } {
   const warnings: string[] = [];
@@ -389,6 +407,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       hasMssTemporalRelevanceScoreColumn: false,
       hasChochTemporalRelevanceScoreColumn: false,
       hasPremiumDiscountScoreColumn: false,
+      hasEntryFillFeasibilityScoreColumn: false,
       warnings,
     };
   }
@@ -402,6 +421,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   const hasMssTemporalRelevanceScoreColumn = col.has("mss_temporal_relevance_score");
   const hasChochTemporalRelevanceScoreColumn = col.has("choch_temporal_relevance_score");
   const hasPremiumDiscountScoreColumn = col.has("premium_discount_score");
+  const hasEntryFillFeasibilityScoreColumn = col.has("entry_fill_feasibility_score");
 
   const emptyComponents = (): Record<ScoreComponentColumn, number | null> => ({
     htf_narrative_score: null,
@@ -484,6 +504,14 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       }
     }
 
+    let entry_fill_feasibility: Partial<Record<EntryFillFeasibilityCalibrationColumn, number | null>> | null = null;
+    if (hasEntryFillFeasibilityScoreColumn) {
+      entry_fill_feasibility = {};
+      for (const c of ENTRY_FILL_FEASIBILITY_CALIBRATION_COLUMNS) {
+        entry_fill_feasibility[c] = parseFiniteNumber(pick(cells, col, c));
+      }
+    }
+
     const aux: TradeScoreAuxiliary = {
       entry_quality_grade: pick(cells, col, "entry_quality_grade")?.trim() ?? null,
       score: parseFiniteNumber(pick(cells, col, "score_total")),
@@ -496,6 +524,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       mss_temporal,
       choch_temporal,
       premium_discount,
+      entry_fill_feasibility,
       missing_raw: missingRaw,
       missing_tokens,
     };
@@ -512,6 +541,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
     hasMssTemporalRelevanceScoreColumn,
     hasChochTemporalRelevanceScoreColumn,
     hasPremiumDiscountScoreColumn,
+    hasEntryFillFeasibilityScoreColumn,
     warnings,
   };
 }
@@ -973,6 +1003,50 @@ function buildPremiumDiscountComponentStats(
   return any ? out : null;
 }
 
+function buildEntryFillFeasibilityComponentStats(
+  rows: { trade: BacktestTrade; aux: TradeScoreAuxiliary | undefined }[],
+): Partial<Record<EntryFillFeasibilityCalibrationColumn, TestEaScoreComponentStats>> | null {
+  const out: Partial<Record<EntryFillFeasibilityCalibrationColumn, TestEaScoreComponentStats>> = {};
+  let any = false;
+  for (const col of ENTRY_FILL_FEASIBILITY_CALIBRATION_COLUMNS) {
+    const vals: number[] = [];
+    const byOutcome: Partial<Record<TestEaScoreOutcomeGroup, { sum: number; count: number }>> = {};
+    let allSum = 0;
+    let allCnt = 0;
+    for (const { trade, aux } of rows) {
+      const v = aux?.entry_fill_feasibility?.[col];
+      if (v == null || !Number.isFinite(v)) continue;
+      any = true;
+      vals.push(v);
+      allSum += v;
+      allCnt += 1;
+      const g = outcomeGroup(trade);
+      const cur = byOutcome[g] ?? { sum: 0, count: 0 };
+      cur.sum += v;
+      cur.count += 1;
+      byOutcome[g] = cur;
+    }
+    const byOutFin: TestEaScoreComponentStats["by_outcome"] = {};
+    if (allCnt > 0) byOutFin.all = { count: allCnt, average: allSum / allCnt };
+    for (const [k, v] of Object.entries(byOutcome)) {
+      const og = k as TestEaScoreOutcomeGroup;
+      byOutFin[og] = { count: v!.count, average: v!.count > 0 ? v!.sum / v!.count : null };
+    }
+    if (vals.length === 0) {
+      out[col] = { min: null, max: null, average: null, by_outcome: byOutFin };
+    } else {
+      const sorted = [...vals].sort((a, b) => a - b);
+      out[col] = {
+        min: sorted[0]!,
+        max: sorted[sorted.length - 1]!,
+        average: average(vals),
+        by_outcome: byOutFin,
+      };
+    }
+  }
+  return any ? out : null;
+}
+
 function missingFrequency(rows: { aux: TradeScoreAuxiliary | undefined }[]): Record<string, number> {
   const freq: Record<string, number> = {};
   for (const { aux } of rows) {
@@ -1056,6 +1130,7 @@ export function analyzeTestEaScoreCalibrationFromTexts(
     mss_temporal_relevance_component_stats: null,
     choch_temporal_relevance_component_stats: null,
     premium_discount_component_stats: null,
+    entry_fill_feasibility_component_stats: null,
   };
 
   let summary: Record<string, unknown>;
@@ -1280,6 +1355,9 @@ export function analyzeTestEaScoreCalibrationFromTexts(
       : null,
     premium_discount_component_stats: auxParse.hasPremiumDiscountScoreColumn
       ? buildPremiumDiscountComponentStats(merged)
+      : null,
+    entry_fill_feasibility_component_stats: auxParse.hasEntryFillFeasibilityScoreColumn
+      ? buildEntryFillFeasibilityComponentStats(merged)
       : null,
   };
 
