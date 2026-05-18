@@ -61,7 +61,8 @@
 - **E5.13.6.2 cerrado (docs):** reconcile smoke — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md); mismatch_rate ≈ 41 %; entry/SL OK; TP/bars/ambiguous no.
 - **E5.13.6.3 cerrado (repo):** paridad control 50 %/CE — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md); build `MZP_TestEA_E5_13_6_3`.
 - **E5.13.6.4 cerrado (docs):** smoke reconcile post-fix — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md); `mismatch_rate = 0`; control 50 %/CE validado.
-- **Siguiente paso canónico:** rerun summary EVOS sobre bundle `MZP_TestEA_E5_13_6_3`; no aprobar edge/25 % antes de esa evidencia. **Nota:** track **`tester_orders`** (E5.1) aparte.
+- **E5.13.6.5 cerrado (docs):** summary EVOS post-paridad — [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md); edge domina rollups; **no** aprobar variantes.
+- **Siguiente paso canónico:** **E5.13.6.6** Edge/25 sanity and transition audit. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

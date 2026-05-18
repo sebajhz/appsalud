@@ -135,7 +135,7 @@ Alcance E5.13.6.1 (solo diagnóstico):
 - CLI opcional: `mapazapp:testea-entry-variant-sim-reconcile`.
 - **Sin** cambiar estrategia, umbrales ni entry oficial.
 
-**Después de reconciliación:** rerun del summary EVOS post-paridad sobre el bundle `MZP_TestEA_E5_13_6_3`; luego evaluar si corresponde avanzar a **E5.14** IFVG / BISI / SIBI.
+**Posterior:** summary post-paridad cerrado — [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md). **Siguiente:** **E5.13.6.6** Edge/25 sanity audit; **no** E5.14 ni cambio de entry hasta entonces.
 
 ---
 

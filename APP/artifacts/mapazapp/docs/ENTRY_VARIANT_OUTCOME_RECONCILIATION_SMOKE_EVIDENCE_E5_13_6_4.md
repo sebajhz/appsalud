@@ -144,11 +144,6 @@ La desalineación detectada en E5.13.6.2 quedó resuelta para el control 50 %/CE
 
 ## Siguiente recomendado
 
-Rerun del summary EVOS sobre este mismo bundle `MZP_TestEA_E5_13_6_3`:
+Summary EVOS post-paridad documentado en [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md).
 
-```bash
-pnpm --filter @workspace/scripts mapazapp:testea-entry-variant-sim-summary -- \
-  --bundle "$RunDir" --json
-```
-
-Ese resultado debe documentarse antes de usar edge / 25 % / 75 % / adaptive como evidencia estratégica.
+**Siguiente:** **E5.13.6.6** — Entry Variant Edge/25 Sanity and Transition Audit.
