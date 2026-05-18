@@ -16,7 +16,9 @@
 |----|--------|-----|
 | **E5.13.1** | Premium/Discount **smoke evidence** | **cerrado — docs** — [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md) |
 | **E5.13.2** | Entry Zone / **Fill Feasibility Audit** | **cerrado — repo** — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md) |
-| **E5.13.3** | Entry Fill Feasibility **smoke evidence** | **siguiente** (recompilar + Strategy Tester; sin gate) |
+| **E5.13.3** | Entry Fill Feasibility **smoke evidence** | **cerrado — docs** — [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md) |
+| **E5.13.2.1** | Fill feasibility **reason-code dedup** fix | **siguiente** (repo; pequeño) |
+| **E5.13.4** | Entry Variant Feasibility Audit | planificado (borde / 25 % / CE / adaptivo) |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -98,9 +100,16 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 **Referencia:** [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md) — build **`MZP_TestEA_E5_13_2`**; diagnóstico **post-candidato** (retrace, near-miss, profundidad en FVG, `entry_fill_status`); summary `has_entry_fill_feasibility_v1_logic`; **no** mezclar `entry_fill_feasibility_score` con `entry_quality_score`; **sin** compuerta.
 
-### E5.13.3 — Entry Fill Feasibility smoke evidence (**siguiente**)
+### E5.13.3 — Entry Fill Feasibility smoke evidence (**cerrado — docs**)
 
-Humo operador post–E5.13.2: recompilar EA, correr bundle benchmark, `mapazapp:testea-export-validate` + lectura de agregados `entry_fill_*` vs outcomes (especialmente `expired_unfilled`).
+- **Evidencia:** [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md) — build `MZP_TestEA_E5_13_2`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, **PASS** técnico (`BUNDLE_EVENTS_LARGE`).
+- **Hallazgo:** todos los trades tocan FVG; solo 1355/1697 CE+entry; 298 `missed_shallow_retrace` + 22 `near_miss` + 22 `expired_unfilled` en capa fill — el modelo CE/~50 % puede ser demasiado estricto para un subconjunto; **no** cambiar entry aún.
+- **Caveat:** reason tokens `max_retrace_shallow` / `max_retrace_deep_enough` inflados por barra → **E5.13.2.1**.
+
+### E5.13.2.1 / E5.13.4 (**siguiente cadena**)
+
+- **E5.13.2.1** — deduplicar reason codes por trade en fill feasibility.  
+- **E5.13.4** — comparar variantes de nivel de entrada (observación-only).
 
 ---
 

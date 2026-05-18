@@ -78,6 +78,11 @@ Durante la ventana de espera (`InpVirtualEntryExpiryBars` o `InpEntryFillFeasibi
 
 Si el CSV incluye `entry_fill_feasibility_score`, el analyzer expone `entry_fill_feasibility_component_stats` por outcome. Documentar siempre como **diagnóstico post-candidato**, no score pre-trade.
 
+## Smoke E5.13.3 (cerrado — docs)
+
+**E5.13.3** — evidencia operador sobre bundle benchmark — [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md) (**PASS** técnico; `BUNDLE_EVENTS_LARGE` único warning). Hallazgo: 1697/1697 tocan FVG; 1355/1697 alcanzan CE/entry; subconjunto sin fill coherente con retrace superficial. Caveat: tokens `max_retrace_shallow` / `max_retrace_deep_enough` en reasons están inflados por barra → ver **E5.13.2.1**.
+
 ## Siguiente paso
 
-**E5.13.3** — recompilar `Mapazapp_TestEA.mq5`, correr smoke en Strategy Tester y validar bundles con `mapazapp:testea-export-validate`.
+1. **E5.13.2.1** — deduplicación de reason codes en fill feasibility.  
+2. **E5.13.4** — Entry Variant Feasibility Audit (borde / 25 % / CE / adaptivo).

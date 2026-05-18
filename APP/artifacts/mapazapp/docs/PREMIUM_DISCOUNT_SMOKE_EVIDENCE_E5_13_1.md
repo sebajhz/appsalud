@@ -116,7 +116,7 @@ Orden aproximado por frecuencia (subset reportado):
 
 - **PASS** técnico del smoke.
 - Mantener Premium/Discount **solo observación**; **sin** compuerta dura, **sin** aprobación live, **sin** cambiar umbrales de Entry Quality, **sin** fabricar A/B, **sin** calibrar solo desde este bundle.
-- **Siguiente checkpoint:** **E5.13.3** — smoke Entry Fill Feasibility post–implementación **E5.13.2** — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md).
+- **Smoke E5.13.3 cerrado:** [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md) — PASS técnico; retrace/CE vs fill documentado.
 
 ---
 
