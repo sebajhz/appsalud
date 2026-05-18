@@ -166,7 +166,7 @@ E5.13.6.5 es el **primer** summary EVOS en el que la variante 50 % actúa como c
 
 ## Siguiente recomendado
 
-**E5.13.6.6** — Entry Variant Edge/25 Sanity and Transition Audit: inspeccionar geometría edge/25 %, transiciones fill→outcome y si el dominio de edge en este bundle es artefacto modelable o señal defendible antes de tocar entry oficial.
+**E5.13.6.6 (repo)** — [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md): CLI `mapazapp:testea-entry-variant-transition-audit` sobre bundle `MZP_TestEA_E5_13_6_3`; revisar transiciones, delta R y risk sanity antes de cualquier decisión de entry.
 
 ---
 

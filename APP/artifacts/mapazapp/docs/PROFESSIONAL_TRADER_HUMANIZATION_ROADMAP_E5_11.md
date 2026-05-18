@@ -27,7 +27,7 @@
 | **E5.13.6.3** | Align EVOS **50 %/CE** with official outcome semantics | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md) |
 | **E5.13.6.4** | Reconciliation **smoke post-parity** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md) |
 | **E5.13.6.5** | EVOS variant outcome **summary post-parity** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md) |
-| **E5.13.6.6** | Entry Variant **Edge/25 Sanity and Transition Audit** | **siguiente** — geometría/transiciones antes de aprobar variante |
+| **E5.13.6.6** | Entry Variant **Edge/25 Sanity and Transition Audit** | **cerrado — repo** — [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md) |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -163,9 +163,11 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 - **Hallazgo:** edge domina expectancy/totalR/fill; 25/adaptive mejoran totalR vs 50 % con más ambiguous; 50 % alineado con oficial.
 - **No aprobar:** edge, 25 %, adaptive, 75 %; mantener entry oficial CE/50 %.
 
-### E5.13.6.6 (**siguiente**)
+### E5.13.6.6 (**cerrado — repo**)
 
-Entry Variant Edge/25 Sanity and Transition Audit — validar si el dominio de edge en este bundle es señal defendible o artefacto de modelado antes de cualquier cambio de entry.
+- **Implementación:** core `testea-entry-variant-transition-audit.ts` + CLI `mapazapp:testea-entry-variant-transition-audit`.
+- **Doc:** [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md).
+- **Operador:** ejecutar transition audit en bundle `MZP_TestEA_E5_13_6_3`; **no** aprobar edge/25 % hasta revisar evidencia.
 
 ---
 

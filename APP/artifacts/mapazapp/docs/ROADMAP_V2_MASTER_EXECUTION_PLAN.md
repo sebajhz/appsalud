@@ -1,10 +1,14 @@
 # ROADMAP V2 — Master Execution Plan
 
+## E5.13.6.6 checkpoint context
+
+- **E5.13.6.6 (repo) — cerrado:** transition audit — [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md); CLI `mapazapp:testea-entry-variant-transition-audit`.
+- **Operador:** ejecutar audit en bundle `MZP_TestEA_E5_13_6_3`; **no** aprobar edge/25 % ni cambiar entry oficial.
+
 ## E5.13.6.5 checkpoint context
 
 - **E5.13.6.5 (docs) — cerrado:** summary EVOS post-paridad — [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md); bundle `MZP_TestEA_E5_13_6_3`, CLI `mapazapp:testea-entry-variant-sim-summary` OK.
 - **Hallazgo:** edge domina expectancy/totalR; 25/adaptive mejoran totalR vs 50 % con más ambiguous; control 50 % alineado con oficial.
-- **Siguiente:** **E5.13.6.6** Edge/25 sanity and transition audit; no aprobar edge/25 % ni cambiar entry oficial.
 
 ## E5.13.6.4 checkpoint context
 

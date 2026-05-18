@@ -95,4 +95,4 @@ Build `MZP_TestEA_E5_13_6_3`: variante 50 espeja outcome oficial (TP/entry/SL of
 
 **E5.13.6.5 cerrado:** [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md) — primer summary post-paridad; edge domina rollups; 25/adaptive mejoran totalR vs 50 % con más ambiguous; **no** aprobar variantes.
 
-**Siguiente:** **E5.13.6.6** — Edge/25 sanity and transition audit.
+**E5.13.6.6 cerrado (repo):** [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md) — CLI `mapazapp:testea-entry-variant-transition-audit`; operador: ejecutar sobre bundle post-paridad y revisar flags; **no** aprobar variantes.
