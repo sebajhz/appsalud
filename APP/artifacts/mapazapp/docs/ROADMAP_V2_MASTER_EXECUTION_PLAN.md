@@ -1,9 +1,18 @@
 # ROADMAP V2 — Master Execution Plan
 
+## Strategic governance (canonical)
+
+- **North Star:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) — framework de descubrimiento de setup parametrizado; XAUUSD laboratorio primario, no producto «solo oro»; perfiles futuros por símbolo con evidencia.
+- **Parameter / optimization governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) — campañas controladas, anti-overfit, escalera de evidencia; **no** aprobar entry desde un bundle; edge / 25 % / adaptive experimentales; oficial **50 % / CE**; sin live / gates / ejecución real hasta aprobación explícita.
+
+## E5.13.6.9 checkpoint context
+
+- **Siguiente:** evidencia operador edge robustness (bundle `MZP_TestEA_E5_13_6_3`) bajo North Star + governance; **no** aprobar edge.
+
 ## E5.13.6.8 checkpoint context
 
 - **E5.13.6.8 (repo) — cerrado:** edge robustness audit — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md); CLI `mapazapp:testea-entry-edge-robustness-audit`.
-- **Siguiente:** evidencia operador post-robustness en bundle `MZP_TestEA_E5_13_6_3`; luego **E5.14**.
+- **E5.13.6.8.1 (repo):** fix `fast_fill_close_count` per-bucket.
 
 ## E5.13.6.7 checkpoint context
 

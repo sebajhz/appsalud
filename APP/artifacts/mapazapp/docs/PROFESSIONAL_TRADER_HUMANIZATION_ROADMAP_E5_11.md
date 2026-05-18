@@ -10,6 +10,17 @@
 - **Primera implementación:** solo **observación** (export/diagnóstico). **Sin compuerta dura** hasta evidencia. **Sin aprobación de trading live**. **Sin** `OrderSend` / `CTrade` / `PositionOpen` / `WebRequest`.
 - **Sin** bajar umbrales para fabricar grados A/B. **Sin** sobreajuste a una sola campaña.
 
+## Gobernanza estratégica (canónica)
+
+Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
+
+| Documento | Rol |
+|-----------|-----|
+| [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) | North Star: framework de detección/descubrimiento de setup; XAUUSD laboratorio, no jaula; familia de entries contextuales; perfiles multi-símbolo futuros |
+| [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) | Parámetros, campañas, anti-overfit, evidencia; **no** aprobar entry por un bundle; edge/25/adaptive experimentales; oficial **50 % / CE** |
+
+**Reglas vigentes:** sin live trading aprobado; sin gates por un solo backtest; Cursor **no** infiere decisiones de trading.
+
 ## Cadena explícita E5.13.1 → E5.20 (orden de trabajo)
 
 | ID | Nombre | Rol |
@@ -30,6 +41,7 @@
 | **E5.13.6.6** | Entry Variant **Edge/25 Sanity and Transition Audit** | **cerrado — repo** — [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md) |
 | **E5.13.6.7** | Transition audit **evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md) |
 | **E5.13.6.8** | **Edge Entry Realism / Robustness Audit** | **cerrado — repo** — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md) |
+| **E5.13.6.9** | Edge robustness **evidence** (operador) | **siguiente** — bajo North Star + governance; **no** aprobar edge |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -178,7 +190,11 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 
 - **Implementación:** core `testea-entry-edge-robustness-audit.ts` + CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **Doc:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md).
-- **Siguiente:** evidencia operador post-robustness audit en bundle `MZP_TestEA_E5_13_6_3`.
+- **Siguiente:** **E5.13.6.9** evidencia operador (bundle `MZP_TestEA_E5_13_6_3`), interpretada bajo [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) y [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md).
+
+### E5.13.6.9 (**siguiente**)
+
+Evidencia operador post–robustness audit — documentar flags, buffers y transiciones; **no** aprobar edge ni cambiar entry oficial 50 % / CE.
 
 ---
 

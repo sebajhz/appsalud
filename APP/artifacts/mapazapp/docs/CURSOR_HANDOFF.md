@@ -3,9 +3,14 @@
 - Plan maestro autoritativo V2: `APP/artifacts/mapazapp/docs/ROADMAP_V2_MASTER_EXECUTION_PLAN.md`.
 - Este documento define secuencia de ejecucion V2-11..V2-25, invariantes de seguridad y criterio de avance sin drift.
 
+## Strategic governance (canonical)
+
+- **Trade Detection North Star:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) — Mapazapp como **framework de descubrimiento de setup parametrizado**, no bot XAUUSD de entry fija; XAUUSD = laboratorio primario, no jaula; descubrir el setup y luego medir qué símbolos lo expresan mejor; perfiles futuros (`XAUUSD_Profile_V1`, `BTCUSD_Profile_V1`, etc.); **Cursor no infiere decisiones de trading**.
+- **Parameter & Optimization Governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) — gobernanza de parámetros, campañas, anti-overfit, perfiles multi-símbolo, reglas de evidencia; configurabilidad solo con evidencia; **un solo bundle no aprueba entry**; edge / 25 % / adaptive **no aprobados**; entry oficial **50 % / CE**; sin live / funding / gates / ejecución real aprobados.
+
 ## Project execution guide (authoritative — E3.4.1+)
 
-- **Living project guide:** [`APP/artifacts/mapazapp/docs/MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md) — referencia principal para Cursor y chats futuros: arquitectura aprobada, tres sistemas internos, **dos EAs oficiales MT5** (`Mapazapp_BridgeEA`, `Mapazapp_TestEA`), prioridades 80/10/10, tabla de siguientes pasos, implementation ledger y reglas de trabajo.
+- **Living project guide:** [`APP/artifacts/mapazapp/docs/MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md) — referencia principal para Cursor y chats futuros: arquitectura aprobada, tres sistemas internos, **dos EAs oficiales MT5** (`Mapazapp_BridgeEA`, `Mapazapp_TestEA`), prioridades 80/10/10, tabla de siguientes pasos, implementation ledger y reglas de trabajo; alineado con North Star y governance anteriores.
 - **Reconciliación de roles EA (E3.4.1):** [`APP/artifacts/mapazapp/docs/MT5_EA_ROLES_RECONCILIATION_E3_4_1.md`](./MT5_EA_ROLES_RECONCILIATION_E3_4_1.md).
 - **E3.5 cerrado:** detección **FVG candidata** + gate Daily Bias en **`Mapazapp_TestEA`** — ver [`BACKTESTEA_IFVG_SETUP_V1_E3_5.md`](./BACKTESTEA_IFVG_SETUP_V1_E3_5.md).
 - **E3.6 cerrado:** esquema de export / evidencia congelado (`has_full_ifvg_pipeline`, eventos CSV, validadores) — ver [`BACKTESTEA_EXPORT_SCHEMA_E3_6.md`](./BACKTESTEA_EXPORT_SCHEMA_E3_6.md).
@@ -66,7 +71,7 @@
 - **E5.13.6.7 cerrado (docs):** transition audit evidence — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md); PASS; edge fuerte + riesgo ~2×; **no** aprobar variantes.
 - **E5.13.6.8 cerrado (repo):** edge robustness audit — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md); CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **E5.13.6.8.1 (repo):** fix `transition_robustness.fast_fill_close_count` (per-bucket, no multiplicar por buffers).
-- **Siguiente canónico:** ejecutar robustness audit en bundle `MZP_TestEA_E5_13_6_3` y documentar evidencia; luego **E5.14**. **Nota:** track **`tester_orders`** (E5.1) aparte.
+- **Siguiente canónico:** **E5.13.6.9** — evidencia operador edge robustness en bundle `MZP_TestEA_E5_13_6_3` (bajo North Star + optimization governance; **no** aprobar edge ni cambiar entry oficial); luego **E5.14**. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 
