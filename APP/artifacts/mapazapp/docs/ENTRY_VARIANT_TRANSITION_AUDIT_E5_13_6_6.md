@@ -67,7 +67,7 @@ Aunque edge gane en total R en un bundle, 25 % y adaptive suelen acercarse al en
 
 **Cerrado — docs:** [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md) — bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, `trade_count = 1697`, audit PASS; edge domina con `risk_ratio ≈ 2` vs 50 %; **no** aprobar variantes.
 
-**Siguiente:** **E5.13.6.8** Edge Entry Realism / Robustness Audit.
+**E5.13.6.8 (repo):** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md) — CLI `mapazapp:testea-entry-edge-robustness-audit`. **Siguiente:** evidencia operador post-robustness audit.
 
 ---
 

@@ -166,7 +166,7 @@ E5.13.6.5 es el **primer** summary EVOS en el que la variante 50 % actúa como c
 
 ## Siguiente recomendado
 
-**E5.13.6.7 (docs)** — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md): transition audit PASS; edge domina con riesgo ~2× vs 50 %; **no** aprobar variantes. **E5.13.6.8** — Edge Entry Realism / Robustness Audit.
+**E5.13.6.7 (docs)** — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md): transition audit PASS; edge domina con riesgo ~2× vs 50 %; **no** aprobar variantes. **E5.13.6.8 (repo)** — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md); CLI `mapazapp:testea-entry-edge-robustness-audit`.
 
 ---
 

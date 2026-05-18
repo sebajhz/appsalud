@@ -239,14 +239,7 @@ Buckets relevantes:
 
 ## Siguiente recomendado
 
-**E5.13.6.8 — Edge Entry Realism / Robustness Audit**
-
-Alcance sugerido (diagnóstico; sin cambiar entry oficial):
-
-- Robustez de wins edge tras buffer de spread/slippage.
-- Realismo de entry en near FVG edge vs demasiado optimista.
-- Comparar edge vs 25/adaptive bajo supuestos de ejecución conservadores.
-- Evaluar `unresolved = 60` en edge.
+**E5.13.6.8 (repo) — Edge Entry Realism / Robustness Audit** — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md); CLI `mapazapp:testea-entry-edge-robustness-audit`. Ejecutar sobre bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` (build `MZP_TestEA_E5_13_6_3`). **Siguiente tras evidencia:** doc operador robustness o variantes EVOS buffered en MQL5 si el proxy es inconcluso.
 - Impacto práctico de `risk_ratio ≈ 2` en sizing y exposición.
 - **Sin** decisión de entry model hasta completar robustness audit.
 

@@ -97,4 +97,4 @@ Build `MZP_TestEA_E5_13_6_3`: variante 50 espeja outcome oficial (TP/entry/SL of
 
 **E5.13.6.6 cerrado (repo):** [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md) — CLI `mapazapp:testea-entry-variant-transition-audit`.
 
-**E5.13.6.7 cerrado (docs):** [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md) — audit PASS en bundle benchmark; edge fuerte pero no aprobado; **siguiente E5.13.6.8** robustness edge.
+**E5.13.6.7 cerrado (docs):** [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md) — audit PASS; edge fuerte pero no aprobado. **E5.13.6.8 cerrado (repo):** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md) — CLI `mapazapp:testea-entry-edge-robustness-audit`.

@@ -1,10 +1,14 @@
 # ROADMAP V2 — Master Execution Plan
 
+## E5.13.6.8 checkpoint context
+
+- **E5.13.6.8 (repo) — cerrado:** edge robustness audit — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md); CLI `mapazapp:testea-entry-edge-robustness-audit`.
+- **Siguiente:** evidencia operador post-robustness en bundle `MZP_TestEA_E5_13_6_3`; luego **E5.14**.
+
 ## E5.13.6.7 checkpoint context
 
 - **E5.13.6.7 (docs) — cerrado:** transition audit evidence — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md); bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, audit PASS.
 - **Hallazgo:** edge domina con `risk_ratio ≈ 2` vs 50 %; 25/adaptive mejoran R con más ambiguous; 75 % descartado; **no** aprobar variantes.
-- **Siguiente:** **E5.13.6.8** Edge Entry Realism / Robustness Audit.
 
 ## E5.13.6.6 checkpoint context
 
