@@ -115,6 +115,7 @@ export * from "./export-sample-validation-reasons";
 export * from "./export-sample-validation";
 export * from "./testea-export-bundle-validate";
 export * from "./testea-ambiguity-sensitivity";
+export * from "./testea-entry-variant-outcome-simulation";
 export * from "./testea-score-calibration";
 export * from "./export-sample-validation-fixtures";
 export * from "./manual-campaign-types";

@@ -82,7 +82,10 @@ input bool              InpEntryFillFeasibilityScoreEnabled = true;
 input bool              InpEnableEntryVariantFeasibilityV1 = true;
 input bool              InpEntryVariantFeasibilityScoreEnabled = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_13_4"
+input bool              InpEnableEntryVariantOutcomeSimulationV1 = true;
+input bool              InpEntryVariantOutcomeSimulationScoreEnabled = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_13_6"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -330,6 +333,70 @@ long            g_ev_75_reached_count = 0;
 long            g_ev_adaptive_reached_count = 0;
 long            g_ev_shallow_would_fill_count = 0;
 long            g_ev_deeper_would_not_fill_count = 0;
+
+struct MapzVariantSimSlot
+  {
+   double            entry_price;
+   double            sl_price;
+   double            tp_price;
+   double            risk_points;
+   double            effective_rr;
+   bool              reached;
+   bool              sim_open;
+   int               bars_to_fill;
+   int               bars_since_fill;
+   string            status;
+   double            result_r;
+   bool              ambiguous_flag;
+   bool              invalid_risk;
+   bool              finalized;
+  };
+
+struct MapzEntryVariantOutcomeSimSnap
+  {
+   bool              log_enabled;
+   bool              finalized;
+   int               bars_observed;
+   string            reasons;
+   MapzVariantSimSlot edge;
+   MapzVariantSimSlot p25;
+   MapzVariantSimSlot p50;
+   MapzVariantSimSlot p75;
+   MapzVariantSimSlot adaptive;
+   string            best_sim_variant;
+   double            best_sim_result_r;
+   string            best_sim_status;
+   string            best_sim_reasons;
+   int               score;
+   string            grade;
+  };
+
+struct MapzEvosRollup
+  {
+   long              filled_count;
+   long              win_count;
+   long              loss_count;
+   long              ambiguous_count;
+   long              not_filled_count;
+   long              invalid_risk_count;
+   double            total_r;
+   long              risk_samples;
+   double            sum_risk_pts;
+  };
+
+MapzEvosRollup    g_evos_edge_sum;
+MapzEvosRollup    g_evos_25_sum;
+MapzEvosRollup    g_evos_50_sum;
+MapzEvosRollup    g_evos_75_sum;
+MapzEvosRollup    g_evos_adaptive_sum;
+string            g_evos_best_expectancy_variant = "";
+double            g_evos_best_expectancy_r = -1e12;
+string            g_evos_best_total_r_variant = "";
+double            g_evos_best_total_r = -1e12;
+string            g_evos_lowest_ambiguous_variant = "";
+long              g_evos_lowest_ambiguous_count = 999999999;
+string            g_evos_highest_fill_variant = "";
+long              g_evos_highest_fill_count = -1;
 
 struct MapzHtfTradeSnap
   {
@@ -601,6 +668,7 @@ struct MapzVirtualTrade
    MapzPremiumDiscountTradeSnap pd;
    MapzEntryFillFeasibilitySnap eff;
    MapzEntryVariantFeasibilitySnap ev;
+   MapzEntryVariantOutcomeSimSnap evos;
   };
 
 MapzVirtualTrade g_vt;
@@ -4868,6 +4936,483 @@ void MapzEvFinalize(MapzEntryVariantFeasibilitySnap &out)
   }
 
 //+------------------------------------------------------------------+
+void MapzEvosRollupClear(MapzEvosRollup &r)
+  {
+   r.filled_count = 0;
+   r.win_count = 0;
+   r.loss_count = 0;
+   r.ambiguous_count = 0;
+   r.not_filled_count = 0;
+   r.invalid_risk_count = 0;
+   r.total_r = 0.0;
+   r.risk_samples = 0;
+   r.sum_risk_pts = 0.0;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosSlotClear(MapzVariantSimSlot &s)
+  {
+   s.entry_price = 0.0;
+   s.sl_price = 0.0;
+   s.tp_price = 0.0;
+   s.risk_points = 0.0;
+   s.effective_rr = 0.0;
+   s.reached = false;
+   s.sim_open = false;
+   s.bars_to_fill = 0;
+   s.bars_since_fill = 0;
+   s.status = "";
+   s.result_r = 0.0;
+   s.ambiguous_flag = false;
+   s.invalid_risk = false;
+   s.finalized = false;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosSnapClear(MapzEntryVariantOutcomeSimSnap &o)
+  {
+   o.log_enabled = false;
+   o.finalized = false;
+   o.bars_observed = 0;
+   o.reasons = "";
+   MapzEvosSlotClear(o.edge);
+   MapzEvosSlotClear(o.p25);
+   MapzEvosSlotClear(o.p50);
+   MapzEvosSlotClear(o.p75);
+   MapzEvosSlotClear(o.adaptive);
+   o.best_sim_variant = "";
+   o.best_sim_result_r = 0.0;
+   o.best_sim_status = "";
+   o.best_sim_reasons = "";
+   o.score = 0;
+   o.grade = "None";
+  }
+
+//+------------------------------------------------------------------+
+bool MapzEvosPrepareSlot(const ENUM_MAPZ_SETUP_DIR dir,
+                         const double entryPx,
+                         const double slOfficial,
+                         MapzVariantSimSlot &slot)
+  {
+   MapzEvosSlotClear(slot);
+   slot.entry_price = NormalizeDouble(entryPx, _Digits);
+   slot.sl_price = NormalizeDouble(slOfficial, _Digits);
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      slot.risk_points = (slot.entry_price - slot.sl_price) / ptSafe;
+      if(slot.entry_price <= slot.sl_price)
+        {
+         slot.invalid_risk = true;
+         slot.status = "invalid_risk";
+         slot.finalized = true;
+         return false;
+        }
+      slot.tp_price = NormalizeDouble(slot.entry_price + (slot.entry_price - slot.sl_price) * InpVirtualRiskReward, _Digits);
+      if(slot.tp_price <= slot.entry_price)
+        {
+         slot.invalid_risk = true;
+         slot.status = "invalid_risk";
+         slot.finalized = true;
+         return false;
+        }
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      slot.risk_points = (slot.sl_price - slot.entry_price) / ptSafe;
+      if(slot.entry_price >= slot.sl_price)
+        {
+         slot.invalid_risk = true;
+         slot.status = "invalid_risk";
+         slot.finalized = true;
+         return false;
+        }
+      slot.tp_price = NormalizeDouble(slot.entry_price - (slot.sl_price - slot.entry_price) * InpVirtualRiskReward, _Digits);
+      if(slot.tp_price >= slot.entry_price)
+        {
+         slot.invalid_risk = true;
+         slot.status = "invalid_risk";
+         slot.finalized = true;
+         return false;
+        }
+     }
+   else
+     {
+      slot.invalid_risk = true;
+      slot.status = "invalid_risk";
+      slot.finalized = true;
+      return false;
+     }
+   if(slot.risk_points <= 0.0)
+     {
+      slot.invalid_risk = true;
+      slot.status = "invalid_risk";
+      slot.finalized = true;
+      return false;
+     }
+   slot.effective_rr = InpVirtualRiskReward;
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+bool MapzEvosBarTouchesEntry(const ENUM_MAPZ_SETUP_DIR dir,
+                             const double lo,
+                             const double hi,
+                             const double entryPx)
+  {
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   if(dir == MAPZ_SETUP_LONG)
+      return (lo <= entryPx + ptSafe * 0.5);
+   if(dir == MAPZ_SETUP_SHORT)
+      return (hi >= entryPx - ptSafe * 0.5);
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosTryFillSlot(const ENUM_MAPZ_SETUP_DIR dir,
+                         const double lo,
+                         const double hi,
+                         const int barN,
+                         MapzVariantSimSlot &slot,
+                         string &reasons)
+  {
+   if(slot.finalized || slot.invalid_risk || slot.reached)
+      return;
+   if(!MapzEvosBarTouchesEntry(dir, lo, hi, slot.entry_price))
+      return;
+   slot.reached = true;
+   slot.sim_open = true;
+   slot.bars_to_fill = barN;
+   slot.bars_since_fill = 0;
+   MapzEffAppendReasonOnce(reasons, "entry_variant_sim_filled");
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosResolveSlotBar(const ENUM_MAPZ_SETUP_DIR dir,
+                            const double lo,
+                            const double hi,
+                            MapzVariantSimSlot &slot,
+                            string &reasons)
+  {
+   if(!slot.sim_open || slot.finalized || slot.invalid_risk)
+      return;
+   slot.bars_since_fill++;
+   bool tpTouched = false;
+   bool slTouched = false;
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      tpTouched = (hi >= slot.tp_price);
+      slTouched = (lo <= slot.sl_price);
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      tpTouched = (lo <= slot.tp_price);
+      slTouched = (hi >= slot.sl_price);
+     }
+   if(tpTouched && !slTouched)
+     {
+      slot.status = "win";
+      slot.result_r = InpVirtualRiskReward;
+      slot.finalized = true;
+      MapzEffAppendReasonOnce(reasons, "entry_variant_sim_win");
+      return;
+     }
+   if(slTouched && !tpTouched)
+     {
+      slot.status = "loss";
+      slot.result_r = -1.0;
+      slot.finalized = true;
+      MapzEffAppendReasonOnce(reasons, "entry_variant_sim_loss");
+      return;
+     }
+   if(tpTouched && slTouched)
+     {
+      if(Trim(InpVirtualAmbiguityMode) == "ambiguous")
+        {
+         slot.status = "ambiguous";
+         slot.result_r = 0.0;
+         slot.ambiguous_flag = true;
+         slot.finalized = true;
+         MapzEffAppendReasonOnce(reasons, "entry_variant_sim_ambiguous");
+         MapzEffAppendReasonOnce(reasons, "entry_variant_sim_same_bar_ambiguous");
+        }
+      return;
+     }
+   if(slot.bars_since_fill > InpVirtualMaxBarsInTrade)
+     {
+      slot.status = "unresolved";
+      slot.result_r = 0.0;
+      slot.finalized = true;
+      MapzEffAppendReasonOnce(reasons, "entry_variant_sim_unresolved");
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosInitFromTrade(const ENUM_MAPZ_SETUP_DIR dir,
+                           const double slOfficial,
+                           const MapzEntryVariantFeasibilitySnap &ev,
+                           MapzEntryVariantOutcomeSimSnap &out)
+  {
+   MapzEvosSnapClear(out);
+   out.log_enabled = InpEnableEntryVariantOutcomeSimulationV1;
+   if(!InpEnableEntryVariantOutcomeSimulationV1)
+     {
+      MapzEffAppendReasonOnce(out.reasons, "entry_variant_geometry_unknown");
+      return;
+     }
+   if(ev.geometry_unknown)
+     {
+      MapzEffAppendReasonOnce(out.reasons, "entry_variant_geometry_unknown");
+      return;
+     }
+   MapzEvosPrepareSlot(dir, ev.edge_price, slOfficial, out.edge);
+   MapzEvosPrepareSlot(dir, ev.p25_price, slOfficial, out.p25);
+   MapzEvosPrepareSlot(dir, ev.p50_price, slOfficial, out.p50);
+   MapzEvosPrepareSlot(dir, ev.p75_price, slOfficial, out.p75);
+   MapzEvosPrepareSlot(dir, ev.adaptive_price, slOfficial, out.adaptive);
+   if(out.edge.invalid_risk || out.p25.invalid_risk || out.p50.invalid_risk
+      || out.p75.invalid_risk || out.adaptive.invalid_risk)
+      MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_invalid_risk");
+   MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_ce_reference");
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
+                      const double lo,
+                      const double hi,
+                      MapzEntryVariantOutcomeSimSnap &out)
+  {
+   if(!out.log_enabled || out.finalized)
+      return;
+   out.bars_observed++;
+   const int barN = out.bars_observed;
+   MapzEvosTryFillSlot(dir, lo, hi, barN, out.edge, out.reasons);
+   MapzEvosTryFillSlot(dir, lo, hi, barN, out.p25, out.reasons);
+   MapzEvosTryFillSlot(dir, lo, hi, barN, out.p50, out.reasons);
+   MapzEvosTryFillSlot(dir, lo, hi, barN, out.p75, out.reasons);
+   MapzEvosTryFillSlot(dir, lo, hi, barN, out.adaptive, out.reasons);
+   MapzEvosResolveSlotBar(dir, lo, hi, out.edge, out.reasons);
+   MapzEvosResolveSlotBar(dir, lo, hi, out.p25, out.reasons);
+   MapzEvosResolveSlotBar(dir, lo, hi, out.p50, out.reasons);
+   MapzEvosResolveSlotBar(dir, lo, hi, out.p75, out.reasons);
+   MapzEvosResolveSlotBar(dir, lo, hi, out.adaptive, out.reasons);
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosFinalizeSlotOpen(MapzVariantSimSlot &slot, string &reasons)
+  {
+   if(slot.finalized)
+      return;
+   if(slot.invalid_risk)
+     {
+      if(slot.status == "")
+         slot.status = "invalid_risk";
+      slot.finalized = true;
+      return;
+     }
+   if(!slot.reached)
+     {
+      slot.status = "not_filled";
+      slot.result_r = 0.0;
+      slot.finalized = true;
+      MapzEffAppendReasonOnce(reasons, "entry_variant_sim_not_filled");
+      return;
+     }
+   if(slot.sim_open && !slot.finalized)
+     {
+      slot.status = "unresolved";
+      slot.result_r = 0.0;
+      slot.finalized = true;
+      MapzEffAppendReasonOnce(reasons, "entry_variant_sim_unresolved");
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosPickBest(MapzEntryVariantOutcomeSimSnap &out)
+  {
+   double bestR = -1e12;
+   string bestName = "";
+   string bestSt = "";
+   const double candidates[5] = {out.edge.result_r, out.p25.result_r, out.p50.result_r, out.p75.result_r, out.adaptive.result_r};
+   const string names[5] = {"edge", "25", "50", "75", "adaptive"};
+   const string stats[5] = {out.edge.status, out.p25.status, out.p50.status, out.p75.status, out.adaptive.status};
+   for(int i = 0; i < 5; i++)
+     {
+      if(stats[i] == "not_filled" || stats[i] == "invalid_risk")
+         continue;
+      if(candidates[i] > bestR)
+        {
+         bestR = candidates[i];
+         bestName = names[i];
+         bestSt = stats[i];
+        }
+     }
+   out.best_sim_variant = bestName;
+   out.best_sim_result_r = (bestName != "" ? bestR : 0.0);
+   out.best_sim_status = bestSt;
+   if(bestName != "")
+      out.best_sim_reasons = "entry_variant_best_sim=" + bestName;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosFinalizeTrade(MapzEntryVariantOutcomeSimSnap &out)
+  {
+   if(!out.log_enabled || out.finalized)
+      return;
+   out.finalized = true;
+   MapzEvosFinalizeSlotOpen(out.edge, out.reasons);
+   MapzEvosFinalizeSlotOpen(out.p25, out.reasons);
+   MapzEvosFinalizeSlotOpen(out.p50, out.reasons);
+   MapzEvosFinalizeSlotOpen(out.p75, out.reasons);
+   MapzEvosFinalizeSlotOpen(out.adaptive, out.reasons);
+   if(out.edge.reached && !out.p50.reached)
+      MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_edge_more_fillable");
+   if(out.p25.reached && !out.p50.reached)
+      MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_25_more_fillable");
+   if(out.p75.reached && out.p50.reached)
+      MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_deep_reached");
+   else if(!out.p75.reached && (out.p50.reached || out.p25.reached))
+      MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_75_less_fillable");
+   if(out.adaptive.reached)
+      MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_adaptive_reference");
+   MapzEvosPickBest(out);
+   if(!InpEntryVariantOutcomeSimulationScoreEnabled)
+     {
+      out.score = 0;
+      out.grade = "None";
+      return;
+     }
+   int sc = 6;
+   if(out.p50.status == "win")
+      sc = 12;
+   if(out.best_sim_result_r >= InpVirtualRiskReward - 0.01)
+      sc = 14;
+   if(out.edge.reached && out.p50.status == "not_filled")
+      sc = MathMax(sc, 9);
+   if(sc > 15)
+      sc = 15;
+   if(sc < 0)
+      sc = 0;
+   out.score = sc;
+   out.grade = MapzEvGradeFromScore(sc);
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosRegisterSlotCampaign(const MapzVariantSimSlot &slot, MapzEvosRollup &rollup)
+  {
+   if(slot.invalid_risk)
+     {
+      rollup.invalid_risk_count++;
+      return;
+     }
+   if(!slot.reached || slot.status == "not_filled")
+     {
+      rollup.not_filled_count++;
+      return;
+     }
+   rollup.filled_count++;
+   rollup.total_r += slot.result_r;
+   if(slot.risk_points > 0.0)
+     {
+      rollup.risk_samples++;
+      rollup.sum_risk_pts += slot.risk_points;
+     }
+   if(slot.status == "win")
+      rollup.win_count++;
+   else if(slot.status == "loss")
+      rollup.loss_count++;
+   else if(slot.status == "ambiguous")
+      rollup.ambiguous_count++;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosRegisterTradeCampaign(const MapzEntryVariantOutcomeSimSnap &out)
+  {
+   if(!out.log_enabled)
+      return;
+   MapzEvosRegisterSlotCampaign(out.edge, g_evos_edge_sum);
+   MapzEvosRegisterSlotCampaign(out.p25, g_evos_25_sum);
+   MapzEvosRegisterSlotCampaign(out.p50, g_evos_50_sum);
+   MapzEvosRegisterSlotCampaign(out.p75, g_evos_75_sum);
+   MapzEvosRegisterSlotCampaign(out.adaptive, g_evos_adaptive_sum);
+   const int n = 5;
+   const double expR[5] = {
+      (g_evos_edge_sum.filled_count > 0 ? g_evos_edge_sum.total_r / (double)g_evos_edge_sum.filled_count : 0.0),
+      (g_evos_25_sum.filled_count > 0 ? g_evos_25_sum.total_r / (double)g_evos_25_sum.filled_count : 0.0),
+      (g_evos_50_sum.filled_count > 0 ? g_evos_50_sum.total_r / (double)g_evos_50_sum.filled_count : 0.0),
+      (g_evos_75_sum.filled_count > 0 ? g_evos_75_sum.total_r / (double)g_evos_75_sum.filled_count : 0.0),
+      (g_evos_adaptive_sum.filled_count > 0 ? g_evos_adaptive_sum.total_r / (double)g_evos_adaptive_sum.filled_count : 0.0)
+   };
+   const double totR[5] = {g_evos_edge_sum.total_r, g_evos_25_sum.total_r, g_evos_50_sum.total_r, g_evos_75_sum.total_r, g_evos_adaptive_sum.total_r};
+   const long fillC[5] = {g_evos_edge_sum.filled_count, g_evos_25_sum.filled_count, g_evos_50_sum.filled_count,
+                          g_evos_75_sum.filled_count, g_evos_adaptive_sum.filled_count};
+   const long ambC[5] = {g_evos_edge_sum.ambiguous_count, g_evos_25_sum.ambiguous_count, g_evos_50_sum.ambiguous_count,
+                         g_evos_75_sum.ambiguous_count, g_evos_adaptive_sum.ambiguous_count};
+   const string names[5] = {"edge", "25", "50", "75", "adaptive"};
+   for(int i = 0; i < n; i++)
+     {
+      if(expR[i] > g_evos_best_expectancy_r)
+        {
+         g_evos_best_expectancy_r = expR[i];
+         g_evos_best_expectancy_variant = names[i];
+        }
+      if(totR[i] > g_evos_best_total_r)
+        {
+         g_evos_best_total_r = totR[i];
+         g_evos_best_total_r_variant = names[i];
+        }
+      if(ambC[i] < g_evos_lowest_ambiguous_count)
+        {
+         g_evos_lowest_ambiguous_count = ambC[i];
+         g_evos_lowest_ambiguous_variant = names[i];
+        }
+      if(fillC[i] > g_evos_highest_fill_count)
+        {
+         g_evos_highest_fill_count = fillC[i];
+         g_evos_highest_fill_variant = names[i];
+        }
+     }
+  }
+
+//+------------------------------------------------------------------+
+string MapzEvosFormatSlotCsv(const MapzVariantSimSlot &s)
+  {
+   return "," + s.status
+          + "," + DoubleToString(s.result_r, 3)
+          + "," + DoubleToString(s.entry_price, _Digits)
+          + "," + DoubleToString(s.sl_price, _Digits)
+          + "," + DoubleToString(s.tp_price, _Digits)
+          + "," + DoubleToString(s.risk_points, 2)
+          + "," + DoubleToString(s.effective_rr, 3)
+          + "," + IntegerToString(s.bars_to_fill)
+          + "," + IntegerToString((s.finalized && s.reached ? s.bars_since_fill : 0))
+          + "," + (s.ambiguous_flag ? "true" : "false")
+          + "," + (s.invalid_risk ? "true" : "false");
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosAppendSummaryRollup(string &json, const string prefix, const MapzEvosRollup &r)
+  {
+   const double winrate = ((r.win_count + r.loss_count) > 0
+                           ? (double)r.win_count / (double)(r.win_count + r.loss_count)
+                           : 0.0);
+   const double expectancy = (r.filled_count > 0 ? r.total_r / (double)r.filled_count : 0.0);
+   const double avgRisk = (r.risk_samples > 0 ? r.sum_risk_pts / (double)r.risk_samples : 0.0);
+   json += StringFormat("  \"entry_variant_%s_sim_filled_count\": %I64d,\r\n", prefix, r.filled_count);
+   json += StringFormat("  \"entry_variant_%s_sim_win_count\": %I64d,\r\n", prefix, r.win_count);
+   json += StringFormat("  \"entry_variant_%s_sim_loss_count\": %I64d,\r\n", prefix, r.loss_count);
+   json += StringFormat("  \"entry_variant_%s_sim_ambiguous_count\": %I64d,\r\n", prefix, r.ambiguous_count);
+   json += StringFormat("  \"entry_variant_%s_sim_not_filled_count\": %I64d,\r\n", prefix, r.not_filled_count);
+   json += StringFormat("  \"entry_variant_%s_sim_invalid_risk_count\": %I64d,\r\n", prefix, r.invalid_risk_count);
+   json += StringFormat("  \"entry_variant_%s_sim_total_r\": %.6f,\r\n", prefix, r.total_r);
+   json += StringFormat("  \"entry_variant_%s_sim_expectancy_r\": %.6f,\r\n", prefix, expectancy);
+   json += StringFormat("  \"entry_variant_%s_sim_winrate\": %.6f,\r\n", prefix, winrate);
+   json += StringFormat("  \"entry_variant_%s_sim_average_risk_points\": %.6f,\r\n", prefix, avgRisk);
+  }
+
+//+------------------------------------------------------------------+
 void MapzEqComputeScoresFromState(const ENUM_MAPZ_SETUP_DIR dir,
                                   const ENUM_MAPZ_BIAS biasEnum,
                                   const long fvgPts,
@@ -5262,6 +5807,8 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
       MapzEffFinalize(g_vt.dir, g_vt.filled, bars_to_fill_export, g_vt.outcome, g_vt.exit_reason, g_vt.eff);
    if(g_vt.ev.log_enabled && !g_vt.ev.finalized)
       MapzEvFinalize(g_vt.ev);
+   if(g_vt.evos.log_enabled && !g_vt.evos.finalized)
+      MapzEvosFinalizeTrade(g_vt.evos);
    const string dirW = SetupDirectionToString(g_vt.dir);
    const string biasDirW = BiasDirectionToString(g_vt.bias_enum);
    const string setupDirW = SetupDirectionToString(g_vt.setup_dir);
@@ -5498,6 +6045,17 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + IntegerToString(g_vt.ev.score)
           + "," + g_vt.ev.grade
           + "," + g_vt.ev.reasons
+          + "," + (g_vt.evos.log_enabled ? "true" : "false")
+          + "," + g_vt.evos.reasons
+          + MapzEvosFormatSlotCsv(g_vt.evos.edge)
+          + MapzEvosFormatSlotCsv(g_vt.evos.p25)
+          + MapzEvosFormatSlotCsv(g_vt.evos.p50)
+          + MapzEvosFormatSlotCsv(g_vt.evos.p75)
+          + MapzEvosFormatSlotCsv(g_vt.evos.adaptive)
+          + "," + g_vt.evos.best_sim_variant
+          + "," + DoubleToString(g_vt.evos.best_sim_result_r, 3)
+          + "," + g_vt.evos.best_sim_status
+          + "," + g_vt.evos.best_sim_reasons
           + "," + eqp.session_bucket
           + "," + eqp.trade_window_status
           + "," + eqp.spread_status
@@ -5816,6 +6374,9 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
          g_ev_deeper_would_not_fill_count++;
      }
 
+   if(InpEnableEntryVariantOutcomeSimulationV1)
+      MapzEvosRegisterTradeCampaign(g_vt.evos);
+
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
    g_tradesDataLines += row;
@@ -5835,6 +6396,7 @@ void VirtualClearTrade(void)
    MapzPdSnapClear(g_vt.pd);
    MapzEffSnapClear(g_vt.eff);
    MapzEvSnapClear(g_vt.ev);
+   MapzEvosSnapClear(g_vt.evos);
   }
 
 //+------------------------------------------------------------------+
@@ -6047,6 +6609,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, g_vt.entry, g_vt.htf, g_vt.pd);
    MapzEffInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.eff);
    MapzEvInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.liq, g_vt.msc, g_vt.ev);
+   MapzEvosInitFromTrade(sdir, g_vt.sl, g_vt.ev, g_vt.evos);
 
    g_virtual_trade_count++;
    const string detC = VirtualBuildDetailsCore();
@@ -6062,6 +6625,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    const datetime t1 = iTime(g_brokerSymbol, InpExecutionTimeframe, 1);
    MapzEffTrackBar(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, lo1, hi1, g_vt.eff);
    MapzEvTrackBar(sdir, lo1, hi1, g_vt.ev);
+   MapzEvosTrackBar(sdir, lo1, hi1, g_vt.evos);
    if(!VirtualTryFillCurrentBar(lo1, hi1, t1))
      {
       g_vt.bars_waiting_entry++;
@@ -6110,6 +6674,7 @@ void VirtualManageOnNewClosedExecBar(void)
      {
       MapzEffTrackBar(g_vt.dir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, lo, hi, g_vt.eff);
       MapzEvTrackBar(g_vt.dir, lo, hi, g_vt.ev);
+      MapzEvosTrackBar(g_vt.dir, lo, hi, g_vt.evos);
       if(VirtualTryFillCurrentBar(lo, hi, tBar))
          return;
       g_vt.bars_waiting_entry++;
@@ -6136,6 +6701,8 @@ void VirtualManageOnNewClosedExecBar(void)
         }
       return;
      }
+
+   MapzEvosTrackBar(g_vt.dir, lo, hi, g_vt.evos);
 
    bool tpTouched = false;
    bool slTouched = false;
@@ -6531,6 +7098,8 @@ string WriteSummaryJson(void)
    json += "  \"entry_fill_feasibility_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_variant_feasibility_v1_logic\": true,\r\n";
    json += "  \"entry_variant_feasibility_enabled\": " + (InpEnableEntryVariantFeasibilityV1 ? "true" : "false") + ",\r\n";
+   json += "  \"has_entry_variant_outcome_sim_v1_logic\": true,\r\n";
+   json += "  \"entry_variant_outcome_sim_enabled\": " + (InpEnableEntryVariantOutcomeSimulationV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
    json += "  \"score_gate_enabled\": false,\r\n";
@@ -6750,6 +7319,15 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"average_entry_variant_25_missed_by_points\": %.6f,\r\n", avgEv25Miss);
    json += StringFormat("  \"average_entry_variant_50_missed_by_points\": %.6f,\r\n", avgEv50Miss);
    json += StringFormat("  \"average_entry_variant_75_missed_by_points\": %.6f,\r\n", avgEv75Miss);
+   MapzEvosAppendSummaryRollup(json, "edge", g_evos_edge_sum);
+   MapzEvosAppendSummaryRollup(json, "25", g_evos_25_sum);
+   MapzEvosAppendSummaryRollup(json, "50", g_evos_50_sum);
+   MapzEvosAppendSummaryRollup(json, "75", g_evos_75_sum);
+   MapzEvosAppendSummaryRollup(json, "adaptive", g_evos_adaptive_sum);
+   json += "  \"entry_variant_outcome_sim_best_variant_by_expectancy\": \"" + JsonStringEscape(g_evos_best_expectancy_variant) + "\",\r\n";
+   json += "  \"entry_variant_outcome_sim_best_variant_by_total_r\": \"" + JsonStringEscape(g_evos_best_total_r_variant) + "\",\r\n";
+   json += "  \"entry_variant_outcome_sim_lowest_ambiguous_variant\": \"" + JsonStringEscape(g_evos_lowest_ambiguous_variant) + "\",\r\n";
+   json += "  \"entry_variant_outcome_sim_highest_fill_variant\": \"" + JsonStringEscape(g_evos_highest_fill_variant) + "\",\r\n";
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -6786,7 +7364,9 @@ string WriteSummaryJson(void)
    json += StringFormat("    \"entry_fill_feasibility_near_miss_points\": %d,\r\n", InpEntryFillFeasibilityNearMissPoints);
    json += "    \"entry_fill_feasibility_score_enabled\": " + (InpEntryFillFeasibilityScoreEnabled ? "true" : "false") + ",\r\n";
    json += "    \"entry_variant_feasibility_v1_enabled\": " + (InpEnableEntryVariantFeasibilityV1 ? "true" : "false") + ",\r\n";
-   json += "    \"entry_variant_feasibility_score_enabled\": " + (InpEntryVariantFeasibilityScoreEnabled ? "true" : "false") + "\r\n";
+   json += "    \"entry_variant_feasibility_score_enabled\": " + (InpEntryVariantFeasibilityScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"entry_variant_outcome_sim_v1_enabled\": " + (InpEnableEntryVariantOutcomeSimulationV1 ? "true" : "false") + ",\r\n";
+   json += "    \"entry_variant_outcome_sim_score_enabled\": " + (InpEntryVariantOutcomeSimulationScoreEnabled ? "true" : "false") + "\r\n";
    json += "  },\r\n";
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";
@@ -6797,7 +7377,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_edge_missed_by_points,entry_variant_25_missed_by_points,entry_variant_50_missed_by_points,entry_variant_75_missed_by_points,entry_variant_adaptive_missed_by_points,entry_variant_edge_bars_to_touch,entry_variant_25_bars_to_touch,entry_variant_50_bars_to_touch,entry_variant_75_bars_to_touch,entry_variant_adaptive_bars_to_touch,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_edge_missed_by_points,entry_variant_25_missed_by_points,entry_variant_50_missed_by_points,entry_variant_75_missed_by_points,entry_variant_adaptive_missed_by_points,entry_variant_edge_bars_to_touch,entry_variant_25_bars_to_touch,entry_variant_50_bars_to_touch,entry_variant_75_bars_to_touch,entry_variant_adaptive_bars_to_touch,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,entry_variant_outcome_sim_enabled,entry_variant_outcome_sim_reasons,entry_variant_edge_sim_status,entry_variant_edge_sim_result_r,entry_variant_edge_sim_entry_price,entry_variant_edge_sim_sl_price,entry_variant_edge_sim_tp_price,entry_variant_edge_sim_risk_points,entry_variant_edge_sim_effective_rr,entry_variant_edge_sim_bars_to_fill,entry_variant_edge_sim_bars_to_close,entry_variant_edge_sim_ambiguous,entry_variant_edge_sim_invalid_risk,entry_variant_25_sim_status,entry_variant_25_sim_result_r,entry_variant_25_sim_entry_price,entry_variant_25_sim_sl_price,entry_variant_25_sim_tp_price,entry_variant_25_sim_risk_points,entry_variant_25_sim_effective_rr,entry_variant_25_sim_bars_to_fill,entry_variant_25_sim_bars_to_close,entry_variant_25_sim_ambiguous,entry_variant_25_sim_invalid_risk,entry_variant_50_sim_status,entry_variant_50_sim_result_r,entry_variant_50_sim_entry_price,entry_variant_50_sim_sl_price,entry_variant_50_sim_tp_price,entry_variant_50_sim_risk_points,entry_variant_50_sim_effective_rr,entry_variant_50_sim_bars_to_fill,entry_variant_50_sim_bars_to_close,entry_variant_50_sim_ambiguous,entry_variant_50_sim_invalid_risk,entry_variant_75_sim_status,entry_variant_75_sim_result_r,entry_variant_75_sim_entry_price,entry_variant_75_sim_sl_price,entry_variant_75_sim_tp_price,entry_variant_75_sim_risk_points,entry_variant_75_sim_effective_rr,entry_variant_75_sim_bars_to_fill,entry_variant_75_sim_bars_to_close,entry_variant_75_sim_ambiguous,entry_variant_75_sim_invalid_risk,entry_variant_adaptive_sim_status,entry_variant_adaptive_sim_result_r,entry_variant_adaptive_sim_entry_price,entry_variant_adaptive_sim_sl_price,entry_variant_adaptive_sim_tp_price,entry_variant_adaptive_sim_risk_points,entry_variant_adaptive_sim_effective_rr,entry_variant_adaptive_sim_bars_to_fill,entry_variant_adaptive_sim_bars_to_close,entry_variant_adaptive_sim_ambiguous,entry_variant_adaptive_sim_invalid_risk,entry_variant_best_sim_variant,entry_variant_best_sim_result_r,entry_variant_best_sim_status,entry_variant_best_sim_reasons,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+

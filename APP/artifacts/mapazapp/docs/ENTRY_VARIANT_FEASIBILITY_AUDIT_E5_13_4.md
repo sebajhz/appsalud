@@ -71,4 +71,4 @@ Si el CSV incluye `entry_variant_feasibility_score`, el analyzer expone `entry_v
 
 ## Siguiente
 
-**E5.13.6** — Entry Variant Outcome / Risk Simulation (hipotético; antes de E5.14).
+**E5.13.6** — Entry Variant Outcome / Risk Simulation — [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md) (repo; build `MZP_TestEA_E5_13_6`). **E5.13.7** — smoke operador (siguiente).

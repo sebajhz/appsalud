@@ -217,6 +217,41 @@ export interface BacktestTrade {
   entryVariantFillGapPct?: number | undefined;
   entryVariantShallowWouldFill?: boolean | undefined;
   entryVariantDeeperWouldNotFill?: boolean | undefined;
+  /**
+   * E5.13.6 — hypothetical entry variant outcome/risk simulation per trade (not official P/L).
+   * Present only when CSV includes `entry_variant_*_sim_*` columns.
+   */
+  entryVariantOutcomeSim?: EntryVariantOutcomeSimTradeFields | undefined;
+}
+
+/** E5.13.6 — one hypothetical variant slot (diagnostic; not official strategy R). */
+export interface EntryVariantOutcomeSimSlot {
+  status?: string | undefined;
+  resultR?: number | undefined;
+  entryPrice?: number | undefined;
+  slPrice?: number | undefined;
+  tpPrice?: number | undefined;
+  riskPoints?: number | undefined;
+  effectiveRr?: number | undefined;
+  barsToFill?: number | undefined;
+  barsToClose?: number | undefined;
+  ambiguous?: boolean | undefined;
+  invalidRisk?: boolean | undefined;
+}
+
+/** E5.13.6 — per-trade hypothetical variant outcome simulation export. */
+export interface EntryVariantOutcomeSimTradeFields {
+  enabled?: boolean | undefined;
+  reasons?: string | undefined;
+  edge?: EntryVariantOutcomeSimSlot | undefined;
+  p25?: EntryVariantOutcomeSimSlot | undefined;
+  p50?: EntryVariantOutcomeSimSlot | undefined;
+  p75?: EntryVariantOutcomeSimSlot | undefined;
+  adaptive?: EntryVariantOutcomeSimSlot | undefined;
+  bestVariant?: string | undefined;
+  bestResultR?: number | undefined;
+  bestStatus?: string | undefined;
+  bestReasons?: string | undefined;
 }
 
 export interface BacktestImportWarning {

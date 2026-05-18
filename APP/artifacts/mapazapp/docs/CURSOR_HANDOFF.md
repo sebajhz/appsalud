@@ -55,7 +55,8 @@
 - **E5.13.4 cerrado (repo):** Entry Variant Feasibility — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md); build `MZP_TestEA_E5_13_4`; columnas `entry_variant_*` hipotéticas; sin gate.
 - **E5.13.5 cerrado (docs):** smoke — [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md); PASS; confirma hipótesis E5.13.3.
 - **E5.13.5 cerrado (docs):** smoke Entry Variant — [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md); `MZP_TestEA_E5_13_4`; PASS; edge 1697, CE 1355, 342 shallow_would_fill; **no** cambiar entry oficial.
-- **Siguiente paso canónico:** **E5.13.6** Entry Variant Outcome / Risk Simulation — ver §D en [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md). Luego **E5.14–E5.20**. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte**.
+- **E5.13.6 cerrado (repo):** Entry Variant Outcome / Risk Simulation — [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md); build `MZP_TestEA_E5_13_6`; campos `entry_variant_*_sim_*` hipotéticos (no R oficial).
+- **Siguiente paso canónico:** **E5.13.7** smoke operador (recompilar + Strategy Tester). Luego **E5.14–E5.20**. **Nota:** el track opcional **`tester_orders`** (E5.1) queda **aparte**.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

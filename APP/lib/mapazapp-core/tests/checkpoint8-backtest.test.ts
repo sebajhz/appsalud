@@ -307,6 +307,22 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(t.entryVariantOfficialDepthPct).toBeCloseTo(50, 2);
   });
 
+  it("parses optional E5.13.6 Entry Variant Outcome Simulation columns when present", () => {
+    const header =
+      "trade_id,direction,entry_time,exit_time,entry,exit_price,result_r,result_money,entry_variant_outcome_sim_enabled,entry_variant_outcome_sim_reasons,entry_variant_edge_sim_status,entry_variant_edge_sim_result_r,entry_variant_edge_sim_entry_price,entry_variant_edge_sim_sl_price,entry_variant_edge_sim_tp_price,entry_variant_edge_sim_risk_points,entry_variant_edge_sim_effective_rr,entry_variant_edge_sim_bars_to_fill,entry_variant_edge_sim_bars_to_close,entry_variant_edge_sim_ambiguous,entry_variant_edge_sim_invalid_risk,entry_variant_25_sim_status,entry_variant_25_sim_result_r,entry_variant_best_sim_variant,entry_variant_best_sim_result_r,entry_variant_best_sim_status,entry_variant_best_sim_reasons";
+    const row =
+      "t_evos,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,2010,1.5,0,true,entry_variant_sim_ce_reference|entry_variant_sim_filled,win,2.000,2010,1990,2030,20.00,2.000,3,10,false,false,not_filled,0.000,edge,2.000,win,entry_variant_sim_win";
+    const r = importBacktestTradesFromCsv(`${header}\n${row}`, testeaOpts);
+    expect(r.ok).toBe(true);
+    const t = r.trades[0]!;
+    expect(t.entryVariantOutcomeSim?.enabled).toBe(true);
+    expect(t.entryVariantOutcomeSim?.edge?.status).toBe("win");
+    expect(t.entryVariantOutcomeSim?.edge?.resultR).toBeCloseTo(2, 3);
+    expect(t.entryVariantOutcomeSim?.p25?.status).toBe("not_filled");
+    expect(t.entryVariantOutcomeSim?.bestVariant).toBe("edge");
+    expect(t.entryVariantOutcomeSim?.bestResultR).toBeCloseTo(2, 3);
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);

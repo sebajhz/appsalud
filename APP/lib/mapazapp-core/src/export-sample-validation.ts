@@ -1703,6 +1703,147 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_entry_variant_outcome_sim_v1_logic"] === true) {
+          if (!("entry_variant_outcome_sim_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_EVOS_E5_13_6_KEY",
+                `E5.13.6: when has_entry_variant_outcome_sim_v1_logic is true, summary must include "entry_variant_outcome_sim_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else {
+            const evosEn = summaryJson["entry_variant_outcome_sim_enabled"];
+            if (typeof evosEn !== "boolean") {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_EVOS_E5_13_6_BOOL",
+                  `E5.13.6: "entry_variant_outcome_sim_enabled" must be a boolean`,
+                  { fileName: sj.fileName, detail: String(evosEn) },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          const evosVariants = ["edge", "25", "50", "75", "adaptive"] as const;
+          const evosRollupSuffixes = [
+            "sim_filled_count",
+            "sim_win_count",
+            "sim_loss_count",
+            "sim_ambiguous_count",
+            "sim_not_filled_count",
+            "sim_invalid_risk_count",
+            "sim_total_r",
+            "sim_expectancy_r",
+            "sim_winrate",
+            "sim_average_risk_points",
+          ] as const;
+          for (const v of evosVariants) {
+            for (const sfx of evosRollupSuffixes) {
+              const k = `entry_variant_${v}_${sfx}`;
+              if (!(k in summaryJson)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_EVOS_E5_13_6_KEY",
+                    `E5.13.6: when has_entry_variant_outcome_sim_v1_logic is true, summary must include "${k}"`,
+                    { fileName: sj.fileName },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              } else {
+                const val = summaryJson[k];
+                if (typeof val !== "number" || !Number.isFinite(val)) {
+                  diagnostics.push(
+                    exportSampleDiagnostic(
+                      "error",
+                      "TESTEA_SUMMARY_EVOS_E5_13_6_NUM",
+                      `E5.13.6: "${k}" must be a finite number`,
+                      { fileName: sj.fileName, detail: String(val) },
+                    ),
+                  );
+                  status = bumpStatus(status, "invalid");
+                }
+              }
+            }
+          }
+          const evosCompareKeys = [
+            "entry_variant_outcome_sim_best_variant_by_expectancy",
+            "entry_variant_outcome_sim_best_variant_by_total_r",
+            "entry_variant_outcome_sim_lowest_ambiguous_variant",
+            "entry_variant_outcome_sim_highest_fill_variant",
+          ] as const;
+          for (const k of evosCompareKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_EVOS_E5_13_6_KEY",
+                  `E5.13.6: when has_entry_variant_outcome_sim_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const evosCols = [
+              "entry_variant_outcome_sim_enabled",
+              "entry_variant_outcome_sim_reasons",
+              "entry_variant_edge_sim_status",
+              "entry_variant_edge_sim_result_r",
+              "entry_variant_edge_sim_entry_price",
+              "entry_variant_edge_sim_sl_price",
+              "entry_variant_edge_sim_tp_price",
+              "entry_variant_edge_sim_risk_points",
+              "entry_variant_edge_sim_effective_rr",
+              "entry_variant_edge_sim_bars_to_fill",
+              "entry_variant_edge_sim_bars_to_close",
+              "entry_variant_edge_sim_ambiguous",
+              "entry_variant_edge_sim_invalid_risk",
+              "entry_variant_25_sim_status",
+              "entry_variant_25_sim_result_r",
+              "entry_variant_50_sim_status",
+              "entry_variant_50_sim_result_r",
+              "entry_variant_75_sim_status",
+              "entry_variant_75_sim_result_r",
+              "entry_variant_adaptive_sim_status",
+              "entry_variant_adaptive_sim_result_r",
+              "entry_variant_best_sim_variant",
+              "entry_variant_best_sim_result_r",
+              "entry_variant_best_sim_status",
+              "entry_variant_best_sim_reasons",
+            ] as const;
+            for (const col of evosCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_EVOS_E5_13_6",
+                    `E5.13.6: backtest_trades.csv header must include "${col}" when has_entry_variant_outcome_sim_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_EVOS_HEADER_CHECK",
+                "has_entry_variant_outcome_sim_v1_logic is true but backtest_trades.csv missing — cannot verify E5.13.6 Entry Variant Outcome Simulation columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

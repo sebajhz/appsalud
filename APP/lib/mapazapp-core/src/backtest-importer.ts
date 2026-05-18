@@ -9,6 +9,8 @@ import type {
   BacktestSourceType,
   BacktestTrade,
   BacktestTradeDirection,
+  EntryVariantOutcomeSimSlot,
+  EntryVariantOutcomeSimTradeFields,
   ImportBacktestCsvOptions,
   IsoDateTimeString,
 } from "./backtest-types";
@@ -32,6 +34,64 @@ function parseOptionalCsvBool(raw: string | undefined, colLabel: string, rowNum:
   if (u === "true" || u === "1") return { ok: true, val: true };
   if (u === "false" || u === "0") return { ok: true, val: false };
   return { ok: false, message: `Row ${rowNum}: ${colLabel} must be true/false/0/1` };
+}
+
+type CsvColIndex = Map<string, number>;
+
+function parseOptionalEntryVariantSimSlot(
+  cells: string[],
+  col: CsvColIndex,
+  prefix: string,
+  rowNum: number,
+  warnings: BacktestImportWarning[],
+): EntryVariantOutcomeSimSlot | undefined {
+  if (!col.has(`${prefix}_sim_status`)) return undefined;
+  const slot: EntryVariantOutcomeSimSlot = {};
+  const statusRaw = pick(cells, col, `${prefix}_sim_status`);
+  if (statusRaw?.trim()) slot.status = statusRaw.trim();
+  const assignNum = (raw: string | undefined, label: string, set: (v: number) => void) => {
+    if (raw === undefined || raw.trim() === "") return;
+    const p = parseNumber(raw, label, rowNum);
+    if (p.ok) set(p.value);
+    else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+  };
+  assignNum(pick(cells, col, `${prefix}_sim_result_r`), `${prefix}_sim_result_r`, (v) => {
+    slot.resultR = v;
+  });
+  assignNum(pick(cells, col, `${prefix}_sim_entry_price`), `${prefix}_sim_entry_price`, (v) => {
+    slot.entryPrice = v;
+  });
+  assignNum(pick(cells, col, `${prefix}_sim_sl_price`), `${prefix}_sim_sl_price`, (v) => {
+    slot.slPrice = v;
+  });
+  assignNum(pick(cells, col, `${prefix}_sim_tp_price`), `${prefix}_sim_tp_price`, (v) => {
+    slot.tpPrice = v;
+  });
+  assignNum(pick(cells, col, `${prefix}_sim_risk_points`), `${prefix}_sim_risk_points`, (v) => {
+    slot.riskPoints = v;
+  });
+  assignNum(pick(cells, col, `${prefix}_sim_effective_rr`), `${prefix}_sim_effective_rr`, (v) => {
+    slot.effectiveRr = v;
+  });
+  assignNum(pick(cells, col, `${prefix}_sim_bars_to_fill`), `${prefix}_sim_bars_to_fill`, (v) => {
+    slot.barsToFill = Math.trunc(v);
+  });
+  assignNum(pick(cells, col, `${prefix}_sim_bars_to_close`), `${prefix}_sim_bars_to_close`, (v) => {
+    slot.barsToClose = Math.trunc(v);
+  });
+  const ambRaw = pick(cells, col, `${prefix}_sim_ambiguous`);
+  if (ambRaw !== undefined && ambRaw.trim() !== "") {
+    const b = parseOptionalCsvBool(ambRaw, `${prefix}_sim_ambiguous`, rowNum);
+    if (b.ok) slot.ambiguous = b.val;
+    else warnings.push({ code: "CSV_EVOS_BOOL_INVALID", message: b.message, row: rowNum });
+  }
+  const invRaw = pick(cells, col, `${prefix}_sim_invalid_risk`);
+  if (invRaw !== undefined && invRaw.trim() !== "") {
+    const b = parseOptionalCsvBool(invRaw, `${prefix}_sim_invalid_risk`, rowNum);
+    if (b.ok) slot.invalidRisk = b.val;
+    else warnings.push({ code: "CSV_EVOS_BOOL_INVALID", message: b.message, row: rowNum });
+  }
+  return slot;
 }
 
 const REQUIRED_HEADERS = [
@@ -1097,6 +1157,45 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     effBool(evDeeperRaw, "entry_variant_deeper_would_not_fill", (v) => {
       trade.entryVariantDeeperWouldNotFill = v;
     });
+
+    const evosEnRaw = pick(cells, col, "entry_variant_outcome_sim_enabled");
+    const evosRsnRaw = pick(cells, col, "entry_variant_outcome_sim_reasons");
+    const evosBestVarRaw = pick(cells, col, "entry_variant_best_sim_variant");
+    const evosBestRRaw = pick(cells, col, "entry_variant_best_sim_result_r");
+    const evosBestStatRaw = pick(cells, col, "entry_variant_best_sim_status");
+    const evosBestRsnRaw = pick(cells, col, "entry_variant_best_sim_reasons");
+    const hasEvosCols =
+      col.has("entry_variant_edge_sim_status") ||
+      col.has("entry_variant_25_sim_status") ||
+      col.has("entry_variant_outcome_sim_enabled");
+    if (hasEvosCols) {
+      const evos: EntryVariantOutcomeSimTradeFields = {};
+      if (evosEnRaw !== undefined && evosEnRaw.trim() !== "") {
+        const b = parseOptionalCsvBool(evosEnRaw, "entry_variant_outcome_sim_enabled", rowNum);
+        if (b.ok) evos.enabled = b.val;
+        else warnings.push({ code: "CSV_EVOS_BOOL_INVALID", message: b.message, row: rowNum });
+      }
+      if (evosRsnRaw?.trim()) evos.reasons = evosRsnRaw.trim();
+      const edgeSlot = parseOptionalEntryVariantSimSlot(cells, col, "entry_variant_edge", rowNum, warnings);
+      if (edgeSlot) evos.edge = edgeSlot;
+      const p25Slot = parseOptionalEntryVariantSimSlot(cells, col, "entry_variant_25", rowNum, warnings);
+      if (p25Slot) evos.p25 = p25Slot;
+      const p50Slot = parseOptionalEntryVariantSimSlot(cells, col, "entry_variant_50", rowNum, warnings);
+      if (p50Slot) evos.p50 = p50Slot;
+      const p75Slot = parseOptionalEntryVariantSimSlot(cells, col, "entry_variant_75", rowNum, warnings);
+      if (p75Slot) evos.p75 = p75Slot;
+      const adSlot = parseOptionalEntryVariantSimSlot(cells, col, "entry_variant_adaptive", rowNum, warnings);
+      if (adSlot) evos.adaptive = adSlot;
+      if (evosBestVarRaw?.trim()) evos.bestVariant = evosBestVarRaw.trim();
+      if (evosBestRRaw !== undefined && evosBestRRaw.trim() !== "") {
+        const p = parseNumber(evosBestRRaw, "entry_variant_best_sim_result_r", rowNum);
+        if (p.ok) evos.bestResultR = p.value;
+        else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+      }
+      if (evosBestStatRaw?.trim()) evos.bestStatus = evosBestStatRaw.trim();
+      if (evosBestRsnRaw?.trim()) evos.bestReasons = evosBestRsnRaw.trim();
+      trade.entryVariantOutcomeSim = evos;
+    }
 
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({
