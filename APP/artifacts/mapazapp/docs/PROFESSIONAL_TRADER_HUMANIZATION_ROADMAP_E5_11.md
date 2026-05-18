@@ -23,7 +23,8 @@
 | **E5.13.6** | Entry Variant **Outcome / Risk Simulation** | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md) |
 | **E5.13.7** | Entry Variant Outcome Sim **smoke evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md) |
 | **E5.13.6.1** | Variant Simulation **Reconciliation Audit** (50 %/CE vs oficial) | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md) |
-| **E5.13.6.2** | Reconciliation **smoke evidence** (operador) | **siguiente** — CLI reconcile sobre bundle E5.13.7 |
+| **E5.13.6.2** | Reconciliation **smoke evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) |
+| **E5.13.6.3** | Align EVOS **50 %/CE** with official outcome semantics | **siguiente** — fix/explain parity; re-reconcile |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -137,9 +138,14 @@ Ver [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMU
 
 Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md) — CLI `mapazapp:testea-entry-variant-sim-reconcile`.
 
-### E5.13.6.2 (**siguiente**)
+### E5.13.6.2 — Reconciliation smoke evidence (**cerrado — docs**)
 
-Smoke operador: reconcile JSON/CSV sobre bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` (E5.13.7). **Sin** decisión de entry hasta paridad documentada.
+- **Evidencia:** [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) — reconcile PASS; `mismatch_rate` ≈ 0.413; entry/SL=0 mismatch; TP=700, fill_bar≈1354, ambiguous flag=618.
+- **Conclusión:** control 50 %/CE **no** alineado; bloquear conclusiones estratégicas EVOS.
+
+### E5.13.6.3 (**siguiente**)
+
+Alinear EVOS 50 %/CE (fill bar, close bar, same-bar ambiguous, TP control) con outcome oficial; re-reconcile. **No** E5.14 hasta paridad.
 
 ---
 

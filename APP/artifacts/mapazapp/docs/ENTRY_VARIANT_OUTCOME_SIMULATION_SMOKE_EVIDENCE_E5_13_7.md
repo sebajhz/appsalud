@@ -126,7 +126,7 @@ Edge muestra el mayor fill, totalR y winrate en este rollup. Eso es **esperable*
 | **Mantener** | Entry oficial CE/50 % sin cambio |
 | **No hacer** | Aprobar edge o 25 %; tunear umbrales; usar sim R como R de estrategia |
 
-**Siguiente obligatorio:** **E5.13.6.1** — implementado en repo — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md); CLI `mapazapp:testea-entry-variant-sim-reconcile`. **Smoke operador:** **E5.13.6.2** (correr reconcile sobre este bundle).
+**Histórico:** **E5.13.6.1** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md). **E5.13.6.2** cerrado — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) (reconcile PASS; paridad 50 %/CE **no**). **Siguiente:** **E5.13.6.3** alinear EVOS control.
 
 Alcance E5.13.6.1 (solo diagnóstico):
 

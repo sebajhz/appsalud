@@ -47,11 +47,11 @@ Bundles **sin** `has_entry_variant_outcome_sim_v1_logic` o sin columnas `entry_v
 - **No** aprobar edge ni 25 %.
 - **No** gates, live trading, ni APIs de orden.
 
-## Smoke operador esperado
+## Smoke E5.13.6.2 (cerrado — docs)
 
-**E5.13.6.2** (o **E5.13.8** en notación alternativa): ejecutar reconcile CLI sobre el bundle E5.13.7 y archivar JSON/CSV de buckets (local `*_DO_NOT_COMMIT.csv`, no commitear).
+**E5.13.6.2** — evidencia operador — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) (**PASS** diagnóstico CLI; `mismatch_rate` ≈ 0.413; entry/SL OK; TP/barras/ambiguous no). **No** paridad 50 %/CE.
 
-**No** hay decisión de entry/modelo hasta cerrar o acotar la paridad 50 %/CE.
+**Siguiente:** **E5.13.6.3** — alinear EVOS 50 %/CE con outcome oficial; re-reconcile.
 
 ## Referencias
 

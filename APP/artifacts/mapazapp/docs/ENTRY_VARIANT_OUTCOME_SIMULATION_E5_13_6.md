@@ -81,6 +81,10 @@ El entry oficial **no cambia** en E5.13.6. Los campos `entry_variant_*_sim_resul
 
 Analizador + CLI `mapazapp:testea-entry-variant-sim-reconcile` — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md). Compara oficial vs `entry_variant_50_sim_*` por `trade_id` (buckets, precios, barras, ejemplos).
 
+## Reconcile smoke E5.13.6.2 (cerrado — docs)
+
+[`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) — reconcile CLI OK; `mismatch_rate` ≈ 41 %; entry/SL alineados; TP/barras/ambiguous no.
+
 ## Siguiente paso
 
-**E5.13.6.2** — smoke operador: ejecutar reconcile CLI sobre bundle E5.13.7 (`SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`). Solo diagnóstico; **sin** cambiar entry oficial hasta paridad 50 %/CE acotada.
+**E5.13.6.3** — alinear EVOS 50 %/CE con semántica outcome virtual oficial; re-ejecutar reconcile. **Sin** E5.14 hasta paridad control.

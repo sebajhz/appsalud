@@ -58,7 +58,8 @@
 - **E5.13.6 cerrado (repo):** Entry Variant Outcome / Risk Simulation — [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md); build `MZP_TestEA_E5_13_6`.
 - **E5.13.7 cerrado (docs):** smoke outcome sim — [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md); PASS técnico; **no** aprobar edge/25 %; 50 % sim no reconcilia con oficial (ambiguous 880 vs 436).
 - **E5.13.6.1 cerrado (repo):** reconcile CLI — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md); `mapazapp:testea-entry-variant-sim-reconcile`.
-- **Siguiente paso canónico:** **E5.13.6.2** smoke reconcile sobre bundle E5.13.7. Luego **E5.14–E5.20**. **Nota:** track **`tester_orders`** (E5.1) aparte.
+- **E5.13.6.2 cerrado (docs):** reconcile smoke — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md); mismatch_rate ≈ 41 %; entry/SL OK; TP/bars/ambiguous no.
+- **Siguiente paso canónico:** **E5.13.6.3** alinear EVOS 50 %/CE con outcome oficial. **No** E5.14 hasta paridad. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 
