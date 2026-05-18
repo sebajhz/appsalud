@@ -22,7 +22,8 @@
 | **E5.13.5** | Entry Variant Feasibility **smoke evidence** | **cerrado — docs** — [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md) |
 | **E5.13.6** | Entry Variant **Outcome / Risk Simulation** | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md) |
 | **E5.13.7** | Entry Variant Outcome Sim **smoke evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md) |
-| **E5.13.6.1** | Variant Simulation **Reconciliation Audit** (50 %/CE vs oficial) | **siguiente** — paridad por `trade_id`; sin cambio de entry |
+| **E5.13.6.1** | Variant Simulation **Reconciliation Audit** (50 %/CE vs oficial) | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md) |
+| **E5.13.6.2** | Reconciliation **smoke evidence** (operador) | **siguiente** — CLI reconcile sobre bundle E5.13.7 |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -132,9 +133,13 @@ Ver [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMU
 - **Evidencia:** [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md) — build `MZP_TestEA_E5_13_6`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, **PASS** técnico (`BUNDLE_EVENTS_LARGE`).
 - **Hallazgo:** export EVOS + CLI OK; edge domina rollups agregados; **50 % sim no reconcilia** con outcome oficial (ambiguous 880 vs 436; totalR 585 vs 315) — **no** usar edge/25/75 como evidencia estratégica hasta **E5.13.6.1**.
 
-### E5.13.6.1 (**siguiente**)
+### E5.13.6.1 (**cerrado — repo**)
 
-Reconciliar simulación **50 % / CE** vs outcome/`result_r` oficial por trade (`entry_variant_50_sim_status`, precios, barras, misma vela ambiguous). Solo diagnóstico; CLI opcional `mapazapp:testea-entry-variant-sim-reconcile`. **Sin** cambiar entry oficial CE/50 %.
+Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md) — CLI `mapazapp:testea-entry-variant-sim-reconcile`.
+
+### E5.13.6.2 (**siguiente**)
+
+Smoke operador: reconcile JSON/CSV sobre bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` (E5.13.7). **Sin** decisión de entry hasta paridad documentada.
 
 ---
 

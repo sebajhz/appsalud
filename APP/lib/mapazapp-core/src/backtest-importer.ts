@@ -458,6 +458,18 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     if (spreadAtEntry !== undefined) trade.spreadAtEntry = spreadAtEntry;
     if (scoreTotal !== undefined) trade.scoreTotal = scoreTotal;
     if (outcomeRaw !== "") trade.outcome = outcomeRaw;
+    const barsFillRaw = pick(cells, col, "bars_to_fill");
+    if (barsFillRaw !== undefined && barsFillRaw.trim() !== "") {
+      const p = parseNumber(barsFillRaw, "bars_to_fill", rowNum);
+      if (p.ok) trade.barsToFill = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    const barsHeldRaw = pick(cells, col, "bars_held");
+    if (barsHeldRaw !== undefined && barsHeldRaw.trim() !== "") {
+      const p = parseNumber(barsHeldRaw, "bars_held", rowNum);
+      if (p.ok) trade.barsHeld = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
     if (liquidityEventScore !== undefined) trade.liquidityEventScore = liquidityEventScore;
     if (liqDetRaw !== undefined && liqDetRaw.trim() !== "") {
       const u = liqDetRaw.trim().toLowerCase();

@@ -77,6 +77,10 @@ El entry oficial **no cambia** en E5.13.6. Los campos `entry_variant_*_sim_resul
 
 **E5.13.7** — evidencia operador — [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md) (**PASS** técnico; `MZP_TestEA_E5_13_6`; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`). Export y CLI OK; variante **50 % / CE** **no** reconcilia con outcome oficial (p. ej. ambiguous 880 vs 436; totalR 585 vs 315) — **bloqueado** para decisiones de entry hasta reconciliación.
 
+## Reconciliación E5.13.6.1 (repo)
+
+Analizador + CLI `mapazapp:testea-entry-variant-sim-reconcile` — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md). Compara oficial vs `entry_variant_50_sim_*` por `trade_id` (buckets, precios, barras, ejemplos).
+
 ## Siguiente paso
 
-**E5.13.6.1** — Variant Simulation Reconciliation Audit: comparar `entry_variant_50_sim_status` (y geometría) vs outcome/`result_r` oficial por `trade_id`; CLI opcional `mapazapp:testea-entry-variant-sim-reconcile`. Solo diagnóstico; **sin** cambiar entry oficial ni estrategia.
+**E5.13.6.2** — smoke operador: ejecutar reconcile CLI sobre bundle E5.13.7 (`SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`). Solo diagnóstico; **sin** cambiar entry oficial hasta paridad 50 %/CE acotada.

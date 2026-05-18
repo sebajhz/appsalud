@@ -126,9 +126,9 @@ Edge muestra el mayor fill, totalR y winrate en este rollup. Eso es **esperable*
 | **Mantener** | Entry oficial CE/50 % sin cambio |
 | **No hacer** | Aprobar edge o 25 %; tunear umbrales; usar sim R como R de estrategia |
 
-**Siguiente obligatorio:** **E5.13.6.1** — Variant Simulation Reconciliation Audit (reconciliar `entry_variant_50_sim_*` vs `outcome` / `result_r` oficial por `trade_id`). Ver [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md).
+**Siguiente obligatorio:** **E5.13.6.1** — implementado en repo — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md); CLI `mapazapp:testea-entry-variant-sim-reconcile`. **Smoke operador:** **E5.13.6.2** (correr reconcile sobre este bundle).
 
-Alcance sugerido E5.13.6.1 (solo diagnóstico):
+Alcance E5.13.6.1 (solo diagnóstico):
 
 - Comparar `outcome` oficial vs `entry_variant_50_sim_status` por trade.
 - Clasificar mismatches: official win vs 50 ambiguous; official loss vs 50 ambiguous; official ambiguous vs 50 win/loss; filled vs not_filled; precio entry / SL / TP; barra fill / close; misma vela ambiguous.

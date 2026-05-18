@@ -60,6 +60,10 @@ export interface BacktestTrade {
   exitReason?: string | undefined;
   /** TestEA E5.3+ virtual outcome when present in CSV (`outcome` column). */
   outcome?: string | undefined;
+  /** TestEA virtual trade bars waiting for entry (`bars_to_fill` column). */
+  barsToFill?: number | undefined;
+  /** TestEA virtual trade bars in trade after fill (`bars_held` column). */
+  barsHeld?: number | undefined;
   /** TestEA E5.10+ liquidity sweep observation columns (optional for legacy CSV). */
   liquidityEventDetected?: boolean | undefined;
   liquidityEventType?: string | undefined;
