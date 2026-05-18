@@ -5116,13 +5116,12 @@ void MapzEvosSyncP50StrictOnOfficialFill(const int barsToFillOfficial)
   {
    if(!g_vt.evos.log_enabled || !g_vt.evos.p50.strict_official_parity)
       return;
-   MapzVariantSimSlot &slot = g_vt.evos.p50;
-   if(slot.finalized || slot.invalid_risk)
+   if(g_vt.evos.p50.finalized || g_vt.evos.p50.invalid_risk)
       return;
-   slot.reached = true;
-   slot.sim_open = true;
-   slot.bars_to_fill = barsToFillOfficial;
-   slot.bars_since_fill = 0;
+   g_vt.evos.p50.reached = true;
+   g_vt.evos.p50.sim_open = true;
+   g_vt.evos.p50.bars_to_fill = barsToFillOfficial;
+   g_vt.evos.p50.bars_since_fill = 0;
    MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_filled");
    MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_p50_official_parity");
   }
@@ -5134,28 +5133,27 @@ void MapzEvosSyncP50StrictOnOfficialClose(const string outcome,
   {
    if(!g_vt.evos.log_enabled || !g_vt.evos.p50.strict_official_parity)
       return;
-   MapzVariantSimSlot &slot = g_vt.evos.p50;
-   if(slot.invalid_risk)
+   if(g_vt.evos.p50.invalid_risk)
       return;
    if(outcome == "expired_unfilled" || !g_vt.filled)
      {
-      slot.reached = false;
-      slot.sim_open = false;
-      slot.status = "not_filled";
-      slot.result_r = 0.0;
-      slot.bars_since_fill = 0;
-      slot.ambiguous_flag = false;
-      slot.finalized = true;
+      g_vt.evos.p50.reached = false;
+      g_vt.evos.p50.sim_open = false;
+      g_vt.evos.p50.status = "not_filled";
+      g_vt.evos.p50.result_r = 0.0;
+      g_vt.evos.p50.bars_since_fill = 0;
+      g_vt.evos.p50.ambiguous_flag = false;
+      g_vt.evos.p50.finalized = true;
       MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_not_filled");
       return;
      }
-   slot.reached = true;
-   slot.sim_open = true;
-   slot.status = outcome;
-   slot.result_r = resultR;
-   slot.bars_since_fill = barsHeldOfficial;
-   slot.ambiguous_flag = (outcome == "ambiguous");
-   slot.finalized = true;
+   g_vt.evos.p50.reached = true;
+   g_vt.evos.p50.sim_open = true;
+   g_vt.evos.p50.status = outcome;
+   g_vt.evos.p50.result_r = resultR;
+   g_vt.evos.p50.bars_since_fill = barsHeldOfficial;
+   g_vt.evos.p50.ambiguous_flag = (outcome == "ambiguous");
+   g_vt.evos.p50.finalized = true;
    if(outcome == "win")
       MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_win");
    else if(outcome == "loss")

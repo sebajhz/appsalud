@@ -475,6 +475,11 @@ test("Z — E5.8 + E5.10 + E5.10.2 + E5.10.4: score field tokens + liquidity cha
   assert.match(src, /MapzEvosPrepareSlotStrictOfficial/);
   assert.match(src, /MapzEvosSyncP50StrictOnOfficialFill/);
   assert.match(src, /MapzEvosSyncP50StrictOnOfficialClose/);
+  assert.equal(
+    /MapzVariantSimSlot\s*&\s*\w+\s*=\s*g_vt\.evos\.p50/.test(src),
+    false,
+    "MQL5 forbids local reference aliases to nested struct fields (g_vt.evos.p50)",
+  );
   assert.match(src, /strict_official_parity/);
   assert.match(src, /entry_variant_sim_p50_official_control/);
   assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
