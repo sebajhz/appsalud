@@ -337,6 +337,14 @@ function isFastClose(barsToClose: number | undefined): boolean {
   return barsToClose != null && Number.isFinite(barsToClose) && barsToClose <= 1;
 }
 
+/** Per-trade: edge fill and close both within 0–1 bars (E5.13.6.8). */
+export function isFastFillAndClose(
+  barsToFill: number | undefined,
+  barsToClose: number | undefined,
+): boolean {
+  return isFastFill(barsToFill) && isFastClose(barsToClose);
+}
+
 function officialResultR(trade: BacktestTrade): number {
   return Number.isFinite(trade.resultR) ? trade.resultR : 0;
 }
@@ -507,7 +515,7 @@ function computeSpeedRealism(contexts: TradeEdgeContext[]): SpeedRealismSummary 
     const fastClose = isFastClose(close);
     if (fastFill) s.edge_win_bars_to_fill_0_or_1 += 1;
     if (fastClose) s.edge_win_bars_to_close_0_or_1 += 1;
-    if (fastFill && fastClose) {
+    if (isFastFillAndClose(fill, close)) {
       s.edge_win_fill_and_close_fast_count += 1;
       if (ctx.official === "expired_unfilled") s.official_expired_to_edge_win_fast_count += 1;
       if (ctx.official === "ambiguous") s.official_ambiguous_to_edge_win_fast_count += 1;
@@ -566,7 +574,10 @@ function computeTransitionRobustness(
 
     const avgEffectiveByBuffer: Record<number, number> = {};
     const failByBuffer: Record<number, number> = {};
-    let fastFillClose = 0;
+
+    const fastFillClose = rows.filter((ctx) =>
+      isFastFillAndClose(ctx.edgeSlot.barsToFill, ctx.edgeSlot.barsToClose),
+    ).length;
 
     for (const buf of bufferPoints) {
       const eff: number[] = [];
@@ -581,12 +592,6 @@ function computeTransitionRobustness(
         );
         eff.push(proxy.effective_rr);
         if (proxy.fragile_by_buffer) fail += 1;
-        if (
-          isFastFill(ctx.edgeSlot.barsToFill) &&
-          isFastClose(ctx.edgeSlot.barsToClose)
-        ) {
-          fastFillClose += 1;
-        }
       }
       avgEffectiveByBuffer[buf] =
         eff.length > 0 ? eff.reduce((s, v) => s + v, 0) / eff.length : 0;

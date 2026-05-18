@@ -4,6 +4,7 @@ import {
   computeEffectiveRrProxy,
   computeTpDistancePoints,
   flattenRobustnessAuditCsvRows,
+  isFastFillAndClose,
 } from "../src/testea-entry-edge-robustness-audit";
 
 const SUMMARY_EVOS = JSON.stringify({
@@ -117,6 +118,74 @@ describe("testea-entry-edge-robustness-audit (E5.13.6.8)", () => {
   it("computeTpDistancePoints scales by SL geometry", () => {
     const tpd = computeTpDistancePoints(2000, 1990, 2030, 100);
     expect(tpd).toBeCloseTo(300, 6);
+  });
+
+  it("transition_robustness fast_fill_close_count is per-bucket and <= count", () => {
+    const others = `${edgeSlots("win", 2, 131)},${edgeSlots("loss", -1, 131)},${edgeSlots("win", 2, 131)}`;
+    const csv = tradesCsv(
+      [
+        `t1,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,1990,-1,0,loss,2,5,true,${edgeSlots("win", 2, 280, 2000, 1990, 2030, 0, 0)},${others}`,
+        `t2,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,1990,-1,0,loss,2,5,true,${edgeSlots("win", 2, 280, 2000, 1990, 2030, 0, 1)},${others}`,
+        `t3,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,1990,-1,0,loss,2,5,true,${edgeSlots("win", 2, 280, 2000, 1990, 2030, 5, 10)},${others}`,
+      ].join("\n"),
+    );
+    const r = analyzeTestEaEntryEdgeRobustnessAuditFromTexts(
+      { bundleName: "fast-bucket", summaryJsonText: SUMMARY_EVOS, tradesCsvText: csv },
+      { bufferPoints: [5, 10, 20, 30, 50] },
+    );
+    expect(r.ok).toBe(true);
+    const bucket = r.transition_robustness.find(
+      (b) => b.bucket === "official_loss_variant_win",
+    );
+    expect(bucket?.count).toBe(3);
+    expect(bucket?.fast_fill_close_count).toBe(2);
+    expect(bucket!.fast_fill_close_count).toBeLessThanOrEqual(bucket!.count);
+    for (const row of r.transition_robustness) {
+      expect(row.fast_fill_close_count).toBeLessThanOrEqual(row.count);
+    }
+  });
+
+  it("fast_fill_close_count does not multiply across buffer points", () => {
+    const others = `${edgeSlots("win", 2, 131)},${edgeSlots("loss", -1, 131)},${edgeSlots("win", 2, 131)}`;
+    const csv = tradesCsv(
+      `t1,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,1990,-1,0,loss,2,5,true,${edgeSlots("win", 2, 280, 2000, 1990, 2030, 0, 0)},${others}`,
+    );
+    const oneBuf = analyzeTestEaEntryEdgeRobustnessAuditFromTexts(
+      { bundleName: "one-buf", summaryJsonText: SUMMARY_EVOS, tradesCsvText: csv },
+      { bufferPoints: [30] },
+    );
+    const fiveBuf = analyzeTestEaEntryEdgeRobustnessAuditFromTexts(
+      { bundleName: "five-buf", summaryJsonText: SUMMARY_EVOS, tradesCsvText: csv },
+      { bufferPoints: [5, 10, 20, 30, 50] },
+    );
+    const b1 = oneBuf.transition_robustness.find(
+      (b) => b.bucket === "official_loss_variant_win",
+    )!;
+    const b5 = fiveBuf.transition_robustness.find(
+      (b) => b.bucket === "official_loss_variant_win",
+    )!;
+    expect(b1.fast_fill_close_count).toBe(1);
+    expect(b5.fast_fill_close_count).toBe(1);
+  });
+
+  it("global speed_realism is separate from transition bucket fast counts", () => {
+    const others = `${edgeSlots("win", 2, 131)},${edgeSlots("loss", -1, 131)},${edgeSlots("win", 2, 131)}`;
+    const csv = tradesCsv(
+      `t1,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,1990,-1,0,loss,2,5,true,${edgeSlots("win", 2, 280, 2000, 1990, 2030, 0, 0)},${others}`,
+    );
+    const r = analyzeTestEaEntryEdgeRobustnessAuditFromTexts({
+      bundleName: "speed",
+      summaryJsonText: SUMMARY_EVOS,
+      tradesCsvText: csv,
+    });
+    expect(r.speed_realism.edge_win_fill_and_close_fast_count).toBe(1);
+    expect(r.speed_realism.official_loss_to_edge_win_fast_count).toBe(1);
+    const bucket = r.transition_robustness.find(
+      (b) => b.bucket === "official_loss_variant_win",
+    )!;
+    expect(bucket.fast_fill_close_count).toBe(1);
+    expect(isFastFillAndClose(0, 0)).toBe(true);
+    expect(isFastFillAndClose(0, 2)).toBe(false);
   });
 
   it("legacy bundle without EVOS returns warning, not crash", () => {

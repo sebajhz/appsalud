@@ -23,7 +23,7 @@
 | **Small-distance fragility** | conteos por umbrales de `risk_points` y `tp_distance_points` |
 | **Speed / same-bar realism** | wins con `bars_to_fill` / `bars_to_close` ≤ 1; rescates rápidos por bucket oficial |
 | **Risk-ratio stress** | avg/median/p90 vs 50 %; buckets >1.25 … >3.0; wins por bucket de ratio |
-| **Transition robustness** | buckets oficial→edge con avg effective RR y fail por buffer |
+| **Transition robustness** | buckets oficial→edge con avg effective RR, fail por buffer, y `fast_fill_close_count` (trades del bucket con `bars_to_fill ≤ 1` y `bars_to_close ≤ 1`; **≤ bucket count**) |
 | **Unresolved edge** | distribución outcome oficial, risk, bars_to_fill |
 | **25 / adaptive lens** | effective RR bajo buffers, fail counts, ambigüedad y delta R vs 50 % |
 
@@ -98,3 +98,9 @@ CSV local (no versionar): `*_DO_NOT_COMMIT.csv` si se usa `--csv-output`.
 - Summary EVOS: [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md)
 
 **No** aprueba edge, 25 %, adaptive ni live trading.
+
+---
+
+## E5.13.6.8.1 — fix `fast_fill_close_count`
+
+**Bug corregido:** `transition_robustness.fast_fill_close_count` se incrementaba una vez por cada `--buffer-points`, inflando el conteo (~5× con buffers por defecto). Ahora se cuenta **una vez por trade del bucket**; invariante `fast_fill_close_count ≤ count`.
