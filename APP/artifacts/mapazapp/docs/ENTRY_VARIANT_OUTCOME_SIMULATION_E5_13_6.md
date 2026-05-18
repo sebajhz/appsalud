@@ -91,4 +91,6 @@ Build `MZP_TestEA_E5_13_6_3`: variante 50 espeja outcome oficial (TP/entry/SL of
 
 ## Siguiente paso
 
-**E5.13.6.4** — smoke reconcile post-fix (operador). **Sin** E5.14 hasta paridad demostrada en bundle nuevo.
+**E5.13.6.4 cerrado:** [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md) confirma paridad perfecta del control 50 %/CE (`mismatch_rate = 0`) en el bundle benchmark.
+
+**Siguiente:** rerun del summary EVOS sobre el bundle `MZP_TestEA_E5_13_6_3`. Aún no aprobar edge/25 % como mejora estratégica sin esa evidencia post-paridad.

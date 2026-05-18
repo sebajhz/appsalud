@@ -126,7 +126,7 @@ Edge muestra el mayor fill, totalR y winrate en este rollup. Eso es **esperable*
 | **Mantener** | Entry oficial CE/50 % sin cambio |
 | **No hacer** | Aprobar edge o 25 %; tunear umbrales; usar sim R como R de estrategia |
 
-**Histórico:** **E5.13.6.1** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md). **E5.13.6.2** cerrado — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) (reconcile PASS; paridad 50 %/CE **no**). **E5.13.6.3** cerrado — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md). **Siguiente:** **E5.13.6.4** re-export + reconcile.
+**Histórico:** **E5.13.6.1** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md). **E5.13.6.2** cerrado — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) (reconcile PASS; paridad 50 %/CE **no**). **E5.13.6.3** cerrado — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md). **E5.13.6.4** cerrado — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md) (`mismatch_rate = 0`).
 
 Alcance E5.13.6.1 (solo diagnóstico):
 
@@ -135,7 +135,7 @@ Alcance E5.13.6.1 (solo diagnóstico):
 - CLI opcional: `mapazapp:testea-entry-variant-sim-reconcile`.
 - **Sin** cambiar estrategia, umbrales ni entry oficial.
 
-**Después de reconciliación:** **E5.14** IFVG / BISI / SIBI (no antes de cerrar o acotar E5.13.6.1).
+**Después de reconciliación:** rerun del summary EVOS post-paridad sobre el bundle `MZP_TestEA_E5_13_6_3`; luego evaluar si corresponde avanzar a **E5.14** IFVG / BISI / SIBI.
 
 ---
 

@@ -1,5 +1,11 @@
 # ROADMAP V2 — Master Execution Plan
 
+## E5.13.6.4 checkpoint context
+
+- **E5.13.6.4 (docs) — cerrado:** smoke reconcile post-parity — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md); build `MZP_TestEA_E5_13_6_3`, compile 0/0, bundle benchmark validado con warning único `BUNDLE_EVENTS_LARGE`.
+- **Resultado:** EVOS 50 %/CE en paridad perfecta con outcome oficial (`outcome_match_count = 1697`, `mismatch_count = 0`, `mismatch_rate = 0`).
+- **Siguiente:** rerun summary EVOS post-parity sobre el bundle `MZP_TestEA_E5_13_6_3`; no aprobar edge/25 % como mejora estratégica antes de esa evidencia.
+
 ## V2-16 checkpoint context
 
 - Checkpoint: `V2-16 — Dashboard/API Connection Cleanup`.

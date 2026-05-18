@@ -25,7 +25,7 @@
 | **E5.13.6.1** | Variant Simulation **Reconciliation Audit** (50 %/CE vs oficial) | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md) |
 | **E5.13.6.2** | Reconciliation **smoke evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) |
 | **E5.13.6.3** | Align EVOS **50 %/CE** with official outcome semantics | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md) |
-| **E5.13.6.4** | Reconciliation **smoke post-parity** (operador) | **siguiente** — re-export `MZP_TestEA_E5_13_6_3` + reconcile |
+| **E5.13.6.4** | Reconciliation **smoke post-parity** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md) |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -149,9 +149,11 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 - **Doc:** [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md); build `MZP_TestEA_E5_13_6_3`.
 - **Fix:** p50 espeja outcome oficial (TP/entry/SL oficiales; sin sim bar-a-bar independiente para control).
 
-### E5.13.6.4 (**siguiente**)
+### E5.13.6.4 (**cerrado — docs**)
 
-Alinear EVOS 50 %/CE (fill bar, close bar, same-bar ambiguous, TP control) con outcome oficial; re-reconcile. **No** E5.14 hasta paridad.
+- **Evidencia:** [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md) — build `MZP_TestEA_E5_13_6_3`, compile 0/0, bundle válido con warning único `BUNDLE_EVENTS_LARGE`.
+- **Resultado:** `outcome_match_count = 1697`, `mismatch_count = 0`, `mismatch_rate = 0`; TP/fill/close/same-bar ambiguous mismatches = 0.
+- **Siguiente:** rerun summary EVOS post-paridad sobre este bundle antes de usar edge/25 %/75 %/adaptive como evidencia estratégica.
 
 ---
 

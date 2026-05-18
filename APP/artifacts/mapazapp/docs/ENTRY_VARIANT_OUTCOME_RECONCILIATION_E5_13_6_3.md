@@ -49,16 +49,11 @@ E5.13.6.3 es un **fix de paridad** en `Mapazapp_TestEA` — no mejora estrategia
 
 ---
 
-## Verificación esperada (E5.13.6.4 — operador)
+## Verificación E5.13.6.4 — operador
 
-Recompilar MT5, re-export bundle, rerun:
+Smoke cerrado en [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md).
 
-```bash
-pnpm --filter @workspace/scripts mapazapp:testea-entry-variant-sim-reconcile -- \
-  --bundle "<RunDir>" --json
-```
-
-**Objetivo (no hardcodeado):** `tp_price_mismatch_count` ≈ 0; fill/close/ambiguous mismatches reducidos de forma material; `mismatch_rate` mucho menor que 0.413 para cohorte con build `MZP_TestEA_E5_13_6_3`.
+Resultado: compile MetaEditor **0 errors / 0 warnings**, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` válido con warning único `BUNDLE_EVENTS_LARGE`, y reconcile con `outcome_match_count = 1697`, `mismatch_count = 0`, `mismatch_rate = 0`.
 
 ---
 
@@ -73,7 +68,8 @@ pnpm --filter @workspace/scripts mapazapp:testea-entry-variant-sim-reconcile -- 
 ## Referencias
 
 - E5.13.6.2 smoke: [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md)
+- E5.13.6.4 smoke: [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md)
 - Contrato reconcile: [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md)
 - EVOS: [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md)
 
-**Siguiente:** **E5.13.6.4** — smoke reconcile post-fix (operador).
+**Siguiente:** rerun summary EVOS sobre el bundle `MZP_TestEA_E5_13_6_3`.
