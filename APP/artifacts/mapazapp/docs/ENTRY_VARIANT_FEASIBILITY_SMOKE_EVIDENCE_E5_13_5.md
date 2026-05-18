@@ -135,7 +135,7 @@ La hipótesis de E5.13.3 queda **confirmada a nivel de fillability**: el entry o
 - **No** cambiar el entry virtual oficial (CE/50 %) en este checkpoint.
 - **No** calibrar ni tunear desde un solo bundle.
 
-**Siguiente recomendado:** **E5.13.6** — implementado en repo — [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md). **Smoke operador:** **E5.13.7** (recompilar `MZP_TestEA_E5_13_6`) **antes** de **E5.14** IFVG / BISI / SIBI.
+**Siguiente (histórico):** **E5.13.6** — [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md); smoke **E5.13.7** cerrado — [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md). **Checkpoint actual:** **E5.13.6.1** reconciliación 50 %/CE vs outcome oficial **antes** de **E5.14**.
 
 ---
 
