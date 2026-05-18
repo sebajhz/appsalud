@@ -63,7 +63,8 @@
 - **E5.13.6.4 cerrado (docs):** smoke reconcile post-fix — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md); `mismatch_rate = 0`; control 50 %/CE validado.
 - **E5.13.6.5 cerrado (docs):** summary EVOS post-paridad — [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md); edge domina rollups; **no** aprobar variantes.
 - **E5.13.6.6 cerrado (repo):** transition audit — [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md); CLI `mapazapp:testea-entry-variant-transition-audit`.
-- **Siguiente operador:** ejecutar transition audit en bundle `MZP_TestEA_E5_13_6_3`; **no** decisión de entry model. **Nota:** track **`tester_orders`** (E5.1) aparte.
+- **E5.13.6.7 cerrado (docs):** transition audit evidence — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md); PASS; edge fuerte + riesgo ~2×; **no** aprobar variantes.
+- **Siguiente canónico:** **E5.13.6.8** Edge Entry Realism / Robustness Audit. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

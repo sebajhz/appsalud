@@ -63,26 +63,17 @@ Aunque edge gane en total R en un bundle, 25 % y adaptive suelen acercarse al en
 
 ---
 
-## Siguiente paso operador
+## Evidencia operador (E5.13.6.7)
 
-Ejecutar sobre el bundle validado **E5_13_6_3**:
+**Cerrado — docs:** [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md) — bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, `trade_count = 1697`, audit PASS; edge domina con `risk_ratio ≈ 2` vs 50 %; **no** aprobar variantes.
 
-```bash
-pnpm --filter @workspace/scripts mapazapp:testea-entry-variant-transition-audit -- \
-  --bundle "<RunDir>" \
-  --json \
-  --variants edge,25,adaptive,50 \
-  --max-examples 10
-```
-
-Opcional: `--csv-output artifacts/mapazapp/docs/_local_transition_audit_DO_NOT_COMMIT.csv` (no commitear `*_DO_NOT_COMMIT.csv`).
-
-**No hay decisión de entry model** hasta revisar flags (`EDGE_DOMINATES_SINGLE_BUNDLE`, `EDGE_RISK_DISTANCE_HIGH`, etc.) y ejemplos por bucket.
+**Siguiente:** **E5.13.6.8** Edge Entry Realism / Robustness Audit.
 
 ---
 
 ## Referencias
 
+- Evidencia operador: [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md)
 - Summary post-paridad: [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md)
 - EVOS contrato: [`ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_6.md)
 - Reconcile smoke: [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md)

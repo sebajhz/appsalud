@@ -28,6 +28,8 @@
 | **E5.13.6.4** | Reconciliation **smoke post-parity** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_4.md) |
 | **E5.13.6.5** | EVOS variant outcome **summary post-parity** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md`](./ENTRY_VARIANT_OUTCOME_SUMMARY_E5_13_6_5.md) |
 | **E5.13.6.6** | Entry Variant **Edge/25 Sanity and Transition Audit** | **cerrado — repo** — [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md) |
+| **E5.13.6.7** | Transition audit **evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md) |
+| **E5.13.6.8** | **Edge Entry Realism / Robustness Audit** | **siguiente** — spread/slippage, ejecución conservadora, unresolved edge |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -167,7 +169,14 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 
 - **Implementación:** core `testea-entry-variant-transition-audit.ts` + CLI `mapazapp:testea-entry-variant-transition-audit`.
 - **Doc:** [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md).
-- **Operador:** ejecutar transition audit en bundle `MZP_TestEA_E5_13_6_3`; **no** aprobar edge/25 % hasta revisar evidencia.
+
+### E5.13.6.7 (**cerrado — docs**)
+
+- **Evidencia:** [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md) — audit PASS; edge domina con `risk_ratio ≈ 2`; 25/adaptive mejoran R con más ambiguous; **no** aprobar variantes.
+
+### E5.13.6.8 (**siguiente**)
+
+Edge Entry Realism / Robustness Audit — spread/slippage, near-edge realismo, edge vs 25/adaptive conservador, `unresolved=60`, sizing con riesgo ~2×; **sin** decisión de entry model.
 
 ---
 
