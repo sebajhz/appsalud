@@ -321,7 +321,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_13_2"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_13_2_1"/);
   assert.match(src, /input bool\s+InpEnablePremiumDiscountV1\s*=\s*true/);
   assert.match(src, /input int\s+InpPremiumDiscountSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpPremiumDiscountMaxBars\s*=\s*200/);
@@ -441,6 +441,8 @@ test("Z — E5.8 + E5.10 + E5.10.2 + E5.10.4: score field tokens + liquidity cha
   assert.match(src, /entry_too_deep_for_retest/);
   assert.match(src, /entry_near_miss/);
   assert.match(src, /MapzEffInitGeometry/);
+  assert.match(src, /MapzEffAppendReasonOnce/);
+  assert.match(src, /MapzReasonBufHasToken/);
   assert.match(src, /has_htf_structure_v1_logic/);
   assert.match(src, /htf_structure_score/);
   assert.match(src, /h4_structure_state/);

@@ -79,7 +79,7 @@ input int               InpEntryFillFeasibilityMaxBars    = 0;
 input int               InpEntryFillFeasibilityNearMissPoints = 30;
 input bool              InpEntryFillFeasibilityScoreEnabled = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_13_2"
+#define TESTEA_BUILD            "MZP_TestEA_E5_13_2_1"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -2367,6 +2367,36 @@ void MapzHtfAppendToken(string &buf, const string tok)
   }
 
 //+------------------------------------------------------------------+
+bool MapzReasonBufHasToken(const string buf, const string tok)
+  {
+   if(StringLen(tok) == 0)
+      return false;
+   if(buf == tok)
+      return true;
+   if(StringFind(buf, tok + "|") == 0)
+      return true;
+   if(StringFind(buf, "|" + tok + "|") >= 0)
+      return true;
+   const int len = StringLen(buf);
+   const int tlen = StringLen(tok);
+   if(len > tlen && StringSubstr(buf, len - tlen - 1, tlen + 1) == "|" + tok)
+      return true;
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEffAppendReasonOnce(string &buf, const string tok)
+  {
+   if(StringLen(tok) == 0)
+      return;
+   if(MapzReasonBufHasToken(buf, tok))
+      return;
+   if(StringLen(buf) > 0)
+      buf += "|";
+   buf += tok;
+  }
+
+//+------------------------------------------------------------------+
 bool MapzHtfIsSwingHigh(const string sym, const ENUM_TIMEFRAMES tf, const int s, const int N)
   {
    if(s < N)
@@ -4097,7 +4127,7 @@ void MapzEffInitGeometry(const ENUM_MAPZ_SETUP_DIR dir,
    out.log_enabled = InpEnableEntryFillFeasibilityV1;
    if(!InpEnableEntryFillFeasibilityV1)
      {
-      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+      MapzEffAppendReasonOnce(out.reasons, "entry_geometry_unknown");
       return;
      }
 
@@ -4113,7 +4143,7 @@ void MapzEffInitGeometry(const ENUM_MAPZ_SETUP_DIR dir,
    if(span <= ptSafe * 0.5)
      {
       out.entry_geometry_unknown = true;
-      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+      MapzEffAppendReasonOnce(out.reasons, "entry_geometry_unknown");
       return;
      }
 
@@ -4132,7 +4162,7 @@ void MapzEffInitGeometry(const ENUM_MAPZ_SETUP_DIR dir,
    else
      {
       out.entry_geometry_unknown = true;
-      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+      MapzEffAppendReasonOnce(out.reasons, "entry_geometry_unknown");
       return;
      }
 
@@ -4144,21 +4174,21 @@ void MapzEffInitGeometry(const ENUM_MAPZ_SETUP_DIR dir,
    out.entry_outside_fvg = (entry < lo - ptSafe * 0.5 || entry > hi + ptSafe * 0.5);
    if(out.entry_outside_fvg)
      {
-      MapzHtfAppendToken(out.reasons, "entry_outside_fvg");
+      MapzEffAppendReasonOnce(out.reasons, "entry_outside_fvg");
      }
    else
      {
       if(out.entry_depth_in_fvg_pct <= 35.0)
-         MapzHtfAppendToken(out.reasons, "entry_depth_reasonable");
+         MapzEffAppendReasonOnce(out.reasons, "entry_depth_reasonable");
       else if(out.entry_depth_in_fvg_pct >= 72.0)
         {
          out.entry_too_deep_for_retest = true;
-         MapzHtfAppendToken(out.reasons, "entry_depth_too_deep");
+         MapzEffAppendReasonOnce(out.reasons, "entry_depth_too_deep");
         }
       else if(out.entry_depth_in_fvg_pct <= 18.0)
-         MapzHtfAppendToken(out.reasons, "entry_depth_too_shallow");
+         MapzEffAppendReasonOnce(out.reasons, "entry_depth_too_shallow");
       else
-         MapzHtfAppendToken(out.reasons, "entry_depth_reasonable");
+         MapzEffAppendReasonOnce(out.reasons, "entry_depth_reasonable");
      }
 
    out.extreme_retrace_price = entry;
@@ -4198,7 +4228,7 @@ void MapzEffTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
            {
             out.fvg_touch_reached = true;
             out.bars_to_fvg_touch = barN;
-            MapzHtfAppendToken(out.reasons, "fvg_touch_reached");
+            MapzEffAppendReasonOnce(out.reasons, "fvg_touch_reached");
            }
         }
       if(lo <= out.fvg_ce_price + ptSafe * 0.5)
@@ -4207,7 +4237,7 @@ void MapzEffTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
            {
             out.fvg_ce_touch_reached = true;
             out.bars_to_ce_touch = barN;
-            MapzHtfAppendToken(out.reasons, "fvg_ce_touch_reached");
+            MapzEffAppendReasonOnce(out.reasons, "fvg_ce_touch_reached");
            }
         }
       if(lo <= entry + ptSafe * 0.5)
@@ -4215,7 +4245,7 @@ void MapzEffTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
          if(!out.entry_price_reached)
            {
             out.entry_price_reached = true;
-            MapzHtfAppendToken(out.reasons, "entry_price_reached");
+            MapzEffAppendReasonOnce(out.reasons, "entry_price_reached");
            }
         }
 
@@ -4249,7 +4279,7 @@ void MapzEffTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
            {
             out.fvg_touch_reached = true;
             out.bars_to_fvg_touch = barN;
-            MapzHtfAppendToken(out.reasons, "fvg_touch_reached");
+            MapzEffAppendReasonOnce(out.reasons, "fvg_touch_reached");
            }
         }
       if(hi >= out.fvg_ce_price - ptSafe * 0.5)
@@ -4258,7 +4288,7 @@ void MapzEffTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
            {
             out.fvg_ce_touch_reached = true;
             out.bars_to_ce_touch = barN;
-            MapzHtfAppendToken(out.reasons, "fvg_ce_touch_reached");
+            MapzEffAppendReasonOnce(out.reasons, "fvg_ce_touch_reached");
            }
         }
       if(hi >= entry - ptSafe * 0.5)
@@ -4266,7 +4296,7 @@ void MapzEffTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
          if(!out.entry_price_reached)
            {
             out.entry_price_reached = true;
-            MapzHtfAppendToken(out.reasons, "entry_price_reached");
+            MapzEffAppendReasonOnce(out.reasons, "entry_price_reached");
            }
         }
 
@@ -4293,9 +4323,9 @@ void MapzEffTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
    out.max_retrace_to_entry_distance_points = out.missed_entry_by_points;
 
    if(out.max_retrace_into_fvg_pct >= 40.0)
-      MapzHtfAppendToken(out.reasons, "max_retrace_deep_enough");
+      MapzEffAppendReasonOnce(out.reasons, "max_retrace_deep_enough");
    else if(out.fvg_touch_reached)
-      MapzHtfAppendToken(out.reasons, "max_retrace_shallow");
+      MapzEffAppendReasonOnce(out.reasons, "max_retrace_shallow");
   }
 
 //+------------------------------------------------------------------+
@@ -4317,62 +4347,62 @@ void MapzEffFinalize(const ENUM_MAPZ_SETUP_DIR dir,
       out.fill_status = "filled";
       out.bars_to_entry_fill = out.bars_until_expiration_or_resolution;
       out.entry_price_reached = true;
-      MapzHtfAppendToken(out.reasons, "entry_fill_filled");
+      MapzEffAppendReasonOnce(out.reasons, "entry_fill_filled");
       if(out.bars_to_entry_fill <= 3)
         {
          out.entry_filled_fast = true;
-         MapzHtfAppendToken(out.reasons, "entry_fill_fast");
+         MapzEffAppendReasonOnce(out.reasons, "entry_fill_fast");
         }
       else if(out.bars_to_entry_fill > 10)
         {
          out.entry_filled_late = true;
-         MapzHtfAppendToken(out.reasons, "entry_fill_late");
+         MapzEffAppendReasonOnce(out.reasons, "entry_fill_late");
         }
      }
    else if(out.entry_outside_fvg)
      {
       out.fill_status = "outside_fvg";
-      MapzHtfAppendToken(out.reasons, "entry_outside_fvg");
+      MapzEffAppendReasonOnce(out.reasons, "entry_outside_fvg");
      }
    else if(out.entry_geometry_unknown)
      {
       out.fill_status = "unknown";
-      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+      MapzEffAppendReasonOnce(out.reasons, "entry_geometry_unknown");
      }
    else if(out.entry_too_deep_for_retest)
      {
       out.fill_status = "too_deep_for_retest";
-      MapzHtfAppendToken(out.reasons, "entry_too_deep_for_retest");
+      MapzEffAppendReasonOnce(out.reasons, "entry_too_deep_for_retest");
      }
    else if(StringFind(exitReason, "invalid") >= 0 || outcome == "invalid_risk")
      {
       out.fill_status = "invalidated_before_fill";
       out.entry_invalidated_before_fill = true;
-      MapzHtfAppendToken(out.reasons, "entry_invalidated_before_fill");
+      MapzEffAppendReasonOnce(out.reasons, "entry_invalidated_before_fill");
      }
    else if(!filled && out.fvg_touch_reached && !out.entry_price_reached && out.max_retrace_into_fvg_pct < 28.0)
      {
       out.fill_status = "missed_shallow_retrace";
       out.entry_missed_shallow_retrace = true;
-      MapzHtfAppendToken(out.reasons, "entry_missed_shallow_retrace");
+      MapzEffAppendReasonOnce(out.reasons, "entry_missed_shallow_retrace");
      }
    else if(!filled && out.missed_entry_by_points > 0.0
            && out.missed_entry_by_points <= (double)InpEntryFillFeasibilityNearMissPoints)
      {
       out.fill_status = "near_miss";
       out.entry_near_miss = true;
-      MapzHtfAppendToken(out.reasons, "entry_fill_near_miss");
+      MapzEffAppendReasonOnce(out.reasons, "entry_fill_near_miss");
      }
    else if(outcome == "expired_unfilled" || StringFind(exitReason, "expired_unfilled") >= 0)
      {
       out.fill_status = "expired_unfilled";
       out.entry_expired_unfilled = true;
-      MapzHtfAppendToken(out.reasons, "entry_fill_expired_unfilled");
+      MapzEffAppendReasonOnce(out.reasons, "entry_fill_expired_unfilled");
      }
    else
      {
       out.fill_status = "unknown";
-      MapzHtfAppendToken(out.reasons, "entry_geometry_unknown");
+      MapzEffAppendReasonOnce(out.reasons, "entry_geometry_unknown");
      }
 
    if(!InpEntryFillFeasibilityScoreEnabled)

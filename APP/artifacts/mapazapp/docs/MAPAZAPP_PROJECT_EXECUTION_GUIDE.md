@@ -149,7 +149,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.13.1 (docs) —** smoke Premium/Discount post–**E5.13** — [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md); bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; **PASS** técnico (`BUNDLE_EVENTS_LARGE`); PD observación-only; sin gate / sin tune por un bundle.
 - **E5.13.2 (repo) —** Entry Fill Feasibility V1 post-candidato — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md); build `MZP_TestEA_E5_13_2`; **no** mezclar con `entry_quality_score`.
 - **E5.13.3 (docs) —** smoke Entry Fill Feasibility — [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md); PASS técnico; observación-only.
-- **Siguiente operativo:** **E5.13.2.1** reason dedup → **E5.13.4** Entry Variant Feasibility — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
+- **E5.13.2.1 (repo) —** dedup reason codes fill feasibility (`MZP_TestEA_E5_13_2_1`); telemetría only.
+- **Siguiente operativo:** **E5.13.4** Entry Variant Feasibility — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -221,7 +222,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.13.1 | Premium/Discount **smoke evidence** (operator; post–E5.13) | **completed** | Operador + Cursor | Bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; `MZP_TestEA_E5_13`; PASS técnico (`BUNDLE_EVENTS_LARGE`) — [`PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md`](./PREMIUM_DISCOUNT_SMOKE_EVIDENCE_E5_13_1.md). | **E5.13.2** |
 | E5.13.2 | Entry Zone / **Fill Feasibility Audit** (repo + docs) | **completed** | Cursor | Post-candidato `entry_fill_*`; sin gate — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md). | **E5.13.3** |
 | E5.13.3 | Entry Fill Feasibility **smoke evidence** (operator) | **completed** | Operador + Cursor | `MZP_TestEA_E5_13_2`; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; PASS — [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md). | **E5.13.2.1** |
-| E5.13.2.1 | Fill feasibility **reason-code dedup** (repo) | **pending** | Cursor | `max_retrace_*` tokens no duplicados por barra. | **E5.13.4** |
+| E5.13.2.1 | Fill feasibility **reason-code dedup** (repo) | **completed** | Cursor | `MapzEffAppendReasonOnce`; build `MZP_TestEA_E5_13_2_1`. | **E5.13.4** |
 | E5.13.4 | Entry Variant Feasibility Audit (repo + docs) | **pending** | Cursor + PM | Comparar niveles de entrada; observación-only. | **E5.14** |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |

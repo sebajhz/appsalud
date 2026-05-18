@@ -119,17 +119,16 @@ Este documento registra **solo** validación de export / CLI y lectura de agrega
 | `max_retrace_shallow` | 12118 | **No** usar como conteo por trade |
 | `max_retrace_deep_enough` | 1906 | **No** usar como conteo por trade |
 
-### Caveat — deduplicación de reason codes (E5.13.2.1)
+### Caveat — deduplicación de reason codes (resuelto en E5.13.2.1)
 
-Las frecuencias de `max_retrace_shallow` y `max_retrace_deep_enough` **superan con creces** `trade_count` (1697). Eso indica que esos tokens se **añaden varias veces por trade** (p. ej. una vez por barra observada durante el seguimiento del retrace), no una vez al cerrar el diagnóstico.
+En el smoke **E5.13.3** (build `MZP_TestEA_E5_13_2`), las frecuencias de `max_retrace_shallow` (12118) y `max_retrace_deep_enough` (1906) **superaban** `trade_count` porque esos tokens se añadían **por barra** durante el seguimiento del retrace.
 
-**Implicación:** hasta un fix **E5.13.2.1** (deduplicación de reason codes por trade en fill feasibility), usar como evidencia primaria:
+**E5.13.2.1** corrige la telemetría con `MapzEffAppendReasonOnce` (cada token ≤ 1 vez por fila CSV). **No** invalida la evidencia primaria de este smoke:
 
-- contadores del **summary** (`entry_fill_*_count`, `fvg_*_touch_reached_count`, …);
-- columnas por trade (`entry_fill_status`, flags booleanos, scores);
-- tokens con frecuencia ≤ `trade_count` o claramente 1:1 con eventos terminales.
+- contadores del **summary** y `entry_fill_status` siguen siendo la referencia;
+- los hallazgos de FVG touch / CE+entry / retrace superficial **no** cambian.
 
-**No** interpretar `max_retrace_shallow` / `max_retrace_deep_enough` en el CSV de reasons como recuentos de trades.
+Re-runs post–**E5.13.2.1** (`MZP_TestEA_E5_13_2_1`) deben mostrar frecuencias de reason acotadas a ≤ `trade_count` por token.
 
 ---
 
@@ -149,10 +148,7 @@ Las frecuencias de `max_retrace_shallow` y `max_retrace_deep_enough` **superan c
 - Mantener Entry Fill Feasibility **solo observación**; **sin** compuerta dura, **sin** aprobación live, **sin** cambiar umbrales de Entry Quality, **sin** usar fill feasibility como score pre-trade, **sin** cambiar el modelo de entrada virtual en este checkpoint.
 - **No** calibrar ni tunear solo desde este bundle.
 
-**Siguiente recomendado (orden):**
-
-1. **E5.13.2.1** — fix deduplicación de reason codes (`max_retrace_shallow` / `max_retrace_deep_enough`) por trade.
-2. **E5.13.4** — Entry Variant Feasibility Audit (comparar borde FVG / 25 % / CE / entry adaptivo).
+**Siguiente recomendado:** **E5.13.4** — Entry Variant Feasibility Audit (comparar borde FVG / 25 % / CE / entry adaptivo). **E5.13.2.1** cerrado en repo.
 
 ---
 
