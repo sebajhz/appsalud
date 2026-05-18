@@ -85,6 +85,15 @@ export const ENTRY_FILL_FEASIBILITY_CALIBRATION_COLUMNS = ["entry_fill_feasibili
 
 export type EntryFillFeasibilityCalibrationColumn = (typeof ENTRY_FILL_FEASIBILITY_CALIBRATION_COLUMNS)[number];
 
+/**
+ * E5.13.4 optional Entry Variant Feasibility hypothetical diagnostic score when CSV includes
+ * `entry_variant_feasibility_score`. Not a pre-trade operational gate.
+ */
+export const ENTRY_VARIANT_FEASIBILITY_CALIBRATION_COLUMNS = ["entry_variant_feasibility_score"] as const;
+
+export type EntryVariantFeasibilityCalibrationColumn =
+  (typeof ENTRY_VARIANT_FEASIBILITY_CALIBRATION_COLUMNS)[number];
+
 export type TestEaScoreOutcomeGroup =
   | "all"
   | "wins"
@@ -213,6 +222,13 @@ export interface TestEaScoreCalibrationBundleAnalysis {
    */
   entry_fill_feasibility_component_stats: Partial<
     Record<EntryFillFeasibilityCalibrationColumn, TestEaScoreComponentStats>
+  > | null;
+  /**
+   * Present when trades CSV includes E5.13.4 `entry_variant_feasibility_score`.
+   * Hypothetical variant diagnostic — not for pre-trade gating.
+   */
+  entry_variant_feasibility_component_stats: Partial<
+    Record<EntryVariantFeasibilityCalibrationColumn, TestEaScoreComponentStats>
   > | null;
 }
 
@@ -374,6 +390,8 @@ export interface TradeScoreAuxiliary {
   premium_discount: Partial<Record<PremiumDiscountCalibrationColumn, number | null>> | null;
   /** E5.13.2 optional Entry Fill Feasibility post-candidate diagnostic when CSV includes `entry_fill_feasibility_score`. */
   entry_fill_feasibility: Partial<Record<EntryFillFeasibilityCalibrationColumn, number | null>> | null;
+  /** E5.13.4 optional Entry Variant Feasibility hypothetical diagnostic when CSV includes `entry_variant_feasibility_score`. */
+  entry_variant_feasibility: Partial<Record<EntryVariantFeasibilityCalibrationColumn, number | null>> | null;
   missing_raw: string;
   missing_tokens: string[];
 }
@@ -390,6 +408,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   hasChochTemporalRelevanceScoreColumn: boolean;
   hasPremiumDiscountScoreColumn: boolean;
   hasEntryFillFeasibilityScoreColumn: boolean;
+  hasEntryVariantFeasibilityScoreColumn: boolean;
   warnings: string[];
 } {
   const warnings: string[] = [];
@@ -408,6 +427,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       hasChochTemporalRelevanceScoreColumn: false,
       hasPremiumDiscountScoreColumn: false,
       hasEntryFillFeasibilityScoreColumn: false,
+      hasEntryVariantFeasibilityScoreColumn: false,
       warnings,
     };
   }
@@ -422,6 +442,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   const hasChochTemporalRelevanceScoreColumn = col.has("choch_temporal_relevance_score");
   const hasPremiumDiscountScoreColumn = col.has("premium_discount_score");
   const hasEntryFillFeasibilityScoreColumn = col.has("entry_fill_feasibility_score");
+  const hasEntryVariantFeasibilityScoreColumn = col.has("entry_variant_feasibility_score");
 
   const emptyComponents = (): Record<ScoreComponentColumn, number | null> => ({
     htf_narrative_score: null,
@@ -512,6 +533,14 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       }
     }
 
+    let entry_variant_feasibility: Partial<Record<EntryVariantFeasibilityCalibrationColumn, number | null>> | null = null;
+    if (hasEntryVariantFeasibilityScoreColumn) {
+      entry_variant_feasibility = {};
+      for (const c of ENTRY_VARIANT_FEASIBILITY_CALIBRATION_COLUMNS) {
+        entry_variant_feasibility[c] = parseFiniteNumber(pick(cells, col, c));
+      }
+    }
+
     const aux: TradeScoreAuxiliary = {
       entry_quality_grade: pick(cells, col, "entry_quality_grade")?.trim() ?? null,
       score: parseFiniteNumber(pick(cells, col, "score_total")),
@@ -525,6 +554,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       choch_temporal,
       premium_discount,
       entry_fill_feasibility,
+      entry_variant_feasibility,
       missing_raw: missingRaw,
       missing_tokens,
     };
@@ -542,6 +572,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
     hasChochTemporalRelevanceScoreColumn,
     hasPremiumDiscountScoreColumn,
     hasEntryFillFeasibilityScoreColumn,
+    hasEntryVariantFeasibilityScoreColumn,
     warnings,
   };
 }
@@ -1047,6 +1078,50 @@ function buildEntryFillFeasibilityComponentStats(
   return any ? out : null;
 }
 
+function buildEntryVariantFeasibilityComponentStats(
+  rows: { trade: BacktestTrade; aux: TradeScoreAuxiliary | undefined }[],
+): Partial<Record<EntryVariantFeasibilityCalibrationColumn, TestEaScoreComponentStats>> | null {
+  const out: Partial<Record<EntryVariantFeasibilityCalibrationColumn, TestEaScoreComponentStats>> = {};
+  let any = false;
+  for (const col of ENTRY_VARIANT_FEASIBILITY_CALIBRATION_COLUMNS) {
+    const vals: number[] = [];
+    const byOutcome: Partial<Record<TestEaScoreOutcomeGroup, { sum: number; count: number }>> = {};
+    let allSum = 0;
+    let allCnt = 0;
+    for (const { trade, aux } of rows) {
+      const v = aux?.entry_variant_feasibility?.[col];
+      if (v == null || !Number.isFinite(v)) continue;
+      any = true;
+      vals.push(v);
+      allSum += v;
+      allCnt += 1;
+      const g = outcomeGroup(trade);
+      const cur = byOutcome[g] ?? { sum: 0, count: 0 };
+      cur.sum += v;
+      cur.count += 1;
+      byOutcome[g] = cur;
+    }
+    const byOutFin: TestEaScoreComponentStats["by_outcome"] = {};
+    if (allCnt > 0) byOutFin.all = { count: allCnt, average: allSum / allCnt };
+    for (const [k, v] of Object.entries(byOutcome)) {
+      const og = k as TestEaScoreOutcomeGroup;
+      byOutFin[og] = { count: v!.count, average: v!.count > 0 ? v!.sum / v!.count : null };
+    }
+    if (vals.length === 0) {
+      out[col] = { min: null, max: null, average: null, by_outcome: byOutFin };
+    } else {
+      const sorted = [...vals].sort((a, b) => a - b);
+      out[col] = {
+        min: sorted[0]!,
+        max: sorted[sorted.length - 1]!,
+        average: average(vals),
+        by_outcome: byOutFin,
+      };
+    }
+  }
+  return any ? out : null;
+}
+
 function missingFrequency(rows: { aux: TradeScoreAuxiliary | undefined }[]): Record<string, number> {
   const freq: Record<string, number> = {};
   for (const { aux } of rows) {
@@ -1131,6 +1206,7 @@ export function analyzeTestEaScoreCalibrationFromTexts(
     choch_temporal_relevance_component_stats: null,
     premium_discount_component_stats: null,
     entry_fill_feasibility_component_stats: null,
+    entry_variant_feasibility_component_stats: null,
   };
 
   let summary: Record<string, unknown>;
@@ -1358,6 +1434,9 @@ export function analyzeTestEaScoreCalibrationFromTexts(
       : null,
     entry_fill_feasibility_component_stats: auxParse.hasEntryFillFeasibilityScoreColumn
       ? buildEntryFillFeasibilityComponentStats(merged)
+      : null,
+    entry_variant_feasibility_component_stats: auxParse.hasEntryVariantFeasibilityScoreColumn
+      ? buildEntryVariantFeasibilityComponentStats(merged)
       : null,
   };
 

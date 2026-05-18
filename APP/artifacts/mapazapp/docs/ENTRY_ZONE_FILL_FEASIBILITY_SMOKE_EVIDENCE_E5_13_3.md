@@ -148,7 +148,7 @@ Re-runs post–**E5.13.2.1** (`MZP_TestEA_E5_13_2_1`) deben mostrar frecuencias 
 - Mantener Entry Fill Feasibility **solo observación**; **sin** compuerta dura, **sin** aprobación live, **sin** cambiar umbrales de Entry Quality, **sin** usar fill feasibility como score pre-trade, **sin** cambiar el modelo de entrada virtual en este checkpoint.
 - **No** calibrar ni tunear solo desde este bundle.
 
-**Siguiente recomendado:** **E5.13.4** — Entry Variant Feasibility Audit (comparar borde FVG / 25 % / CE / entry adaptivo). **E5.13.2.1** cerrado en repo.
+**Siguiente recomendado:** **E5.13.5** — smoke operador post–**E5.13.4** (recompilar `MZP_TestEA_E5_13_4`, validar `entry_variant_*`). **E5.13.4** implementado en repo — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md). **E5.13.2.1** cerrado en repo.
 
 ---
 

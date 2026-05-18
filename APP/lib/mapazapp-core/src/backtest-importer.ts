@@ -1016,6 +1016,88 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       trade.entryGeometryUnknown = v;
     });
 
+    const evEnRaw = pick(cells, col, "entry_variant_feasibility_enabled");
+    const evScrRaw = pick(cells, col, "entry_variant_feasibility_score");
+    const evGrdRaw = pick(cells, col, "entry_variant_feasibility_grade");
+    const evRsnRaw = pick(cells, col, "entry_variant_feasibility_reasons");
+    const evEdgePxRaw = pick(cells, col, "entry_variant_edge_price");
+    const ev25PxRaw = pick(cells, col, "entry_variant_25_price");
+    const ev50PxRaw = pick(cells, col, "entry_variant_50_price");
+    const ev75PxRaw = pick(cells, col, "entry_variant_75_price");
+    const evAdPxRaw = pick(cells, col, "entry_variant_adaptive_price");
+    const evAdTypeRaw = pick(cells, col, "entry_variant_adaptive_type");
+    const evEdgeReachRaw = pick(cells, col, "entry_variant_edge_reached");
+    const ev25ReachRaw = pick(cells, col, "entry_variant_25_reached");
+    const ev50ReachRaw = pick(cells, col, "entry_variant_50_reached");
+    const ev75ReachRaw = pick(cells, col, "entry_variant_75_reached");
+    const evAdReachRaw = pick(cells, col, "entry_variant_adaptive_reached");
+    const evBestRaw = pick(cells, col, "entry_variant_best_reached");
+    const evBestDepthRaw = pick(cells, col, "entry_variant_best_reached_depth_pct");
+    const evOfficialDepthRaw = pick(cells, col, "entry_variant_official_depth_pct");
+    const evFillGapRaw = pick(cells, col, "entry_variant_fill_gap_pct");
+    const evShallowRaw = pick(cells, col, "entry_variant_shallow_would_fill");
+    const evDeeperRaw = pick(cells, col, "entry_variant_deeper_would_not_fill");
+
+    if (evEnRaw !== undefined && evEnRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(evEnRaw, "entry_variant_feasibility_enabled", rowNum);
+      if (b.ok) trade.entryVariantFeasibilityEnabled = b.val;
+      else warnings.push({ code: "CSV_EV_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (evScrRaw !== undefined && evScrRaw.trim() !== "") {
+      const p = parseNumber(evScrRaw, "entry_variant_feasibility_score", rowNum);
+      if (p.ok) trade.entryVariantFeasibilityScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (evGrdRaw?.trim()) trade.entryVariantFeasibilityGrade = evGrdRaw.trim();
+    if (evRsnRaw?.trim()) trade.entryVariantFeasibilityReasons = evRsnRaw.trim();
+    if (evAdTypeRaw?.trim()) trade.entryVariantAdaptiveType = evAdTypeRaw.trim();
+    if (evBestRaw?.trim()) trade.entryVariantBestReached = evBestRaw.trim();
+    effNum(evEdgePxRaw, "entry_variant_edge_price", (v) => {
+      trade.entryVariantEdgePrice = v;
+    });
+    effNum(ev25PxRaw, "entry_variant_25_price", (v) => {
+      trade.entryVariant25Price = v;
+    });
+    effNum(ev50PxRaw, "entry_variant_50_price", (v) => {
+      trade.entryVariant50Price = v;
+    });
+    effNum(ev75PxRaw, "entry_variant_75_price", (v) => {
+      trade.entryVariant75Price = v;
+    });
+    effNum(evAdPxRaw, "entry_variant_adaptive_price", (v) => {
+      trade.entryVariantAdaptivePrice = v;
+    });
+    effNum(evBestDepthRaw, "entry_variant_best_reached_depth_pct", (v) => {
+      trade.entryVariantBestReachedDepthPct = v;
+    });
+    effNum(evOfficialDepthRaw, "entry_variant_official_depth_pct", (v) => {
+      trade.entryVariantOfficialDepthPct = v;
+    });
+    effNum(evFillGapRaw, "entry_variant_fill_gap_pct", (v) => {
+      trade.entryVariantFillGapPct = v;
+    });
+    effBool(evEdgeReachRaw, "entry_variant_edge_reached", (v) => {
+      trade.entryVariantEdgeReached = v;
+    });
+    effBool(ev25ReachRaw, "entry_variant_25_reached", (v) => {
+      trade.entryVariant25Reached = v;
+    });
+    effBool(ev50ReachRaw, "entry_variant_50_reached", (v) => {
+      trade.entryVariant50Reached = v;
+    });
+    effBool(ev75ReachRaw, "entry_variant_75_reached", (v) => {
+      trade.entryVariant75Reached = v;
+    });
+    effBool(evAdReachRaw, "entry_variant_adaptive_reached", (v) => {
+      trade.entryVariantAdaptiveReached = v;
+    });
+    effBool(evShallowRaw, "entry_variant_shallow_would_fill", (v) => {
+      trade.entryVariantShallowWouldFill = v;
+    });
+    effBool(evDeeperRaw, "entry_variant_deeper_would_not_fill", (v) => {
+      trade.entryVariantDeeperWouldNotFill = v;
+    });
+
     if (direction === "BUY" && sl !== undefined && sl >= ep.value) {
       warnings.push({
         code: "CSV_GEOMETRY_LONG_SL",

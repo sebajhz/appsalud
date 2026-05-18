@@ -56,4 +56,4 @@ Tokens concatenados (pipe `|`), incluyendo entre otros: `pd_valid_range`, `pd_mi
 
 ## Checkpoint relacionado (E5.13.2)
 
-**E5.13.2** — **Entry Zone / Fill Feasibility Audit** — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md) (diagnóstico post-candidato; no sustituye PD). **Siguiente smoke:** E5.13.3.
+**E5.13.2** — **Entry Zone / Fill Feasibility Audit** — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md) (diagnóstico post-candidato; no sustituye PD). **Smoke E5.13.3 cerrado.** **E5.13.4** variantes — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md). **Siguiente smoke:** E5.13.5.

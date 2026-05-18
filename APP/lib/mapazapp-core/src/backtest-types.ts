@@ -195,6 +195,28 @@ export interface BacktestTrade {
   entryInvalidatedBeforeFill?: boolean | undefined;
   entryOutsideFvg?: boolean | undefined;
   entryGeometryUnknown?: boolean | undefined;
+  /** E5.13.4 Entry variant feasibility hypothetical diagnostic columns (optional; older CSV). */
+  entryVariantFeasibilityEnabled?: boolean | undefined;
+  entryVariantEdgePrice?: number | undefined;
+  entryVariant25Price?: number | undefined;
+  entryVariant50Price?: number | undefined;
+  entryVariant75Price?: number | undefined;
+  entryVariantAdaptivePrice?: number | undefined;
+  entryVariantAdaptiveType?: string | undefined;
+  entryVariantEdgeReached?: boolean | undefined;
+  entryVariant25Reached?: boolean | undefined;
+  entryVariant50Reached?: boolean | undefined;
+  entryVariant75Reached?: boolean | undefined;
+  entryVariantAdaptiveReached?: boolean | undefined;
+  entryVariantFeasibilityScore?: number | undefined;
+  entryVariantFeasibilityGrade?: string | undefined;
+  entryVariantFeasibilityReasons?: string | undefined;
+  entryVariantBestReached?: string | undefined;
+  entryVariantBestReachedDepthPct?: number | undefined;
+  entryVariantOfficialDepthPct?: number | undefined;
+  entryVariantFillGapPct?: number | undefined;
+  entryVariantShallowWouldFill?: boolean | undefined;
+  entryVariantDeeperWouldNotFill?: boolean | undefined;
 }
 
 export interface BacktestImportWarning {

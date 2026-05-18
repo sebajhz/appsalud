@@ -88,4 +88,6 @@ Si el CSV incluye `entry_fill_feasibility_score`, el analyzer expone `entry_fill
 
 ## Siguiente paso
 
-**E5.13.4** — Entry Variant Feasibility Audit (borde / 25 % / CE / adaptivo).
+**E5.13.4** — Entry Variant Feasibility Audit (borde / 25 % / CE / 75 % / adaptivo) — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md). Build `MZP_TestEA_E5_13_4`.
+
+**E5.13.5** — smoke operador de variantes (siguiente).

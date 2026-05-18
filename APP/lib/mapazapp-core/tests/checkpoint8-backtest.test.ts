@@ -290,6 +290,23 @@ describe("Checkpoint 14 — Mapazapp_TestEA CSV shape (CP8 importer)", () => {
     expect(t.entryExpiredUnfilled).toBe(true);
   });
 
+  it("parses optional E5.13.4 Entry Variant Feasibility diagnostic columns when present", () => {
+    const header =
+      "trade_id,direction,entry_time,exit_time,entry,exit_price,result_r,result_money,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill";
+    const row =
+      "t_ev,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,0,0,0,true,2010,2005,2000,1995,2010,edge,true,true,false,false,false,10,B,entry_variant_edge_reached|entry_variant_25_reached,25,50.00,50.00,25.00,true,true";
+    const r = importBacktestTradesFromCsv(`${header}\n${row}`, testeaOpts);
+    expect(r.ok).toBe(true);
+    const t = r.trades[0]!;
+    expect(t.entryVariantFeasibilityEnabled).toBe(true);
+    expect(t.entryVariantEdgeReached).toBe(true);
+    expect(t.entryVariant25Reached).toBe(true);
+    expect(t.entryVariant50Reached).toBe(false);
+    expect(t.entryVariantFeasibilityScore).toBe(10);
+    expect(t.entryVariantShallowWouldFill).toBe(true);
+    expect(t.entryVariantOfficialDepthPct).toBeCloseTo(50, 2);
+  });
+
   it("warns when CSV run_id overrides options run_id", () => {
     const r = importBacktestTradesFromCsv(MAPAZAPP_TESTEA_SAMPLE_CSV, { ...testeaOpts, runId: "OTHER_RUN" });
     expect(r.ok).toBe(true);

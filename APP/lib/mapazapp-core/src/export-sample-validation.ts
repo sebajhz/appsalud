@@ -1574,6 +1574,135 @@ export function validateTestEaExportSample(
             status = bumpStatus(status, "valid_with_warnings");
           }
         }
+        if (summaryJson["has_entry_variant_feasibility_v1_logic"] === true) {
+          if (!("entry_variant_feasibility_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_EV_E5_13_4_KEY",
+                `E5.13.4: when has_entry_variant_feasibility_v1_logic is true, summary must include "entry_variant_feasibility_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else {
+            const evEn = summaryJson["entry_variant_feasibility_enabled"];
+            if (typeof evEn !== "boolean") {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_EV_E5_13_4_BOOL",
+                  `E5.13.4: "entry_variant_feasibility_enabled" must be a boolean`,
+                  { fileName: sj.fileName, detail: String(evEn) },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          const evSummaryKeys = [
+            "entry_variant_edge_reached_count",
+            "entry_variant_25_reached_count",
+            "entry_variant_50_reached_count",
+            "entry_variant_75_reached_count",
+            "entry_variant_adaptive_reached_count",
+            "entry_variant_shallow_would_fill_count",
+            "entry_variant_deeper_would_not_fill_count",
+            "average_entry_variant_feasibility_score",
+            "average_entry_variant_best_reached_depth_pct",
+            "average_entry_variant_official_depth_pct",
+            "average_entry_variant_fill_gap_pct",
+            "average_entry_variant_edge_missed_by_points",
+            "average_entry_variant_25_missed_by_points",
+            "average_entry_variant_50_missed_by_points",
+            "average_entry_variant_75_missed_by_points",
+          ] as const;
+          for (const k of evSummaryKeys) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_EV_E5_13_4_KEY",
+                  `E5.13.4: when has_entry_variant_feasibility_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const v = summaryJson[k];
+              if (typeof v !== "number" || !Number.isFinite(v)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_EV_E5_13_4_NUM",
+                    `E5.13.4: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(v) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            const evCols = [
+              "entry_variant_feasibility_enabled",
+              "entry_variant_edge_price",
+              "entry_variant_25_price",
+              "entry_variant_50_price",
+              "entry_variant_75_price",
+              "entry_variant_adaptive_price",
+              "entry_variant_adaptive_type",
+              "entry_variant_edge_reached",
+              "entry_variant_25_reached",
+              "entry_variant_50_reached",
+              "entry_variant_75_reached",
+              "entry_variant_adaptive_reached",
+              "entry_variant_edge_missed_by_points",
+              "entry_variant_25_missed_by_points",
+              "entry_variant_50_missed_by_points",
+              "entry_variant_75_missed_by_points",
+              "entry_variant_adaptive_missed_by_points",
+              "entry_variant_edge_bars_to_touch",
+              "entry_variant_25_bars_to_touch",
+              "entry_variant_50_bars_to_touch",
+              "entry_variant_75_bars_to_touch",
+              "entry_variant_adaptive_bars_to_touch",
+              "entry_variant_best_reached",
+              "entry_variant_best_reached_depth_pct",
+              "entry_variant_official_depth_pct",
+              "entry_variant_fill_gap_pct",
+              "entry_variant_shallow_would_fill",
+              "entry_variant_deeper_would_not_fill",
+              "entry_variant_feasibility_score",
+              "entry_variant_feasibility_grade",
+              "entry_variant_feasibility_reasons",
+            ] as const;
+            for (const col of evCols) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_EV_E5_13_4",
+                    `E5.13.4: backtest_trades.csv header must include "${col}" when has_entry_variant_feasibility_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "warning",
+                "TESTEA_TRADES_MISSING_EV_HEADER_CHECK",
+                "has_entry_variant_feasibility_v1_logic is true but backtest_trades.csv missing — cannot verify E5.13.4 Entry Variant Feasibility columns",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
         if (!byKind.has("backtest_events_csv")) {
           diagnostics.push(
             exportSampleDiagnostic(

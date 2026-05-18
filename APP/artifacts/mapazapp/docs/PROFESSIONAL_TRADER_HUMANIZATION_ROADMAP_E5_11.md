@@ -18,7 +18,8 @@
 | **E5.13.2** | Entry Zone / **Fill Feasibility Audit** | **cerrado — repo** — [`ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md`](./ENTRY_ZONE_FILL_FEASIBILITY_AUDIT_E5_13_2.md) |
 | **E5.13.3** | Entry Fill Feasibility **smoke evidence** | **cerrado — docs** — [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md) |
 | **E5.13.2.1** | Fill feasibility **reason-code dedup** fix | **cerrado — repo** (`MapzEffAppendReasonOnce`) |
-| **E5.13.4** | Entry Variant Feasibility Audit | planificado (borde / 25 % / CE / adaptivo) |
+| **E5.13.4** | Entry Variant Feasibility Audit | **cerrado — repo** — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md) |
+| **E5.13.5** | Entry Variant Feasibility **smoke evidence** | **siguiente** (operador) |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -110,9 +111,13 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 `MapzEffAppendReasonOnce` garantiza ≤ 1 token por trade en `entry_fill_feasibility_reasons`. No altera summary counters ni `entry_fill_status`.
 
-### E5.13.4 (**siguiente**)
+### E5.13.4 — Entry Variant Feasibility Audit (**cerrado — repo**)
 
-Comparar variantes de nivel de entrada (observación-only).
+- **Referencia:** [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md) — build **`MZP_TestEA_E5_13_4`**; variantes hipotéticas edge / 25 % / 50 % / 75 % / adaptive; columnas `entry_variant_*` separadas del entry oficial; **sin** gate ni cambio de outcomes.
+
+### E5.13.5 (**siguiente — operador**)
+
+Smoke Strategy Tester post–E5.13.4; contrastar contadores `entry_variant_*` con evidencia E5.13.3.
 
 ---
 
