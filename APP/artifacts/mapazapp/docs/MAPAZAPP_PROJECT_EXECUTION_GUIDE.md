@@ -156,7 +156,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.13.7 (docs) —** smoke outcome sim — [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md); PASS técnico; sim 50 % **no** reconcilia con oficial — bloqueado para decisiones de entry.
 - **E5.13.6.1 (repo) —** reconciliación 50 %/CE — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md); CLI `mapazapp:testea-entry-variant-sim-reconcile`.
 - **E5.13.6.2 (docs) —** smoke reconcile — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md); paridad 50 %/CE no demostrada.
-- **Siguiente operativo:** **E5.13.6.3** alinear EVOS 50 %/CE — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
+- **E5.13.6.3 (repo) —** paridad control 50 %/CE — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md); build `MZP_TestEA_E5_13_6_3`.
+- **Siguiente operativo:** **E5.13.6.4** smoke reconcile post-fix — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -235,7 +236,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.13.7 | Entry Variant Outcome Sim **smoke evidence** (operator) | **completed** | Operador + Cursor | `MZP_TestEA_E5_13_6`; PASS técnico; 50 % sim ≠ oficial — [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_E5_13_7.md). | **E5.13.6.1** |
 | E5.13.6.1 | Variant Simulation **Reconciliation Audit** | **completed** | Cursor | CLI `mapazapp:testea-entry-variant-sim-reconcile` — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md). | **E5.13.6.2** |
 | E5.13.6.2 | Reconciliation **smoke evidence** (operator) | **completed** | Operador + Cursor | Reconcile PASS; mismatch_rate ≈ 41 % — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md). | **E5.13.6.3** |
-| E5.13.6.3 | Align EVOS **50 %/CE** parity (repo) | **pending** | Cursor | Fix/explain fill/close/ambiguous/TP; re-reconcile. | **E5.14** |
+| E5.13.6.3 | Align EVOS **50 %/CE** parity (repo) | **completed** | Cursor | `MZP_TestEA_E5_13_6_3` — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md). | **E5.13.6.4** |
+| E5.13.6.4 | Reconciliation **smoke post-parity** (operator) | **pending** | Operador + Cursor | Re-export + reconcile; validar mismatch_rate. | **E5.14** |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |

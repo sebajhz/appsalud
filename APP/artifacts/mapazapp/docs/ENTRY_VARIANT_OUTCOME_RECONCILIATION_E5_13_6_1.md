@@ -51,7 +51,9 @@ Bundles **sin** `has_entry_variant_outcome_sim_v1_logic` o sin columnas `entry_v
 
 **E5.13.6.2** — evidencia operador — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) (**PASS** diagnóstico CLI; `mismatch_rate` ≈ 0.413; entry/SL OK; TP/barras/ambiguous no). **No** paridad 50 %/CE.
 
-**Siguiente:** **E5.13.6.3** — alinear EVOS 50 %/CE con outcome oficial; re-reconcile.
+**E5.13.6.3 (cerrado — repo):** paridad control 50 %/CE — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md); build `MZP_TestEA_E5_13_6_3`.
+
+**Siguiente:** **E5.13.6.4** — smoke reconcile post-fix (operador).
 
 ## Referencias
 

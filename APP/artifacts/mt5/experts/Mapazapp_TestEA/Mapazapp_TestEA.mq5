@@ -85,7 +85,7 @@ input bool              InpEntryVariantFeasibilityScoreEnabled = true;
 input bool              InpEnableEntryVariantOutcomeSimulationV1 = true;
 input bool              InpEntryVariantOutcomeSimulationScoreEnabled = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_13_6"
+#define TESTEA_BUILD            "MZP_TestEA_E5_13_6_3"
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -341,6 +341,7 @@ struct MapzVariantSimSlot
    double            tp_price;
    double            risk_points;
    double            effective_rr;
+   bool              strict_official_parity;
    bool              reached;
    bool              sim_open;
    int               bars_to_fill;
@@ -4957,6 +4958,7 @@ void MapzEvosSlotClear(MapzVariantSimSlot &s)
    s.tp_price = 0.0;
    s.risk_points = 0.0;
    s.effective_rr = 0.0;
+   s.strict_official_parity = false;
    s.reached = false;
    s.sim_open = false;
    s.bars_to_fill = 0;
@@ -5056,6 +5058,116 @@ bool MapzEvosPrepareSlot(const ENUM_MAPZ_SETUP_DIR dir,
   }
 
 //+------------------------------------------------------------------+
+bool MapzEvosPrepareSlotStrictOfficial(const ENUM_MAPZ_SETUP_DIR dir,
+                                     const double entryOfficial,
+                                     const double slOfficial,
+                                     const double tpOfficial,
+                                     MapzVariantSimSlot &slot)
+  {
+   MapzEvosSlotClear(slot);
+   slot.strict_official_parity = true;
+   slot.entry_price = NormalizeDouble(entryOfficial, _Digits);
+   slot.sl_price = NormalizeDouble(slOfficial, _Digits);
+   slot.tp_price = NormalizeDouble(tpOfficial, _Digits);
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      slot.risk_points = (slot.entry_price - slot.sl_price) / ptSafe;
+      if(slot.entry_price <= slot.sl_price || slot.tp_price <= slot.entry_price)
+        {
+         slot.invalid_risk = true;
+         slot.status = "invalid_risk";
+         slot.finalized = true;
+         return false;
+        }
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      slot.risk_points = (slot.sl_price - slot.entry_price) / ptSafe;
+      if(slot.entry_price >= slot.sl_price || slot.tp_price >= slot.entry_price)
+        {
+         slot.invalid_risk = true;
+         slot.status = "invalid_risk";
+         slot.finalized = true;
+         return false;
+        }
+     }
+   else
+     {
+      slot.invalid_risk = true;
+      slot.status = "invalid_risk";
+      slot.finalized = true;
+      return false;
+     }
+   if(slot.risk_points <= 0.0)
+     {
+      slot.invalid_risk = true;
+      slot.status = "invalid_risk";
+      slot.finalized = true;
+      return false;
+     }
+   slot.effective_rr = InpVirtualRiskReward;
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosSyncP50StrictOnOfficialFill(const int barsToFillOfficial)
+  {
+   if(!g_vt.evos.log_enabled || !g_vt.evos.p50.strict_official_parity)
+      return;
+   MapzVariantSimSlot &slot = g_vt.evos.p50;
+   if(slot.finalized || slot.invalid_risk)
+      return;
+   slot.reached = true;
+   slot.sim_open = true;
+   slot.bars_to_fill = barsToFillOfficial;
+   slot.bars_since_fill = 0;
+   MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_filled");
+   MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_p50_official_parity");
+  }
+
+//+------------------------------------------------------------------+
+void MapzEvosSyncP50StrictOnOfficialClose(const string outcome,
+                                          const double resultR,
+                                          const int barsHeldOfficial)
+  {
+   if(!g_vt.evos.log_enabled || !g_vt.evos.p50.strict_official_parity)
+      return;
+   MapzVariantSimSlot &slot = g_vt.evos.p50;
+   if(slot.invalid_risk)
+      return;
+   if(outcome == "expired_unfilled" || !g_vt.filled)
+     {
+      slot.reached = false;
+      slot.sim_open = false;
+      slot.status = "not_filled";
+      slot.result_r = 0.0;
+      slot.bars_since_fill = 0;
+      slot.ambiguous_flag = false;
+      slot.finalized = true;
+      MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_not_filled");
+      return;
+     }
+   slot.reached = true;
+   slot.sim_open = true;
+   slot.status = outcome;
+   slot.result_r = resultR;
+   slot.bars_since_fill = barsHeldOfficial;
+   slot.ambiguous_flag = (outcome == "ambiguous");
+   slot.finalized = true;
+   if(outcome == "win")
+      MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_win");
+   else if(outcome == "loss")
+      MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_loss");
+   else if(outcome == "ambiguous")
+     {
+      MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_ambiguous");
+      MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_same_bar_ambiguous");
+     }
+  }
+
+//+------------------------------------------------------------------+
 bool MapzEvosBarTouchesEntry(const ENUM_MAPZ_SETUP_DIR dir,
                              const double lo,
                              const double hi,
@@ -5151,7 +5263,9 @@ void MapzEvosResolveSlotBar(const ENUM_MAPZ_SETUP_DIR dir,
 
 //+------------------------------------------------------------------+
 void MapzEvosInitFromTrade(const ENUM_MAPZ_SETUP_DIR dir,
+                           const double entryOfficial,
                            const double slOfficial,
+                           const double tpOfficial,
                            const MapzEntryVariantFeasibilitySnap &ev,
                            MapzEntryVariantOutcomeSimSnap &out)
   {
@@ -5169,13 +5283,14 @@ void MapzEvosInitFromTrade(const ENUM_MAPZ_SETUP_DIR dir,
      }
    MapzEvosPrepareSlot(dir, ev.edge_price, slOfficial, out.edge);
    MapzEvosPrepareSlot(dir, ev.p25_price, slOfficial, out.p25);
-   MapzEvosPrepareSlot(dir, ev.p50_price, slOfficial, out.p50);
+   MapzEvosPrepareSlotStrictOfficial(dir, entryOfficial, slOfficial, tpOfficial, out.p50);
    MapzEvosPrepareSlot(dir, ev.p75_price, slOfficial, out.p75);
    MapzEvosPrepareSlot(dir, ev.adaptive_price, slOfficial, out.adaptive);
    if(out.edge.invalid_risk || out.p25.invalid_risk || out.p50.invalid_risk
       || out.p75.invalid_risk || out.adaptive.invalid_risk)
       MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_invalid_risk");
    MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_ce_reference");
+   MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_p50_official_control");
   }
 
 //+------------------------------------------------------------------+
@@ -5190,12 +5305,15 @@ void MapzEvosTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
    const int barN = out.bars_observed;
    MapzEvosTryFillSlot(dir, lo, hi, barN, out.edge, out.reasons);
    MapzEvosTryFillSlot(dir, lo, hi, barN, out.p25, out.reasons);
-   MapzEvosTryFillSlot(dir, lo, hi, barN, out.p50, out.reasons);
+   if(!out.p50.strict_official_parity)
+     {
+      MapzEvosTryFillSlot(dir, lo, hi, barN, out.p50, out.reasons);
+      MapzEvosResolveSlotBar(dir, lo, hi, out.p50, out.reasons);
+     }
    MapzEvosTryFillSlot(dir, lo, hi, barN, out.p75, out.reasons);
    MapzEvosTryFillSlot(dir, lo, hi, barN, out.adaptive, out.reasons);
    MapzEvosResolveSlotBar(dir, lo, hi, out.edge, out.reasons);
    MapzEvosResolveSlotBar(dir, lo, hi, out.p25, out.reasons);
-   MapzEvosResolveSlotBar(dir, lo, hi, out.p50, out.reasons);
    MapzEvosResolveSlotBar(dir, lo, hi, out.p75, out.reasons);
    MapzEvosResolveSlotBar(dir, lo, hi, out.adaptive, out.reasons);
   }
@@ -5264,7 +5382,8 @@ void MapzEvosFinalizeTrade(MapzEntryVariantOutcomeSimSnap &out)
    out.finalized = true;
    MapzEvosFinalizeSlotOpen(out.edge, out.reasons);
    MapzEvosFinalizeSlotOpen(out.p25, out.reasons);
-   MapzEvosFinalizeSlotOpen(out.p50, out.reasons);
+   if(!out.p50.strict_official_parity || !out.p50.finalized)
+      MapzEvosFinalizeSlotOpen(out.p50, out.reasons);
    MapzEvosFinalizeSlotOpen(out.p75, out.reasons);
    MapzEvosFinalizeSlotOpen(out.adaptive, out.reasons);
    if(out.edge.reached && !out.p50.reached)
@@ -6416,6 +6535,7 @@ bool VirtualTryFillCurrentBar(const double lo, const double hi, const datetime t
       MapzEffFinalize(g_vt.dir, true, barsFill, "", "", g_vt.eff);
       if(g_vt.ev.log_enabled && !g_vt.ev.finalized)
          MapzEvFinalize(g_vt.ev);
+      MapzEvosSyncP50StrictOnOfficialFill(barsFill);
       const string det = VirtualBuildDetailsCore();
       AppendEventRow(EVT_VIRT_FILL,
                      BiasDirectionToString(g_vt.bias_enum),
@@ -6609,7 +6729,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, g_vt.entry, g_vt.htf, g_vt.pd);
    MapzEffInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.eff);
    MapzEvInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.liq, g_vt.msc, g_vt.ev);
-   MapzEvosInitFromTrade(sdir, g_vt.sl, g_vt.ev, g_vt.evos);
+   MapzEvosInitFromTrade(sdir, g_vt.entry, g_vt.sl, g_vt.tp, g_vt.ev, g_vt.evos);
 
    g_virtual_trade_count++;
    const string detC = VirtualBuildDetailsCore();
@@ -6646,6 +6766,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
                         "expired",
                         "expired_unfilled",
                         detE);
+         MapzEvosSyncP50StrictOnOfficialClose(g_vt.outcome, g_vt.result_r, g_vt.bars_held);
          VirtualAppendTradeCsvRow(g_vt.bars_waiting_entry, "daily_bias_aligned", g_lastBiasReason, "");
          VirtualRegisterOutcomeStats();
          VirtualClearTrade();
@@ -6695,6 +6816,7 @@ void VirtualManageOnNewClosedExecBar(void)
                         "expired",
                         "expired_unfilled",
                         detE);
+         MapzEvosSyncP50StrictOnOfficialClose(g_vt.outcome, g_vt.result_r, g_vt.bars_held);
          VirtualAppendTradeCsvRow(g_vt.bars_waiting_entry, "daily_bias_aligned", g_lastBiasReason, "");
          VirtualRegisterOutcomeStats();
          VirtualClearTrade();
@@ -6731,6 +6853,7 @@ void VirtualManageOnNewClosedExecBar(void)
                      "closed",
                      "tp_hit",
                      detX);
+      MapzEvosSyncP50StrictOnOfficialClose(g_vt.outcome, g_vt.result_r, g_vt.bars_held);
       VirtualAppendTradeCsvRow(g_vt.bars_waiting_entry, "daily_bias_aligned", g_lastBiasReason, "");
       VirtualRegisterOutcomeStats();
       VirtualClearTrade();
@@ -6751,6 +6874,7 @@ void VirtualManageOnNewClosedExecBar(void)
                      "closed",
                      "sl_hit",
                      detX);
+      MapzEvosSyncP50StrictOnOfficialClose(g_vt.outcome, g_vt.result_r, g_vt.bars_held);
       VirtualAppendTradeCsvRow(g_vt.bars_waiting_entry, "daily_bias_aligned", g_lastBiasReason, "");
       VirtualRegisterOutcomeStats();
       VirtualClearTrade();
@@ -6773,6 +6897,7 @@ void VirtualManageOnNewClosedExecBar(void)
                         "ambiguous",
                         "ambiguous_sl_tp_same_bar",
                         detX);
+         MapzEvosSyncP50StrictOnOfficialClose(g_vt.outcome, g_vt.result_r, g_vt.bars_held);
          VirtualAppendTradeCsvRow(g_vt.bars_waiting_entry, "daily_bias_aligned", g_lastBiasReason, "");
          VirtualRegisterOutcomeStats();
          VirtualClearTrade();
@@ -6795,6 +6920,7 @@ void VirtualManageOnNewClosedExecBar(void)
                      "expired",
                      "expired_open",
                      detX);
+      MapzEvosSyncP50StrictOnOfficialClose(g_vt.outcome, g_vt.result_r, g_vt.bars_held);
       VirtualAppendTradeCsvRow(g_vt.bars_waiting_entry, "daily_bias_aligned", g_lastBiasReason, "");
       VirtualRegisterOutcomeStats();
       VirtualClearTrade();
@@ -7099,6 +7225,7 @@ string WriteSummaryJson(void)
    json += "  \"has_entry_variant_feasibility_v1_logic\": true,\r\n";
    json += "  \"entry_variant_feasibility_enabled\": " + (InpEnableEntryVariantFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_variant_outcome_sim_v1_logic\": true,\r\n";
+   json += "  \"has_entry_variant_outcome_sim_v1_parity_control\": true,\r\n";
    json += "  \"entry_variant_outcome_sim_enabled\": " + (InpEnableEntryVariantOutcomeSimulationV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
@@ -7429,6 +7556,7 @@ void VirtualFinalizeActiveTradeIfAny(void)
                   "unresolved",
                   g_vt.exit_reason,
                   detU);
+   MapzEvosSyncP50StrictOnOfficialClose(g_vt.outcome, g_vt.result_r, g_vt.bars_held);
    if(InpWriteTradesCsv && InpWriteVirtualTrades)
       VirtualAppendTradeCsvRow(g_vt.bars_waiting_entry, "daily_bias_aligned", g_lastBiasReason, "");
    VirtualRegisterOutcomeStats();

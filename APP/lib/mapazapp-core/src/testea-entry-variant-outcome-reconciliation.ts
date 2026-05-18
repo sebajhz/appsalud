@@ -107,6 +107,10 @@ export interface TestEaEntryVariantReconcileSummary {
     fill: number;
     close: number;
   };
+  fill_bar_delta_histogram: Record<string, number>;
+  close_bar_delta_histogram: Record<string, number>;
+  mismatch_reason_counts: Record<string, number>;
+  tp_delta_points_max: number | null;
 }
 
 export interface TestEaEntryVariantReconcileBundleAnalysis {
@@ -219,7 +223,27 @@ function outcomeParityMatch(official: OfficialOutcomeClass, variant: Variant50Ou
   if (official === "loss" && variant === "loss") return true;
   if (official === "ambiguous" && variant === "ambiguous") return true;
   if (official === "expired_unfilled" && variant === "not_filled") return true;
+  if (official === "expired_open" && variant === "expired_open") return true;
+  if (official === "unresolved" && variant === "unresolved") return true;
   return false;
+}
+
+function deltaBucket(delta: number): string {
+  if (delta === 0) return "0";
+  if (delta === -1) return "-1";
+  if (delta === 1) return "1";
+  if (delta < -1) return "lt_-1";
+  return "gt_1";
+}
+
+function bumpHistogram(hist: Record<string, number>, key: string): void {
+  hist[key] = (hist[key] ?? 0) + 1;
+}
+
+function bumpReasonCounts(counts: Record<string, number>, reasons: string[]): void {
+  for (const r of reasons) {
+    counts[r] = (counts[r] ?? 0) + 1;
+  }
 }
 
 function variant50Slot(trade: BacktestTrade): EntryVariantOutcomeSimSlot | undefined {
@@ -354,6 +378,10 @@ export function analyzeTestEaEntryVariantReconcileFromTexts(
   let resultRMismatch = 0;
   let sameBarAmbMismatch = 0;
   let invalidRiskCount = 0;
+  const fillBarDeltaHistogram: Record<string, number> = {};
+  const closeBarDeltaHistogram: Record<string, number> = {};
+  const mismatchReasonCounts: Record<string, number> = {};
+  let tpDeltaPointsMax: number | null = null;
 
   for (const trade of trades) {
     const official = normalizeOfficialOutcome(trade.outcome);
@@ -398,20 +426,30 @@ export function analyzeTestEaEntryVariantReconcileFromTexts(
         reasons.push("tp_price_mismatch");
       }
       if (
-        trade.barsToFill != null &&
-        slot?.barsToFill != null &&
-        trade.barsToFill !== slot.barsToFill
+        trade.tp != null &&
+        slot?.tpPrice != null &&
+        Number.isFinite(trade.tp) &&
+        Number.isFinite(slot.tpPrice)
       ) {
-        fillBarMismatch += 1;
-        reasons.push("fill_bar_mismatch");
+        const tpDelta = Math.abs(trade.tp - slot.tpPrice);
+        tpDeltaPointsMax =
+          tpDeltaPointsMax == null ? tpDelta : Math.max(tpDeltaPointsMax, tpDelta);
       }
-      if (
-        trade.barsHeld != null &&
-        slot?.barsToClose != null &&
-        trade.barsHeld !== slot.barsToClose
-      ) {
-        closeBarMismatch += 1;
-        reasons.push("close_bar_mismatch");
+      if (trade.barsToFill != null && slot?.barsToFill != null) {
+        const fillDelta = slot.barsToFill - trade.barsToFill;
+        bumpHistogram(fillBarDeltaHistogram, deltaBucket(fillDelta));
+        if (trade.barsToFill !== slot.barsToFill) {
+          fillBarMismatch += 1;
+          reasons.push("fill_bar_mismatch");
+        }
+      }
+      if (trade.barsHeld != null && slot?.barsToClose != null) {
+        const closeDelta = slot.barsToClose - trade.barsHeld;
+        bumpHistogram(closeBarDeltaHistogram, deltaBucket(closeDelta));
+        if (trade.barsHeld !== slot.barsToClose) {
+          closeBarMismatch += 1;
+          reasons.push("close_bar_mismatch");
+        }
       }
       const offR = trade.resultR;
       const vR = slot?.resultR;
@@ -435,6 +473,7 @@ export function analyzeTestEaEntryVariantReconcileFromTexts(
     }
 
     if (reasons.length > 0) {
+      bumpReasonCounts(mismatchReasonCounts, reasons);
       const ex = buildExample(crossId, trade, slot, reasons.join("|"));
       pushExample(crossId, ex);
       if (reasons.some((r) => r.includes("price") || r.includes("bar") || r.includes("result_r"))) {
@@ -476,6 +515,10 @@ export function analyzeTestEaEntryVariantReconcileFromTexts(
       fill: fillBarMismatch,
       close: closeBarMismatch,
     },
+    fill_bar_delta_histogram: fillBarDeltaHistogram,
+    close_bar_delta_histogram: closeBarDeltaHistogram,
+    mismatch_reason_counts: mismatchReasonCounts,
+    tp_delta_points_max: tpDeltaPointsMax,
   };
 
   const buckets: ReconciliationBucketRow[] = [...bucketCounts.entries()]

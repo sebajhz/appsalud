@@ -93,6 +93,26 @@ describe("testea-entry-variant-outcome-reconciliation (E5.13.6.1)", () => {
     expect(r.buckets.find((b) => b.id === "official_filled_variant50_not_filled")?.count).toBe(1);
   });
 
+  it("parity fixture: aligned official and variant50 produce zero mismatches", () => {
+    const csv = tradesCsv(
+      "t1,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,2030,2,0,win,3,0,true,win,2.000,2000,1990,2030,10,2,3,0,false,false",
+      "t2,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,2000,0,0,ambiguous,2,0,true,ambiguous,0.000,2000,1990,2030,10,2,2,0,true,false",
+      "t3,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,2030,2,0,expired_unfilled,5,0,true,not_filled,0.000,2000,1990,2030,10,2,-1,0,false,false",
+    );
+    const r = analyzeTestEaEntryVariantReconcileFromTexts({
+      bundleName: "parity",
+      summaryJsonText: SUMMARY_EVOS,
+      tradesCsvText: csv,
+    });
+    expect(r.ok).toBe(true);
+    expect(r.summary?.mismatch_count).toBe(0);
+    expect(r.summary?.tp_price_mismatch_count).toBe(0);
+    expect(r.summary?.fill_bar_mismatch_count).toBe(0);
+    expect(r.summary?.close_bar_mismatch_count).toBe(0);
+    expect(r.summary?.fill_bar_delta_histogram["0"]).toBe(2);
+    expect(r.summary?.close_bar_delta_histogram["0"]).toBe(2);
+  });
+
   it("returns warning when EVOS flag missing (legacy bundle)", () => {
     const csv = tradesCsv(
       "t1,BUY,2026-01-10T12:00:00Z,2026-01-10T14:00:00Z,2000,1990,2030,2030,2,0,win,3,10,true,win,2,2000,1990,2030,10,2,3,10,false,false",

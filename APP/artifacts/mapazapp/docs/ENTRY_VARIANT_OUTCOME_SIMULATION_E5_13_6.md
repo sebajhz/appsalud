@@ -85,6 +85,10 @@ Analizador + CLI `mapazapp:testea-entry-variant-sim-reconcile` — [`ENTRY_VARIA
 
 [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) — reconcile CLI OK; `mismatch_rate` ≈ 41 %; entry/SL alineados; TP/barras/ambiguous no.
 
+## Paridad control 50 %/CE — E5.13.6.3 (cerrado — repo)
+
+Build `MZP_TestEA_E5_13_6_3`: variante 50 espeja outcome oficial (TP/entry/SL oficiales; fill/close/ambiguous vía hooks, no sim bar-a-bar independiente). Detalle: [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md).
+
 ## Siguiente paso
 
-**E5.13.6.3** — alinear EVOS 50 %/CE con semántica outcome virtual oficial; re-ejecutar reconcile. **Sin** E5.14 hasta paridad control.
+**E5.13.6.4** — smoke reconcile post-fix (operador). **Sin** E5.14 hasta paridad demostrada en bundle nuevo.

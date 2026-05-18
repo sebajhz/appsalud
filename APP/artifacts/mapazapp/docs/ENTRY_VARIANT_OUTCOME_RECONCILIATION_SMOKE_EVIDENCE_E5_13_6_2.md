@@ -110,7 +110,7 @@ Estas hipótesis **no** están verificadas en código en este checkpoint; guían
 | **No usar** | edge `totalR` / winrate como evidencia de rentabilidad |
 | **No avanzar** | **E5.14** IFVG/BISI/SIBI hasta paridad 50 %/CE corregida o explicada |
 
-**Siguiente recomendado:** **E5.13.6.3** — alinear EVOS 50 %/CE con semántica de outcome virtual oficial (fill bar, close bar, ambiguous misma vela, TP control); re-ejecutar reconcile hasta `mismatch_rate` acotado en cohorte control.
+**Siguiente recomendado:** **E5.13.6.3** — cerrado en repo — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md). **E5.13.6.4** — re-export + reconcile post-fix (operador).
 
 ---
 

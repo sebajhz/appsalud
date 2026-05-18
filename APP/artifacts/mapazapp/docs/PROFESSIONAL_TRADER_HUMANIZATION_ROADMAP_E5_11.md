@@ -24,7 +24,8 @@
 | **E5.13.7** | Entry Variant Outcome Sim **smoke evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md`](./ENTRY_VARIANT_OUTCOME_SIMULATION_SMOKE_EVIDENCE_E5_13_7.md) |
 | **E5.13.6.1** | Variant Simulation **Reconciliation Audit** (50 %/CE vs oficial) | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md) |
 | **E5.13.6.2** | Reconciliation **smoke evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) |
-| **E5.13.6.3** | Align EVOS **50 %/CE** with official outcome semantics | **siguiente** — fix/explain parity; re-reconcile |
+| **E5.13.6.3** | Align EVOS **50 %/CE** with official outcome semantics | **cerrado — repo** — [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md) |
+| **E5.13.6.4** | Reconciliation **smoke post-parity** (operador) | **siguiente** — re-export `MZP_TestEA_E5_13_6_3` + reconcile |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -143,7 +144,12 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 - **Evidencia:** [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_SMOKE_EVIDENCE_E5_13_6_2.md) — reconcile PASS; `mismatch_rate` ≈ 0.413; entry/SL=0 mismatch; TP=700, fill_bar≈1354, ambiguous flag=618.
 - **Conclusión:** control 50 %/CE **no** alineado; bloquear conclusiones estratégicas EVOS.
 
-### E5.13.6.3 (**siguiente**)
+### E5.13.6.3 (**cerrado — repo**)
+
+- **Doc:** [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md`](./ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_3.md); build `MZP_TestEA_E5_13_6_3`.
+- **Fix:** p50 espeja outcome oficial (TP/entry/SL oficiales; sin sim bar-a-bar independiente para control).
+
+### E5.13.6.4 (**siguiente**)
 
 Alinear EVOS 50 %/CE (fill bar, close bar, same-bar ambiguous, TP control) con outcome oficial; re-reconcile. **No** E5.14 hasta paridad.
 
