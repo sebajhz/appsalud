@@ -65,6 +65,10 @@ Build: `MZP_TestEA_E5_13_4`.
 
 Si el CSV incluye `entry_variant_feasibility_score`, el analyzer expone `entry_variant_feasibility_component_stats`. Bundles antiguos sin la columna siguen parseando (`null`).
 
+## Smoke E5.13.5 (cerrado — docs)
+
+**E5.13.5** — evidencia operador — [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md) (**PASS** técnico; `MZP_TestEA_E5_13_4`; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`). Confirma hipótesis E5.13.3: CE/50 % = 1355; edge = 1697; 25 % = 1406; 75 % = 1117; 342 `shallow_would_fill` — **no** implica cambiar entry oficial.
+
 ## Siguiente
 
-**E5.13.5** — smoke operador: recompilar TestEA, Strategy Tester, validar bundle con flags E5.13.4 y contrastar con E5.13.3.
+**E5.13.6** — Entry Variant Outcome / Risk Simulation (hipotético; antes de E5.14).

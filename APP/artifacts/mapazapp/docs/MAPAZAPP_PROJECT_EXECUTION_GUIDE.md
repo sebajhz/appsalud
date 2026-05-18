@@ -151,7 +151,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.13.3 (docs) —** smoke Entry Fill Feasibility — [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md); PASS técnico; observación-only.
 - **E5.13.2.1 (repo) —** dedup reason codes fill feasibility (`MZP_TestEA_E5_13_2_1`); telemetría only.
 - **E5.13.4 (repo):** Entry Variant Feasibility — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md); build `MZP_TestEA_E5_13_4`; observación-only.
-- **Siguiente operativo:** **E5.13.5** smoke Entry Variant — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
+- **E5.13.5 (docs) —** smoke Entry Variant — [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md); PASS técnico; confirma E5.13.3; sin cambio de entry oficial.
+- **Siguiente operativo:** **E5.13.6** Entry Variant Outcome / Risk Simulation — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -225,7 +226,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.13.3 | Entry Fill Feasibility **smoke evidence** (operator) | **completed** | Operador + Cursor | `MZP_TestEA_E5_13_2`; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; PASS — [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md). | **E5.13.2.1** |
 | E5.13.2.1 | Fill feasibility **reason-code dedup** (repo) | **completed** | Cursor | `MapzEffAppendReasonOnce`; build `MZP_TestEA_E5_13_2_1`. | **E5.13.4** |
 | E5.13.4 | Entry Variant Feasibility Audit (repo + docs) | **completed** | Cursor | `entry_variant_*`; build `MZP_TestEA_E5_13_4` — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md). | **E5.13.5** |
-| E5.13.5 | Entry Variant Feasibility **smoke evidence** (operator) | **pending** | Operador + Cursor | Recompilar TestEA; Strategy Tester; contrastar con E5.13.3. | **E5.14** |
+| E5.13.5 | Entry Variant Feasibility **smoke evidence** (operator) | **completed** | Operador + Cursor | `MZP_TestEA_E5_13_4`; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; PASS — [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md). | **E5.13.6** |
+| E5.13.6 | Entry Variant **Outcome / Risk Simulation** (docs/plan) | **pending** | Cursor + PM | Hipotético SL/RR/ambigüedad por variante; antes de E5.14. | **E5.14** |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |

@@ -19,7 +19,8 @@
 | **E5.13.3** | Entry Fill Feasibility **smoke evidence** | **cerrado — docs** — [`ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md`](./ENTRY_ZONE_FILL_FEASIBILITY_SMOKE_EVIDENCE_E5_13_3.md) |
 | **E5.13.2.1** | Fill feasibility **reason-code dedup** fix | **cerrado — repo** (`MapzEffAppendReasonOnce`) |
 | **E5.13.4** | Entry Variant Feasibility Audit | **cerrado — repo** — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md) |
-| **E5.13.5** | Entry Variant Feasibility **smoke evidence** | **siguiente** (operador) |
+| **E5.13.5** | Entry Variant Feasibility **smoke evidence** | **cerrado — docs** — [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md) |
+| **E5.13.6** | Entry Variant **Outcome / Risk Simulation** | **siguiente** — hipotético SL/RR/ambigüedad por variante; antes de E5.14 |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -115,9 +116,14 @@ Mapazapp **no** debe tratar el FVG como disparador único de entrada; la cadena 
 
 - **Referencia:** [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md) — build **`MZP_TestEA_E5_13_4`**; variantes hipotéticas edge / 25 % / 50 % / 75 % / adaptive; columnas `entry_variant_*` separadas del entry oficial; **sin** gate ni cambio de outcomes.
 
-### E5.13.5 (**siguiente — operador**)
+### E5.13.5 — Entry Variant Feasibility smoke evidence (**cerrado — docs**)
 
-Smoke Strategy Tester post–E5.13.4; contrastar contadores `entry_variant_*` con evidencia E5.13.3.
+- **Evidencia:** [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md) — build `MZP_TestEA_E5_13_4`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, **PASS** técnico (`BUNDLE_EVENTS_LARGE`).
+- **Hallazgo:** edge 1697/1697; CE/50 % 1355; 25 % 1406 (+51); 75 % 1117; 342 `shallow_would_fill` / `official_too_deep` — confirma E5.13.3; **no** cambiar entry oficial ni usar variantes como gate.
+
+### E5.13.6 (**siguiente**)
+
+Simulación hipotética de outcome/riesgo si el fill hubiera sido en edge/25 % (SL, RR, `ambiguous`, expectancy) — **sin** modificar TestEA de producción hasta decisión explícita.
 
 ---
 
