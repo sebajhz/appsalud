@@ -454,7 +454,7 @@ Benchmark audit **PASS** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_
 
 ### E5.16.4 — Symbol/Timeframe Execution Profile Policy (**completed — docs only**)
 
-[`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — profile vocabulary, XAUUSD M15 policy; E5.16 block closed at policy level. **E5.17 export:** [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) (`MZP_TestEA_E5_17`). **Next:** E5.17.1 smoke; E5.18 checklist.
+[`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — profile vocabulary, XAUUSD M15 policy; E5.16 block closed at policy level. **E5.17 export:** [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) (`MZP_TestEA_E5_17`). **E5.17.2 policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). **Next:** E5.17.1 smoke; E5.18 checklist.
 
 ### E5.16+ — Session / News / Spread / Volatility (future)
 
@@ -473,6 +473,10 @@ Initially observation-only, not hard blocking.
 ### E5.17 — Frequency / Risk / Discipline (export V1 — done)
 
 [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) — daily/session trade counts, loss streaks, daily R, cooldowns, overtrading/revenge/giveback flags, diagnostic score; **no** gates or live behavior. Build `MZP_TestEA_E5_17`.
+
+### E5.17.2 — Optimization governance and visual review (policy — done)
+
+[`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) — optimization levels, symbol profiles, anti-overfit, MT5 genetic as research-only, future Visual Trace Mode; **no** code or parameter change.
 
 ### E5.18 — Setup State Contract
 

@@ -183,6 +183,8 @@ Profile policy allows the system to **adapt interpretation** per symbol without 
 
 **E5.17 (export):** [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) — frequency/risk/overtrading discipline V1 (`MZP_TestEA_E5_17`); diagnostic only.
 
+**E5.17.2 (optimization policy):** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) — multi-symbol profiles, anti-overfit, MT5 optimization workflow (docs only).
+
 **Next recommended:** E5.17.1 operator smoke evidence; then Setup Readiness Checklist (E5.18).
 
 Optional later: implement checklist fields (E5.18) consuming E5.16 export + this policy vocabulary.

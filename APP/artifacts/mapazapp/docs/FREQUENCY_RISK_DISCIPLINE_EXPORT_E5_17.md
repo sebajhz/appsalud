@@ -124,4 +124,4 @@ Low-risk events may include: `disc_score`, `disc_grade`, `disc_flags` via `MapzD
    `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<export_folder>" --json`  
 4. Compare discipline flags vs manual journal — **research only**.
 
-**Recommended follow-up:** E5.17.1 smoke evidence doc (operator).
+**Recommended follow-up:** E5.17.1 smoke evidence doc (operator). **Optimization policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) — discipline enters future profile scoring; **no** parameter change in E5.17.2.

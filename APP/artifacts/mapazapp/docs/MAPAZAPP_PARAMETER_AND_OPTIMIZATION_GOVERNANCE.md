@@ -27,6 +27,8 @@ Mapazapp is **manual / read-only decision support** until explicitly approved ot
 
 ## 2. Optimization Philosophy
 
+**E5.17.2 (policy):** Multi-symbol optimization levels, anti-overfit rules, MT5 genetic usage, and future Visual Trace Mode — [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md).
+
 Mapazapp does not perform “simple backtests”.
 
 Mapazapp should support structured discovery campaigns where parameters are varied in controlled ranges to understand how the setup behaves under different market conditions.
@@ -502,8 +504,9 @@ Current rules:
    - ~~**E5.16.2** execution environment calibration audit.~~ **Done (repo)** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`.
    - ~~**E5.16.3** operator evidence post-calibration audit.~~ **Done** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md); PASS; **no** threshold/TP/entry change.
    - ~~**E5.16.4** symbol/timeframe execution profile policy.~~ **Done** — [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md); E5.16 block closed; **no** threshold change.
-   - **E5.17** frequency/risk/overtrading discipline V1 — [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) (export; `MZP_TestEA_E5_17`)
-   - **Next:** E5.17.1 smoke evidence; E5.18 Setup Readiness Checklist
+   - ~~**E5.17** frequency/risk/overtrading discipline V1.~~ **Done** — [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) (`MZP_TestEA_E5_17`).
+   - ~~**E5.17.2** optimization governance + MT5 visual review policy.~~ **Done** — [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) (docs only).
+   - **Next:** E5.17.1 smoke evidence (operator); E5.18 Setup Readiness Checklist
    - E5.18 setup state contract
    - E5.19 forward demo read-only
    - E5.20 evidence-based gate/score decision
