@@ -115,7 +115,7 @@ On `setup_allowed` preview: compact `fvg_class` / `ifvg_inv` / `ifvg_score` via 
 
 - **Status:** **PASS** (operator benchmark) — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)
 - **Bundle:** `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` · `trade_count` 1697 · `has_ifvg_bisi_sibi_v1_logic` true
-- **E5.15 (export):** [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md) — operator smoke pending
+- **E5.15.1 (smoke):** [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md) — PASS
 
 ## References
 

@@ -489,12 +489,12 @@ Current rules:
 5. ~~E5.13.6.13 entry candidate policy (research).~~ **Done** — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 6. ~~E5.14 IFVG/BISI/SIBI export (diagnostic).~~ **Done (repo)** — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 7. ~~E5.14.1 IFVG/BISI/SIBI smoke ST.~~ **Done** — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md). **No** edge approval without explicit governance.
-8. ~~E5.15 Liquidity Target Quality export.~~ **Done (repo)** — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md). Operator smoke pending.
+8. ~~E5.15 Liquidity Target Quality export.~~ **Done (repo)** — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md).
+9. ~~E5.15.1 Liquidity Target Quality smoke ST.~~ **Done** — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md). **No** TP change; **no** edge approval.
 4. Define entry model candidate policy only if buffered evidence supports it (post-11).
 4. Continue roadmap:
-   - ~~**E5.15** liquidity target quality (export).~~ **Done (repo)** — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md). Operator smoke pending.
-   - **E5.15.1** liquidity target smoke ST
-   - E5.16 session/news/spread/volatility
+   - ~~**E5.15.1** liquidity target smoke ST.~~ **Done** — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md).
+   - **E5.16** session/news/spread/volatility **or** **E5.15.2** target realism audit (research)
    - E5.17 frequency/risk/discipline
    - E5.18 setup state contract
    - E5.19 forward demo read-only

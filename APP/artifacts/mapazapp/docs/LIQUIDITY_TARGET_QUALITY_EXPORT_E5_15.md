@@ -89,14 +89,15 @@ On setup preview / virtual details: `lq_tgt`, `lq_tgt_type`, `lq_tgt_score` via 
 - Does **not** add gates, `OrderSend`, `CTrade`, `PositionOpen`, or `WebRequest`.
 - Bundles **without** `has_liquidity_target_quality_v1_logic` remain valid (TypeScript validation is opt-in).
 
-## Operator next step
+## Operator smoke (E5.15.1)
 
-1. Compile `MZP_TestEA_E5_15` in MetaEditor.
-2. Run Strategy Tester smoke on XAUUSD M15 (virtual mode).
-3. Validate bundle: `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<export_folder>" --json`
+- **Status:** **PASS** (operator benchmark) — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md)
+- **Bundle:** `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` · `trade_count` 1697
+- **Next (decision):** **E5.15.2** target realism audit (research) **or** **E5.16** session/spread/volatility
 
 ## References
 
+- [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md)
 - [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)
 - [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md)
 - [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md)

@@ -49,7 +49,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | **completed (export)** — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md) |
 | **E5.14.1** | **IFVG / BISI / SIBI smoke evidence** | **completed** — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) |
 | **E5.15** | **Liquidity Target Quality** V1 | **completed (export)** — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md) |
-| **E5.15.1** | **Liquidity Target Quality smoke** | planificado — operador |
+| **E5.15.1** | **Liquidity Target Quality smoke** | **completed** — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md) |
+| **E5.15.2** | **Target realism / TP vs liquidity audit** | planificado — research only |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
 | **E5.17** | **Frequency / Risk / Overtrading** discipline V1 | planificado — §H |
 | **E5.18** | **BridgeEA / Dashboard** setup state contract | planificado — §I |
@@ -196,7 +197,7 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 
 - **Implementación:** core `testea-entry-edge-robustness-audit.ts` + CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **Doc:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md).
-- **E5.15 (export):** [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md). **Siguiente (operador):** compilar `MZP_TestEA_E5_15` + smoke ST.
+- **E5.15.1 (smoke):** [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md) — PASS; **siguiente:** **E5.16** o **E5.15.2** (decisión roadmap).
 
 ### E5.13.6.9 (**cerrado — docs**)
 

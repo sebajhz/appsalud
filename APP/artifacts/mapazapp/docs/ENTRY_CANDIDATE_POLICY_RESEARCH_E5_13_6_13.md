@@ -111,8 +111,8 @@ It **must not**:
 | Live / gates / automation | **Not approved** |
 | Buffered EVOS | **Implemented and smoke-validated** — use for research, not for auto-approval |
 | IFVG / BISI / SIBI smoke | **PASS** — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) |
-| Liquidity target quality export | **E5.15 repo** — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md); operator smoke pending |
-| Next technical roadmap | **E5.15.1** operator smoke (post-compile) |
+| Liquidity target quality smoke | **PASS** — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md) |
+| Next technical roadmap | **E5.16** Session / spread / volatility **or** **E5.15.2** target realism audit (research) |
 
 Edge candidate research is **parked under governance** while setup-quality and classification work proceeds.
 
@@ -120,9 +120,9 @@ Edge candidate research is **parked under governance** while setup-quality and c
 
 ## 7. Suggested next step
 
-**Recommend: E5.15.1 — Liquidity Target Quality operator smoke** (after compile `MZP_TestEA_E5_15`).
+**Recommend: E5.16 — Session / spread / volatility context** (next diagnostic export), unless governance prioritizes **E5.15.2** target realism research first.
 
-**Reason:** IFVG smoke **PASS** ([`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)). **E5.15 export** is in repo ([`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md)) — validates whether official TP has a **logical liquidity target**; not R alone.
+**Reason:** Liquidity Target Quality smoke **PASS** ([`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md)) — official RR2 TP often **before** nearest liquidity; that is diagnostic only and does **not** authorize TP changes.
 
 Entry policy research (this document) stays valid as the **governance frame**; IFVG exports supply **setup taxonomy** inputs to future candidate marking and the future **Setup Readiness Checklist** (read-only; see North Star).
 
@@ -135,6 +135,8 @@ Entry policy research (this document) stays valid as the **governance frame**; I
 - [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md)
 - [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md)
 - [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md)
+- [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md)
+- [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md)
 - [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md)
 - [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)
 - [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)

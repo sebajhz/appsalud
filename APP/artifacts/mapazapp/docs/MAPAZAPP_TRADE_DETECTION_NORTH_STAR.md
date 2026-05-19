@@ -418,19 +418,15 @@ Diagnostic export V1 — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDIT
 - Swing / equal levels / PDH-PDL / HTF external candidates
 - Per-trade score/grade/reasons + summary counters
 
-**Does not** change official entry (50 % / CE) or outcomes. Operator smoke ST pending.
+**Does not** change official entry (50 % / CE) or outcomes.
 
-### E5.15.1 — Liquidity Target Quality smoke (planned — operator)
+### E5.15.1 — Liquidity Target Quality smoke evidence (**completed — operator**)
 
-Measure whether the trade has a logical target (benchmark validation):
+Strategy Tester smoke **PASS** on benchmark bundle — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md). Diagnostic-only; TP and entry official unchanged.
 
-- internal liquidity
-- external liquidity
-- equal highs/lows
-- previous session levels
-- HTF liquidity
-- reasonable TP location
-- target quality relative to entry risk
+### E5.15.2 — Target Realism / TP vs Liquidity Distance Audit (**planned — research only**)
+
+Investigate whether official fixed-RR TP is too conservative, too far, or well-aligned vs detected liquidity. **Must not** change TP or outcome logic without explicit governance.
 
 ### E5.16 — Session / News / Spread / Volatility Context
 

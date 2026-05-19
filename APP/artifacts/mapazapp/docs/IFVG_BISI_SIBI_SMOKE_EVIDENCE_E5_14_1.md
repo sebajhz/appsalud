@@ -98,7 +98,7 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 | Aprobación edge / 25 % / adaptive | **No** |
 | Live / gates / automatización | **No** |
 | Guardrail manual read-only | **Vigente** |
-| Siguiente técnico recomendado | **E5.15** Liquidity Target Quality V1 — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md) (repo); operator smoke pending |
+| Siguiente técnico recomendado | **E5.15.1** Liquidity Target Quality smoke — **PASS** — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md) |
 
 ---
 
