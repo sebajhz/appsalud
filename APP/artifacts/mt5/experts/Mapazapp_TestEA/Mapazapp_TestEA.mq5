@@ -101,7 +101,14 @@ input bool              InpIfvgRequireCloseInversion = true;
 input bool              InpIfvgTrackRetest = true;
 input bool              InpIfvgScoreEnabled = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_14"
+input bool              InpEnableLiquidityTargetQualityV1 = true;
+input int               InpLiquidityTargetLookbackBars = 200;
+input int               InpLiquidityTargetSwingLookbackBars = 2;
+input int               InpLiquidityTargetEqualLevelTolerancePoints = 50;
+input int               InpLiquidityTargetMinDistancePoints = 20;
+input bool              InpLiquidityTargetScoreEnabled = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_15"
 #define BUF_EVOS_VAR_N          4
 #define BUF_EVOS_BUF_N          6
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
@@ -336,6 +343,24 @@ long            g_ifvg_grade_b = 0;
 long            g_ifvg_grade_c = 0;
 long            g_ifvg_grade_weak = 0;
 long            g_ifvg_grade_none = 0;
+double          g_lq_tgt_sum_score = 0.0;
+double          g_lq_tgt_sum_official_tp_dist = 0.0;
+double          g_lq_tgt_sum_nearest_dist = 0.0;
+long            g_lq_tgt_supported_count = 0;
+long            g_lq_tgt_missing_count = 0;
+long            g_lq_tgt_conflict_count = 0;
+long            g_lq_tgt_reached_by_tp_count = 0;
+long            g_lq_tgt_before_nearest_count = 0;
+long            g_lq_tgt_beyond_nearest_count = 0;
+long            g_lq_tgt_too_far_beyond_count = 0;
+long            g_lq_tgt_equal_level_count = 0;
+long            g_lq_tgt_swing_target_count = 0;
+long            g_lq_tgt_htf_external_target_count = 0;
+long            g_lq_tgt_grade_a = 0;
+long            g_lq_tgt_grade_b = 0;
+long            g_lq_tgt_grade_c = 0;
+long            g_lq_tgt_grade_weak = 0;
+long            g_lq_tgt_grade_none = 0;
 
 double          g_eff_sum_score = 0.0;
 double          g_eff_sum_depth_pct = 0.0;
@@ -616,6 +641,36 @@ struct MapzIfvgBisiSibiTradeSnap
    string            reasons;
   };
 
+struct MapzLiquidityTargetQualitySnap
+  {
+   bool              log_enabled;
+   bool              finalized;
+   string            direction;
+   double            official_tp_price;
+   long              official_tp_distance_points;
+   double            nearest_price;
+   string            nearest_type;
+   long              nearest_distance_points;
+   bool              reached_by_official_tp;
+   bool              tp_before_nearest_liquidity;
+   bool              tp_beyond_nearest_liquidity;
+   bool              too_far_beyond_nearest_liquidity;
+   bool              has_equal_level;
+   double            equal_level_price;
+   long              equal_level_distance_points;
+   bool              has_swing_target;
+   double            swing_price;
+   long              swing_distance_points;
+   bool              has_htf_external_target;
+   double            htf_external_price;
+   long              htf_external_distance_points;
+   bool              supported;
+   bool              conflict;
+   int               score;
+   string            grade;
+   string            reasons;
+  };
+
 struct MapzEntryFillFeasibilitySnap
   {
    bool              log_enabled;
@@ -786,6 +841,7 @@ struct MapzVirtualTrade
    MapzMssChochTradeSnap msc;
    MapzPremiumDiscountTradeSnap pd;
    MapzIfvgBisiSibiTradeSnap ifvg;
+   MapzLiquidityTargetQualitySnap lqTgt;
    MapzEntryFillFeasibilitySnap eff;
    MapzEntryVariantFeasibilitySnap ev;
    MapzEntryVariantOutcomeSimSnap evos;
@@ -4730,6 +4786,459 @@ void MapzIfvgFinalize(const ENUM_MAPZ_SETUP_DIR dir,
   }
 
 //+------------------------------------------------------------------+
+void MapzLqTgtSnapClear(MapzLiquidityTargetQualitySnap &o)
+  {
+   o.log_enabled = false;
+   o.finalized = false;
+   o.direction = "unknown";
+   o.official_tp_price = 0.0;
+   o.official_tp_distance_points = 0;
+   o.nearest_price = 0.0;
+   o.nearest_type = "unknown";
+   o.nearest_distance_points = -1;
+   o.reached_by_official_tp = false;
+   o.tp_before_nearest_liquidity = false;
+   o.tp_beyond_nearest_liquidity = false;
+   o.too_far_beyond_nearest_liquidity = false;
+   o.has_equal_level = false;
+   o.equal_level_price = 0.0;
+   o.equal_level_distance_points = -1;
+   o.has_swing_target = false;
+   o.swing_price = 0.0;
+   o.swing_distance_points = -1;
+   o.has_htf_external_target = false;
+   o.htf_external_price = 0.0;
+   o.htf_external_distance_points = -1;
+   o.supported = false;
+   o.conflict = false;
+   o.score = 0;
+   o.grade = "None";
+   o.reasons = "";
+  }
+
+//+------------------------------------------------------------------+
+string MapzLqTgtGradeFromScore(const int sc)
+  {
+   if(sc >= 13)
+      return "A";
+   if(sc >= 10)
+      return "B";
+   if(sc >= 7)
+      return "C";
+   if(sc >= 4)
+      return "Weak";
+   return "None";
+  }
+
+//+------------------------------------------------------------------+
+string MapzLqTgtCompactSuffix(const MapzLiquidityTargetQualitySnap &x)
+  {
+   return StringFormat("lq_tgt=%s lq_tgt_type=%s lq_tgt_score=%d",
+                       (x.nearest_distance_points >= 0 ? "yes" : "no"),
+                       JsonStringEscape(x.nearest_type),
+                       x.score);
+  }
+
+//+------------------------------------------------------------------+
+long MapzLqTgtDistPts(const double a, const double b, const double pt)
+  {
+   if(pt <= 0.0)
+      return 0;
+   return (long)MathRound(MathAbs(a - b) / pt);
+  }
+
+//+------------------------------------------------------------------+
+void MapzLqTgtConsiderCandidate(const bool isLong,
+                                const double entry,
+                                const double pt,
+                                const long minDistPts,
+                                const string typ,
+                                const double price,
+                                double &bestPrice,
+                                string &bestType,
+                                long &bestDist)
+  {
+   if(price <= 0.0 || pt <= 0.0)
+      return;
+   long dist = -1;
+   if(isLong)
+     {
+      if(price <= entry)
+         return;
+      dist = (long)MathRound((price - entry) / pt);
+     }
+   else
+     {
+      if(price >= entry)
+         return;
+      dist = (long)MathRound((entry - price) / pt);
+     }
+   if(dist < minDistPts)
+      return;
+   if(bestDist < 0 || dist < bestDist)
+     {
+      bestDist = dist;
+      bestPrice = price;
+      bestType = typ;
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzLqTgtBuildTradeSnap(const string sym,
+                             const ENUM_TIMEFRAMES tf,
+                             const ENUM_MAPZ_SETUP_DIR dir,
+                             const datetime setupTime,
+                             const double entry,
+                             const double sl,
+                             const double tp,
+                             const MapzHtfTradeSnap &htf,
+                             MapzLiquidityTargetQualitySnap &out)
+  {
+   MapzLqTgtSnapClear(out);
+   out.log_enabled = InpEnableLiquidityTargetQualityV1;
+   if(!InpEnableLiquidityTargetQualityV1)
+     {
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_disabled");
+      return;
+     }
+
+   const double pt = SymbolInfoDouble(sym, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   const bool isLong = (dir == MAPZ_SETUP_LONG);
+   out.direction = (isLong ? "buy" : "sell");
+   MapzEffAppendReasonOnce(out.reasons, (isLong ? "liquidity_target_direction_buy" : "liquidity_target_direction_sell"));
+
+   out.official_tp_price = tp;
+   out.official_tp_distance_points = MapzLqTgtDistPts(entry, tp, ptSafe);
+
+   if(out.official_tp_distance_points < InpLiquidityTargetMinDistancePoints)
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_distance_too_small");
+
+   if((isLong && tp <= entry) || (!isLong && tp >= entry))
+     {
+      out.conflict = true;
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_conflict");
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_missing");
+     }
+
+   const int refShift = MathMax(1, iBarShift(sym, tf, setupTime, false));
+   const int N = (InpLiquidityTargetSwingLookbackBars > 0 ? InpLiquidityTargetSwingLookbackBars : 2);
+   const int lookback = (InpLiquidityTargetLookbackBars > 10 ? InpLiquidityTargetLookbackBars : 200);
+   const long minDist = (InpLiquidityTargetMinDistancePoints > 0 ? InpLiquidityTargetMinDistancePoints : 20);
+   const long eqTol = (InpLiquidityTargetEqualLevelTolerancePoints > 0 ? InpLiquidityTargetEqualLevelTolerancePoints : 50);
+   const double eqTolPx = (double)eqTol * ptSafe;
+
+   double bestPrice = 0.0;
+   string bestType = "unknown";
+   long bestDist = -1;
+
+   int swHiSh = -1;
+   double swHiPx = 0.0;
+   int swLoSh = -1;
+   double swLoPx = 0.0;
+   if(MapzMscFindLatestSwingHigh(sym, tf, refShift, N, lookback, swHiSh, swHiPx))
+     {
+      out.has_swing_target = true;
+      out.swing_price = swHiPx;
+      out.swing_distance_points = MapzLqTgtDistPts(entry, swHiPx, ptSafe);
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_swing_found");
+      if(isLong)
+         MapzLqTgtConsiderCandidate(true, entry, ptSafe, minDist, "swing_high", swHiPx, bestPrice, bestType, bestDist);
+     }
+   if(MapzMscFindLatestSwingLow(sym, tf, refShift, N, lookback, swLoSh, swLoPx))
+     {
+      if(!isLong)
+        {
+         out.has_swing_target = true;
+         out.swing_price = swLoPx;
+         out.swing_distance_points = MapzLqTgtDistPts(entry, swLoPx, ptSafe);
+         MapzEffAppendReasonOnce(out.reasons, "liquidity_target_swing_found");
+         MapzLqTgtConsiderCandidate(false, entry, ptSafe, minDist, "swing_low", swLoPx, bestPrice, bestType, bestDist);
+        }
+      else if(!out.has_swing_target)
+        {
+         out.has_swing_target = true;
+         out.swing_price = swLoPx;
+         out.swing_distance_points = MapzLqTgtDistPts(entry, swLoPx, ptSafe);
+        }
+     }
+
+   const int barsTf = Bars(sym, tf);
+   const int lim = MathMin(refShift + lookback, barsTf - N - 2);
+   if(barsTf > N * 2 + 5 && eqTolPx > 0.0)
+     {
+      for(int s = refShift + N + 1; s <= lim; s++)
+        {
+         if(s + N >= barsTf)
+            continue;
+         if(isLong && MapzMscIsSwingHigh(sym, tf, s, N))
+           {
+            const double p1 = iHigh(sym, tf, s);
+            for(int s2 = s + 1; s2 <= lim; s2++)
+              {
+               if(s2 + N >= barsTf)
+                  continue;
+               if(!MapzMscIsSwingHigh(sym, tf, s2, N))
+                  continue;
+               const double p2 = iHigh(sym, tf, s2);
+               if(MathAbs(p1 - p2) <= eqTolPx)
+                 {
+                  const double eqPx = MathMin(p1, p2);
+                  if(eqPx > entry)
+                    {
+                     out.has_equal_level = true;
+                     out.equal_level_price = eqPx;
+                     out.equal_level_distance_points = MapzLqTgtDistPts(entry, eqPx, ptSafe);
+                     MapzEffAppendReasonOnce(out.reasons, "liquidity_target_equal_level_found");
+                     MapzLqTgtConsiderCandidate(true, entry, ptSafe, minDist, "equal_highs", eqPx, bestPrice, bestType, bestDist);
+                     break;
+                    }
+                 }
+              }
+           }
+         if(!isLong && MapzMscIsSwingLow(sym, tf, s, N))
+           {
+            const double p1 = iLow(sym, tf, s);
+            for(int s2 = s + 1; s2 <= lim; s2++)
+              {
+               if(s2 + N >= barsTf)
+                  continue;
+               if(!MapzMscIsSwingLow(sym, tf, s2, N))
+                  continue;
+               const double p2 = iLow(sym, tf, s2);
+               if(MathAbs(p1 - p2) <= eqTolPx)
+                 {
+                  const double eqPx = MathMax(p1, p2);
+                  if(eqPx < entry)
+                    {
+                     out.has_equal_level = true;
+                     out.equal_level_price = eqPx;
+                     out.equal_level_distance_points = MapzLqTgtDistPts(entry, eqPx, ptSafe);
+                     MapzEffAppendReasonOnce(out.reasons, "liquidity_target_equal_level_found");
+                     MapzLqTgtConsiderCandidate(false, entry, ptSafe, minDist, "equal_lows", eqPx, bestPrice, bestType, bestDist);
+                     break;
+                    }
+                 }
+              }
+           }
+        }
+     }
+
+   double pdh = 0.0;
+   double pdl = 0.0;
+   const int dSh = iBarShift(sym, PERIOD_D1, setupTime, false);
+   if(dSh >= 0 && (dSh + 1) < Bars(sym, PERIOD_D1))
+     {
+      pdh = iHigh(sym, PERIOD_D1, dSh + 1);
+      pdl = iLow(sym, PERIOD_D1, dSh + 1);
+      if(isLong && pdh > 0.0)
+         MapzLqTgtConsiderCandidate(true, entry, ptSafe, minDist, "prev_day_high", pdh, bestPrice, bestType, bestDist);
+      if(!isLong && pdl > 0.0)
+         MapzLqTgtConsiderCandidate(false, entry, ptSafe, minDist, "prev_day_low", pdl, bestPrice, bestType, bestDist);
+     }
+
+   if(htf.enabled)
+     {
+      double extPx = 0.0;
+      if(isLong)
+        {
+         extPx = MathMax(htf.h4_external_liquidity_high, htf.h1_external_liquidity_high);
+         if(extPx > entry && extPx > 0.0)
+           {
+            out.has_htf_external_target = true;
+            out.htf_external_price = extPx;
+            out.htf_external_distance_points = MapzLqTgtDistPts(entry, extPx, ptSafe);
+            MapzEffAppendReasonOnce(out.reasons, "liquidity_target_htf_external_found");
+            MapzLqTgtConsiderCandidate(true, entry, ptSafe, minDist, "htf_external_high", extPx, bestPrice, bestType, bestDist);
+            if(htf.htf_structure_conflict)
+               MapzEffAppendReasonOnce(out.reasons, "liquidity_target_conflict");
+           }
+        }
+      else
+        {
+         extPx = 0.0;
+         if(htf.h4_external_liquidity_low > 0.0)
+            extPx = htf.h4_external_liquidity_low;
+         if(htf.h1_external_liquidity_low > 0.0 && (extPx <= 0.0 || htf.h1_external_liquidity_low < extPx))
+            extPx = htf.h1_external_liquidity_low;
+         if(extPx > 0.0 && extPx < entry)
+           {
+            out.has_htf_external_target = true;
+            out.htf_external_price = extPx;
+            out.htf_external_distance_points = MapzLqTgtDistPts(entry, extPx, ptSafe);
+            MapzEffAppendReasonOnce(out.reasons, "liquidity_target_htf_external_found");
+            MapzLqTgtConsiderCandidate(false, entry, ptSafe, minDist, "htf_external_low", extPx, bestPrice, bestType, bestDist);
+            if(htf.htf_structure_conflict)
+               MapzEffAppendReasonOnce(out.reasons, "liquidity_target_conflict");
+           }
+        }
+     }
+
+   if(bestDist >= 0)
+     {
+      out.nearest_price = bestPrice;
+      out.nearest_type = bestType;
+      out.nearest_distance_points = bestDist;
+     }
+   else
+     {
+      out.nearest_type = "unknown";
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_missing");
+     }
+
+   const long riskPts = MapzLqTgtDistPts(entry, sl, ptSafe);
+   const long bufPts = MathMax(5L, eqTol / 2);
+   if(bestDist >= 0)
+     {
+      if(isLong)
+        {
+         if(tp >= bestPrice - (double)bufPts * ptSafe)
+           {
+            out.reached_by_official_tp = true;
+            MapzEffAppendReasonOnce(out.reasons, "liquidity_target_reached_by_tp");
+           }
+         if(tp < bestPrice - (double)bufPts * ptSafe)
+           {
+            out.tp_before_nearest_liquidity = true;
+            MapzEffAppendReasonOnce(out.reasons, "liquidity_target_before_nearest");
+           }
+         if(tp > bestPrice + (double)bufPts * ptSafe)
+           {
+            out.tp_beyond_nearest_liquidity = true;
+            MapzEffAppendReasonOnce(out.reasons, "liquidity_target_beyond_nearest");
+            const long beyondPts = MapzLqTgtDistPts(tp, bestPrice, ptSafe);
+            const long thr = MathMax(2L * bestDist, 3L * MathMax(riskPts, minDist));
+            if(beyondPts > thr)
+              {
+               out.too_far_beyond_nearest_liquidity = true;
+               MapzEffAppendReasonOnce(out.reasons, "liquidity_target_too_far_beyond");
+              }
+           }
+        }
+      else
+        {
+         if(tp <= bestPrice + (double)bufPts * ptSafe)
+           {
+            out.reached_by_official_tp = true;
+            MapzEffAppendReasonOnce(out.reasons, "liquidity_target_reached_by_tp");
+           }
+         if(tp > bestPrice + (double)bufPts * ptSafe)
+           {
+            out.tp_before_nearest_liquidity = true;
+            MapzEffAppendReasonOnce(out.reasons, "liquidity_target_before_nearest");
+           }
+         if(tp < bestPrice - (double)bufPts * ptSafe)
+           {
+            out.tp_beyond_nearest_liquidity = true;
+            MapzEffAppendReasonOnce(out.reasons, "liquidity_target_beyond_nearest");
+            const long beyondPts = MapzLqTgtDistPts(tp, bestPrice, ptSafe);
+            const long thr = MathMax(2L * bestDist, 3L * MathMax(riskPts, minDist));
+            if(beyondPts > thr)
+              {
+               out.too_far_beyond_nearest_liquidity = true;
+               MapzEffAppendReasonOnce(out.reasons, "liquidity_target_too_far_beyond");
+              }
+           }
+        }
+     }
+
+   if(out.conflict)
+      out.supported = false;
+   else if(bestDist >= 0 && out.reached_by_official_tp && !out.too_far_beyond_nearest_liquidity)
+     {
+      out.supported = true;
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_supported");
+     }
+
+   if(!InpLiquidityTargetScoreEnabled)
+     {
+      out.score = 0;
+      out.grade = "None";
+      return;
+     }
+
+   int sc = 4;
+   if(bestDist >= 0)
+      sc += 4;
+   else
+      sc -= 3;
+   if(out.reached_by_official_tp)
+      sc += 3;
+   if(out.has_equal_level)
+      sc += 2;
+   if(out.has_swing_target)
+      sc += 1;
+   if(out.has_htf_external_target)
+      sc += 1;
+   if(out.tp_before_nearest_liquidity && !out.reached_by_official_tp)
+      sc -= 3;
+   if(out.too_far_beyond_nearest_liquidity)
+      sc -= 4;
+   if(out.tp_beyond_nearest_liquidity && !out.too_far_beyond_nearest_liquidity)
+      sc -= 1;
+   if(out.conflict)
+      sc -= 4;
+   if(out.official_tp_distance_points < minDist)
+      sc -= 2;
+   if(StringFind(out.reasons, "liquidity_target_conflict") >= 0 && htf.enabled && htf.htf_structure_conflict)
+      sc -= 2;
+   if(sc < 0)
+      sc = 0;
+   if(sc > 15)
+      sc = 15;
+   out.score = sc;
+   out.grade = MapzLqTgtGradeFromScore(sc);
+   if(out.grade == "A")
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_score_a");
+   else if(out.grade == "B")
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_score_b");
+   else if(out.grade == "C")
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_score_c");
+   else if(out.grade == "Weak")
+      MapzEffAppendReasonOnce(out.reasons, "liquidity_target_score_weak");
+  }
+
+//+------------------------------------------------------------------+
+void MapzLqTgtFinalize(MapzLiquidityTargetQualitySnap &out)
+  {
+   if(!out.log_enabled || out.finalized)
+      return;
+   out.finalized = true;
+
+   if(out.supported)
+      g_lq_tgt_supported_count++;
+   if(out.nearest_distance_points < 0 || StringFind(out.reasons, "liquidity_target_missing") >= 0)
+      g_lq_tgt_missing_count++;
+   if(out.conflict)
+      g_lq_tgt_conflict_count++;
+   if(out.reached_by_official_tp)
+      g_lq_tgt_reached_by_tp_count++;
+   if(out.tp_before_nearest_liquidity)
+      g_lq_tgt_before_nearest_count++;
+   if(out.tp_beyond_nearest_liquidity)
+      g_lq_tgt_beyond_nearest_count++;
+   if(out.too_far_beyond_nearest_liquidity)
+      g_lq_tgt_too_far_beyond_count++;
+   if(out.has_equal_level)
+      g_lq_tgt_equal_level_count++;
+   if(out.has_swing_target)
+      g_lq_tgt_swing_target_count++;
+   if(out.has_htf_external_target)
+      g_lq_tgt_htf_external_target_count++;
+
+   if(out.grade == "A")
+      g_lq_tgt_grade_a++;
+   else if(out.grade == "B")
+      g_lq_tgt_grade_b++;
+   else if(out.grade == "C")
+      g_lq_tgt_grade_c++;
+   else if(out.grade == "Weak")
+      g_lq_tgt_grade_weak++;
+   else
+      g_lq_tgt_grade_none++;
+  }
+
+//+------------------------------------------------------------------+
 void MapzEffSnapClear(MapzEntryFillFeasibilitySnap &o)
   {
    o.log_enabled = false;
@@ -6857,7 +7366,7 @@ string VirtualBuildDetailsCore(void)
              g_vt.bars_waiting_entry,
              g_vt.bars_held,
              JsonStringEscape(g_vt.exit_reason));
-   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc) + " " + MapzPdCompactSuffix(g_vt.pd) + " " + MapzEffCompactSuffix(g_vt.eff);
+   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc) + " " + MapzPdCompactSuffix(g_vt.pd) + " " + MapzIfvgCompactSuffix(g_vt.ifvg) + " " + MapzLqTgtCompactSuffix(g_vt.lqTgt) + " " + MapzEffCompactSuffix(g_vt.eff);
   }
 
 //+------------------------------------------------------------------+
@@ -6902,6 +7411,8 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
       MapzEvosFinalizeTrade(g_vt.evos);
    if(g_vt.ifvg.log_enabled && !g_vt.ifvg.finalized)
       MapzIfvgFinalize(g_vt.dir, g_vt.filled, bars_to_fill_export, g_vt.ifvg);
+   if(g_vt.lqTgt.log_enabled && !g_vt.lqTgt.finalized)
+      MapzLqTgtFinalize(g_vt.lqTgt);
    const string dirW = SetupDirectionToString(g_vt.dir);
    const string biasDirW = BiasDirectionToString(g_vt.bias_enum);
    const string setupDirW = SetupDirectionToString(g_vt.setup_dir);
@@ -7099,6 +7610,31 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + IntegerToString(g_vt.ifvg.score)
           + "," + g_vt.ifvg.grade
           + "," + g_vt.ifvg.reasons
+          + "," + (g_vt.lqTgt.log_enabled ? "true" : "false")
+          + "," + g_vt.lqTgt.direction
+          + "," + DoubleToString(g_vt.lqTgt.official_tp_price, _Digits)
+          + "," + IntegerToString((int)g_vt.lqTgt.official_tp_distance_points)
+          + "," + DoubleToString(g_vt.lqTgt.nearest_price, _Digits)
+          + "," + g_vt.lqTgt.nearest_type
+          + "," + IntegerToString((int)g_vt.lqTgt.nearest_distance_points)
+          + "," + (g_vt.lqTgt.reached_by_official_tp ? "true" : "false")
+          + "," + (g_vt.lqTgt.tp_before_nearest_liquidity ? "true" : "false")
+          + "," + (g_vt.lqTgt.tp_beyond_nearest_liquidity ? "true" : "false")
+          + "," + (g_vt.lqTgt.too_far_beyond_nearest_liquidity ? "true" : "false")
+          + "," + (g_vt.lqTgt.has_equal_level ? "true" : "false")
+          + "," + DoubleToString(g_vt.lqTgt.equal_level_price, _Digits)
+          + "," + IntegerToString((int)g_vt.lqTgt.equal_level_distance_points)
+          + "," + (g_vt.lqTgt.has_swing_target ? "true" : "false")
+          + "," + DoubleToString(g_vt.lqTgt.swing_price, _Digits)
+          + "," + IntegerToString((int)g_vt.lqTgt.swing_distance_points)
+          + "," + (g_vt.lqTgt.has_htf_external_target ? "true" : "false")
+          + "," + DoubleToString(g_vt.lqTgt.htf_external_price, _Digits)
+          + "," + IntegerToString((int)g_vt.lqTgt.htf_external_distance_points)
+          + "," + (g_vt.lqTgt.supported ? "true" : "false")
+          + "," + (g_vt.lqTgt.conflict ? "true" : "false")
+          + "," + IntegerToString(g_vt.lqTgt.score)
+          + "," + g_vt.lqTgt.grade
+          + "," + g_vt.lqTgt.reasons
           + "," + (g_vt.eff.log_enabled ? "true" : "false")
           + "," + g_vt.eff.fill_status
           + "," + IntegerToString(g_vt.eff.score)
@@ -7401,6 +7937,14 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
    if(InpEnableIfvgBisiSibiV1 && g_vt.ifvg.log_enabled)
       g_ifvg_sum_score += (double)g_vt.ifvg.score;
 
+   if(InpEnableLiquidityTargetQualityV1 && g_vt.lqTgt.log_enabled)
+     {
+      g_lq_tgt_sum_score += (double)g_vt.lqTgt.score;
+      g_lq_tgt_sum_official_tp_dist += (double)g_vt.lqTgt.official_tp_distance_points;
+      if(g_vt.lqTgt.nearest_distance_points >= 0)
+         g_lq_tgt_sum_nearest_dist += (double)g_vt.lqTgt.nearest_distance_points;
+     }
+
    if(InpEnablePremiumDiscountV1)
      {
       g_pd_sum_score += (double)g_vt.pd.score;
@@ -7521,6 +8065,7 @@ void VirtualClearTrade(void)
    MapzMscSnapClear(g_vt.msc);
    MapzPdSnapClear(g_vt.pd);
    MapzIfvgSnapClear(g_vt.ifvg);
+   MapzLqTgtSnapClear(g_vt.lqTgt);
    MapzEffSnapClear(g_vt.eff);
    MapzEvSnapClear(g_vt.ev);
    MapzEvosSnapClear(g_vt.evos);
@@ -7738,6 +8283,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    MapzMssChochBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, g_lastBiasEnum, liqInit, cTime, g_vt.msc);
    MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, g_vt.entry, g_vt.htf, g_vt.pd);
    MapzIfvgInitFromSetup(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.fvg_points, g_vt.ifvg);
+   MapzLqTgtBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, g_vt.entry, g_vt.sl, g_vt.tp, g_vt.htf, g_vt.lqTgt);
    MapzEffInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.eff);
    MapzEvInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.liq, g_vt.msc, g_vt.ev);
    MapzEvosInitFromTrade(sdir, g_vt.entry, g_vt.sl, g_vt.tp, g_vt.ev, g_vt.evos);
@@ -8099,7 +8645,9 @@ void TryDetectIfvgOnNewExecClosedBar(void)
          MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, entP, htfPrev, pdPrev);
          MapzIfvgBisiSibiTradeSnap ifvgPrev;
          MapzIfvgInitFromSetup(sdir, fLoP, fHiP, fvgPtsP, ifvgPrev);
-         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev) + " " + MapzMscCompactSuffix(mscPrev) + " " + MapzPdCompactSuffix(pdPrev) + " " + MapzIfvgCompactSuffix(ifvgPrev);
+         MapzLiquidityTargetQualitySnap lqTgtPrev;
+         MapzLqTgtBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, entP, slP, tpP, htfPrev, lqTgtPrev);
+         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev) + " " + MapzMscCompactSuffix(mscPrev) + " " + MapzPdCompactSuffix(pdPrev) + " " + MapzIfvgCompactSuffix(ifvgPrev) + " " + MapzLqTgtCompactSuffix(lqTgtPrev);
         }
       const string evAllow = ExportSetupEvent(EVT_SETUP_ALLOWED, setupW, gate, "daily_bias_aligned", detA);
       VirtualOnSetupAllowed(evAllow, setupW, sdir, fLo, fHi, gapPts, cTime, rsn, liqWork);
@@ -8238,6 +8786,8 @@ string WriteSummaryJson(void)
    json += "  \"premium_discount_enabled\": " + (InpEnablePremiumDiscountV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_ifvg_bisi_sibi_v1_logic\": true,\r\n";
    json += "  \"ifvg_bisi_sibi_enabled\": " + (InpEnableIfvgBisiSibiV1 ? "true" : "false") + ",\r\n";
+   json += "  \"has_liquidity_target_quality_v1_logic\": true,\r\n";
+   json += "  \"liquidity_target_quality_enabled\": " + (InpEnableLiquidityTargetQualityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_fill_feasibility_v1_logic\": true,\r\n";
    json += "  \"entry_fill_feasibility_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_variant_feasibility_v1_logic\": true,\r\n";
@@ -8441,6 +8991,27 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"ifvg_bisi_sibi_grade_c_count\": %I64d,\r\n", g_ifvg_grade_c);
    json += StringFormat("  \"ifvg_bisi_sibi_grade_weak_count\": %I64d,\r\n", g_ifvg_grade_weak);
    json += StringFormat("  \"ifvg_bisi_sibi_grade_none_count\": %I64d,\r\n", g_ifvg_grade_none);
+   const double avgLqTgtScore = (tcRows > 0 ? g_lq_tgt_sum_score / (double)tcRows : 0.0);
+   const double avgLqTgtTpDist = (tcRows > 0 ? g_lq_tgt_sum_official_tp_dist / (double)tcRows : 0.0);
+   const double avgLqTgtNearDist = (tcRows > 0 ? g_lq_tgt_sum_nearest_dist / (double)tcRows : 0.0);
+   json += StringFormat("  \"liquidity_target_supported_count\": %I64d,\r\n", g_lq_tgt_supported_count);
+   json += StringFormat("  \"liquidity_target_missing_count\": %I64d,\r\n", g_lq_tgt_missing_count);
+   json += StringFormat("  \"liquidity_target_conflict_count\": %I64d,\r\n", g_lq_tgt_conflict_count);
+   json += StringFormat("  \"liquidity_target_reached_by_tp_count\": %I64d,\r\n", g_lq_tgt_reached_by_tp_count);
+   json += StringFormat("  \"liquidity_target_before_nearest_count\": %I64d,\r\n", g_lq_tgt_before_nearest_count);
+   json += StringFormat("  \"liquidity_target_beyond_nearest_count\": %I64d,\r\n", g_lq_tgt_beyond_nearest_count);
+   json += StringFormat("  \"liquidity_target_too_far_beyond_count\": %I64d,\r\n", g_lq_tgt_too_far_beyond_count);
+   json += StringFormat("  \"liquidity_target_equal_level_count\": %I64d,\r\n", g_lq_tgt_equal_level_count);
+   json += StringFormat("  \"liquidity_target_swing_target_count\": %I64d,\r\n", g_lq_tgt_swing_target_count);
+   json += StringFormat("  \"liquidity_target_htf_external_target_count\": %I64d,\r\n", g_lq_tgt_htf_external_target_count);
+   json += StringFormat("  \"average_liquidity_target_score\": %.6f,\r\n", avgLqTgtScore);
+   json += StringFormat("  \"average_liquidity_target_official_tp_distance_points\": %.6f,\r\n", avgLqTgtTpDist);
+   json += StringFormat("  \"average_liquidity_target_nearest_distance_points\": %.6f,\r\n", avgLqTgtNearDist);
+   json += StringFormat("  \"liquidity_target_grade_a_count\": %I64d,\r\n", g_lq_tgt_grade_a);
+   json += StringFormat("  \"liquidity_target_grade_b_count\": %I64d,\r\n", g_lq_tgt_grade_b);
+   json += StringFormat("  \"liquidity_target_grade_c_count\": %I64d,\r\n", g_lq_tgt_grade_c);
+   json += StringFormat("  \"liquidity_target_grade_weak_count\": %I64d,\r\n", g_lq_tgt_grade_weak);
+   json += StringFormat("  \"liquidity_target_grade_none_count\": %I64d,\r\n", g_lq_tgt_grade_none);
    const double avgEffScore = (tcRows > 0 ? g_eff_sum_score / (double)tcRows : 0.0);
    const double avgEffDepth = (tcRows > 0 ? g_eff_sum_depth_pct / (double)tcRows : 0.0);
    const double avgEffRetrace = (tcRows > 0 ? g_eff_sum_max_retrace_pct / (double)tcRows : 0.0);
@@ -8535,6 +9106,12 @@ string WriteSummaryJson(void)
    json += "    \"ifvg_require_close_inversion\": " + (InpIfvgRequireCloseInversion ? "true" : "false") + ",\r\n";
    json += "    \"ifvg_track_retest\": " + (InpIfvgTrackRetest ? "true" : "false") + ",\r\n";
    json += "    \"ifvg_score_enabled\": " + (InpIfvgScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"liquidity_target_quality_v1_enabled\": " + (InpEnableLiquidityTargetQualityV1 ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"liquidity_target_lookback_bars\": %d,\r\n", InpLiquidityTargetLookbackBars);
+   json += StringFormat("    \"liquidity_target_swing_lookback_bars\": %d,\r\n", InpLiquidityTargetSwingLookbackBars);
+   json += StringFormat("    \"liquidity_target_equal_level_tolerance_points\": %d,\r\n", InpLiquidityTargetEqualLevelTolerancePoints);
+   json += StringFormat("    \"liquidity_target_min_distance_points\": %d,\r\n", InpLiquidityTargetMinDistancePoints);
+   json += "    \"liquidity_target_score_enabled\": " + (InpLiquidityTargetScoreEnabled ? "true" : "false") + ",\r\n";
    json += "    \"entry_fill_feasibility_v1_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += StringFormat("    \"entry_fill_feasibility_near_miss_points\": %d,\r\n", InpEntryFillFeasibilityNearMissPoints);
    json += "    \"entry_fill_feasibility_score_enabled\": " + (InpEntryFillFeasibilityScoreEnabled ? "true" : "false") + ",\r\n";
@@ -8561,7 +9138,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,ifvg_bisi_sibi_enabled,fvg_class,fvg_direction,fvg_upper_price,fvg_lower_price,fvg_ce_price,fvg_size_points,fvg_age_bars_at_entry,fvg_mitigation_state,fvg_mitigation_depth_pct,fvg_ce_touched,fvg_fully_filled,fvg_wick_only_fill,ifvg_inversion_detected,ifvg_inversion_confirmed_close,ifvg_inversion_wick_only,ifvg_inversion_bars_after_fvg,ifvg_inversion_close_price,ifvg_retest_detected,ifvg_retest_bars_after_inversion,ifvg_retest_depth_pct,ifvg_valid_for_trade_direction,ifvg_conflict_with_trade_direction,ifvg_bisi_sibi_score,ifvg_bisi_sibi_grade,ifvg_bisi_sibi_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_edge_missed_by_points,entry_variant_25_missed_by_points,entry_variant_50_missed_by_points,entry_variant_75_missed_by_points,entry_variant_adaptive_missed_by_points,entry_variant_edge_bars_to_touch,entry_variant_25_bars_to_touch,entry_variant_50_bars_to_touch,entry_variant_75_bars_to_touch,entry_variant_adaptive_bars_to_touch,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,entry_variant_outcome_sim_enabled,entry_variant_outcome_sim_reasons,entry_variant_edge_sim_status,entry_variant_edge_sim_result_r,entry_variant_edge_sim_entry_price,entry_variant_edge_sim_sl_price,entry_variant_edge_sim_tp_price,entry_variant_edge_sim_risk_points,entry_variant_edge_sim_effective_rr,entry_variant_edge_sim_bars_to_fill,entry_variant_edge_sim_bars_to_close,entry_variant_edge_sim_ambiguous,entry_variant_edge_sim_invalid_risk,entry_variant_25_sim_status,entry_variant_25_sim_result_r,entry_variant_25_sim_entry_price,entry_variant_25_sim_sl_price,entry_variant_25_sim_tp_price,entry_variant_25_sim_risk_points,entry_variant_25_sim_effective_rr,entry_variant_25_sim_bars_to_fill,entry_variant_25_sim_bars_to_close,entry_variant_25_sim_ambiguous,entry_variant_25_sim_invalid_risk,entry_variant_50_sim_status,entry_variant_50_sim_result_r,entry_variant_50_sim_entry_price,entry_variant_50_sim_sl_price,entry_variant_50_sim_tp_price,entry_variant_50_sim_risk_points,entry_variant_50_sim_effective_rr,entry_variant_50_sim_bars_to_fill,entry_variant_50_sim_bars_to_close,entry_variant_50_sim_ambiguous,entry_variant_50_sim_invalid_risk,entry_variant_75_sim_status,entry_variant_75_sim_result_r,entry_variant_75_sim_entry_price,entry_variant_75_sim_sl_price,entry_variant_75_sim_tp_price,entry_variant_75_sim_risk_points,entry_variant_75_sim_effective_rr,entry_variant_75_sim_bars_to_fill,entry_variant_75_sim_bars_to_close,entry_variant_75_sim_ambiguous,entry_variant_75_sim_invalid_risk,entry_variant_adaptive_sim_status,entry_variant_adaptive_sim_result_r,entry_variant_adaptive_sim_entry_price,entry_variant_adaptive_sim_sl_price,entry_variant_adaptive_sim_tp_price,entry_variant_adaptive_sim_risk_points,entry_variant_adaptive_sim_effective_rr,entry_variant_adaptive_sim_bars_to_fill,entry_variant_adaptive_sim_bars_to_close,entry_variant_adaptive_sim_ambiguous,entry_variant_adaptive_sim_invalid_risk,entry_variant_best_sim_variant,entry_variant_best_sim_result_r,entry_variant_best_sim_status,entry_variant_best_sim_reasons,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,ifvg_bisi_sibi_enabled,fvg_class,fvg_direction,fvg_upper_price,fvg_lower_price,fvg_ce_price,fvg_size_points,fvg_age_bars_at_entry,fvg_mitigation_state,fvg_mitigation_depth_pct,fvg_ce_touched,fvg_fully_filled,fvg_wick_only_fill,ifvg_inversion_detected,ifvg_inversion_confirmed_close,ifvg_inversion_wick_only,ifvg_inversion_bars_after_fvg,ifvg_inversion_close_price,ifvg_retest_detected,ifvg_retest_bars_after_inversion,ifvg_retest_depth_pct,ifvg_valid_for_trade_direction,ifvg_conflict_with_trade_direction,ifvg_bisi_sibi_score,ifvg_bisi_sibi_grade,ifvg_bisi_sibi_reasons,liquidity_target_quality_enabled,liquidity_target_direction,liquidity_target_official_tp_price,liquidity_target_official_tp_distance_points,liquidity_target_nearest_price,liquidity_target_nearest_type,liquidity_target_nearest_distance_points,liquidity_target_reached_by_official_tp,liquidity_target_tp_before_nearest_liquidity,liquidity_target_tp_beyond_nearest_liquidity,liquidity_target_too_far_beyond_nearest_liquidity,liquidity_target_has_equal_level,liquidity_target_equal_level_price,liquidity_target_equal_level_distance_points,liquidity_target_has_swing_target,liquidity_target_swing_price,liquidity_target_swing_distance_points,liquidity_target_has_htf_external_target,liquidity_target_htf_external_price,liquidity_target_htf_external_distance_points,liquidity_target_supported,liquidity_target_conflict,liquidity_target_score,liquidity_target_grade,liquidity_target_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_edge_missed_by_points,entry_variant_25_missed_by_points,entry_variant_50_missed_by_points,entry_variant_75_missed_by_points,entry_variant_adaptive_missed_by_points,entry_variant_edge_bars_to_touch,entry_variant_25_bars_to_touch,entry_variant_50_bars_to_touch,entry_variant_75_bars_to_touch,entry_variant_adaptive_bars_to_touch,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,entry_variant_outcome_sim_enabled,entry_variant_outcome_sim_reasons,entry_variant_edge_sim_status,entry_variant_edge_sim_result_r,entry_variant_edge_sim_entry_price,entry_variant_edge_sim_sl_price,entry_variant_edge_sim_tp_price,entry_variant_edge_sim_risk_points,entry_variant_edge_sim_effective_rr,entry_variant_edge_sim_bars_to_fill,entry_variant_edge_sim_bars_to_close,entry_variant_edge_sim_ambiguous,entry_variant_edge_sim_invalid_risk,entry_variant_25_sim_status,entry_variant_25_sim_result_r,entry_variant_25_sim_entry_price,entry_variant_25_sim_sl_price,entry_variant_25_sim_tp_price,entry_variant_25_sim_risk_points,entry_variant_25_sim_effective_rr,entry_variant_25_sim_bars_to_fill,entry_variant_25_sim_bars_to_close,entry_variant_25_sim_ambiguous,entry_variant_25_sim_invalid_risk,entry_variant_50_sim_status,entry_variant_50_sim_result_r,entry_variant_50_sim_entry_price,entry_variant_50_sim_sl_price,entry_variant_50_sim_tp_price,entry_variant_50_sim_risk_points,entry_variant_50_sim_effective_rr,entry_variant_50_sim_bars_to_fill,entry_variant_50_sim_bars_to_close,entry_variant_50_sim_ambiguous,entry_variant_50_sim_invalid_risk,entry_variant_75_sim_status,entry_variant_75_sim_result_r,entry_variant_75_sim_entry_price,entry_variant_75_sim_sl_price,entry_variant_75_sim_tp_price,entry_variant_75_sim_risk_points,entry_variant_75_sim_effective_rr,entry_variant_75_sim_bars_to_fill,entry_variant_75_sim_bars_to_close,entry_variant_75_sim_ambiguous,entry_variant_75_sim_invalid_risk,entry_variant_adaptive_sim_status,entry_variant_adaptive_sim_result_r,entry_variant_adaptive_sim_entry_price,entry_variant_adaptive_sim_sl_price,entry_variant_adaptive_sim_tp_price,entry_variant_adaptive_sim_risk_points,entry_variant_adaptive_sim_effective_rr,entry_variant_adaptive_sim_bars_to_fill,entry_variant_adaptive_sim_bars_to_close,entry_variant_adaptive_sim_ambiguous,entry_variant_adaptive_sim_invalid_risk,entry_variant_best_sim_variant,entry_variant_best_sim_result_r,entry_variant_best_sim_status,entry_variant_best_sim_reasons,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+

@@ -73,7 +73,7 @@
 - **E5.13.6.8.1 (repo):** fix `transition_robustness.fast_fill_close_count` (per-bucket, no multiplicar por buffers).
 - **E5.13.6.9 cerrado (docs):** edge robustness evidence — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md); PASS post-8.1; edge frágil (buffer/velocidad/riesgo ~2×); **no** aprobar edge; oficial **50 % / CE**.
 - **E5.13.6.10 cerrado (docs):** Buffered EVOS decision + manual-control guardrail — [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md); proxy TS no basta; **MQL5 Buffered EVOS requerido**; Mapazapp manual/read-only.
-- **E5.14.1 cerrado (smoke operador):** [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md), build **`MZP_TestEA_E5_14`**, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` — PASS técnico; **no** aprueba edge ni cambia entry 50 %/CE. **Siguiente recomendado:** **E5.15** Liquidity Target Quality V1. **Futuro (solo plan):** Mapazapp Setup Readiness Checklist (read-only; ver smoke doc § futuro y North Star E5.18).
+- **E5.15 cerrado (export repo):** [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md), build **`MZP_TestEA_E5_15`**. Calidad de objetivo de liquidez vs TP oficial; **no** cambia entry 50 %/CE ni outcomes. **Siguiente (operador):** compilar + smoke ST + validar bundle. **Futuro (solo plan):** Setup Readiness Checklist (North Star E5.18).
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)

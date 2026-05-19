@@ -190,6 +190,32 @@ export interface BacktestTrade {
   ifvgBisiSibiScore?: number | undefined;
   ifvgBisiSibiGrade?: string | undefined;
   ifvgBisiSibiReasons?: string | undefined;
+  /** E5.15 Liquidity Target Quality observation columns (optional; older CSV). */
+  liquidityTargetQualityEnabled?: boolean | undefined;
+  liquidityTargetDirection?: string | undefined;
+  liquidityTargetOfficialTpPrice?: number | undefined;
+  liquidityTargetOfficialTpDistancePoints?: number | undefined;
+  liquidityTargetNearestPrice?: number | undefined;
+  liquidityTargetNearestType?: string | undefined;
+  liquidityTargetNearestDistancePoints?: number | undefined;
+  liquidityTargetReachedByOfficialTp?: boolean | undefined;
+  liquidityTargetTpBeforeNearestLiquidity?: boolean | undefined;
+  liquidityTargetTpBeyondNearestLiquidity?: boolean | undefined;
+  liquidityTargetTooFarBeyondNearestLiquidity?: boolean | undefined;
+  liquidityTargetHasEqualLevel?: boolean | undefined;
+  liquidityTargetEqualLevelPrice?: number | undefined;
+  liquidityTargetEqualLevelDistancePoints?: number | undefined;
+  liquidityTargetHasSwingTarget?: boolean | undefined;
+  liquidityTargetSwingPrice?: number | undefined;
+  liquidityTargetSwingDistancePoints?: number | undefined;
+  liquidityTargetHasHtfExternalTarget?: boolean | undefined;
+  liquidityTargetHtfExternalPrice?: number | undefined;
+  liquidityTargetHtfExternalDistancePoints?: number | undefined;
+  liquidityTargetSupported?: boolean | undefined;
+  liquidityTargetConflict?: boolean | undefined;
+  liquidityTargetScore?: number | undefined;
+  liquidityTargetGrade?: string | undefined;
+  liquidityTargetReasons?: string | undefined;
   /** E5.13.2 Entry fill feasibility post-candidate diagnostic columns (optional; older CSV). */
   entryFillFeasibilityEnabled?: boolean | undefined;
   entryFillStatus?: string | undefined;

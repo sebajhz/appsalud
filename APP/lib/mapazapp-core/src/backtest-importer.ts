@@ -1072,6 +1072,124 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     if (ifvgGrdRaw?.trim()) trade.ifvgBisiSibiGrade = ifvgGrdRaw.trim();
     if (ifvgRsnRaw?.trim()) trade.ifvgBisiSibiReasons = ifvgRsnRaw.trim();
 
+    const lqEnRaw = pick(cells, col, "liquidity_target_quality_enabled");
+    const lqDirRaw = pick(cells, col, "liquidity_target_direction");
+    const lqTpPxRaw = pick(cells, col, "liquidity_target_official_tp_price");
+    const lqTpDistRaw = pick(cells, col, "liquidity_target_official_tp_distance_points");
+    const lqNearPxRaw = pick(cells, col, "liquidity_target_nearest_price");
+    const lqNearTypRaw = pick(cells, col, "liquidity_target_nearest_type");
+    const lqNearDistRaw = pick(cells, col, "liquidity_target_nearest_distance_points");
+    const lqReachedRaw = pick(cells, col, "liquidity_target_reached_by_official_tp");
+    const lqBeforeRaw = pick(cells, col, "liquidity_target_tp_before_nearest_liquidity");
+    const lqBeyondRaw = pick(cells, col, "liquidity_target_tp_beyond_nearest_liquidity");
+    const lqTooFarRaw = pick(cells, col, "liquidity_target_too_far_beyond_nearest_liquidity");
+    const lqEqRaw = pick(cells, col, "liquidity_target_has_equal_level");
+    const lqEqPxRaw = pick(cells, col, "liquidity_target_equal_level_price");
+    const lqEqDistRaw = pick(cells, col, "liquidity_target_equal_level_distance_points");
+    const lqSwRaw = pick(cells, col, "liquidity_target_has_swing_target");
+    const lqSwPxRaw = pick(cells, col, "liquidity_target_swing_price");
+    const lqSwDistRaw = pick(cells, col, "liquidity_target_swing_distance_points");
+    const lqHtfRaw = pick(cells, col, "liquidity_target_has_htf_external_target");
+    const lqHtfPxRaw = pick(cells, col, "liquidity_target_htf_external_price");
+    const lqHtfDistRaw = pick(cells, col, "liquidity_target_htf_external_distance_points");
+    const lqSupRaw = pick(cells, col, "liquidity_target_supported");
+    const lqCnfRaw = pick(cells, col, "liquidity_target_conflict");
+    const lqScrRaw = pick(cells, col, "liquidity_target_score");
+    const lqGrdRaw = pick(cells, col, "liquidity_target_grade");
+    const lqRsnRaw = pick(cells, col, "liquidity_target_reasons");
+
+    if (lqEnRaw !== undefined && lqEnRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(lqEnRaw, "liquidity_target_quality_enabled", rowNum);
+      if (b.ok) trade.liquidityTargetQualityEnabled = b.val;
+      else warnings.push({ code: "CSV_LQ_TGT_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (lqDirRaw?.trim()) trade.liquidityTargetDirection = lqDirRaw.trim();
+    if (lqNearTypRaw?.trim()) trade.liquidityTargetNearestType = lqNearTypRaw.trim();
+    if (lqGrdRaw?.trim()) trade.liquidityTargetGrade = lqGrdRaw.trim();
+    if (lqRsnRaw?.trim()) trade.liquidityTargetReasons = lqRsnRaw.trim();
+    const lqNum = (
+      raw: string | undefined,
+      field: string,
+      assign: (v: number) => void,
+    ) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const p = parseNumber(raw, field, rowNum);
+      if (p.ok) assign(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    };
+    lqNum(lqTpPxRaw, "liquidity_target_official_tp_price", (v) => {
+      trade.liquidityTargetOfficialTpPrice = v;
+    });
+    lqNum(lqTpDistRaw, "liquidity_target_official_tp_distance_points", (v) => {
+      trade.liquidityTargetOfficialTpDistancePoints = v;
+    });
+    lqNum(lqNearPxRaw, "liquidity_target_nearest_price", (v) => {
+      trade.liquidityTargetNearestPrice = v;
+    });
+    lqNum(lqNearDistRaw, "liquidity_target_nearest_distance_points", (v) => {
+      trade.liquidityTargetNearestDistancePoints = v;
+    });
+    lqNum(lqEqPxRaw, "liquidity_target_equal_level_price", (v) => {
+      trade.liquidityTargetEqualLevelPrice = v;
+    });
+    lqNum(lqEqDistRaw, "liquidity_target_equal_level_distance_points", (v) => {
+      trade.liquidityTargetEqualLevelDistancePoints = v;
+    });
+    lqNum(lqSwPxRaw, "liquidity_target_swing_price", (v) => {
+      trade.liquidityTargetSwingPrice = v;
+    });
+    lqNum(lqSwDistRaw, "liquidity_target_swing_distance_points", (v) => {
+      trade.liquidityTargetSwingDistancePoints = v;
+    });
+    lqNum(lqHtfPxRaw, "liquidity_target_htf_external_price", (v) => {
+      trade.liquidityTargetHtfExternalPrice = v;
+    });
+    lqNum(lqHtfDistRaw, "liquidity_target_htf_external_distance_points", (v) => {
+      trade.liquidityTargetHtfExternalDistancePoints = v;
+    });
+    if (lqScrRaw !== undefined && lqScrRaw.trim() !== "") {
+      const p = parseNumber(lqScrRaw, "liquidity_target_score", rowNum);
+      if (p.ok) trade.liquidityTargetScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    const lqBool = (
+      raw: string | undefined,
+      field: string,
+      assign: (v: boolean) => void,
+    ) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const b = parseOptionalCsvBool(raw, field, rowNum);
+      if (b.ok) assign(b.val);
+      else warnings.push({ code: "CSV_LQ_TGT_BOOL_INVALID", message: b.message, row: rowNum });
+    };
+    lqBool(lqReachedRaw, "liquidity_target_reached_by_official_tp", (v) => {
+      trade.liquidityTargetReachedByOfficialTp = v;
+    });
+    lqBool(lqBeforeRaw, "liquidity_target_tp_before_nearest_liquidity", (v) => {
+      trade.liquidityTargetTpBeforeNearestLiquidity = v;
+    });
+    lqBool(lqBeyondRaw, "liquidity_target_tp_beyond_nearest_liquidity", (v) => {
+      trade.liquidityTargetTpBeyondNearestLiquidity = v;
+    });
+    lqBool(lqTooFarRaw, "liquidity_target_too_far_beyond_nearest_liquidity", (v) => {
+      trade.liquidityTargetTooFarBeyondNearestLiquidity = v;
+    });
+    lqBool(lqEqRaw, "liquidity_target_has_equal_level", (v) => {
+      trade.liquidityTargetHasEqualLevel = v;
+    });
+    lqBool(lqSwRaw, "liquidity_target_has_swing_target", (v) => {
+      trade.liquidityTargetHasSwingTarget = v;
+    });
+    lqBool(lqHtfRaw, "liquidity_target_has_htf_external_target", (v) => {
+      trade.liquidityTargetHasHtfExternalTarget = v;
+    });
+    lqBool(lqSupRaw, "liquidity_target_supported", (v) => {
+      trade.liquidityTargetSupported = v;
+    });
+    lqBool(lqCnfRaw, "liquidity_target_conflict", (v) => {
+      trade.liquidityTargetConflict = v;
+    });
+
     const effEnRaw = pick(cells, col, "entry_fill_feasibility_enabled");
     const effStatRaw = pick(cells, col, "entry_fill_status");
     const effScrRaw = pick(cells, col, "entry_fill_feasibility_score");

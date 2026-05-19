@@ -410,9 +410,19 @@ Diagnostic export V1 in TestEA — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BIS
 
 Strategy Tester smoke **PASS** on benchmark bundle — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md). Diagnostic-only; **no** edge approval; official entry 50 % / CE unchanged.
 
-### E5.15 — Liquidity Target Quality
+### E5.15 — Liquidity Target Quality (**completed — export repo**)
 
-Measure whether the trade has a logical target:
+Diagnostic export V1 — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md), build `MZP_TestEA_E5_15`:
+
+- Official virtual TP vs nearest liquidity in trade direction
+- Swing / equal levels / PDH-PDL / HTF external candidates
+- Per-trade score/grade/reasons + summary counters
+
+**Does not** change official entry (50 % / CE) or outcomes. Operator smoke ST pending.
+
+### E5.15.1 — Liquidity Target Quality smoke (planned — operator)
+
+Measure whether the trade has a logical target (benchmark validation):
 
 - internal liquidity
 - external liquidity

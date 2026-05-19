@@ -39,6 +39,11 @@ import {
   IFVG_BISI_SIBI_SUMMARY_NUMERIC_KEYS,
   IFVG_BISI_SIBI_TRADE_COLUMNS,
 } from "./ifvg-bisi-sibi-export-keys";
+import {
+  LIQUIDITY_TARGET_QUALITY_OPTIMIZATION_PARAMETER_KEYS,
+  LIQUIDITY_TARGET_QUALITY_SUMMARY_NUMERIC_KEYS,
+  LIQUIDITY_TARGET_QUALITY_TRADE_COLUMNS,
+} from "./liquidity-target-quality-export-keys";
 
 const FILE_NAME_TO_KIND: Record<string, ExportSampleFileKind> = {
   "bridge_status.json": "bridge_status_json",
@@ -1929,6 +1934,89 @@ export function validateTestEaExportSample(
                     "error",
                     "TESTEA_TRADES_HEADER_IFVG_E5_14",
                     `E5.14: backtest_trades.csv header must include "${col}" when has_ifvg_bisi_sibi_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+        }
+        if (summaryJson["has_liquidity_target_quality_v1_logic"] === true) {
+          if (!("liquidity_target_quality_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_LQ_TGT_E5_15_KEY",
+                `E5.15: when has_liquidity_target_quality_v1_logic is true, summary must include "liquidity_target_quality_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else if (typeof summaryJson["liquidity_target_quality_enabled"] !== "boolean") {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_LQ_TGT_E5_15_BOOL",
+                `E5.15: "liquidity_target_quality_enabled" must be a boolean`,
+                { fileName: sj.fileName, detail: String(summaryJson["liquidity_target_quality_enabled"]) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          for (const k of LIQUIDITY_TARGET_QUALITY_SUMMARY_NUMERIC_KEYS) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_LQ_TGT_E5_15_KEY",
+                  `E5.15: when has_liquidity_target_quality_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const val = summaryJson[k];
+              if (typeof val !== "number" || !Number.isFinite(val)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_LQ_TGT_E5_15_NUM",
+                    `E5.15: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(val) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          const optParamsLq = summaryJson["optimization_parameters"];
+          if (optParamsLq && typeof optParamsLq === "object" && !Array.isArray(optParamsLq)) {
+            const op = optParamsLq as Record<string, unknown>;
+            for (const k of LIQUIDITY_TARGET_QUALITY_OPTIMIZATION_PARAMETER_KEYS) {
+              if (!(k in op)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_LQ_TGT_E5_15_OPT",
+                    `E5.15: optimization_parameters must include "${k}" when has_liquidity_target_quality_v1_logic is true`,
+                    { fileName: sj.fileName },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            for (const col of LIQUIDITY_TARGET_QUALITY_TRADE_COLUMNS) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_LQ_TGT_E5_15",
+                    `E5.15: backtest_trades.csv header must include "${col}" when has_liquidity_target_quality_v1_logic is true (see ${tr.fileName})`,
                     { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
                   ),
                 );

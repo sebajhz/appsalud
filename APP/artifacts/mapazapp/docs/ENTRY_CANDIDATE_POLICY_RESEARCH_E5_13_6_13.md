@@ -111,7 +111,8 @@ It **must not**:
 | Live / gates / automation | **Not approved** |
 | Buffered EVOS | **Implemented and smoke-validated** — use for research, not for auto-approval |
 | IFVG / BISI / SIBI smoke | **PASS** — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) |
-| Next technical roadmap | **E5.15** Liquidity Target Quality V1 (diagnostic-only) |
+| Liquidity target quality export | **E5.15 repo** — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md); operator smoke pending |
+| Next technical roadmap | **E5.15.1** operator smoke (post-compile) |
 
 Edge candidate research is **parked under governance** while setup-quality and classification work proceeds.
 
@@ -119,9 +120,9 @@ Edge candidate research is **parked under governance** while setup-quality and c
 
 ## 7. Suggested next step
 
-**Recommend: E5.15 — Liquidity Target Quality V1.**
+**Recommend: E5.15.1 — Liquidity Target Quality operator smoke** (after compile `MZP_TestEA_E5_15`).
 
-**Reason:** IFVG / BISI / SIBI classification is **smoke-validated** ([`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)). The next research gap is whether the trade has a **logical liquidity target** (internal/external liquidity, session levels, TP realism) — not R alone.
+**Reason:** IFVG smoke **PASS** ([`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)). **E5.15 export** is in repo ([`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md)) — validates whether official TP has a **logical liquidity target**; not R alone.
 
 Entry policy research (this document) stays valid as the **governance frame**; IFVG exports supply **setup taxonomy** inputs to future candidate marking and the future **Setup Readiness Checklist** (read-only; see North Star).
 

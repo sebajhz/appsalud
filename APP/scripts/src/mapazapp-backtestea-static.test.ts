@@ -92,6 +92,7 @@ test("G — summary flags: IFVG on; daily bias on; tester orders off; pipeline n
   assert.match(src, /\\"has_entry_fill_feasibility_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_entry_variant_feasibility_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_ifvg_bisi_sibi_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /\\"has_liquidity_target_quality_v1_logic\\"\s*:\s*true/);
 });
 
 test("H — Daily Bias V1 + gate markers", () => {
@@ -328,7 +329,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_14"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_15"/);
   assert.match(src, /input bool\s+InpEnablePremiumDiscountV1\s*=\s*true/);
   assert.match(src, /input int\s+InpPremiumDiscountSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpPremiumDiscountMaxBars\s*=\s*200/);
@@ -524,9 +525,35 @@ test("AA — E5.13.6.11 Buffered EVOS diagnostics (summary-only; no orders)", ()
   }
 });
 
+test("AC — E5.15 Liquidity Target Quality V1 (export-only; no orders)", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_15"/);
+  assert.match(src, /input bool\s+InpEnableLiquidityTargetQualityV1\s*=\s*true/);
+  assert.match(src, /input int\s+InpLiquidityTargetLookbackBars\s*=\s*200/);
+  assert.match(src, /input int\s+InpLiquidityTargetSwingLookbackBars\s*=\s*2/);
+  assert.match(src, /input int\s+InpLiquidityTargetEqualLevelTolerancePoints\s*=\s*50/);
+  assert.match(src, /input int\s+InpLiquidityTargetMinDistancePoints\s*=\s*20/);
+  assert.match(src, /input bool\s+InpLiquidityTargetScoreEnabled\s*=\s*true/);
+  assert.match(src, /\\"has_liquidity_target_quality_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /liquidity_target_quality_v1_enabled/);
+  assert.match(src, /liquidity_target_supported_count/);
+  assert.match(src, /average_liquidity_target_score/);
+  assert.match(src, /liquidity_target_grade_a_count/);
+  assert.match(src, /MapzLqTgtBuildTradeSnap/);
+  assert.match(src, /MapzLqTgtFinalize/);
+  assert.match(src, /liquidity_target_score/);
+  assert.match(src, /liquidity_target_reasons/);
+  assert.match(src, /MapzLqTgtCompactSuffix/);
+  assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
+  assert.match(src, /entry_variant_sim_p50_official_control/);
+  for (const bad of FORBIDDEN_SUBSTRINGS) {
+    assert.equal(src.includes(bad), false, `must not contain ${bad}`);
+  }
+});
+
 test("AB — E5.14 IFVG / BISI / SIBI classification V1 (export-only; no orders)", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_14"/);
+  assert.match(src, /InpEnableIfvgBisiSibiV1/);
   assert.match(src, /input bool\s+InpEnableIfvgBisiSibiV1\s*=\s*true/);
   assert.match(src, /input int\s+InpIfvgBisiSibiMaxBars\s*=\s*200/);
   assert.match(src, /input bool\s+InpIfvgRequireCloseInversion\s*=\s*true/);
