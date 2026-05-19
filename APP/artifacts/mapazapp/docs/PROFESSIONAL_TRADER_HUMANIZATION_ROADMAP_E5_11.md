@@ -47,6 +47,7 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.13.6.12** | **Buffered EVOS smoke evidence** | **completed** — [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md) |
 | **E5.13.6.13** | **Entry candidate policy (research)** | **completed** — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md) |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | **completed (export)** — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md) |
+| **E5.14.1** | **IFVG / BISI / SIBI smoke evidence** | **completed** — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
 | **E5.17** | **Frequency / Risk / Overtrading** discipline V1 | planificado — §H |
@@ -194,7 +195,7 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 
 - **Implementación:** core `testea-entry-edge-robustness-audit.ts` + CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **Doc:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md).
-- **E5.14 (export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md). **Siguiente (operador):** smoke ST + validar bundle.
+- **E5.14.1 (smoke):** [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) — PASS técnico; **siguiente:** **E5.15** Liquidity Target Quality V1.
 
 ### E5.13.6.9 (**cerrado — docs**)
 
@@ -214,15 +215,21 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 ### E5.13.6.13 (**completed — research docs**)
 
-[`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md) — family roles + governance; next **E5.14**.
+[`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md) — family roles + governance; next **E5.15**.
 
 ---
 
 ## E. IFVG / BISI / SIBI
 
-### E5.14 — IFVG / BISI / SIBI / clasificación Inversion FVG V1
+### E5.14 — IFVG / BISI / SIBI / clasificación Inversion FVG V1 (**export — repo**)
 
-**Propósito:** separar FVG «regular», implicado e **inversión** (IFVG) en comportamiento exportable.
+**Contrato:** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
+
+### E5.14.1 — Smoke evidence (**operador — PASS**)
+
+**Evidencia:** [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md). Diagnostic-only; sin aprobación edge ni cambio entry oficial.
+
+**Propósito (E5.14):** separar FVG «regular», implicado e **inversión** (IFVG) en comportamiento exportable.
 
 **Conceptos a documentar/implementar como definiciones cerradas:**
 

@@ -111,14 +111,15 @@ On `setup_allowed` preview: compact `fvg_class` / `ifvg_inv` / `ifvg_score` via 
 - Does **not** add gates, `OrderSend`, `CTrade`, `PositionOpen`, or `WebRequest`.
 - Bundles **without** `has_ifvg_bisi_sibi_v1_logic` remain valid (TypeScript validation is opt-in).
 
-## Operator next step
+## Operator smoke (E5.14.1)
 
-1. Compile `MZP_TestEA_E5_14` in MetaEditor.
-2. Run Strategy Tester smoke on XAUUSD M15 (virtual mode).
-3. Validate bundle: `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<export_folder>" --json`
+- **Status:** **PASS** (operator benchmark) — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)
+- **Bundle:** `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` · `trade_count` 1697 · `has_ifvg_bisi_sibi_v1_logic` true
+- **Next technical:** **E5.15** Liquidity Target Quality V1 (diagnostic-only)
 
 ## References
 
+- [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)
 - [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md)
 - [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md)
 - [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)

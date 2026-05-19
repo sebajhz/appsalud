@@ -395,7 +395,7 @@ Strategy Tester smoke **PASS** on benchmark bundle — [`BUFFERED_EVOS_SMOKE_EVI
 
 Research-only frame for entry families (edge / 25 % / 50 % CE / adaptive / no-trade) — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge serious research candidate; **not** approved; official entry 50 % / CE unchanged.
 
-### E5.14 — IFVG / BISI / SIBI Classification (**completed — export repo**)
+### E5.14 — IFVG / BISI / SIBI Classification (**completed — export + smoke**)
 
 Diagnostic export V1 in TestEA — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md), build `MZP_TestEA_E5_14`:
 
@@ -404,7 +404,11 @@ Diagnostic export V1 in TestEA — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BIS
 - Close-confirmed IFVG inversion + optional retest
 - Per-trade score/grade/reasons + summary counters
 
-**Does not** change official entry (50 % / CE) or trade generation. Operator smoke ST pending.
+**Does not** change official entry (50 % / CE) or trade generation.
+
+### E5.14.1 — IFVG / BISI / SIBI smoke evidence (**completed — operator**)
+
+Strategy Tester smoke **PASS** on benchmark bundle — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md). Diagnostic-only; **no** edge approval; official entry 50 % / CE unchanged.
 
 ### E5.15 — Liquidity Target Quality
 
@@ -457,6 +461,8 @@ Export setup state for BridgeEA/dashboard:
 - entry candidate
 - invalidated
 - target reached
+
+**Future (planning only): Mapazapp Setup Readiness Checklist** — automatic read-only checklist from diagnostics (HTF bias, liquidity event, reaction/displacement, IFVG/BISI/SIBI quality, MSS/CHoCH, premium/discount, entry-family candidate, Buffered EVOS, liquidity target, session/spread/volatility, risk/discipline, final **Candidate / Wait / Reject**). Store **blocker reasons** for aggregate reporting (weak IFVG, HTF conflict, poor target, fragile entry, ambiguity, session/spread/volatility, risk discipline). **Not** a live execution panel; manual-control aligned until explicit governance approval. Detail: [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) § futuro.
 
 ### E5.19 — Forward Demo Read-only
 

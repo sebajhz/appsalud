@@ -73,7 +73,7 @@ No entry family becomes **official** without a documented governance decision an
 | **Multi-period XAUUSD validation** | Same parameter discipline across distinct time windows; not one lucky segment. |
 | **Walk-forward / out-of-sample** | Holdout or rolling validation; anti-overfit per [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md). |
 | **Target quality** | TP realism, RR achievability, and outcome stability — not R alone. |
-| **IFVG / BISI / SIBI classification** | Imbalance quality and setup taxonomy (planned **E5.14**). |
+| **IFVG / BISI / SIBI classification** | Imbalance quality and setup taxonomy — **E5.14** export + **E5.14.1** smoke PASS — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md). |
 | **Session / spread / volatility context** | Execution conditions beyond closed-candle geometry. |
 | **Multi-symbol comparison** | XAUUSD is laboratory; other symbols need their own profiles. |
 | **Forward demo read-only** | Observation under live-like conditions without execution approval. |
@@ -110,7 +110,8 @@ It **must not**:
 | 75 % | **Not primary** in current track |
 | Live / gates / automation | **Not approved** |
 | Buffered EVOS | **Implemented and smoke-validated** — use for research, not for auto-approval |
-| Next technical roadmap | **E5.14** IFVG / BISI / SIBI export — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md) (diagnostic-only; operator smoke pending) |
+| IFVG / BISI / SIBI smoke | **PASS** — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) |
+| Next technical roadmap | **E5.15** Liquidity Target Quality V1 (diagnostic-only) |
 
 Edge candidate research is **parked under governance** while setup-quality and classification work proceeds.
 
@@ -118,11 +119,11 @@ Edge candidate research is **parked under governance** while setup-quality and c
 
 ## 7. Suggested next step
 
-**Recommend: E5.14 — IFVG / BISI / SIBI classification.**
+**Recommend: E5.15 — Liquidity Target Quality V1.**
 
-**Reason:** Before approving any entry family, improve **imbalance quality classification** and **setup context**. That helps distinguish when edge is a **valid early entry** versus when it is only a **fragile, execution-sensitive** fill on an otherwise weak setup.
+**Reason:** IFVG / BISI / SIBI classification is **smoke-validated** ([`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)). The next research gap is whether the trade has a **logical liquidity target** (internal/external liquidity, session levels, TP realism) — not R alone.
 
-Entry policy research (this document) stays valid as the **governance frame**; E5.14 supplies richer **setup taxonomy** inputs to future candidate marking.
+Entry policy research (this document) stays valid as the **governance frame**; IFVG exports supply **setup taxonomy** inputs to future candidate marking and the future **Setup Readiness Checklist** (read-only; see North Star).
 
 ---
 
@@ -133,4 +134,6 @@ Entry policy research (this document) stays valid as the **governance frame**; E
 - [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md)
 - [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md)
 - [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md)
+- [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md)
+- [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)
 - [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)

@@ -487,11 +487,11 @@ Current rules:
 3. ~~E5.13.6.11 MQL5 Buffered EVOS diagnostics.~~ **Done** — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md).
 4. ~~E5.13.6.12 smoke ST.~~ **Done** — [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md).
 5. ~~E5.13.6.13 entry candidate policy (research).~~ **Done** — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
-6. ~~E5.14 IFVG/BISI/SIBI export (diagnostic).~~ **Done (repo)** — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md). Operator smoke pending. **No** edge approval without explicit governance.
+6. ~~E5.14 IFVG/BISI/SIBI export (diagnostic).~~ **Done (repo)** — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
+7. ~~E5.14.1 IFVG/BISI/SIBI smoke ST.~~ **Done** — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md). **No** edge approval without explicit governance.
 4. Define entry model candidate policy only if buffered evidence supports it (post-11).
 4. Continue roadmap:
-   - E5.14 IFVG / BISI / SIBI
-   - E5.15 liquidity target quality
+   - **E5.15** liquidity target quality
    - E5.16 session/news/spread/volatility
    - E5.17 frequency/risk/discipline
    - E5.18 setup state contract
