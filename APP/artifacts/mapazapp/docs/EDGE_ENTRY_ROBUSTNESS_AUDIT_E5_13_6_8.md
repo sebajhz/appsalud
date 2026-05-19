@@ -66,9 +66,13 @@ Script: `mapazapp:testea-entry-edge-robustness-audit`
 
 ---
 
+## Evidencia operador (E5.13.6.9)
+
+**Cerrado — docs:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md) — re-run post–E5.13.6.8.1; PASS; edge frágil bajo buffer; **no** aprobar edge.
+
 ## Próximo paso operador
 
-Ejecutar el CLI sobre el bundle **E5_13_6_3**:
+Ejecutar el CLI sobre el bundle **E5_13_6_3** (si aún no se hizo):
 
 - Build: `MZP_TestEA_E5_13_6_3`
 - Bundle: `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`

@@ -41,7 +41,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.13.6.6** | Entry Variant **Edge/25 Sanity and Transition Audit** | **cerrado — repo** — [`ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_E5_13_6_6.md) |
 | **E5.13.6.7** | Transition audit **evidence** (operador) | **cerrado — docs** — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md) |
 | **E5.13.6.8** | **Edge Entry Realism / Robustness Audit** | **cerrado — repo** — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md) |
-| **E5.13.6.9** | Edge robustness **evidence** (operador) | **siguiente** — bajo North Star + governance; **no** aprobar edge |
+| **E5.13.6.9** | Edge robustness **evidence** (operador) | **cerrado — docs** — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md) |
+| **E5.13.6.10** | **Buffered EVOS decision** | **siguiente** — proxy TS vs MQL5 exact |
 | **E5.14** | **IFVG / BISI / SIBI / Inversion FVG** V1 | planificado — §E |
 | **E5.15** | **Liquidity Target Quality** V1 | planificado — §F |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
@@ -190,11 +191,15 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 
 - **Implementación:** core `testea-entry-edge-robustness-audit.ts` + CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **Doc:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md).
-- **Siguiente:** **E5.13.6.9** evidencia operador (bundle `MZP_TestEA_E5_13_6_3`), interpretada bajo [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) y [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md).
+- **Siguiente:** **E5.13.6.10** Buffered EVOS decision — ver [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md).
 
-### E5.13.6.9 (**siguiente**)
+### E5.13.6.9 (**cerrado — docs**)
 
-Evidencia operador post–robustness audit — documentar flags, buffers y transiciones; **no** aprobar edge ni cambiar entry oficial 50 % / CE.
+- **Evidencia:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md) — re-run post–8.1; PASS; edge frágil bajo buffer 30–50 pts; **no** aprobar edge.
+
+### E5.13.6.10 (**siguiente**)
+
+Decidir si el proxy TypeScript de robustez basta o se requieren variantes EVOS buffered en MQL5 — ver North Star §14.
 
 ---
 

@@ -5,9 +5,13 @@
 - **North Star:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) — framework de descubrimiento de setup parametrizado; XAUUSD laboratorio primario, no producto «solo oro»; perfiles futuros por símbolo con evidencia.
 - **Parameter / optimization governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) — campañas controladas, anti-overfit, escalera de evidencia; **no** aprobar entry desde un bundle; edge / 25 % / adaptive experimentales; oficial **50 % / CE**; sin live / gates / ejecución real hasta aprobación explícita.
 
+## E5.13.6.10 checkpoint context
+
+- **Siguiente:** **E5.13.6.10** Buffered EVOS decision — proxy TS vs simulación MQL5 exacta; ver North Star §14.
+
 ## E5.13.6.9 checkpoint context
 
-- **Siguiente:** evidencia operador edge robustness (bundle `MZP_TestEA_E5_13_6_3`) bajo North Star + governance; **no** aprobar edge.
+- **E5.13.6.9 (docs) — cerrado:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md); bundle benchmark; PASS post-8.1; edge frágil; **no** aprobar edge.
 
 ## E5.13.6.8 checkpoint context
 

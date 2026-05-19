@@ -71,7 +71,8 @@
 - **E5.13.6.7 cerrado (docs):** transition audit evidence — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md); PASS; edge fuerte + riesgo ~2×; **no** aprobar variantes.
 - **E5.13.6.8 cerrado (repo):** edge robustness audit — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md); CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **E5.13.6.8.1 (repo):** fix `transition_robustness.fast_fill_close_count` (per-bucket, no multiplicar por buffers).
-- **Siguiente canónico:** **E5.13.6.9** — evidencia operador edge robustness en bundle `MZP_TestEA_E5_13_6_3` (bajo North Star + optimization governance; **no** aprobar edge ni cambiar entry oficial); luego **E5.14**. **Nota:** track **`tester_orders`** (E5.1) aparte.
+- **E5.13.6.9 cerrado (docs):** edge robustness evidence — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md); PASS post-8.1; edge frágil (buffer/velocidad/riesgo ~2×); **no** aprobar edge; oficial **50 % / CE**.
+- **Siguiente canónico:** **E5.13.6.10** Buffered EVOS decision; luego **E5.14**. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 
