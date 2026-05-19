@@ -507,6 +507,11 @@ test("AA — E5.13.6.11 Buffered EVOS diagnostics (summary-only; no orders)", ()
   assert.match(src, /buffered_evos_best_variant_by_expectancy_b30/);
   assert.match(src, /buffered_evos_edge_b30_wins_failing_min_effective_rr_count/);
   assert.match(src, /MapzBufEvosTrackBar/);
+  assert.equal(
+    /MapzBufferedEvosRollup\s*&\s*\w+\s*=\s*g_buf_evos_rollups/.test(src),
+    false,
+    "MQL5 forbids local reference aliases to g_buf_evos_rollups[][] elements",
+  );
   assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
   assert.match(src, /entry_variant_sim_p50_official_control/);
   for (const bad of FORBIDDEN_SUBSTRINGS) {

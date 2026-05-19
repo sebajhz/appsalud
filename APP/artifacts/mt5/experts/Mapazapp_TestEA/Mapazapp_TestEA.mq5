@@ -5953,7 +5953,7 @@ void MapzBufEvosComputeBestVariants(void)
 //+------------------------------------------------------------------+
 void MapzBufEvosAppendRollup(string &json, const int vi, const int bi)
   {
-   const MapzBufferedEvosRollup &r = g_buf_evos_rollups[vi][bi];
+   const MapzBufferedEvosRollup r = g_buf_evos_rollups[vi][bi];
    const string vp = MapzBufEvosVariantPrefix(vi);
    const string bl = MapzBufEvosBufferLabel(bi);
    const string keyBase = "buffered_evos_" + vp + "_" + bl + "_";
