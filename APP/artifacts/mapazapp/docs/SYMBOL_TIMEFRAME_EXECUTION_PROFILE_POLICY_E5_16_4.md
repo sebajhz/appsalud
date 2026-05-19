@@ -181,7 +181,9 @@ Profile policy allows the system to **adapt interpretation** per symbol without 
 | Profile-calibrated buckets in export | **Not implemented** |
 | E5.16 block (policy) | **Closed** at governance level after E5.16.4 |
 
-**Next recommended technical milestone:** **E5.17** — Frequency / Risk / Overtrading Discipline V1 (see [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md)).
+**E5.17 (export):** [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) — frequency/risk/overtrading discipline V1 (`MZP_TestEA_E5_17`); diagnostic only.
+
+**Next recommended:** E5.17.1 operator smoke evidence; then Setup Readiness Checklist (E5.18).
 
 Optional later: implement checklist fields (E5.18) consuming E5.16 export + this policy vocabulary.
 

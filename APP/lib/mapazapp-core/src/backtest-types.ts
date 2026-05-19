@@ -244,6 +244,36 @@ export interface BacktestTrade {
   executionEnvironmentScore?: number | undefined;
   executionEnvironmentGrade?: string | undefined;
   executionEnvironmentReasons?: string | undefined;
+  /** E5.17 Frequency / risk / overtrading discipline (optional; older CSV). */
+  frequencyRiskDisciplineEnabled?: boolean | undefined;
+  disciplineTradeDate?: string | undefined;
+  disciplineSessionBucket?: string | undefined;
+  disciplineTradesSoFarToday?: number | undefined;
+  disciplineTradesSoFarSession?: number | undefined;
+  disciplineClosedRSoFarToday?: number | undefined;
+  disciplineConsecutiveLossesBeforeTrade?: number | undefined;
+  disciplineConsecutiveWinsBeforeTrade?: number | undefined;
+  disciplineBarsSinceLastTrade?: number | undefined;
+  disciplineBarsSinceLastLoss?: number | undefined;
+  disciplineDailyTradeLimitReached?: boolean | undefined;
+  disciplineSessionTradeLimitReached?: boolean | undefined;
+  disciplineMaxConsecutiveLossesReached?: boolean | undefined;
+  disciplineDailyLossLimitReached?: boolean | undefined;
+  disciplineDailyProfitProtectReached?: boolean | undefined;
+  disciplineCooldownAfterLossActive?: boolean | undefined;
+  disciplineCooldownAfterTradeActive?: boolean | undefined;
+  disciplineOvertradingRisk?: boolean | undefined;
+  disciplineRevengeTradeRisk?: boolean | undefined;
+  disciplineProfitGivebackRisk?: boolean | undefined;
+  disciplineTradeResultR?: number | undefined;
+  disciplineClosedRAfterTradeToday?: number | undefined;
+  disciplineConsecutiveLossesAfterTrade?: number | undefined;
+  disciplineConsecutiveWinsAfterTrade?: number | undefined;
+  disciplineDailyTradeSequence?: number | undefined;
+  disciplineSessionTradeSequence?: number | undefined;
+  disciplineScore?: number | undefined;
+  disciplineGrade?: string | undefined;
+  disciplineReasons?: string | undefined;
   /** E5.13.2 Entry fill feasibility post-candidate diagnostic columns (optional; older CSV). */
   entryFillFeasibilityEnabled?: boolean | undefined;
   entryFillStatus?: string | undefined;

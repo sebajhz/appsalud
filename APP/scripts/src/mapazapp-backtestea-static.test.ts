@@ -329,7 +329,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_16"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17"/);
   assert.match(src, /input bool\s+InpEnablePremiumDiscountV1\s*=\s*true/);
   assert.match(src, /input int\s+InpPremiumDiscountSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpPremiumDiscountMaxBars\s*=\s*200/);
@@ -527,7 +527,7 @@ test("AA — E5.13.6.11 Buffered EVOS diagnostics (summary-only; no orders)", ()
 
 test("AC — E5.15 Liquidity Target Quality V1 (export-only; no orders)", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_16"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17"/);
   assert.match(src, /input bool\s+InpEnableLiquidityTargetQualityV1\s*=\s*true/);
   assert.match(src, /input int\s+InpLiquidityTargetLookbackBars\s*=\s*200/);
   assert.match(src, /input int\s+InpLiquidityTargetSwingLookbackBars\s*=\s*2/);
@@ -553,7 +553,7 @@ test("AC — E5.15 Liquidity Target Quality V1 (export-only; no orders)", () => 
 
 test("AD — E5.16 Session / Spread / Volatility Context V1 (export-only; no orders)", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_16"/);
+  assert.match(src, /InpEnableSessionSpreadVolatilityV1/);
   assert.match(src, /input bool\s+InpEnableSessionSpreadVolatilityV1\s*=\s*true/);
   assert.match(src, /input int\s+InpSessionTimezoneOffsetHours\s*=\s*0/);
   assert.match(src, /input int\s+InpSpreadWarningPoints\s*=\s*30/);
@@ -573,6 +573,31 @@ test("AD — E5.16 Session / Spread / Volatility Context V1 (export-only; no ord
   assert.match(src, /execution_environment_score/);
   assert.match(src, /execution_environment_reasons/);
   assert.match(src, /MapzSsvCompactSuffix/);
+  assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
+  assert.match(src, /entry_variant_sim_p50_official_control/);
+  for (const bad of FORBIDDEN_SUBSTRINGS) {
+    assert.equal(src.includes(bad), false, `must not contain ${bad}`);
+  }
+});
+
+test("AE — E5.17 Frequency / Risk / Overtrading Discipline V1 (export-only; no orders)", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17"/);
+  assert.match(src, /input bool\s+InpEnableFrequencyRiskDisciplineV1\s*=\s*true/);
+  assert.match(src, /input int\s+InpDisciplineMaxTradesPerDay\s*=\s*3/);
+  assert.match(src, /input double\s+InpDisciplineMaxDailyLossR\s*=\s*-2\.0/);
+  assert.match(src, /\\"has_frequency_risk_discipline_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /frequency_risk_discipline_enabled/);
+  assert.match(src, /discipline_overtrading_risk_count/);
+  assert.match(src, /average_discipline_score/);
+  assert.match(src, /discipline_grade_a_count/);
+  assert.match(src, /MapzDiscBuildPreTradeSnap/);
+  assert.match(src, /MapzDiscCompletePostTrade/);
+  assert.match(src, /frequency_risk_discipline_enabled/);
+  assert.match(src, /discipline_trades_so_far_today/);
+  assert.match(src, /discipline_score/);
+  assert.match(src, /discipline_reasons/);
+  assert.match(src, /MapzDiscCompactSuffix/);
   assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
   assert.match(src, /entry_variant_sim_p50_official_control/);
   for (const bad of FORBIDDEN_SUBSTRINGS) {

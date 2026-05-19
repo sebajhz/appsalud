@@ -49,6 +49,11 @@ import {
   SESSION_SPREAD_VOLATILITY_SUMMARY_NUMERIC_KEYS,
   SESSION_SPREAD_VOLATILITY_TRADE_COLUMNS,
 } from "./session-spread-volatility-export-keys";
+import {
+  FREQUENCY_RISK_DISCIPLINE_OPTIMIZATION_PARAMETER_KEYS,
+  FREQUENCY_RISK_DISCIPLINE_SUMMARY_NUMERIC_KEYS,
+  FREQUENCY_RISK_DISCIPLINE_TRADE_COLUMNS,
+} from "./frequency-risk-discipline-export-keys";
 
 const FILE_NAME_TO_KIND: Record<string, ExportSampleFileKind> = {
   "bridge_status.json": "bridge_status_json",
@@ -2105,6 +2110,89 @@ export function validateTestEaExportSample(
                     "error",
                     "TESTEA_TRADES_HEADER_SSV_E5_16",
                     `E5.16: backtest_trades.csv header must include "${col}" when has_session_spread_volatility_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+        }
+        if (summaryJson["has_frequency_risk_discipline_v1_logic"] === true) {
+          if (!("frequency_risk_discipline_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_DISC_E5_17_KEY",
+                `E5.17: when has_frequency_risk_discipline_v1_logic is true, summary must include "frequency_risk_discipline_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else if (typeof summaryJson["frequency_risk_discipline_enabled"] !== "boolean") {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_DISC_E5_17_BOOL",
+                `E5.17: "frequency_risk_discipline_enabled" must be a boolean`,
+                { fileName: sj.fileName, detail: String(summaryJson["frequency_risk_discipline_enabled"]) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          for (const k of FREQUENCY_RISK_DISCIPLINE_SUMMARY_NUMERIC_KEYS) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_DISC_E5_17_KEY",
+                  `E5.17: when has_frequency_risk_discipline_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const val = summaryJson[k];
+              if (typeof val !== "number" || !Number.isFinite(val)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_DISC_E5_17_NUM",
+                    `E5.17: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(val) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          const optParamsDisc = summaryJson["optimization_parameters"];
+          if (optParamsDisc && typeof optParamsDisc === "object" && !Array.isArray(optParamsDisc)) {
+            const op = optParamsDisc as Record<string, unknown>;
+            for (const k of FREQUENCY_RISK_DISCIPLINE_OPTIMIZATION_PARAMETER_KEYS) {
+              if (!(k in op)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_DISC_E5_17_OPT",
+                    `E5.17: optimization_parameters must include "${k}" when has_frequency_risk_discipline_v1_logic is true`,
+                    { fileName: sj.fileName },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            for (const col of FREQUENCY_RISK_DISCIPLINE_TRADE_COLUMNS) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_DISC_E5_17",
+                    `E5.17: backtest_trades.csv header must include "${col}" when has_frequency_risk_discipline_v1_logic is true (see ${tr.fileName})`,
                     { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
                   ),
                 );

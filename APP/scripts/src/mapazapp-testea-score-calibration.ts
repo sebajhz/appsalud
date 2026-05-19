@@ -90,6 +90,7 @@ export function analyzeTestEaBundleScoreCalibration(
       ifvg_bisi_sibi_component_stats: null,
       liquidity_target_component_stats: null,
       execution_environment_component_stats: null,
+      discipline_component_stats: null,
     };
   }
   return analyzeTestEaScoreCalibrationFromTexts({

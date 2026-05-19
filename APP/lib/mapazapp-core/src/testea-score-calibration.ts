@@ -93,6 +93,11 @@ export const EXECUTION_ENVIRONMENT_CALIBRATION_COLUMNS = ["execution_environment
 export type ExecutionEnvironmentCalibrationColumn =
   (typeof EXECUTION_ENVIRONMENT_CALIBRATION_COLUMNS)[number];
 
+/** E5.17 optional discipline score when CSV includes `discipline_score`. */
+export const DISCIPLINE_CALIBRATION_COLUMNS = ["discipline_score"] as const;
+
+export type DisciplineCalibrationColumn = (typeof DISCIPLINE_CALIBRATION_COLUMNS)[number];
+
 /**
  * E5.13.2 optional Entry Fill Feasibility post-candidate diagnostic score when CSV includes
  * `entry_fill_feasibility_score`. Not a pre-trade operational gate.
@@ -258,6 +263,8 @@ export interface TestEaScoreCalibrationBundleAnalysis {
   execution_environment_component_stats: Partial<
     Record<ExecutionEnvironmentCalibrationColumn, TestEaScoreComponentStats>
   > | null;
+  /** Present when trades CSV includes E5.17 `discipline_score`. */
+  discipline_component_stats: Partial<Record<DisciplineCalibrationColumn, TestEaScoreComponentStats>> | null;
 }
 
 export interface TestEaScoreCalibrationBundleTextInput {
@@ -425,6 +432,7 @@ export interface TradeScoreAuxiliary {
   /** E5.15 optional Liquidity Target Quality observation score when CSV includes `liquidity_target_score`. */
   liquidity_target: Partial<Record<LiquidityTargetCalibrationColumn, number | null>> | null;
   execution_environment: Partial<Record<ExecutionEnvironmentCalibrationColumn, number | null>> | null;
+  discipline: Partial<Record<DisciplineCalibrationColumn, number | null>> | null;
   missing_raw: string;
   missing_tokens: string[];
 }
@@ -445,6 +453,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   hasIfvgBisiSibiScoreColumn: boolean;
   hasLiquidityTargetScoreColumn: boolean;
   hasExecutionEnvironmentScoreColumn: boolean;
+  hasDisciplineScoreColumn: boolean;
   warnings: string[];
 } {
   const warnings: string[] = [];
@@ -467,6 +476,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       hasIfvgBisiSibiScoreColumn: false,
       hasLiquidityTargetScoreColumn: false,
       hasExecutionEnvironmentScoreColumn: false,
+      hasDisciplineScoreColumn: false,
       warnings,
     };
   }
@@ -485,6 +495,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   const hasIfvgBisiSibiScoreColumn = col.has("ifvg_bisi_sibi_score");
   const hasLiquidityTargetScoreColumn = col.has("liquidity_target_score");
   const hasExecutionEnvironmentScoreColumn = col.has("execution_environment_score");
+  const hasDisciplineScoreColumn = col.has("discipline_score");
 
   const emptyComponents = (): Record<ScoreComponentColumn, number | null> => ({
     htf_narrative_score: null,
@@ -609,6 +620,14 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       }
     }
 
+    let discipline: Partial<Record<DisciplineCalibrationColumn, number | null>> | null = null;
+    if (hasDisciplineScoreColumn) {
+      discipline = {};
+      for (const c of DISCIPLINE_CALIBRATION_COLUMNS) {
+        discipline[c] = parseFiniteNumber(pick(cells, col, c));
+      }
+    }
+
     const aux: TradeScoreAuxiliary = {
       entry_quality_grade: pick(cells, col, "entry_quality_grade")?.trim() ?? null,
       score: parseFiniteNumber(pick(cells, col, "score_total")),
@@ -626,6 +645,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       ifvg_bisi_sibi,
       liquidity_target,
       execution_environment,
+      discipline,
       missing_raw: missingRaw,
       missing_tokens,
     };
@@ -647,6 +667,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
     hasIfvgBisiSibiScoreColumn,
     hasLiquidityTargetScoreColumn,
     hasExecutionEnvironmentScoreColumn,
+    hasDisciplineScoreColumn,
     warnings,
   };
 }
@@ -1328,6 +1349,50 @@ function buildExecutionEnvironmentComponentStats(
   return any ? out : null;
 }
 
+function buildDisciplineComponentStats(
+  rows: { trade: BacktestTrade; aux: TradeScoreAuxiliary | undefined }[],
+): Partial<Record<DisciplineCalibrationColumn, TestEaScoreComponentStats>> | null {
+  const out: Partial<Record<DisciplineCalibrationColumn, TestEaScoreComponentStats>> = {};
+  let any = false;
+  for (const col of DISCIPLINE_CALIBRATION_COLUMNS) {
+    const vals: number[] = [];
+    const byOutcome: Partial<Record<TestEaScoreOutcomeGroup, { sum: number; count: number }>> = {};
+    let allSum = 0;
+    let allCnt = 0;
+    for (const { trade, aux } of rows) {
+      const v = aux?.discipline?.[col];
+      if (v == null || !Number.isFinite(v)) continue;
+      any = true;
+      vals.push(v);
+      allSum += v;
+      allCnt += 1;
+      const g = outcomeGroup(trade);
+      const cur = byOutcome[g] ?? { sum: 0, count: 0 };
+      cur.sum += v;
+      cur.count += 1;
+      byOutcome[g] = cur;
+    }
+    const byOutFin: TestEaScoreComponentStats["by_outcome"] = {};
+    if (allCnt > 0) byOutFin.all = { count: allCnt, average: allSum / allCnt };
+    for (const [k, v] of Object.entries(byOutcome)) {
+      const og = k as TestEaScoreOutcomeGroup;
+      byOutFin[og] = { count: v!.count, average: v!.count > 0 ? v!.sum / v!.count : null };
+    }
+    if (vals.length === 0) {
+      out[col] = { min: null, max: null, average: null, by_outcome: byOutFin };
+    } else {
+      const sorted = [...vals].sort((a, b) => a - b);
+      out[col] = {
+        min: sorted[0]!,
+        max: sorted[sorted.length - 1]!,
+        average: average(vals),
+        by_outcome: byOutFin,
+      };
+    }
+  }
+  return any ? out : null;
+}
+
 function missingFrequency(rows: { aux: TradeScoreAuxiliary | undefined }[]): Record<string, number> {
   const freq: Record<string, number> = {};
   for (const { aux } of rows) {
@@ -1416,6 +1481,7 @@ export function analyzeTestEaScoreCalibrationFromTexts(
     ifvg_bisi_sibi_component_stats: null,
     liquidity_target_component_stats: null,
     execution_environment_component_stats: null,
+    discipline_component_stats: null,
   };
 
   let summary: Record<string, unknown>;
@@ -1655,6 +1721,9 @@ export function analyzeTestEaScoreCalibrationFromTexts(
       : null,
     execution_environment_component_stats: auxParse.hasExecutionEnvironmentScoreColumn
       ? buildExecutionEnvironmentComponentStats(merged)
+      : null,
+    discipline_component_stats: auxParse.hasDisciplineScoreColumn
+      ? buildDisciplineComponentStats(merged)
       : null,
   };
 

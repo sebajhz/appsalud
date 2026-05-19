@@ -1309,6 +1309,173 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       else warnings.push({ code: "CSV_SSV_NUMERIC", message: p.message, row: rowNum });
     }
 
+    const discEnRaw = pick(cells, col, "frequency_risk_discipline_enabled");
+    const discBool = (
+      raw: string | undefined,
+      field: string,
+      assign: (v: boolean) => void,
+    ) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const b = parseOptionalCsvBool(raw, field, rowNum);
+      if (b.ok) assign(b.val);
+      else warnings.push({ code: "CSV_DISC_BOOL_INVALID", message: b.message, row: rowNum });
+    };
+    const discNum = (
+      raw: string | undefined,
+      field: string,
+      assign: (v: number) => void,
+    ) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const p = parseNumber(raw, field, rowNum);
+      if (p.ok) assign(p.value);
+      else warnings.push({ code: "CSV_DISC_NUMERIC", message: p.message, row: rowNum });
+    };
+    discBool(discEnRaw, "frequency_risk_discipline_enabled", (v) => {
+      trade.frequencyRiskDisciplineEnabled = v;
+    });
+    const discDateRaw = pick(cells, col, "discipline_trade_date");
+    if (discDateRaw?.trim()) trade.disciplineTradeDate = discDateRaw.trim();
+    const discSessRaw = pick(cells, col, "discipline_session_bucket");
+    if (discSessRaw?.trim()) trade.disciplineSessionBucket = discSessRaw.trim();
+    const discGrdRaw = pick(cells, col, "discipline_grade");
+    if (discGrdRaw?.trim()) trade.disciplineGrade = discGrdRaw.trim();
+    const discRsnRaw = pick(cells, col, "discipline_reasons");
+    if (discRsnRaw?.trim()) trade.disciplineReasons = discRsnRaw.trim();
+    discNum(pick(cells, col, "discipline_trades_so_far_today"), "discipline_trades_so_far_today", (v) => {
+      trade.disciplineTradesSoFarToday = Math.trunc(v);
+    });
+    discNum(pick(cells, col, "discipline_trades_so_far_session"), "discipline_trades_so_far_session", (v) => {
+      trade.disciplineTradesSoFarSession = Math.trunc(v);
+    });
+    discNum(pick(cells, col, "discipline_closed_r_so_far_today"), "discipline_closed_r_so_far_today", (v) => {
+      trade.disciplineClosedRSoFarToday = v;
+    });
+    discNum(
+      pick(cells, col, "discipline_consecutive_losses_before_trade"),
+      "discipline_consecutive_losses_before_trade",
+      (v) => {
+        trade.disciplineConsecutiveLossesBeforeTrade = Math.trunc(v);
+      },
+    );
+    discNum(
+      pick(cells, col, "discipline_consecutive_wins_before_trade"),
+      "discipline_consecutive_wins_before_trade",
+      (v) => {
+        trade.disciplineConsecutiveWinsBeforeTrade = Math.trunc(v);
+      },
+    );
+    discNum(pick(cells, col, "discipline_bars_since_last_trade"), "discipline_bars_since_last_trade", (v) => {
+      trade.disciplineBarsSinceLastTrade = Math.trunc(v);
+    });
+    discNum(pick(cells, col, "discipline_bars_since_last_loss"), "discipline_bars_since_last_loss", (v) => {
+      trade.disciplineBarsSinceLastLoss = Math.trunc(v);
+    });
+    discBool(
+      pick(cells, col, "discipline_daily_trade_limit_reached"),
+      "discipline_daily_trade_limit_reached",
+      (v) => {
+        trade.disciplineDailyTradeLimitReached = v;
+      },
+    );
+    discBool(
+      pick(cells, col, "discipline_session_trade_limit_reached"),
+      "discipline_session_trade_limit_reached",
+      (v) => {
+        trade.disciplineSessionTradeLimitReached = v;
+      },
+    );
+    discBool(
+      pick(cells, col, "discipline_max_consecutive_losses_reached"),
+      "discipline_max_consecutive_losses_reached",
+      (v) => {
+        trade.disciplineMaxConsecutiveLossesReached = v;
+      },
+    );
+    discBool(
+      pick(cells, col, "discipline_daily_loss_limit_reached"),
+      "discipline_daily_loss_limit_reached",
+      (v) => {
+        trade.disciplineDailyLossLimitReached = v;
+      },
+    );
+    discBool(
+      pick(cells, col, "discipline_daily_profit_protect_reached"),
+      "discipline_daily_profit_protect_reached",
+      (v) => {
+        trade.disciplineDailyProfitProtectReached = v;
+      },
+    );
+    discBool(
+      pick(cells, col, "discipline_cooldown_after_loss_active"),
+      "discipline_cooldown_after_loss_active",
+      (v) => {
+        trade.disciplineCooldownAfterLossActive = v;
+      },
+    );
+    discBool(
+      pick(cells, col, "discipline_cooldown_after_trade_active"),
+      "discipline_cooldown_after_trade_active",
+      (v) => {
+        trade.disciplineCooldownAfterTradeActive = v;
+      },
+    );
+    discBool(pick(cells, col, "discipline_overtrading_risk"), "discipline_overtrading_risk", (v) => {
+      trade.disciplineOvertradingRisk = v;
+    });
+    discBool(pick(cells, col, "discipline_revenge_trade_risk"), "discipline_revenge_trade_risk", (v) => {
+      trade.disciplineRevengeTradeRisk = v;
+    });
+    discBool(
+      pick(cells, col, "discipline_profit_giveback_risk"),
+      "discipline_profit_giveback_risk",
+      (v) => {
+        trade.disciplineProfitGivebackRisk = v;
+      },
+    );
+    discNum(pick(cells, col, "discipline_trade_result_r"), "discipline_trade_result_r", (v) => {
+      trade.disciplineTradeResultR = v;
+    });
+    discNum(
+      pick(cells, col, "discipline_closed_r_after_trade_today"),
+      "discipline_closed_r_after_trade_today",
+      (v) => {
+        trade.disciplineClosedRAfterTradeToday = v;
+      },
+    );
+    discNum(
+      pick(cells, col, "discipline_consecutive_losses_after_trade"),
+      "discipline_consecutive_losses_after_trade",
+      (v) => {
+        trade.disciplineConsecutiveLossesAfterTrade = Math.trunc(v);
+      },
+    );
+    discNum(
+      pick(cells, col, "discipline_consecutive_wins_after_trade"),
+      "discipline_consecutive_wins_after_trade",
+      (v) => {
+        trade.disciplineConsecutiveWinsAfterTrade = Math.trunc(v);
+      },
+    );
+    discNum(
+      pick(cells, col, "discipline_daily_trade_sequence"),
+      "discipline_daily_trade_sequence",
+      (v) => {
+        trade.disciplineDailyTradeSequence = Math.trunc(v);
+      },
+    );
+    discNum(
+      pick(cells, col, "discipline_session_trade_sequence"),
+      "discipline_session_trade_sequence",
+      (v) => {
+        trade.disciplineSessionTradeSequence = Math.trunc(v);
+      },
+    );
+    if (pick(cells, col, "discipline_score") !== undefined && pick(cells, col, "discipline_score")!.trim() !== "") {
+      const p = parseNumber(pick(cells, col, "discipline_score")!, "discipline_score", rowNum);
+      if (p.ok) trade.disciplineScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_DISC_NUMERIC", message: p.message, row: rowNum });
+    }
+
     const effEnRaw = pick(cells, col, "entry_fill_feasibility_enabled");
     const effStatRaw = pick(cells, col, "entry_fill_status");
     const effScrRaw = pick(cells, col, "entry_fill_feasibility_score");

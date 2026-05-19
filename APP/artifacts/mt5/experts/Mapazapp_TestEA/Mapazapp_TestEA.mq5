@@ -131,7 +131,17 @@ input int               InpVolatilityHighAtrPoints = 250;
 input int               InpVolatilityExtremeAtrPoints = 400;
 input bool              InpVolatilityScoreEnabled = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_16"
+input bool              InpEnableFrequencyRiskDisciplineV1 = true;
+input int               InpDisciplineMaxTradesPerDay = 3;
+input int               InpDisciplineMaxTradesPerSession = 2;
+input int               InpDisciplineMaxConsecutiveLosses = 2;
+input double            InpDisciplineMaxDailyLossR = -2.0;
+input double            InpDisciplineDailyProfitProtectR = 3.0;
+input int               InpDisciplineCooldownBarsAfterLoss = 4;
+input int               InpDisciplineCooldownBarsAfterTrade = 0;
+input bool              InpDisciplineScoreEnabled = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_17"
 #define BUF_EVOS_VAR_N          4
 #define BUF_EVOS_BUF_N          6
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
@@ -412,6 +422,47 @@ long            g_ssv_env_grade_b = 0;
 long            g_ssv_env_grade_c = 0;
 long            g_ssv_env_grade_weak = 0;
 long            g_ssv_env_grade_none = 0;
+
+long            g_disc_total_trade_days_count = 0;
+long            g_disc_max_trades_in_day = 0;
+long            g_disc_sum_closed_trades_all_days = 0;
+long            g_disc_days_over_trade_limit_count = 0;
+long            g_disc_sessions_over_trade_limit_count = 0;
+long            g_disc_trades_over_daily_limit_count = 0;
+long            g_disc_trades_over_session_limit_count = 0;
+long            g_disc_loss_streak_warning_count = 0;
+long            g_disc_daily_loss_limit_warning_count = 0;
+long            g_disc_profit_protect_warning_count = 0;
+long            g_disc_cooldown_after_loss_count = 0;
+long            g_disc_cooldown_after_trade_count = 0;
+long            g_disc_overtrading_risk_count = 0;
+long            g_disc_revenge_trade_risk_count = 0;
+long            g_disc_profit_giveback_risk_count = 0;
+double          g_disc_total_result_r = 0.0;
+double          g_disc_sum_daily_r_closed = 0.0;
+double          g_disc_best_daily_r = -1.0e100;
+double          g_disc_worst_daily_r = 1.0e100;
+long            g_disc_max_consecutive_losses_observed = 0;
+long            g_disc_max_consecutive_wins_observed = 0;
+double          g_disc_sum_score = 0.0;
+long            g_disc_grade_a = 0;
+long            g_disc_grade_b = 0;
+long            g_disc_grade_c = 0;
+long            g_disc_grade_weak = 0;
+long            g_disc_grade_none = 0;
+int             g_disc_closed_day_key = 0;
+int             g_disc_closed_trades_today = 0;
+double          g_disc_closed_r_today = 0.0;
+int             g_disc_consec_losses = 0;
+int             g_disc_consec_wins = 0;
+string          g_disc_active_session_bucket = "";
+int             g_disc_closed_trades_session = 0;
+datetime        g_disc_last_closed_bar_time = 0;
+datetime        g_disc_last_loss_bar_time = 0;
+int             g_disc_day_seen_key = 0;
+int             g_disc_session_over_limit_day_key = 0;
+string          g_disc_session_over_limit_bucket = "";
+int             g_disc_day_over_limit_day_key = 0;
 
 double          g_eff_sum_score = 0.0;
 double          g_eff_sum_depth_pct = 0.0;
@@ -754,6 +805,40 @@ struct MapzSessionSpreadVolatilitySnap
    string            execution_environment_reasons;
   };
 
+struct MapzFrequencyRiskDisciplineSnap
+  {
+   bool              log_enabled;
+   bool              finalized;
+   string            trade_date;
+   string            session_bucket;
+   int               trades_so_far_today;
+   int               trades_so_far_session;
+   double            closed_r_so_far_today;
+   int               consecutive_losses_before_trade;
+   int               consecutive_wins_before_trade;
+   int               bars_since_last_trade;
+   int               bars_since_last_loss;
+   bool              daily_trade_limit_reached;
+   bool              session_trade_limit_reached;
+   bool              max_consecutive_losses_reached;
+   bool              daily_loss_limit_reached;
+   bool              daily_profit_protect_reached;
+   bool              cooldown_after_loss_active;
+   bool              cooldown_after_trade_active;
+   bool              overtrading_risk;
+   bool              revenge_trade_risk;
+   bool              profit_giveback_risk;
+   double            trade_result_r;
+   double            closed_r_after_trade_today;
+   int               consecutive_losses_after_trade;
+   int               consecutive_wins_after_trade;
+   int               daily_trade_sequence;
+   int               session_trade_sequence;
+   int               score;
+   string            grade;
+   string            reasons;
+  };
+
 struct MapzEntryFillFeasibilitySnap
   {
    bool              log_enabled;
@@ -926,6 +1011,7 @@ struct MapzVirtualTrade
    MapzIfvgBisiSibiTradeSnap ifvg;
    MapzLiquidityTargetQualitySnap lqTgt;
    MapzSessionSpreadVolatilitySnap ssv;
+   MapzFrequencyRiskDisciplineSnap disc;
    MapzEntryFillFeasibilitySnap eff;
    MapzEntryVariantFeasibilitySnap ev;
    MapzEntryVariantOutcomeSimSnap evos;
@@ -5705,6 +5791,443 @@ void MapzSsvFinalize(MapzSessionSpreadVolatilitySnap &out)
   }
 
 //+------------------------------------------------------------------+
+//| E5.17 — Frequency / Risk / Overtrading discipline (diagnostic)   |
+//+------------------------------------------------------------------+
+void MapzDiscSnapClear(MapzFrequencyRiskDisciplineSnap &o)
+  {
+   o.log_enabled = false;
+   o.finalized = false;
+   o.trade_date = "";
+   o.session_bucket = "unknown";
+   o.trades_so_far_today = 0;
+   o.trades_so_far_session = 0;
+   o.closed_r_so_far_today = 0.0;
+   o.consecutive_losses_before_trade = 0;
+   o.consecutive_wins_before_trade = 0;
+   o.bars_since_last_trade = -1;
+   o.bars_since_last_loss = -1;
+   o.daily_trade_limit_reached = false;
+   o.session_trade_limit_reached = false;
+   o.max_consecutive_losses_reached = false;
+   o.daily_loss_limit_reached = false;
+   o.daily_profit_protect_reached = false;
+   o.cooldown_after_loss_active = false;
+   o.cooldown_after_trade_active = false;
+   o.overtrading_risk = false;
+   o.revenge_trade_risk = false;
+   o.profit_giveback_risk = false;
+   o.trade_result_r = 0.0;
+   o.closed_r_after_trade_today = 0.0;
+   o.consecutive_losses_after_trade = 0;
+   o.consecutive_wins_after_trade = 0;
+   o.daily_trade_sequence = 0;
+   o.session_trade_sequence = 0;
+   o.score = 0;
+   o.grade = "None";
+   o.reasons = "";
+  }
+
+//+------------------------------------------------------------------+
+int MapzDiscDayKeyFromTime(const datetime t)
+  {
+   if(t <= 0)
+      return 0;
+   MqlDateTime dt;
+   TimeToStruct(t, dt);
+   return dt.year * 10000 + dt.mon * 100 + dt.day;
+  }
+
+//+------------------------------------------------------------------+
+string MapzDiscDateWire(const datetime t)
+  {
+   if(t <= 0)
+      return "";
+   MqlDateTime dt;
+   TimeToStruct(t, dt);
+   return StringFormat("%04d-%02d-%02d", dt.year, dt.mon, dt.day);
+  }
+
+//+------------------------------------------------------------------+
+string MapzDiscGradeFromScore(const int sc)
+  {
+   if(sc >= 12)
+      return "A";
+   if(sc >= 9)
+      return "B";
+   if(sc >= 6)
+      return "C";
+   if(sc >= 3)
+      return "Weak";
+   return "None";
+  }
+
+//+------------------------------------------------------------------+
+int MapzDiscBarsSince(const datetime refTime, const datetime priorTime)
+  {
+   if(refTime <= 0 || priorTime <= 0)
+      return -1;
+   const int sh = iBarShift(g_brokerSymbol, InpExecutionTimeframe, priorTime, false);
+   const int sr = iBarShift(g_brokerSymbol, InpExecutionTimeframe, refTime, false);
+   if(sh < 0 || sr < 0)
+      return -1;
+   return sh - sr;
+  }
+
+//+------------------------------------------------------------------+
+void MapzDiscFinalizePreviousDayIfRolled(const int newDayKey)
+  {
+   if(g_disc_closed_day_key <= 0 || newDayKey <= 0 || newDayKey == g_disc_closed_day_key)
+      return;
+   g_disc_sum_daily_r_closed += g_disc_closed_r_today;
+   if(g_disc_closed_r_today > g_disc_best_daily_r)
+      g_disc_best_daily_r = g_disc_closed_r_today;
+   if(g_disc_closed_r_today < g_disc_worst_daily_r)
+      g_disc_worst_daily_r = g_disc_closed_r_today;
+   if(g_disc_closed_trades_today > g_disc_max_trades_in_day)
+      g_disc_max_trades_in_day = g_disc_closed_trades_today;
+   if(g_disc_closed_trades_today > InpDisciplineMaxTradesPerDay
+      && g_disc_day_over_limit_day_key != g_disc_closed_day_key)
+     {
+      g_disc_days_over_trade_limit_count++;
+      g_disc_day_over_limit_day_key = g_disc_closed_day_key;
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzDiscScoreAndFinalize(MapzFrequencyRiskDisciplineSnap &out)
+  {
+   if(!out.log_enabled)
+      return;
+
+   if(!InpDisciplineScoreEnabled)
+     {
+      out.score = 0;
+      out.grade = "None";
+      return;
+     }
+
+   int sc = 15;
+   if(out.trades_so_far_today == 0)
+      MapzEffAppendReasonOnce(out.reasons, "discipline_first_trade_today");
+   else if(InpDisciplineMaxTradesPerDay <= 0 || out.trades_so_far_today < InpDisciplineMaxTradesPerDay)
+      MapzEffAppendReasonOnce(out.reasons, "discipline_trade_count_ok");
+   else
+     {
+      sc -= 3;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_trade_count_high");
+     }
+
+   if(InpDisciplineMaxTradesPerSession > 0 && out.trades_so_far_session >= InpDisciplineMaxTradesPerSession)
+     {
+      sc -= 2;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_session_count_high");
+     }
+
+   if(out.consecutive_losses_before_trade == 0)
+      MapzEffAppendReasonOnce(out.reasons, "discipline_loss_streak_ok");
+   else if(out.max_consecutive_losses_reached)
+     {
+      sc -= 4;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_loss_streak_high");
+     }
+   else if(out.consecutive_losses_before_trade > 0)
+     {
+      sc -= 2;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_loss_streak_high");
+     }
+
+   if(out.daily_loss_limit_reached)
+     {
+      sc -= 3;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_daily_loss_limit_reached");
+     }
+   if(out.daily_profit_protect_reached)
+     {
+      sc -= 2;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_profit_protect_reached");
+     }
+   if(out.cooldown_after_loss_active)
+     {
+      sc -= 2;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_cooldown_loss_active");
+     }
+   if(out.cooldown_after_trade_active)
+     {
+      sc -= 1;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_cooldown_trade_active");
+     }
+   if(out.overtrading_risk)
+     {
+      sc -= 2;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_overtrading_risk");
+     }
+   if(out.revenge_trade_risk)
+     {
+      sc -= 2;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_revenge_trade_risk");
+     }
+   if(out.profit_giveback_risk)
+     {
+      sc -= 1;
+      MapzEffAppendReasonOnce(out.reasons, "discipline_profit_giveback_risk");
+     }
+
+   if(sc < 0)
+      sc = 0;
+   if(sc > 15)
+      sc = 15;
+   out.score = sc;
+   out.grade = MapzDiscGradeFromScore(sc);
+   if(out.grade == "A")
+      MapzEffAppendReasonOnce(out.reasons, "discipline_score_a");
+   else if(out.grade == "B")
+      MapzEffAppendReasonOnce(out.reasons, "discipline_score_b");
+   else if(out.grade == "C")
+      MapzEffAppendReasonOnce(out.reasons, "discipline_score_c");
+   else if(out.grade == "Weak")
+      MapzEffAppendReasonOnce(out.reasons, "discipline_score_weak");
+  }
+
+//+------------------------------------------------------------------+
+void MapzDiscBuildPreTradeSnap(const datetime refTime,
+                               const string sessionBucket,
+                               MapzFrequencyRiskDisciplineSnap &out)
+  {
+   MapzDiscSnapClear(out);
+   out.log_enabled = InpEnableFrequencyRiskDisciplineV1;
+   if(!out.log_enabled)
+     {
+      MapzEffAppendReasonOnce(out.reasons, "discipline_disabled");
+      return;
+     }
+
+   const int dayKey = MapzDiscDayKeyFromTime(refTime);
+   out.trade_date = MapzDiscDateWire(refTime);
+   out.session_bucket = sessionBucket;
+
+   MapzDiscFinalizePreviousDayIfRolled(dayKey);
+   if(dayKey != g_disc_closed_day_key)
+     {
+      g_disc_closed_day_key = dayKey;
+      g_disc_closed_trades_today = 0;
+      g_disc_closed_r_today = 0.0;
+      g_disc_consec_losses = 0;
+      g_disc_consec_wins = 0;
+      g_disc_session_over_limit_day_key = 0;
+      g_disc_session_over_limit_bucket = "";
+     }
+
+   if(g_disc_active_session_bucket != sessionBucket)
+     {
+      g_disc_active_session_bucket = sessionBucket;
+      g_disc_closed_trades_session = 0;
+     }
+
+   out.trades_so_far_today = g_disc_closed_trades_today;
+   out.trades_so_far_session = g_disc_closed_trades_session;
+   out.closed_r_so_far_today = g_disc_closed_r_today;
+   out.consecutive_losses_before_trade = g_disc_consec_losses;
+   out.consecutive_wins_before_trade = g_disc_consec_wins;
+   out.bars_since_last_trade = MapzDiscBarsSince(refTime, g_disc_last_closed_bar_time);
+   out.bars_since_last_loss = MapzDiscBarsSince(refTime, g_disc_last_loss_bar_time);
+
+   out.daily_trade_limit_reached = (InpDisciplineMaxTradesPerDay > 0
+                                    && out.trades_so_far_today >= InpDisciplineMaxTradesPerDay);
+   out.session_trade_limit_reached = (InpDisciplineMaxTradesPerSession > 0
+                                      && out.trades_so_far_session >= InpDisciplineMaxTradesPerSession);
+   out.max_consecutive_losses_reached = (InpDisciplineMaxConsecutiveLosses > 0
+                                         && out.consecutive_losses_before_trade >= InpDisciplineMaxConsecutiveLosses);
+   out.daily_loss_limit_reached = (out.closed_r_so_far_today <= InpDisciplineMaxDailyLossR);
+   out.daily_profit_protect_reached = (InpDisciplineDailyProfitProtectR > 0.0
+                                       && out.closed_r_so_far_today >= InpDisciplineDailyProfitProtectR);
+   out.cooldown_after_loss_active = (InpDisciplineCooldownBarsAfterLoss > 0
+                                     && out.consecutive_losses_before_trade > 0
+                                     && out.bars_since_last_loss >= 0
+                                     && out.bars_since_last_loss < InpDisciplineCooldownBarsAfterLoss);
+   out.cooldown_after_trade_active = (InpDisciplineCooldownBarsAfterTrade > 0
+                                      && out.bars_since_last_trade >= 0
+                                      && out.bars_since_last_trade < InpDisciplineCooldownBarsAfterTrade);
+
+   out.overtrading_risk = (out.daily_trade_limit_reached
+                           || out.session_trade_limit_reached
+                           || (InpDisciplineMaxTradesPerDay > 0
+                               && out.trades_so_far_today >= InpDisciplineMaxTradesPerDay - 1
+                               && out.trades_so_far_today > 0)
+                           || (InpDisciplineMaxTradesPerSession > 0
+                               && out.trades_so_far_session >= InpDisciplineMaxTradesPerSession - 1
+                               && out.trades_so_far_session > 0));
+
+   out.revenge_trade_risk = (out.consecutive_losses_before_trade > 0
+                             && (out.cooldown_after_loss_active
+                                 || out.max_consecutive_losses_reached
+                                 || out.daily_loss_limit_reached));
+
+   out.profit_giveback_risk = (out.daily_profit_protect_reached
+                               && out.consecutive_losses_before_trade > 0);
+
+   MapzDiscScoreAndFinalize(out);
+  }
+
+//+------------------------------------------------------------------+
+void MapzDiscFinalizeSummary(MapzFrequencyRiskDisciplineSnap &out)
+  {
+   if(!out.log_enabled || out.finalized)
+      return;
+   out.finalized = true;
+
+   if(out.daily_trade_limit_reached || out.trades_so_far_today >= InpDisciplineMaxTradesPerDay)
+      g_disc_trades_over_daily_limit_count++;
+   if(out.session_trade_limit_reached || out.trades_so_far_session >= InpDisciplineMaxTradesPerSession)
+      g_disc_trades_over_session_limit_count++;
+   if(out.max_consecutive_losses_reached || out.consecutive_losses_before_trade >= InpDisciplineMaxConsecutiveLosses)
+      g_disc_loss_streak_warning_count++;
+   if(out.daily_loss_limit_reached)
+      g_disc_daily_loss_limit_warning_count++;
+   if(out.daily_profit_protect_reached)
+      g_disc_profit_protect_warning_count++;
+   if(out.cooldown_after_loss_active)
+      g_disc_cooldown_after_loss_count++;
+   if(out.cooldown_after_trade_active)
+      g_disc_cooldown_after_trade_count++;
+   if(out.overtrading_risk)
+      g_disc_overtrading_risk_count++;
+   if(out.revenge_trade_risk)
+      g_disc_revenge_trade_risk_count++;
+   if(out.profit_giveback_risk)
+      g_disc_profit_giveback_risk_count++;
+
+   g_disc_sum_score += (double)out.score;
+   if(out.grade == "A")
+      g_disc_grade_a++;
+   else if(out.grade == "B")
+      g_disc_grade_b++;
+   else if(out.grade == "C")
+      g_disc_grade_c++;
+   else if(out.grade == "Weak")
+      g_disc_grade_weak++;
+   else
+      g_disc_grade_none++;
+  }
+
+//+------------------------------------------------------------------+
+void MapzDiscCompletePostTrade(MapzFrequencyRiskDisciplineSnap &out,
+                               const double resultR,
+                               const string outcome,
+                               const datetime closeTime)
+  {
+   if(!out.log_enabled)
+      return;
+
+   const bool countsAsClosedTrade = (StringLen(outcome) > 0
+                                     && outcome != "expired_unfilled"
+                                     && outcome != "expired_open");
+
+   out.trade_result_r = resultR;
+   if(countsAsClosedTrade)
+     {
+      const int dayKey = MapzDiscDayKeyFromTime(closeTime > 0 ? closeTime : TimeGMT());
+      if(dayKey > 0 && dayKey != g_disc_closed_day_key)
+         MapzDiscFinalizePreviousDayIfRolled(dayKey);
+      if(dayKey > 0 && dayKey != g_disc_closed_day_key)
+        {
+         g_disc_closed_day_key = dayKey;
+         g_disc_closed_trades_today = 0;
+         g_disc_closed_r_today = 0.0;
+         g_disc_consec_losses = 0;
+         g_disc_consec_wins = 0;
+        }
+
+      if(dayKey > 0 && g_disc_day_seen_key != dayKey)
+        {
+         g_disc_day_seen_key = dayKey;
+         g_disc_total_trade_days_count++;
+        }
+
+      out.daily_trade_sequence = g_disc_closed_trades_today + 1;
+      out.session_trade_sequence = g_disc_closed_trades_session + 1;
+      out.closed_r_after_trade_today = g_disc_closed_r_today + resultR;
+
+      if(outcome == "loss")
+        {
+         out.consecutive_losses_after_trade = g_disc_consec_losses + 1;
+         out.consecutive_wins_after_trade = 0;
+        }
+      else if(outcome == "win")
+        {
+         out.consecutive_losses_after_trade = 0;
+         out.consecutive_wins_after_trade = g_disc_consec_wins + 1;
+        }
+      else
+        {
+         out.consecutive_losses_after_trade = g_disc_consec_losses;
+         out.consecutive_wins_after_trade = g_disc_consec_wins;
+        }
+
+      g_disc_closed_trades_today++;
+      g_disc_closed_trades_session++;
+      g_disc_sum_closed_trades_all_days++;
+      g_disc_closed_r_today += resultR;
+      g_disc_total_result_r += resultR;
+
+      if(g_disc_closed_trades_today > g_disc_max_trades_in_day)
+         g_disc_max_trades_in_day = g_disc_closed_trades_today;
+
+      if(InpDisciplineMaxTradesPerDay > 0 && g_disc_closed_trades_today > InpDisciplineMaxTradesPerDay
+         && g_disc_day_over_limit_day_key != g_disc_closed_day_key)
+        {
+         g_disc_days_over_trade_limit_count++;
+         g_disc_day_over_limit_day_key = g_disc_closed_day_key;
+        }
+
+      if(InpDisciplineMaxTradesPerSession > 0 && g_disc_closed_trades_session > InpDisciplineMaxTradesPerSession
+         && (g_disc_session_over_limit_day_key != g_disc_closed_day_key
+             || g_disc_session_over_limit_bucket != out.session_bucket))
+        {
+         g_disc_sessions_over_trade_limit_count++;
+         g_disc_session_over_limit_day_key = g_disc_closed_day_key;
+         g_disc_session_over_limit_bucket = out.session_bucket;
+        }
+
+      g_disc_consec_losses = out.consecutive_losses_after_trade;
+      g_disc_consec_wins = out.consecutive_wins_after_trade;
+      if(g_disc_consec_losses > g_disc_max_consecutive_losses_observed)
+         g_disc_max_consecutive_losses_observed = g_disc_consec_losses;
+      if(g_disc_consec_wins > g_disc_max_consecutive_wins_observed)
+         g_disc_max_consecutive_wins_observed = g_disc_consec_wins;
+
+      if(closeTime > 0)
+        {
+         g_disc_last_closed_bar_time = closeTime;
+         if(outcome == "loss")
+            g_disc_last_loss_bar_time = closeTime;
+        }
+     }
+   else
+     {
+      out.daily_trade_sequence = 0;
+      out.session_trade_sequence = 0;
+      out.closed_r_after_trade_today = out.closed_r_so_far_today;
+      out.consecutive_losses_after_trade = out.consecutive_losses_before_trade;
+      out.consecutive_wins_after_trade = out.consecutive_wins_before_trade;
+     }
+
+   MapzDiscFinalizeSummary(out);
+  }
+
+//+------------------------------------------------------------------+
+string MapzDiscCompactSuffix(const MapzFrequencyRiskDisciplineSnap &x)
+  {
+   if(!x.log_enabled)
+      return "disc=off";
+   return StringFormat("disc_score=%d disc_grade=%s disc_ot=%d disc_rev=%d disc_pgb=%d",
+                       x.score,
+                       JsonStringEscape(x.grade),
+                       (x.overtrading_risk ? 1 : 0),
+                       (x.revenge_trade_risk ? 1 : 0),
+                       (x.profit_giveback_risk ? 1 : 0));
+  }
+
+//+------------------------------------------------------------------+
 void MapzEffSnapClear(MapzEntryFillFeasibilitySnap &o)
   {
    o.log_enabled = false;
@@ -7832,7 +8355,7 @@ string VirtualBuildDetailsCore(void)
              g_vt.bars_waiting_entry,
              g_vt.bars_held,
              JsonStringEscape(g_vt.exit_reason));
-   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc) + " " + MapzPdCompactSuffix(g_vt.pd) + " " + MapzIfvgCompactSuffix(g_vt.ifvg) + " " + MapzLqTgtCompactSuffix(g_vt.lqTgt) + " " + MapzSsvCompactSuffix(g_vt.ssv) + " " + MapzEffCompactSuffix(g_vt.eff);
+   return base + " " + MapzEqScoresToDetailsSuffix(eqp, g_vt.liq, g_vt.htf) + " " + MapzMscCompactSuffix(g_vt.msc) + " " + MapzPdCompactSuffix(g_vt.pd) + " " + MapzIfvgCompactSuffix(g_vt.ifvg) + " " + MapzLqTgtCompactSuffix(g_vt.lqTgt) + " " + MapzSsvCompactSuffix(g_vt.ssv) + " " + MapzDiscCompactSuffix(g_vt.disc) + " " + MapzEffCompactSuffix(g_vt.eff);
   }
 
 //+------------------------------------------------------------------+
@@ -7886,6 +8409,11 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
      }
    if(g_vt.ssv.log_enabled && !g_vt.ssv.finalized)
       MapzSsvFinalize(g_vt.ssv);
+   if(InpEnableFrequencyRiskDisciplineV1 && g_vt.disc.log_enabled)
+     {
+      const datetime discClose = (g_vt.exit_time > 0 ? g_vt.exit_time : g_vt.setup_time);
+      MapzDiscCompletePostTrade(g_vt.disc, g_vt.result_r, g_vt.outcome, discClose);
+     }
    const string dirW = SetupDirectionToString(g_vt.dir);
    const string biasDirW = BiasDirectionToString(g_vt.bias_enum);
    const string setupDirW = SetupDirectionToString(g_vt.setup_dir);
@@ -8135,6 +8663,35 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + IntegerToString(g_vt.ssv.execution_environment_score)
           + "," + g_vt.ssv.execution_environment_grade
           + "," + g_vt.ssv.execution_environment_reasons
+          + "," + (g_vt.disc.log_enabled ? "true" : "false")
+          + "," + g_vt.disc.trade_date
+          + "," + g_vt.disc.session_bucket
+          + "," + IntegerToString(g_vt.disc.trades_so_far_today)
+          + "," + IntegerToString(g_vt.disc.trades_so_far_session)
+          + "," + DoubleToString(g_vt.disc.closed_r_so_far_today, 3)
+          + "," + IntegerToString(g_vt.disc.consecutive_losses_before_trade)
+          + "," + IntegerToString(g_vt.disc.consecutive_wins_before_trade)
+          + "," + IntegerToString(g_vt.disc.bars_since_last_trade)
+          + "," + IntegerToString(g_vt.disc.bars_since_last_loss)
+          + "," + (g_vt.disc.daily_trade_limit_reached ? "true" : "false")
+          + "," + (g_vt.disc.session_trade_limit_reached ? "true" : "false")
+          + "," + (g_vt.disc.max_consecutive_losses_reached ? "true" : "false")
+          + "," + (g_vt.disc.daily_loss_limit_reached ? "true" : "false")
+          + "," + (g_vt.disc.daily_profit_protect_reached ? "true" : "false")
+          + "," + (g_vt.disc.cooldown_after_loss_active ? "true" : "false")
+          + "," + (g_vt.disc.cooldown_after_trade_active ? "true" : "false")
+          + "," + (g_vt.disc.overtrading_risk ? "true" : "false")
+          + "," + (g_vt.disc.revenge_trade_risk ? "true" : "false")
+          + "," + (g_vt.disc.profit_giveback_risk ? "true" : "false")
+          + "," + DoubleToString(g_vt.disc.trade_result_r, 3)
+          + "," + DoubleToString(g_vt.disc.closed_r_after_trade_today, 3)
+          + "," + IntegerToString(g_vt.disc.consecutive_losses_after_trade)
+          + "," + IntegerToString(g_vt.disc.consecutive_wins_after_trade)
+          + "," + IntegerToString(g_vt.disc.daily_trade_sequence)
+          + "," + IntegerToString(g_vt.disc.session_trade_sequence)
+          + "," + IntegerToString(g_vt.disc.score)
+          + "," + g_vt.disc.grade
+          + "," + g_vt.disc.reasons
           + "," + (g_vt.eff.log_enabled ? "true" : "false")
           + "," + g_vt.eff.fill_status
           + "," + IntegerToString(g_vt.eff.score)
@@ -8563,6 +9120,9 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
       MapzBufEvosClearTrade();
      }
 
+   if(InpEnableFrequencyRiskDisciplineV1 && g_vt.disc.log_enabled)
+      g_disc_sum_score += (double)g_vt.disc.score;
+
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
    g_tradesDataLines += row;
@@ -8583,6 +9143,7 @@ void VirtualClearTrade(void)
    MapzIfvgSnapClear(g_vt.ifvg);
    MapzLqTgtSnapClear(g_vt.lqTgt);
    MapzSsvSnapClear(g_vt.ssv);
+   MapzDiscSnapClear(g_vt.disc);
    MapzEffSnapClear(g_vt.eff);
    MapzEvSnapClear(g_vt.ev);
    MapzEvosSnapClear(g_vt.evos);
@@ -8802,6 +9363,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    MapzIfvgInitFromSetup(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.fvg_points, g_vt.ifvg);
    MapzLqTgtBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, g_vt.entry, g_vt.sl, g_vt.tp, g_vt.htf, g_vt.lqTgt);
    MapzSsvBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, cTime, g_vt.ssv);
+   MapzDiscBuildPreTradeSnap(cTime, g_vt.ssv.session_bucket, g_vt.disc);
    MapzEffInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.eff);
    MapzEvInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.liq, g_vt.msc, g_vt.ev);
    MapzEvosInitFromTrade(sdir, g_vt.entry, g_vt.sl, g_vt.tp, g_vt.ev, g_vt.evos);
@@ -9308,6 +9870,8 @@ string WriteSummaryJson(void)
    json += "  \"liquidity_target_quality_enabled\": " + (InpEnableLiquidityTargetQualityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_session_spread_volatility_v1_logic\": true,\r\n";
    json += "  \"session_spread_volatility_enabled\": " + (InpEnableSessionSpreadVolatilityV1 ? "true" : "false") + ",\r\n";
+   json += "  \"has_frequency_risk_discipline_v1_logic\": true,\r\n";
+   json += "  \"frequency_risk_discipline_enabled\": " + (InpEnableFrequencyRiskDisciplineV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_fill_feasibility_v1_logic\": true,\r\n";
    json += "  \"entry_fill_feasibility_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_variant_feasibility_v1_logic\": true,\r\n";
@@ -9563,6 +10127,55 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"execution_environment_grade_c_count\": %I64d,\r\n", g_ssv_env_grade_c);
    json += StringFormat("  \"execution_environment_grade_weak_count\": %I64d,\r\n", g_ssv_env_grade_weak);
    json += StringFormat("  \"execution_environment_grade_none_count\": %I64d,\r\n", g_ssv_env_grade_none);
+   double discSumDailyR = g_disc_sum_daily_r_closed;
+   double discBestDailyR = g_disc_best_daily_r;
+   double discWorstDailyR = g_disc_worst_daily_r;
+   long discMaxTradesInDay = g_disc_max_trades_in_day;
+   if(g_disc_closed_day_key > 0)
+     {
+      discSumDailyR += g_disc_closed_r_today;
+      if(g_disc_closed_r_today > discBestDailyR)
+         discBestDailyR = g_disc_closed_r_today;
+      if(g_disc_closed_r_today < discWorstDailyR)
+         discWorstDailyR = g_disc_closed_r_today;
+      if(g_disc_closed_trades_today > discMaxTradesInDay)
+         discMaxTradesInDay = g_disc_closed_trades_today;
+     }
+   const double avgDiscScore = (tcRows > 0 ? g_disc_sum_score / (double)tcRows : 0.0);
+   const long discDays = (g_disc_total_trade_days_count > 0 ? g_disc_total_trade_days_count : 0);
+   const double avgDiscTradesPerDay = (discDays > 0 ? (double)g_disc_sum_closed_trades_all_days / (double)discDays : 0.0);
+   const double avgDiscDailyR = (discDays > 0 ? discSumDailyR / (double)discDays : 0.0);
+   if(discBestDailyR <= -1.0e50)
+      discBestDailyR = 0.0;
+   if(discWorstDailyR >= 1.0e50)
+      discWorstDailyR = 0.0;
+   json += StringFormat("  \"discipline_total_trade_days_count\": %I64d,\r\n", g_disc_total_trade_days_count);
+   json += StringFormat("  \"discipline_max_trades_in_day\": %I64d,\r\n", discMaxTradesInDay);
+   json += StringFormat("  \"discipline_average_trades_per_day\": %.6f,\r\n", avgDiscTradesPerDay);
+   json += StringFormat("  \"discipline_days_over_trade_limit_count\": %I64d,\r\n", g_disc_days_over_trade_limit_count);
+   json += StringFormat("  \"discipline_sessions_over_trade_limit_count\": %I64d,\r\n", g_disc_sessions_over_trade_limit_count);
+   json += StringFormat("  \"discipline_trades_over_daily_limit_count\": %I64d,\r\n", g_disc_trades_over_daily_limit_count);
+   json += StringFormat("  \"discipline_trades_over_session_limit_count\": %I64d,\r\n", g_disc_trades_over_session_limit_count);
+   json += StringFormat("  \"discipline_loss_streak_warning_count\": %I64d,\r\n", g_disc_loss_streak_warning_count);
+   json += StringFormat("  \"discipline_daily_loss_limit_warning_count\": %I64d,\r\n", g_disc_daily_loss_limit_warning_count);
+   json += StringFormat("  \"discipline_profit_protect_warning_count\": %I64d,\r\n", g_disc_profit_protect_warning_count);
+   json += StringFormat("  \"discipline_cooldown_after_loss_count\": %I64d,\r\n", g_disc_cooldown_after_loss_count);
+   json += StringFormat("  \"discipline_cooldown_after_trade_count\": %I64d,\r\n", g_disc_cooldown_after_trade_count);
+   json += StringFormat("  \"discipline_overtrading_risk_count\": %I64d,\r\n", g_disc_overtrading_risk_count);
+   json += StringFormat("  \"discipline_revenge_trade_risk_count\": %I64d,\r\n", g_disc_revenge_trade_risk_count);
+   json += StringFormat("  \"discipline_profit_giveback_risk_count\": %I64d,\r\n", g_disc_profit_giveback_risk_count);
+   json += StringFormat("  \"discipline_total_result_r\": %.6f,\r\n", g_disc_total_result_r);
+   json += StringFormat("  \"discipline_average_daily_r\": %.6f,\r\n", avgDiscDailyR);
+   json += StringFormat("  \"discipline_best_daily_r\": %.6f,\r\n", discBestDailyR);
+   json += StringFormat("  \"discipline_worst_daily_r\": %.6f,\r\n", discWorstDailyR);
+   json += StringFormat("  \"discipline_max_consecutive_losses_observed\": %I64d,\r\n", g_disc_max_consecutive_losses_observed);
+   json += StringFormat("  \"discipline_max_consecutive_wins_observed\": %I64d,\r\n", g_disc_max_consecutive_wins_observed);
+   json += StringFormat("  \"average_discipline_score\": %.6f,\r\n", avgDiscScore);
+   json += StringFormat("  \"discipline_grade_a_count\": %I64d,\r\n", g_disc_grade_a);
+   json += StringFormat("  \"discipline_grade_b_count\": %I64d,\r\n", g_disc_grade_b);
+   json += StringFormat("  \"discipline_grade_c_count\": %I64d,\r\n", g_disc_grade_c);
+   json += StringFormat("  \"discipline_grade_weak_count\": %I64d,\r\n", g_disc_grade_weak);
+   json += StringFormat("  \"discipline_grade_none_count\": %I64d,\r\n", g_disc_grade_none);
    const double avgEffScore = (tcRows > 0 ? g_eff_sum_score / (double)tcRows : 0.0);
    const double avgEffDepth = (tcRows > 0 ? g_eff_sum_depth_pct / (double)tcRows : 0.0);
    const double avgEffRetrace = (tcRows > 0 ? g_eff_sum_max_retrace_pct / (double)tcRows : 0.0);
@@ -9683,6 +10296,15 @@ string WriteSummaryJson(void)
    json += StringFormat("    \"volatility_high_atr_points\": %d,\r\n", InpVolatilityHighAtrPoints);
    json += StringFormat("    \"volatility_extreme_atr_points\": %d,\r\n", InpVolatilityExtremeAtrPoints);
    json += "    \"volatility_score_enabled\": " + (InpVolatilityScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"frequency_risk_discipline_v1_enabled\": " + (InpEnableFrequencyRiskDisciplineV1 ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"discipline_max_trades_per_day\": %d,\r\n", InpDisciplineMaxTradesPerDay);
+   json += StringFormat("    \"discipline_max_trades_per_session\": %d,\r\n", InpDisciplineMaxTradesPerSession);
+   json += StringFormat("    \"discipline_max_consecutive_losses\": %d,\r\n", InpDisciplineMaxConsecutiveLosses);
+   json += StringFormat("    \"discipline_max_daily_loss_r\": %.6f,\r\n", InpDisciplineMaxDailyLossR);
+   json += StringFormat("    \"discipline_daily_profit_protect_r\": %.6f,\r\n", InpDisciplineDailyProfitProtectR);
+   json += StringFormat("    \"discipline_cooldown_bars_after_loss\": %d,\r\n", InpDisciplineCooldownBarsAfterLoss);
+   json += StringFormat("    \"discipline_cooldown_bars_after_trade\": %d,\r\n", InpDisciplineCooldownBarsAfterTrade);
+   json += "    \"discipline_score_enabled\": " + (InpDisciplineScoreEnabled ? "true" : "false") + ",\r\n";
    json += "    \"entry_fill_feasibility_v1_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += StringFormat("    \"entry_fill_feasibility_near_miss_points\": %d,\r\n", InpEntryFillFeasibilityNearMissPoints);
    json += "    \"entry_fill_feasibility_score_enabled\": " + (InpEntryFillFeasibilityScoreEnabled ? "true" : "false") + ",\r\n";
@@ -9709,7 +10331,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,ifvg_bisi_sibi_enabled,fvg_class,fvg_direction,fvg_upper_price,fvg_lower_price,fvg_ce_price,fvg_size_points,fvg_age_bars_at_entry,fvg_mitigation_state,fvg_mitigation_depth_pct,fvg_ce_touched,fvg_fully_filled,fvg_wick_only_fill,ifvg_inversion_detected,ifvg_inversion_confirmed_close,ifvg_inversion_wick_only,ifvg_inversion_bars_after_fvg,ifvg_inversion_close_price,ifvg_retest_detected,ifvg_retest_bars_after_inversion,ifvg_retest_depth_pct,ifvg_valid_for_trade_direction,ifvg_conflict_with_trade_direction,ifvg_bisi_sibi_score,ifvg_bisi_sibi_grade,ifvg_bisi_sibi_reasons,liquidity_target_quality_enabled,liquidity_target_direction,liquidity_target_official_tp_price,liquidity_target_official_tp_distance_points,liquidity_target_nearest_price,liquidity_target_nearest_type,liquidity_target_nearest_distance_points,liquidity_target_reached_by_official_tp,liquidity_target_tp_before_nearest_liquidity,liquidity_target_tp_beyond_nearest_liquidity,liquidity_target_too_far_beyond_nearest_liquidity,liquidity_target_has_equal_level,liquidity_target_equal_level_price,liquidity_target_equal_level_distance_points,liquidity_target_has_swing_target,liquidity_target_swing_price,liquidity_target_swing_distance_points,liquidity_target_has_htf_external_target,liquidity_target_htf_external_price,liquidity_target_htf_external_distance_points,liquidity_target_supported,liquidity_target_conflict,liquidity_target_score,liquidity_target_grade,liquidity_target_reasons,session_spread_volatility_enabled,session_bucket,session_phase,session_hour,session_timezone_offset_hours,is_asian_session,is_london_session,is_new_york_session,is_london_new_york_overlap,is_off_session,spread_context_enabled,spread_points,spread_bucket,spread_is_warning,spread_is_high,spread_is_extreme,volatility_context_enabled,volatility_atr_points,volatility_bucket,volatility_is_low,volatility_is_high,volatility_is_extreme,volatility_range_points,volatility_range_to_atr_ratio,execution_environment_score,execution_environment_grade,execution_environment_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_edge_missed_by_points,entry_variant_25_missed_by_points,entry_variant_50_missed_by_points,entry_variant_75_missed_by_points,entry_variant_adaptive_missed_by_points,entry_variant_edge_bars_to_touch,entry_variant_25_bars_to_touch,entry_variant_50_bars_to_touch,entry_variant_75_bars_to_touch,entry_variant_adaptive_bars_to_touch,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,entry_variant_outcome_sim_enabled,entry_variant_outcome_sim_reasons,entry_variant_edge_sim_status,entry_variant_edge_sim_result_r,entry_variant_edge_sim_entry_price,entry_variant_edge_sim_sl_price,entry_variant_edge_sim_tp_price,entry_variant_edge_sim_risk_points,entry_variant_edge_sim_effective_rr,entry_variant_edge_sim_bars_to_fill,entry_variant_edge_sim_bars_to_close,entry_variant_edge_sim_ambiguous,entry_variant_edge_sim_invalid_risk,entry_variant_25_sim_status,entry_variant_25_sim_result_r,entry_variant_25_sim_entry_price,entry_variant_25_sim_sl_price,entry_variant_25_sim_tp_price,entry_variant_25_sim_risk_points,entry_variant_25_sim_effective_rr,entry_variant_25_sim_bars_to_fill,entry_variant_25_sim_bars_to_close,entry_variant_25_sim_ambiguous,entry_variant_25_sim_invalid_risk,entry_variant_50_sim_status,entry_variant_50_sim_result_r,entry_variant_50_sim_entry_price,entry_variant_50_sim_sl_price,entry_variant_50_sim_tp_price,entry_variant_50_sim_risk_points,entry_variant_50_sim_effective_rr,entry_variant_50_sim_bars_to_fill,entry_variant_50_sim_bars_to_close,entry_variant_50_sim_ambiguous,entry_variant_50_sim_invalid_risk,entry_variant_75_sim_status,entry_variant_75_sim_result_r,entry_variant_75_sim_entry_price,entry_variant_75_sim_sl_price,entry_variant_75_sim_tp_price,entry_variant_75_sim_risk_points,entry_variant_75_sim_effective_rr,entry_variant_75_sim_bars_to_fill,entry_variant_75_sim_bars_to_close,entry_variant_75_sim_ambiguous,entry_variant_75_sim_invalid_risk,entry_variant_adaptive_sim_status,entry_variant_adaptive_sim_result_r,entry_variant_adaptive_sim_entry_price,entry_variant_adaptive_sim_sl_price,entry_variant_adaptive_sim_tp_price,entry_variant_adaptive_sim_risk_points,entry_variant_adaptive_sim_effective_rr,entry_variant_adaptive_sim_bars_to_fill,entry_variant_adaptive_sim_bars_to_close,entry_variant_adaptive_sim_ambiguous,entry_variant_adaptive_sim_invalid_risk,entry_variant_best_sim_variant,entry_variant_best_sim_result_r,entry_variant_best_sim_status,entry_variant_best_sim_reasons,entry_quality_session_bucket,entry_quality_trade_window_status,entry_quality_spread_status,entry_quality_news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,ifvg_bisi_sibi_enabled,fvg_class,fvg_direction,fvg_upper_price,fvg_lower_price,fvg_ce_price,fvg_size_points,fvg_age_bars_at_entry,fvg_mitigation_state,fvg_mitigation_depth_pct,fvg_ce_touched,fvg_fully_filled,fvg_wick_only_fill,ifvg_inversion_detected,ifvg_inversion_confirmed_close,ifvg_inversion_wick_only,ifvg_inversion_bars_after_fvg,ifvg_inversion_close_price,ifvg_retest_detected,ifvg_retest_bars_after_inversion,ifvg_retest_depth_pct,ifvg_valid_for_trade_direction,ifvg_conflict_with_trade_direction,ifvg_bisi_sibi_score,ifvg_bisi_sibi_grade,ifvg_bisi_sibi_reasons,liquidity_target_quality_enabled,liquidity_target_direction,liquidity_target_official_tp_price,liquidity_target_official_tp_distance_points,liquidity_target_nearest_price,liquidity_target_nearest_type,liquidity_target_nearest_distance_points,liquidity_target_reached_by_official_tp,liquidity_target_tp_before_nearest_liquidity,liquidity_target_tp_beyond_nearest_liquidity,liquidity_target_too_far_beyond_nearest_liquidity,liquidity_target_has_equal_level,liquidity_target_equal_level_price,liquidity_target_equal_level_distance_points,liquidity_target_has_swing_target,liquidity_target_swing_price,liquidity_target_swing_distance_points,liquidity_target_has_htf_external_target,liquidity_target_htf_external_price,liquidity_target_htf_external_distance_points,liquidity_target_supported,liquidity_target_conflict,liquidity_target_score,liquidity_target_grade,liquidity_target_reasons,session_spread_volatility_enabled,session_bucket,session_phase,session_hour,session_timezone_offset_hours,is_asian_session,is_london_session,is_new_york_session,is_london_new_york_overlap,is_off_session,spread_context_enabled,spread_points,spread_bucket,spread_is_warning,spread_is_high,spread_is_extreme,volatility_context_enabled,volatility_atr_points,volatility_bucket,volatility_is_low,volatility_is_high,volatility_is_extreme,volatility_range_points,volatility_range_to_atr_ratio,execution_environment_score,execution_environment_grade,execution_environment_reasons,frequency_risk_discipline_enabled,discipline_trade_date,discipline_session_bucket,discipline_trades_so_far_today,discipline_trades_so_far_session,discipline_closed_r_so_far_today,discipline_consecutive_losses_before_trade,discipline_consecutive_wins_before_trade,discipline_bars_since_last_trade,discipline_bars_since_last_loss,discipline_daily_trade_limit_reached,discipline_session_trade_limit_reached,discipline_max_consecutive_losses_reached,discipline_daily_loss_limit_reached,discipline_daily_profit_protect_reached,discipline_cooldown_after_loss_active,discipline_cooldown_after_trade_active,discipline_overtrading_risk,discipline_revenge_trade_risk,discipline_profit_giveback_risk,discipline_trade_result_r,discipline_closed_r_after_trade_today,discipline_consecutive_losses_after_trade,discipline_consecutive_wins_after_trade,discipline_daily_trade_sequence,discipline_session_trade_sequence,discipline_score,discipline_grade,discipline_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_edge_missed_by_points,entry_variant_25_missed_by_points,entry_variant_50_missed_by_points,entry_variant_75_missed_by_points,entry_variant_adaptive_missed_by_points,entry_variant_edge_bars_to_touch,entry_variant_25_bars_to_touch,entry_variant_50_bars_to_touch,entry_variant_75_bars_to_touch,entry_variant_adaptive_bars_to_touch,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,entry_variant_outcome_sim_enabled,entry_variant_outcome_sim_reasons,entry_variant_edge_sim_status,entry_variant_edge_sim_result_r,entry_variant_edge_sim_entry_price,entry_variant_edge_sim_sl_price,entry_variant_edge_sim_tp_price,entry_variant_edge_sim_risk_points,entry_variant_edge_sim_effective_rr,entry_variant_edge_sim_bars_to_fill,entry_variant_edge_sim_bars_to_close,entry_variant_edge_sim_ambiguous,entry_variant_edge_sim_invalid_risk,entry_variant_25_sim_status,entry_variant_25_sim_result_r,entry_variant_25_sim_entry_price,entry_variant_25_sim_sl_price,entry_variant_25_sim_tp_price,entry_variant_25_sim_risk_points,entry_variant_25_sim_effective_rr,entry_variant_25_sim_bars_to_fill,entry_variant_25_sim_bars_to_close,entry_variant_25_sim_ambiguous,entry_variant_25_sim_invalid_risk,entry_variant_50_sim_status,entry_variant_50_sim_result_r,entry_variant_50_sim_entry_price,entry_variant_50_sim_sl_price,entry_variant_50_sim_tp_price,entry_variant_50_sim_risk_points,entry_variant_50_sim_effective_rr,entry_variant_50_sim_bars_to_fill,entry_variant_50_sim_bars_to_close,entry_variant_50_sim_ambiguous,entry_variant_50_sim_invalid_risk,entry_variant_75_sim_status,entry_variant_75_sim_result_r,entry_variant_75_sim_entry_price,entry_variant_75_sim_sl_price,entry_variant_75_sim_tp_price,entry_variant_75_sim_risk_points,entry_variant_75_sim_effective_rr,entry_variant_75_sim_bars_to_fill,entry_variant_75_sim_bars_to_close,entry_variant_75_sim_ambiguous,entry_variant_75_sim_invalid_risk,entry_variant_adaptive_sim_status,entry_variant_adaptive_sim_result_r,entry_variant_adaptive_sim_entry_price,entry_variant_adaptive_sim_sl_price,entry_variant_adaptive_sim_tp_price,entry_variant_adaptive_sim_risk_points,entry_variant_adaptive_sim_effective_rr,entry_variant_adaptive_sim_bars_to_fill,entry_variant_adaptive_sim_bars_to_close,entry_variant_adaptive_sim_ambiguous,entry_variant_adaptive_sim_invalid_risk,entry_variant_best_sim_variant,entry_variant_best_sim_result_r,entry_variant_best_sim_status,entry_variant_best_sim_reasons,entry_quality_session_bucket,entry_quality_trade_window_status,entry_quality_spread_status,entry_quality_news_mode";
   }
 
 //+------------------------------------------------------------------+
