@@ -77,6 +77,11 @@ export const PREMIUM_DISCOUNT_CALIBRATION_COLUMNS = ["premium_discount_score"] a
 
 export type PremiumDiscountCalibrationColumn = (typeof PREMIUM_DISCOUNT_CALIBRATION_COLUMNS)[number];
 
+/** E5.14 optional IFVG/BISI/SIBI observation score when CSV includes `ifvg_bisi_sibi_score`. */
+export const IFVG_BISI_SIBI_CALIBRATION_COLUMNS = ["ifvg_bisi_sibi_score"] as const;
+
+export type IfvgBisiSibiCalibrationColumn = (typeof IFVG_BISI_SIBI_CALIBRATION_COLUMNS)[number];
+
 /**
  * E5.13.2 optional Entry Fill Feasibility post-candidate diagnostic score when CSV includes
  * `entry_fill_feasibility_score`. Not a pre-trade operational gate.
@@ -229,6 +234,10 @@ export interface TestEaScoreCalibrationBundleAnalysis {
    */
   entry_variant_feasibility_component_stats: Partial<
     Record<EntryVariantFeasibilityCalibrationColumn, TestEaScoreComponentStats>
+  > | null;
+  /** Present when trades CSV includes E5.14 `ifvg_bisi_sibi_score`. */
+  ifvg_bisi_sibi_component_stats: Partial<
+    Record<IfvgBisiSibiCalibrationColumn, TestEaScoreComponentStats>
   > | null;
 }
 
@@ -392,6 +401,8 @@ export interface TradeScoreAuxiliary {
   entry_fill_feasibility: Partial<Record<EntryFillFeasibilityCalibrationColumn, number | null>> | null;
   /** E5.13.4 optional Entry Variant Feasibility hypothetical diagnostic when CSV includes `entry_variant_feasibility_score`. */
   entry_variant_feasibility: Partial<Record<EntryVariantFeasibilityCalibrationColumn, number | null>> | null;
+  /** E5.14 optional IFVG/BISI/SIBI observation score when CSV includes `ifvg_bisi_sibi_score`. */
+  ifvg_bisi_sibi: Partial<Record<IfvgBisiSibiCalibrationColumn, number | null>> | null;
   missing_raw: string;
   missing_tokens: string[];
 }
@@ -409,6 +420,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   hasPremiumDiscountScoreColumn: boolean;
   hasEntryFillFeasibilityScoreColumn: boolean;
   hasEntryVariantFeasibilityScoreColumn: boolean;
+  hasIfvgBisiSibiScoreColumn: boolean;
   warnings: string[];
 } {
   const warnings: string[] = [];
@@ -428,6 +440,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       hasPremiumDiscountScoreColumn: false,
       hasEntryFillFeasibilityScoreColumn: false,
       hasEntryVariantFeasibilityScoreColumn: false,
+      hasIfvgBisiSibiScoreColumn: false,
       warnings,
     };
   }
@@ -443,6 +456,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   const hasPremiumDiscountScoreColumn = col.has("premium_discount_score");
   const hasEntryFillFeasibilityScoreColumn = col.has("entry_fill_feasibility_score");
   const hasEntryVariantFeasibilityScoreColumn = col.has("entry_variant_feasibility_score");
+  const hasIfvgBisiSibiScoreColumn = col.has("ifvg_bisi_sibi_score");
 
   const emptyComponents = (): Record<ScoreComponentColumn, number | null> => ({
     htf_narrative_score: null,
@@ -541,6 +555,14 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       }
     }
 
+    let ifvg_bisi_sibi: Partial<Record<IfvgBisiSibiCalibrationColumn, number | null>> | null = null;
+    if (hasIfvgBisiSibiScoreColumn) {
+      ifvg_bisi_sibi = {};
+      for (const c of IFVG_BISI_SIBI_CALIBRATION_COLUMNS) {
+        ifvg_bisi_sibi[c] = parseFiniteNumber(pick(cells, col, c));
+      }
+    }
+
     const aux: TradeScoreAuxiliary = {
       entry_quality_grade: pick(cells, col, "entry_quality_grade")?.trim() ?? null,
       score: parseFiniteNumber(pick(cells, col, "score_total")),
@@ -555,6 +577,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       premium_discount,
       entry_fill_feasibility,
       entry_variant_feasibility,
+      ifvg_bisi_sibi,
       missing_raw: missingRaw,
       missing_tokens,
     };
@@ -573,6 +596,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
     hasPremiumDiscountScoreColumn,
     hasEntryFillFeasibilityScoreColumn,
     hasEntryVariantFeasibilityScoreColumn,
+    hasIfvgBisiSibiScoreColumn,
     warnings,
   };
 }
@@ -1122,6 +1146,50 @@ function buildEntryVariantFeasibilityComponentStats(
   return any ? out : null;
 }
 
+function buildIfvgBisiSibiComponentStats(
+  rows: { trade: BacktestTrade; aux: TradeScoreAuxiliary | undefined }[],
+): Partial<Record<IfvgBisiSibiCalibrationColumn, TestEaScoreComponentStats>> | null {
+  const out: Partial<Record<IfvgBisiSibiCalibrationColumn, TestEaScoreComponentStats>> = {};
+  let any = false;
+  for (const col of IFVG_BISI_SIBI_CALIBRATION_COLUMNS) {
+    const vals: number[] = [];
+    const byOutcome: Partial<Record<TestEaScoreOutcomeGroup, { sum: number; count: number }>> = {};
+    let allSum = 0;
+    let allCnt = 0;
+    for (const { trade, aux } of rows) {
+      const v = aux?.ifvg_bisi_sibi?.[col];
+      if (v == null || !Number.isFinite(v)) continue;
+      any = true;
+      vals.push(v);
+      allSum += v;
+      allCnt += 1;
+      const g = outcomeGroup(trade);
+      const cur = byOutcome[g] ?? { sum: 0, count: 0 };
+      cur.sum += v;
+      cur.count += 1;
+      byOutcome[g] = cur;
+    }
+    const byOutFin: TestEaScoreComponentStats["by_outcome"] = {};
+    if (allCnt > 0) byOutFin.all = { count: allCnt, average: allSum / allCnt };
+    for (const [k, v] of Object.entries(byOutcome)) {
+      const og = k as TestEaScoreOutcomeGroup;
+      byOutFin[og] = { count: v!.count, average: v!.count > 0 ? v!.sum / v!.count : null };
+    }
+    if (vals.length === 0) {
+      out[col] = { min: null, max: null, average: null, by_outcome: byOutFin };
+    } else {
+      const sorted = [...vals].sort((a, b) => a - b);
+      out[col] = {
+        min: sorted[0]!,
+        max: sorted[sorted.length - 1]!,
+        average: average(vals),
+        by_outcome: byOutFin,
+      };
+    }
+  }
+  return any ? out : null;
+}
+
 function missingFrequency(rows: { aux: TradeScoreAuxiliary | undefined }[]): Record<string, number> {
   const freq: Record<string, number> = {};
   for (const { aux } of rows) {
@@ -1207,6 +1275,7 @@ export function analyzeTestEaScoreCalibrationFromTexts(
     premium_discount_component_stats: null,
     entry_fill_feasibility_component_stats: null,
     entry_variant_feasibility_component_stats: null,
+    ifvg_bisi_sibi_component_stats: null,
   };
 
   let summary: Record<string, unknown>;
@@ -1437,6 +1506,9 @@ export function analyzeTestEaScoreCalibrationFromTexts(
       : null,
     entry_variant_feasibility_component_stats: auxParse.hasEntryVariantFeasibilityScoreColumn
       ? buildEntryVariantFeasibilityComponentStats(merged)
+      : null,
+    ifvg_bisi_sibi_component_stats: auxParse.hasIfvgBisiSibiScoreColumn
+      ? buildIfvgBisiSibiComponentStats(merged)
       : null,
   };
 

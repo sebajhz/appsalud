@@ -91,6 +91,7 @@ test("G — summary flags: IFVG on; daily bias on; tester orders off; pipeline n
   assert.match(src, /\\"has_premium_discount_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_entry_fill_feasibility_v1_logic\\"\s*:\s*true/);
   assert.match(src, /\\"has_entry_variant_feasibility_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /\\"has_ifvg_bisi_sibi_v1_logic\\"\s*:\s*true/);
 });
 
 test("H — Daily Bias V1 + gate markers", () => {
@@ -233,6 +234,11 @@ test("Q — samples: summary has_full false; events include setup + virtual flow
   assert.ok(trades[0]!.includes("liquidity_chain_reaction_failure_reason"));
   assert.ok(trades[0]!.includes("htf_structure_score"));
   assert.ok(trades[0]!.includes("premium_discount_score"));
+  assert.equal(summary["has_ifvg_bisi_sibi_v1_logic"], true);
+  assert.equal(summary["ifvg_bisi_sibi_enabled"], true);
+  assert.ok(trades[0]!.includes("ifvg_bisi_sibi_enabled"));
+  assert.ok(trades[0]!.includes("fvg_class"));
+  assert.ok(trades[0]!.includes("ifvg_bisi_sibi_score"));
   assert.ok(trades[0]!.includes("pd_range_high"));
   assert.ok(trades[0]!.includes("pd_midpoint_50"));
   assert.ok(trades[0]!.includes("pd_position_pct"));
@@ -322,7 +328,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_13_6_3"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_14"/);
   assert.match(src, /input bool\s+InpEnablePremiumDiscountV1\s*=\s*true/);
   assert.match(src, /input int\s+InpPremiumDiscountSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpPremiumDiscountMaxBars\s*=\s*200/);
@@ -493,25 +499,53 @@ test("Z — E5.8 + E5.10 + E5.10.2 + E5.10.4: score field tokens + liquidity cha
 
 test("AA — E5.13.6.11 Buffered EVOS diagnostics (summary-only; no orders)", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /MZP_TestEA_E5_13_6_11/);
   assert.match(src, /InpEnableBufferedEvosV1/);
   assert.match(src, /InpBufferedEvosBufferA_Points/);
   assert.match(src, /InpBufferedEvosBufferF_Points/);
   assert.match(src, /InpBufferedEvosMinEffectiveRr/);
   assert.match(src, /\\"has_buffered_evos_v1_logic\\"\s*:\s*true/);
-  assert.match(src, /buffered_evos_edge_b0_filled_count/);
-  assert.match(src, /buffered_evos_edge_b30_fragile_count/);
-  assert.match(src, /buffered_evos_p25_b30_total_r/);
-  assert.match(src, /buffered_evos_p50_b0_total_r/);
-  assert.match(src, /buffered_evos_adaptive_b50_expectancy_r/);
+  assert.match(src, /const string keyBase = "buffered_evos_"/);
+  assert.match(src, /MapzBufEvosAppendRollup/);
+  assert.match(src, /_filled_count/);
+  assert.match(src, /_fragile_count/);
+  assert.match(src, /_expectancy_r/);
   assert.match(src, /buffered_evos_best_variant_by_expectancy_b30/);
-  assert.match(src, /buffered_evos_edge_b30_wins_failing_min_effective_rr_count/);
+  assert.match(src, /wins_failing_min_effective_rr_count/);
   assert.match(src, /MapzBufEvosTrackBar/);
   assert.equal(
     /MapzBufferedEvosRollup\s*&\s*\w+\s*=\s*g_buf_evos_rollups/.test(src),
     false,
     "MQL5 forbids local reference aliases to g_buf_evos_rollups[][] elements",
   );
+  assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
+  assert.match(src, /entry_variant_sim_p50_official_control/);
+  for (const bad of FORBIDDEN_SUBSTRINGS) {
+    assert.equal(src.includes(bad), false, `must not contain ${bad}`);
+  }
+});
+
+test("AB — E5.14 IFVG / BISI / SIBI classification V1 (export-only; no orders)", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_14"/);
+  assert.match(src, /input bool\s+InpEnableIfvgBisiSibiV1\s*=\s*true/);
+  assert.match(src, /input int\s+InpIfvgBisiSibiMaxBars\s*=\s*200/);
+  assert.match(src, /input bool\s+InpIfvgRequireCloseInversion\s*=\s*true/);
+  assert.match(src, /input bool\s+InpIfvgTrackRetest\s*=\s*true/);
+  assert.match(src, /input bool\s+InpIfvgScoreEnabled\s*=\s*true/);
+  assert.match(src, /\\"has_ifvg_bisi_sibi_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /ifvg_bisi_sibi_v1_enabled/);
+  assert.match(src, /ifvg_bisi_count/);
+  assert.match(src, /average_ifvg_bisi_sibi_score/);
+  assert.match(src, /ifvg_bisi_sibi_grade_a_count/);
+  assert.match(src, /MapzIfvgInitFromSetup/);
+  assert.match(src, /MapzIfvgTrackBar/);
+  assert.match(src, /MapzIfvgFinalize/);
+  assert.match(src, /fvg_class/);
+  assert.match(src, /fvg_mitigation_state/);
+  assert.match(src, /ifvg_inversion_confirmed_close/);
+  assert.match(src, /ifvg_bisi_sibi_score/);
+  assert.match(src, /ifvg_bisi_sibi_reasons/);
+  assert.match(src, /MapzIfvgCompactSuffix/);
   assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
   assert.match(src, /entry_variant_sim_p50_official_control/);
   for (const bad of FORBIDDEN_SUBSTRINGS) {

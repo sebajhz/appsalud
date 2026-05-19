@@ -170,7 +170,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.13.6.8 (repo) —** edge robustness audit — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md); CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **E5.13.6.9 (docs) —** edge robustness evidence — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md); PASS; **no** aprobar edge.
 - **E5.13.6.10 (docs) —** Buffered EVOS decision — [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md); MQL5 required; manual-control guardrail.
-- **Siguiente:** **E5.14** IFVG / BISI / SIBI — ver [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
+- **E5.14 (export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md). **Siguiente (operador):** compilar `MZP_TestEA_E5_14`, smoke ST, validar bundle.
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -260,6 +260,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.13.6.11 | **MQL5 Buffered EVOS diagnostics** | **completed** | Cursor | `MZP_TestEA_E5_13_6_11` — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). | **E5.13.6.12** |
 | E5.13.6.12 | **Buffered EVOS smoke evidence** | **completed** | Operator + docs | ST PASS — [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md). | **E5.13.6.13** |
 | E5.13.6.13 | **Entry candidate policy (research)** | **completed** | Docs | [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). | **E5.14** |
+| E5.14 | **IFVG / BISI / SIBI export V1** | **completed (repo)** | MQL5 + TS | [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md). Operator smoke pending. | post-E5.14 research |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |

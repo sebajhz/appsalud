@@ -934,6 +934,144 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     if (pdGrdRaw?.trim()) trade.premiumDiscountGrade = pdGrdRaw.trim();
     if (pdRsnRaw?.trim()) trade.premiumDiscountReasons = pdRsnRaw.trim();
 
+    const ifvgEnRaw = pick(cells, col, "ifvg_bisi_sibi_enabled");
+    const fvgClassRaw = pick(cells, col, "fvg_class");
+    const fvgDirRaw = pick(cells, col, "fvg_direction");
+    const fvgUpRaw = pick(cells, col, "fvg_upper_price");
+    const fvgLoRaw = pick(cells, col, "fvg_lower_price");
+    const fvgCeRaw = pick(cells, col, "fvg_ce_price");
+    const fvgSzRaw = pick(cells, col, "fvg_size_points");
+    const fvgAgeRaw = pick(cells, col, "fvg_age_bars_at_entry");
+    const fvgMitRaw = pick(cells, col, "fvg_mitigation_state");
+    const fvgMitDpRaw = pick(cells, col, "fvg_mitigation_depth_pct");
+    const fvgCeTRaw = pick(cells, col, "fvg_ce_touched");
+    const fvgFillRaw = pick(cells, col, "fvg_fully_filled");
+    const fvgWickRaw = pick(cells, col, "fvg_wick_only_fill");
+    const ifvgInvDetRaw = pick(cells, col, "ifvg_inversion_detected");
+    const ifvgInvCloseRaw = pick(cells, col, "ifvg_inversion_confirmed_close");
+    const ifvgInvWickRaw = pick(cells, col, "ifvg_inversion_wick_only");
+    const ifvgInvBarsRaw = pick(cells, col, "ifvg_inversion_bars_after_fvg");
+    const ifvgInvPxRaw = pick(cells, col, "ifvg_inversion_close_price");
+    const ifvgRetDetRaw = pick(cells, col, "ifvg_retest_detected");
+    const ifvgRetBarsRaw = pick(cells, col, "ifvg_retest_bars_after_inversion");
+    const ifvgRetDpRaw = pick(cells, col, "ifvg_retest_depth_pct");
+    const ifvgValRaw = pick(cells, col, "ifvg_valid_for_trade_direction");
+    const ifvgCnfRaw = pick(cells, col, "ifvg_conflict_with_trade_direction");
+    const ifvgScrRaw = pick(cells, col, "ifvg_bisi_sibi_score");
+    const ifvgGrdRaw = pick(cells, col, "ifvg_bisi_sibi_grade");
+    const ifvgRsnRaw = pick(cells, col, "ifvg_bisi_sibi_reasons");
+
+    if (ifvgEnRaw !== undefined && ifvgEnRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(ifvgEnRaw, "ifvg_bisi_sibi_enabled", rowNum);
+      if (b.ok) trade.ifvgBisiSibiEnabled = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (fvgClassRaw?.trim()) trade.fvgClass = fvgClassRaw.trim();
+    if (fvgDirRaw?.trim()) trade.fvgDirection = fvgDirRaw.trim();
+    if (fvgUpRaw !== undefined && fvgUpRaw.trim() !== "") {
+      const p = parseNumber(fvgUpRaw, "fvg_upper_price", rowNum);
+      if (p.ok) trade.fvgUpperPrice = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (fvgLoRaw !== undefined && fvgLoRaw.trim() !== "") {
+      const p = parseNumber(fvgLoRaw, "fvg_lower_price", rowNum);
+      if (p.ok) trade.fvgLowerPrice = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (fvgCeRaw !== undefined && fvgCeRaw.trim() !== "") {
+      const p = parseNumber(fvgCeRaw, "fvg_ce_price", rowNum);
+      if (p.ok) trade.fvgCePrice = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (fvgSzRaw !== undefined && fvgSzRaw.trim() !== "") {
+      const p = parseNumber(fvgSzRaw, "fvg_size_points", rowNum);
+      if (p.ok) trade.fvgSizePoints = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (fvgAgeRaw !== undefined && fvgAgeRaw.trim() !== "") {
+      const p = parseNumber(fvgAgeRaw, "fvg_age_bars_at_entry", rowNum);
+      if (p.ok) trade.fvgAgeBarsAtEntry = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (fvgMitRaw?.trim()) trade.fvgMitigationState = fvgMitRaw.trim();
+    if (fvgMitDpRaw !== undefined && fvgMitDpRaw.trim() !== "") {
+      const p = parseNumber(fvgMitDpRaw, "fvg_mitigation_depth_pct", rowNum);
+      if (p.ok) trade.fvgMitigationDepthPct = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (fvgCeTRaw !== undefined && fvgCeTRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(fvgCeTRaw, "fvg_ce_touched", rowNum);
+      if (b.ok) trade.fvgCeTouched = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (fvgFillRaw !== undefined && fvgFillRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(fvgFillRaw, "fvg_fully_filled", rowNum);
+      if (b.ok) trade.fvgFullyFilled = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (fvgWickRaw !== undefined && fvgWickRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(fvgWickRaw, "fvg_wick_only_fill", rowNum);
+      if (b.ok) trade.fvgWickOnlyFill = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (ifvgInvDetRaw !== undefined && ifvgInvDetRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(ifvgInvDetRaw, "ifvg_inversion_detected", rowNum);
+      if (b.ok) trade.ifvgInversionDetected = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (ifvgInvCloseRaw !== undefined && ifvgInvCloseRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(ifvgInvCloseRaw, "ifvg_inversion_confirmed_close", rowNum);
+      if (b.ok) trade.ifvgInversionConfirmedClose = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (ifvgInvWickRaw !== undefined && ifvgInvWickRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(ifvgInvWickRaw, "ifvg_inversion_wick_only", rowNum);
+      if (b.ok) trade.ifvgInversionWickOnly = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (ifvgInvBarsRaw !== undefined && ifvgInvBarsRaw.trim() !== "") {
+      const p = parseNumber(ifvgInvBarsRaw, "ifvg_inversion_bars_after_fvg", rowNum);
+      if (p.ok) trade.ifvgInversionBarsAfterFvg = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (ifvgInvPxRaw !== undefined && ifvgInvPxRaw.trim() !== "") {
+      const p = parseNumber(ifvgInvPxRaw, "ifvg_inversion_close_price", rowNum);
+      if (p.ok) trade.ifvgInversionClosePrice = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (ifvgRetDetRaw !== undefined && ifvgRetDetRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(ifvgRetDetRaw, "ifvg_retest_detected", rowNum);
+      if (b.ok) trade.ifvgRetestDetected = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (ifvgRetBarsRaw !== undefined && ifvgRetBarsRaw.trim() !== "") {
+      const p = parseNumber(ifvgRetBarsRaw, "ifvg_retest_bars_after_inversion", rowNum);
+      if (p.ok) trade.ifvgRetestBarsAfterInversion = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (ifvgRetDpRaw !== undefined && ifvgRetDpRaw.trim() !== "") {
+      const p = parseNumber(ifvgRetDpRaw, "ifvg_retest_depth_pct", rowNum);
+      if (p.ok) trade.ifvgRetestDepthPct = p.value;
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (ifvgValRaw !== undefined && ifvgValRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(ifvgValRaw, "ifvg_valid_for_trade_direction", rowNum);
+      if (b.ok) trade.ifvgValidForTradeDirection = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (ifvgCnfRaw !== undefined && ifvgCnfRaw.trim() !== "") {
+      const b = parseOptionalCsvBool(ifvgCnfRaw, "ifvg_conflict_with_trade_direction", rowNum);
+      if (b.ok) trade.ifvgConflictWithTradeDirection = b.val;
+      else warnings.push({ code: "CSV_IFVG_BOOL_INVALID", message: b.message, row: rowNum });
+    }
+    if (ifvgScrRaw !== undefined && ifvgScrRaw.trim() !== "") {
+      const p = parseNumber(ifvgScrRaw, "ifvg_bisi_sibi_score", rowNum);
+      if (p.ok) trade.ifvgBisiSibiScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_OPTIONAL_NUMERIC", message: p.message, row: rowNum });
+    }
+    if (ifvgGrdRaw?.trim()) trade.ifvgBisiSibiGrade = ifvgGrdRaw.trim();
+    if (ifvgRsnRaw?.trim()) trade.ifvgBisiSibiReasons = ifvgRsnRaw.trim();
+
     const effEnRaw = pick(cells, col, "entry_fill_feasibility_enabled");
     const effStatRaw = pick(cells, col, "entry_fill_status");
     const effScrRaw = pick(cells, col, "entry_fill_feasibility_score");

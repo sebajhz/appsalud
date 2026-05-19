@@ -95,7 +95,13 @@ input int               InpBufferedEvosBufferF_Points = 50;
 input double            InpBufferedEvosMinEffectiveRr = 1.5;
 input bool              InpBufferedEvosScoreEnabled = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_13_6_11"
+input bool              InpEnableIfvgBisiSibiV1 = true;
+input int               InpIfvgBisiSibiMaxBars = 200;
+input bool              InpIfvgRequireCloseInversion = true;
+input bool              InpIfvgTrackRetest = true;
+input bool              InpIfvgScoreEnabled = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_14"
 #define BUF_EVOS_VAR_N          4
 #define BUF_EVOS_BUF_N          6
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
@@ -309,6 +315,27 @@ long            g_pd_zone_valid_dir_count = 0;
 long            g_pd_zone_conflict_count = 0;
 long            g_pd_too_deep_count = 0;
 long            g_pd_too_shallow_count = 0;
+
+double          g_ifvg_sum_score = 0.0;
+long            g_ifvg_bisi_count = 0;
+long            g_ifvg_sibi_count = 0;
+long            g_ifvg_unknown_class_count = 0;
+long            g_ifvg_clean_count = 0;
+long            g_ifvg_touched_count = 0;
+long            g_ifvg_ce_touched_count = 0;
+long            g_ifvg_fully_filled_count = 0;
+long            g_ifvg_wick_only_fill_count = 0;
+long            g_ifvg_inversion_detected_count = 0;
+long            g_ifvg_inversion_confirmed_count = 0;
+long            g_ifvg_inversion_wick_only_count = 0;
+long            g_ifvg_retest_detected_count = 0;
+long            g_ifvg_aligned_count = 0;
+long            g_ifvg_conflict_count = 0;
+long            g_ifvg_grade_a = 0;
+long            g_ifvg_grade_b = 0;
+long            g_ifvg_grade_c = 0;
+long            g_ifvg_grade_weak = 0;
+long            g_ifvg_grade_none = 0;
 
 double          g_eff_sum_score = 0.0;
 double          g_eff_sum_depth_pct = 0.0;
@@ -557,6 +584,38 @@ struct MapzPremiumDiscountTradeSnap
    bool              range_geometry_ok;
   };
 
+struct MapzIfvgBisiSibiTradeSnap
+  {
+   bool              log_enabled;
+   bool              finalized;
+   int               bars_observed;
+   int               bars_at_fill;
+   string            fvg_class;
+   string            fvg_direction;
+   double            fvg_upper_price;
+   double            fvg_lower_price;
+   double            fvg_ce_price;
+   long              fvg_size_points;
+   string            fvg_mitigation_state;
+   double            fvg_mitigation_depth_pct;
+   bool              fvg_ce_touched;
+   bool              fvg_fully_filled;
+   bool              fvg_wick_only_fill;
+   bool              ifvg_inversion_detected;
+   bool              ifvg_inversion_confirmed_close;
+   bool              ifvg_inversion_wick_only;
+   int               ifvg_inversion_bars_after_fvg;
+   double            ifvg_inversion_close_price;
+   bool              ifvg_retest_detected;
+   int               ifvg_retest_bars_after_inversion;
+   double            ifvg_retest_depth_pct;
+   bool              ifvg_valid_for_trade_direction;
+   bool              ifvg_conflict_with_trade_direction;
+   int               score;
+   string            grade;
+   string            reasons;
+  };
+
 struct MapzEntryFillFeasibilitySnap
   {
    bool              log_enabled;
@@ -726,6 +785,7 @@ struct MapzVirtualTrade
    MapzHtfTradeSnap     htf;
    MapzMssChochTradeSnap msc;
    MapzPremiumDiscountTradeSnap pd;
+   MapzIfvgBisiSibiTradeSnap ifvg;
    MapzEntryFillFeasibilitySnap eff;
    MapzEntryVariantFeasibilitySnap ev;
    MapzEntryVariantOutcomeSimSnap evos;
@@ -4225,6 +4285,451 @@ void MapzPremiumDiscountBuildTradeSnap(const string sym,
   }
 
 //+------------------------------------------------------------------+
+void MapzIfvgSnapClear(MapzIfvgBisiSibiTradeSnap &o)
+  {
+   o.log_enabled = false;
+   o.finalized = false;
+   o.bars_observed = 0;
+   o.bars_at_fill = -1;
+   o.fvg_class = "unknown";
+   o.fvg_direction = "unknown";
+   o.fvg_upper_price = 0.0;
+   o.fvg_lower_price = 0.0;
+   o.fvg_ce_price = 0.0;
+   o.fvg_size_points = 0;
+   o.fvg_mitigation_state = "unknown";
+   o.fvg_mitigation_depth_pct = 0.0;
+   o.fvg_ce_touched = false;
+   o.fvg_fully_filled = false;
+   o.fvg_wick_only_fill = false;
+   o.ifvg_inversion_detected = false;
+   o.ifvg_inversion_confirmed_close = false;
+   o.ifvg_inversion_wick_only = false;
+   o.ifvg_inversion_bars_after_fvg = -1;
+   o.ifvg_inversion_close_price = 0.0;
+   o.ifvg_retest_detected = false;
+   o.ifvg_retest_bars_after_inversion = -1;
+   o.ifvg_retest_depth_pct = 0.0;
+   o.ifvg_valid_for_trade_direction = false;
+   o.ifvg_conflict_with_trade_direction = false;
+   o.score = 0;
+   o.grade = "None";
+   o.reasons = "";
+  }
+
+//+------------------------------------------------------------------+
+string MapzIfvgGradeFromScore(const int sc)
+  {
+   if(sc >= 12)
+      return "A";
+   if(sc >= 9)
+      return "B";
+   if(sc >= 6)
+      return "C";
+   if(sc >= 2)
+      return "Weak";
+   return "None";
+  }
+
+//+------------------------------------------------------------------+
+string MapzIfvgCompactSuffix(const MapzIfvgBisiSibiTradeSnap &x)
+  {
+   return StringFormat("fvg_class=%s ifvg_inv=%s ifvg_score=%d",
+                       JsonStringEscape(x.fvg_class),
+                       (x.ifvg_inversion_confirmed_close ? "close" : (x.ifvg_inversion_wick_only ? "wick" : "none")),
+                       x.score);
+  }
+
+//+------------------------------------------------------------------+
+void MapzIfvgInitFromSetup(const ENUM_MAPZ_SETUP_DIR dir,
+                           const double fvgLo,
+                           const double fvgHi,
+                           const long fvgPts,
+                           MapzIfvgBisiSibiTradeSnap &out)
+  {
+   MapzIfvgSnapClear(out);
+   out.log_enabled = InpEnableIfvgBisiSibiV1;
+   if(!InpEnableIfvgBisiSibiV1)
+     {
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_bisi_sibi_disabled");
+      return;
+     }
+
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   const double lo = MathMin(fvgLo, fvgHi);
+   const double hi = MathMax(fvgLo, fvgHi);
+   const double span = hi - lo;
+
+   out.fvg_lower_price = lo;
+   out.fvg_upper_price = hi;
+   out.fvg_ce_price = (lo + hi) / 2.0;
+   out.fvg_size_points = fvgPts;
+   out.fvg_mitigation_state = "untouched";
+   out.ifvg_inversion_bars_after_fvg = -1;
+   out.ifvg_retest_bars_after_inversion = -1;
+
+   if(span <= ptSafe * 0.5 || fvgPts <= 0)
+     {
+      out.fvg_class = "unknown";
+      out.fvg_direction = "unknown";
+      MapzEffAppendReasonOnce(out.reasons, "fvg_class_unknown");
+      return;
+     }
+
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      out.fvg_class = "BISI";
+      out.fvg_direction = "bullish";
+      MapzEffAppendReasonOnce(out.reasons, "fvg_class_bisi");
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      out.fvg_class = "SIBI";
+      out.fvg_direction = "bearish";
+      MapzEffAppendReasonOnce(out.reasons, "fvg_class_sibi");
+     }
+   else
+     {
+      out.fvg_class = "unknown";
+      out.fvg_direction = "unknown";
+      MapzEffAppendReasonOnce(out.reasons, "fvg_class_unknown");
+      return;
+     }
+
+   if(fvgPts >= InpVirtualMinTradeFvgPoints && fvgPts < 80)
+      MapzEffAppendReasonOnce(out.reasons, "fvg_clean");
+   else if(fvgPts >= 80)
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_stale");
+  }
+
+//+------------------------------------------------------------------+
+void MapzIfvgTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
+                      const double lo,
+                      const double hi,
+                      const double cl,
+                      MapzIfvgBisiSibiTradeSnap &out)
+  {
+   if(!out.log_enabled || out.finalized)
+      return;
+
+   int mx = InpIfvgBisiSibiMaxBars;
+   if(mx < 20)
+      mx = 20;
+   if(mx > 500)
+      mx = 500;
+
+   out.bars_observed++;
+   if(out.bars_observed > mx)
+      return;
+
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   const double zoneLo = out.fvg_lower_price;
+   const double zoneHi = out.fvg_upper_price;
+   const double span = zoneHi - zoneLo;
+   if(span <= ptSafe * 0.5)
+      return;
+
+   const int barN = out.bars_observed;
+   double depthPct = out.fvg_mitigation_depth_pct;
+
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      if(lo <= zoneHi + ptSafe * 0.5)
+        {
+         const double d = 100.0 * (zoneHi - lo) / span;
+         if(d > depthPct)
+            depthPct = d;
+         if(lo <= out.fvg_ce_price + ptSafe * 0.5)
+            out.fvg_ce_touched = true;
+        }
+      if(lo < zoneLo - ptSafe * 0.5 && cl > zoneLo + ptSafe * 0.5)
+         out.fvg_wick_only_fill = true;
+      if(cl <= zoneLo + ptSafe * 0.5)
+         out.fvg_fully_filled = true;
+
+      if(InpIfvgRequireCloseInversion)
+        {
+         if(cl < zoneLo - ptSafe * 0.5)
+           {
+            out.ifvg_inversion_detected = true;
+            out.ifvg_inversion_confirmed_close = true;
+            if(out.ifvg_inversion_bars_after_fvg < 0)
+              {
+               out.ifvg_inversion_bars_after_fvg = barN;
+               out.ifvg_inversion_close_price = cl;
+              }
+           }
+         else if(lo < zoneLo - ptSafe * 0.5)
+           {
+            out.ifvg_inversion_detected = true;
+            out.ifvg_inversion_wick_only = true;
+           }
+        }
+      else
+        {
+         if(lo < zoneLo - ptSafe * 0.5)
+           {
+            out.ifvg_inversion_detected = true;
+            out.ifvg_inversion_confirmed_close = true;
+            if(out.ifvg_inversion_bars_after_fvg < 0)
+              {
+               out.ifvg_inversion_bars_after_fvg = barN;
+               out.ifvg_inversion_close_price = cl;
+              }
+           }
+        }
+
+      if(out.ifvg_inversion_confirmed_close && InpIfvgTrackRetest)
+        {
+         if(hi >= zoneLo - ptSafe * 0.5 && hi <= zoneHi + ptSafe * 0.5)
+           {
+            if(!out.ifvg_retest_detected)
+              {
+               out.ifvg_retest_detected = true;
+               out.ifvg_retest_bars_after_inversion = barN - out.ifvg_inversion_bars_after_fvg;
+              }
+            const double rd = 100.0 * (hi - zoneLo) / span;
+            if(rd > out.ifvg_retest_depth_pct)
+               out.ifvg_retest_depth_pct = rd;
+           }
+        }
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      if(hi >= zoneLo - ptSafe * 0.5)
+        {
+         const double d = 100.0 * (hi - zoneLo) / span;
+         if(d > depthPct)
+            depthPct = d;
+         if(hi >= out.fvg_ce_price - ptSafe * 0.5)
+            out.fvg_ce_touched = true;
+        }
+      if(hi > zoneHi + ptSafe * 0.5 && cl < zoneHi - ptSafe * 0.5)
+         out.fvg_wick_only_fill = true;
+      if(cl >= zoneHi - ptSafe * 0.5)
+         out.fvg_fully_filled = true;
+
+      if(InpIfvgRequireCloseInversion)
+        {
+         if(cl > zoneHi + ptSafe * 0.5)
+           {
+            out.ifvg_inversion_detected = true;
+            out.ifvg_inversion_confirmed_close = true;
+            if(out.ifvg_inversion_bars_after_fvg < 0)
+              {
+               out.ifvg_inversion_bars_after_fvg = barN;
+               out.ifvg_inversion_close_price = cl;
+              }
+           }
+         else if(hi > zoneHi + ptSafe * 0.5)
+           {
+            out.ifvg_inversion_detected = true;
+            out.ifvg_inversion_wick_only = true;
+           }
+        }
+      else
+        {
+         if(hi > zoneHi + ptSafe * 0.5)
+           {
+            out.ifvg_inversion_detected = true;
+            out.ifvg_inversion_confirmed_close = true;
+            if(out.ifvg_inversion_bars_after_fvg < 0)
+              {
+               out.ifvg_inversion_bars_after_fvg = barN;
+               out.ifvg_inversion_close_price = cl;
+              }
+           }
+        }
+
+      if(out.ifvg_inversion_confirmed_close && InpIfvgTrackRetest)
+        {
+         if(lo <= zoneHi + ptSafe * 0.5 && lo >= zoneLo - ptSafe * 0.5)
+           {
+            if(!out.ifvg_retest_detected)
+              {
+               out.ifvg_retest_detected = true;
+               out.ifvg_retest_bars_after_inversion = barN - out.ifvg_inversion_bars_after_fvg;
+              }
+            const double rd = 100.0 * (zoneHi - lo) / span;
+            if(rd > out.ifvg_retest_depth_pct)
+               out.ifvg_retest_depth_pct = rd;
+           }
+        }
+     }
+
+   out.fvg_mitigation_depth_pct = depthPct;
+
+   if(out.fvg_fully_filled)
+      out.fvg_mitigation_state = "filled";
+   else if(depthPct >= 85.0)
+      out.fvg_mitigation_state = "full_mitigation";
+   else if(out.fvg_ce_touched || (depthPct >= 40.0 && depthPct <= 65.0))
+      out.fvg_mitigation_state = "ce_mitigation";
+   else if(depthPct > 5.0)
+      out.fvg_mitigation_state = "partial_mitigation";
+   else if(depthPct > 0.0)
+      out.fvg_mitigation_state = "touched";
+   else
+      out.fvg_mitigation_state = "untouched";
+  }
+
+//+------------------------------------------------------------------+
+void MapzIfvgFinalize(const ENUM_MAPZ_SETUP_DIR dir,
+                      const bool filled,
+                      const int barsWaitingEntry,
+                      MapzIfvgBisiSibiTradeSnap &out)
+  {
+   if(!out.log_enabled || out.finalized)
+      return;
+   out.finalized = true;
+
+   if(filled && out.bars_at_fill < 0)
+      out.bars_at_fill = (barsWaitingEntry > 0 ? barsWaitingEntry : out.bars_observed);
+
+   if(out.fvg_class == "BISI")
+      g_ifvg_bisi_count++;
+   else if(out.fvg_class == "SIBI")
+      g_ifvg_sibi_count++;
+   else
+      g_ifvg_unknown_class_count++;
+
+   if(out.fvg_mitigation_state == "untouched")
+      g_ifvg_clean_count++;
+   if(out.fvg_mitigation_state == "touched" || out.fvg_mitigation_depth_pct > 0.0)
+      g_ifvg_touched_count++;
+   if(out.fvg_ce_touched)
+      g_ifvg_ce_touched_count++;
+   if(out.fvg_fully_filled || out.fvg_mitigation_state == "filled")
+      g_ifvg_fully_filled_count++;
+   if(out.fvg_wick_only_fill)
+      g_ifvg_wick_only_fill_count++;
+   if(out.ifvg_inversion_detected)
+      g_ifvg_inversion_detected_count++;
+   if(out.ifvg_inversion_confirmed_close)
+      g_ifvg_inversion_confirmed_count++;
+   if(out.ifvg_inversion_wick_only)
+      g_ifvg_inversion_wick_only_count++;
+   if(out.ifvg_retest_detected)
+      g_ifvg_retest_detected_count++;
+
+   if(out.fvg_mitigation_state == "untouched")
+      MapzEffAppendReasonOnce(out.reasons, "fvg_clean");
+   if(out.fvg_mitigation_state == "touched")
+      MapzEffAppendReasonOnce(out.reasons, "fvg_touched");
+   if(out.fvg_ce_touched)
+      MapzEffAppendReasonOnce(out.reasons, "fvg_ce_touched");
+   if(out.fvg_fully_filled)
+      MapzEffAppendReasonOnce(out.reasons, "fvg_fully_filled");
+   if(out.fvg_wick_only_fill)
+      MapzEffAppendReasonOnce(out.reasons, "fvg_wick_only_fill");
+   if(out.ifvg_inversion_confirmed_close)
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_inversion_confirmed");
+   if(out.ifvg_inversion_wick_only)
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_inversion_wick_only");
+   if(out.ifvg_retest_detected)
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_retest_detected");
+   else if(out.ifvg_inversion_confirmed_close && InpIfvgTrackRetest)
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_no_retest");
+
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      if(out.ifvg_inversion_confirmed_close)
+        {
+         out.ifvg_conflict_with_trade_direction = true;
+         MapzEffAppendReasonOnce(out.reasons, "ifvg_conflict_with_trade");
+        }
+      else
+        {
+         out.ifvg_valid_for_trade_direction = true;
+         MapzEffAppendReasonOnce(out.reasons, "ifvg_aligned_with_trade");
+        }
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      if(out.ifvg_inversion_confirmed_close)
+        {
+         out.ifvg_conflict_with_trade_direction = true;
+         MapzEffAppendReasonOnce(out.reasons, "ifvg_conflict_with_trade");
+        }
+      else
+        {
+         out.ifvg_valid_for_trade_direction = true;
+         MapzEffAppendReasonOnce(out.reasons, "ifvg_aligned_with_trade");
+        }
+     }
+
+   if(out.ifvg_valid_for_trade_direction)
+      g_ifvg_aligned_count++;
+   if(out.ifvg_conflict_with_trade_direction)
+      g_ifvg_conflict_count++;
+
+   if(!InpIfvgScoreEnabled)
+     {
+      out.score = 0;
+      out.grade = "None";
+      return;
+     }
+
+   int sc = 6;
+   if(out.fvg_class == "BISI" || out.fvg_class == "SIBI")
+      sc = 8;
+   if(out.fvg_size_points >= InpVirtualMinTradeFvgPoints)
+      sc += 2;
+   if(out.ifvg_valid_for_trade_direction)
+      sc += 3;
+   if(out.ifvg_conflict_with_trade_direction)
+      sc -= 4;
+   if(out.fvg_fully_filled && !filled)
+      sc -= 3;
+   if(out.fvg_wick_only_fill)
+      sc -= 1;
+   if(out.ifvg_inversion_wick_only && !out.ifvg_inversion_confirmed_close)
+      sc -= 2;
+   if(out.ifvg_inversion_confirmed_close && out.ifvg_retest_detected)
+      sc += 1;
+   if(out.fvg_mitigation_state == "ce_mitigation" && filled)
+      sc += 1;
+   if(out.fvg_mitigation_state == "untouched")
+      sc += 1;
+   if(StringFind(out.reasons, "ifvg_stale") >= 0)
+      sc -= 2;
+   if(out.fvg_class == "unknown")
+      sc = 1;
+
+   if(sc < 0)
+      sc = 0;
+   if(sc > 15)
+      sc = 15;
+   out.score = sc;
+   out.grade = MapzIfvgGradeFromScore(sc);
+
+   if(out.grade == "A")
+     {
+      g_ifvg_grade_a++;
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_score_a");
+     }
+   else if(out.grade == "B")
+     {
+      g_ifvg_grade_b++;
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_score_b");
+     }
+   else if(out.grade == "C")
+     {
+      g_ifvg_grade_c++;
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_score_c");
+     }
+   else if(out.grade == "Weak")
+     {
+      g_ifvg_grade_weak++;
+      MapzEffAppendReasonOnce(out.reasons, "ifvg_score_weak");
+     }
+   else
+      g_ifvg_grade_none++;
+  }
+
+//+------------------------------------------------------------------+
 void MapzEffSnapClear(MapzEntryFillFeasibilitySnap &o)
   {
    o.log_enabled = false;
@@ -6395,6 +6900,8 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
       MapzEvFinalize(g_vt.ev);
    if(g_vt.evos.log_enabled && !g_vt.evos.finalized)
       MapzEvosFinalizeTrade(g_vt.evos);
+   if(g_vt.ifvg.log_enabled && !g_vt.ifvg.finalized)
+      MapzIfvgFinalize(g_vt.dir, g_vt.filled, bars_to_fill_export, g_vt.ifvg);
    const string dirW = SetupDirectionToString(g_vt.dir);
    const string biasDirW = BiasDirectionToString(g_vt.bias_enum);
    const string setupDirW = SetupDirectionToString(g_vt.setup_dir);
@@ -6566,6 +7073,32 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
           + "," + IntegerToString(g_vt.pd.score)
           + "," + g_vt.pd.grade
           + "," + g_vt.pd.reasons
+          + "," + (g_vt.ifvg.log_enabled ? "true" : "false")
+          + "," + g_vt.ifvg.fvg_class
+          + "," + g_vt.ifvg.fvg_direction
+          + "," + DoubleToString(g_vt.ifvg.fvg_upper_price, _Digits)
+          + "," + DoubleToString(g_vt.ifvg.fvg_lower_price, _Digits)
+          + "," + DoubleToString(g_vt.ifvg.fvg_ce_price, _Digits)
+          + "," + IntegerToString((int)g_vt.ifvg.fvg_size_points)
+          + "," + IntegerToString((g_vt.ifvg.bars_at_fill >= 0 ? g_vt.ifvg.bars_at_fill : g_vt.ifvg.bars_observed))
+          + "," + g_vt.ifvg.fvg_mitigation_state
+          + "," + DoubleToString(g_vt.ifvg.fvg_mitigation_depth_pct, 2)
+          + "," + (g_vt.ifvg.fvg_ce_touched ? "true" : "false")
+          + "," + (g_vt.ifvg.fvg_fully_filled ? "true" : "false")
+          + "," + (g_vt.ifvg.fvg_wick_only_fill ? "true" : "false")
+          + "," + (g_vt.ifvg.ifvg_inversion_detected ? "true" : "false")
+          + "," + (g_vt.ifvg.ifvg_inversion_confirmed_close ? "true" : "false")
+          + "," + (g_vt.ifvg.ifvg_inversion_wick_only ? "true" : "false")
+          + "," + IntegerToString(g_vt.ifvg.ifvg_inversion_bars_after_fvg)
+          + "," + DoubleToString(g_vt.ifvg.ifvg_inversion_close_price, _Digits)
+          + "," + (g_vt.ifvg.ifvg_retest_detected ? "true" : "false")
+          + "," + IntegerToString(g_vt.ifvg.ifvg_retest_bars_after_inversion)
+          + "," + DoubleToString(g_vt.ifvg.ifvg_retest_depth_pct, 2)
+          + "," + (g_vt.ifvg.ifvg_valid_for_trade_direction ? "true" : "false")
+          + "," + (g_vt.ifvg.ifvg_conflict_with_trade_direction ? "true" : "false")
+          + "," + IntegerToString(g_vt.ifvg.score)
+          + "," + g_vt.ifvg.grade
+          + "," + g_vt.ifvg.reasons
           + "," + (g_vt.eff.log_enabled ? "true" : "false")
           + "," + g_vt.eff.fill_status
           + "," + IntegerToString(g_vt.eff.score)
@@ -6865,6 +7398,9 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
         }
      }
 
+   if(InpEnableIfvgBisiSibiV1 && g_vt.ifvg.log_enabled)
+      g_ifvg_sum_score += (double)g_vt.ifvg.score;
+
    if(InpEnablePremiumDiscountV1)
      {
       g_pd_sum_score += (double)g_vt.pd.score;
@@ -6984,6 +7520,7 @@ void VirtualClearTrade(void)
    MapzHtfSnapClear(g_vt.htf);
    MapzMscSnapClear(g_vt.msc);
    MapzPdSnapClear(g_vt.pd);
+   MapzIfvgSnapClear(g_vt.ifvg);
    MapzEffSnapClear(g_vt.eff);
    MapzEvSnapClear(g_vt.ev);
    MapzEvosSnapClear(g_vt.evos);
@@ -6998,6 +7535,8 @@ bool VirtualTryFillCurrentBar(const double lo, const double hi, const datetime t
      {
       g_vt.filled = true;
       g_vt.entry_time = tBar;
+      if(g_vt.ifvg.log_enabled && g_vt.ifvg.bars_at_fill < 0)
+         g_vt.ifvg.bars_at_fill = g_vt.ifvg.bars_observed;
       g_filled_trade_count++;
       g_vt.outcome = "";
       g_vt.result_r = 0.0;
@@ -7198,6 +7737,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    MapzHtfBuildTradeSnap(g_brokerSymbol, sdir, g_lastBiasEnum, g_vt.htf);
    MapzMssChochBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, g_lastBiasEnum, liqInit, cTime, g_vt.msc);
    MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, g_vt.entry, g_vt.htf, g_vt.pd);
+   MapzIfvgInitFromSetup(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.fvg_points, g_vt.ifvg);
    MapzEffInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.eff);
    MapzEvInitGeometry(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, g_vt.liq, g_vt.msc, g_vt.ev);
    MapzEvosInitFromTrade(sdir, g_vt.entry, g_vt.sl, g_vt.tp, g_vt.ev, g_vt.evos);
@@ -7215,6 +7755,7 @@ void VirtualOnSetupAllowed(const string setupEventId,
    const double hi1 = iHigh(g_brokerSymbol, InpExecutionTimeframe, 1);
    const datetime t1 = iTime(g_brokerSymbol, InpExecutionTimeframe, 1);
    MapzEffTrackBar(sdir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, lo1, hi1, g_vt.eff);
+   MapzIfvgTrackBar(sdir, lo1, hi1, iClose(g_brokerSymbol, InpExecutionTimeframe, 1), g_vt.ifvg);
    MapzEvTrackBar(sdir, lo1, hi1, g_vt.ev);
    MapzEvosTrackBar(sdir, lo1, hi1, g_vt.evos);
    if(!VirtualTryFillCurrentBar(lo1, hi1, t1))
@@ -7265,6 +7806,7 @@ void VirtualManageOnNewClosedExecBar(void)
    if(!g_vt.filled)
      {
       MapzEffTrackBar(g_vt.dir, g_vt.fvg_low, g_vt.fvg_high, g_vt.entry, lo, hi, g_vt.eff);
+      MapzIfvgTrackBar(g_vt.dir, lo, hi, cl, g_vt.ifvg);
       MapzEvTrackBar(g_vt.dir, lo, hi, g_vt.ev);
       MapzEvosTrackBar(g_vt.dir, lo, hi, g_vt.evos);
       if(VirtualTryFillCurrentBar(lo, hi, tBar))
@@ -7295,6 +7837,7 @@ void VirtualManageOnNewClosedExecBar(void)
       return;
      }
 
+   MapzIfvgTrackBar(g_vt.dir, lo, hi, cl, g_vt.ifvg);
    MapzEvosTrackBar(g_vt.dir, lo, hi, g_vt.evos);
 
    bool tpTouched = false;
@@ -7554,7 +8097,9 @@ void TryDetectIfvgOnNewExecClosedBar(void)
          MapzMssChochBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, g_lastBiasEnum, liqWork, cTime, mscPrev);
          MapzPremiumDiscountTradeSnap pdPrev;
          MapzPremiumDiscountBuildTradeSnap(g_brokerSymbol, InpExecutionTimeframe, sdir, cTime, entP, htfPrev, pdPrev);
-         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev) + " " + MapzMscCompactSuffix(mscPrev) + " " + MapzPdCompactSuffix(pdPrev);
+         MapzIfvgBisiSibiTradeSnap ifvgPrev;
+         MapzIfvgInitFromSetup(sdir, fLoP, fHiP, fvgPtsP, ifvgPrev);
+         detA = detA + " " + MapzEqScoresToDetailsSuffix(eqSetup, liqWork, htfPrev) + " " + MapzMscCompactSuffix(mscPrev) + " " + MapzPdCompactSuffix(pdPrev) + " " + MapzIfvgCompactSuffix(ifvgPrev);
         }
       const string evAllow = ExportSetupEvent(EVT_SETUP_ALLOWED, setupW, gate, "daily_bias_aligned", detA);
       VirtualOnSetupAllowed(evAllow, setupW, sdir, fLo, fHi, gapPts, cTime, rsn, liqWork);
@@ -7691,6 +8236,8 @@ string WriteSummaryJson(void)
    json += "  \"has_mss_choch_temporal_relevance_v1_logic\": true,\r\n";
    json += "  \"has_premium_discount_v1_logic\": true,\r\n";
    json += "  \"premium_discount_enabled\": " + (InpEnablePremiumDiscountV1 ? "true" : "false") + ",\r\n";
+   json += "  \"has_ifvg_bisi_sibi_v1_logic\": true,\r\n";
+   json += "  \"ifvg_bisi_sibi_enabled\": " + (InpEnableIfvgBisiSibiV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_fill_feasibility_v1_logic\": true,\r\n";
    json += "  \"entry_fill_feasibility_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_variant_feasibility_v1_logic\": true,\r\n";
@@ -7873,6 +8420,27 @@ string WriteSummaryJson(void)
    json += StringFormat("  \"average_premium_discount_score\": %.6f,\r\n", avgPdScore);
    json += StringFormat("  \"average_pd_position_pct\": %.6f,\r\n", avgPdPos);
    json += StringFormat("  \"average_pd_range_size_points\": %.6f,\r\n", avgPdRangePts);
+   const double avgIfvgScore = (tcRows > 0 ? g_ifvg_sum_score / (double)tcRows : 0.0);
+   json += StringFormat("  \"ifvg_bisi_count\": %I64d,\r\n", g_ifvg_bisi_count);
+   json += StringFormat("  \"ifvg_sibi_count\": %I64d,\r\n", g_ifvg_sibi_count);
+   json += StringFormat("  \"ifvg_unknown_class_count\": %I64d,\r\n", g_ifvg_unknown_class_count);
+   json += StringFormat("  \"fvg_clean_count\": %I64d,\r\n", g_ifvg_clean_count);
+   json += StringFormat("  \"fvg_touched_count\": %I64d,\r\n", g_ifvg_touched_count);
+   json += StringFormat("  \"fvg_ce_touched_count\": %I64d,\r\n", g_ifvg_ce_touched_count);
+   json += StringFormat("  \"fvg_fully_filled_count\": %I64d,\r\n", g_ifvg_fully_filled_count);
+   json += StringFormat("  \"fvg_wick_only_fill_count\": %I64d,\r\n", g_ifvg_wick_only_fill_count);
+   json += StringFormat("  \"ifvg_inversion_detected_count\": %I64d,\r\n", g_ifvg_inversion_detected_count);
+   json += StringFormat("  \"ifvg_inversion_confirmed_close_count\": %I64d,\r\n", g_ifvg_inversion_confirmed_count);
+   json += StringFormat("  \"ifvg_inversion_wick_only_count\": %I64d,\r\n", g_ifvg_inversion_wick_only_count);
+   json += StringFormat("  \"ifvg_retest_detected_count\": %I64d,\r\n", g_ifvg_retest_detected_count);
+   json += StringFormat("  \"ifvg_aligned_with_trade_count\": %I64d,\r\n", g_ifvg_aligned_count);
+   json += StringFormat("  \"ifvg_conflict_with_trade_count\": %I64d,\r\n", g_ifvg_conflict_count);
+   json += StringFormat("  \"average_ifvg_bisi_sibi_score\": %.6f,\r\n", avgIfvgScore);
+   json += StringFormat("  \"ifvg_bisi_sibi_grade_a_count\": %I64d,\r\n", g_ifvg_grade_a);
+   json += StringFormat("  \"ifvg_bisi_sibi_grade_b_count\": %I64d,\r\n", g_ifvg_grade_b);
+   json += StringFormat("  \"ifvg_bisi_sibi_grade_c_count\": %I64d,\r\n", g_ifvg_grade_c);
+   json += StringFormat("  \"ifvg_bisi_sibi_grade_weak_count\": %I64d,\r\n", g_ifvg_grade_weak);
+   json += StringFormat("  \"ifvg_bisi_sibi_grade_none_count\": %I64d,\r\n", g_ifvg_grade_none);
    const double avgEffScore = (tcRows > 0 ? g_eff_sum_score / (double)tcRows : 0.0);
    const double avgEffDepth = (tcRows > 0 ? g_eff_sum_depth_pct / (double)tcRows : 0.0);
    const double avgEffRetrace = (tcRows > 0 ? g_eff_sum_max_retrace_pct / (double)tcRows : 0.0);
@@ -7962,6 +8530,11 @@ string WriteSummaryJson(void)
    json += StringFormat("    \"premium_discount_max_bars\": %d,\r\n", InpPremiumDiscountMaxBars);
    json += StringFormat("    \"premium_discount_equilibrium_band_pct\": %d,\r\n", InpPremiumDiscountEquilibriumBandPct);
    json += "    \"premium_discount_score_enabled\": " + (InpPremiumDiscountScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"ifvg_bisi_sibi_v1_enabled\": " + (InpEnableIfvgBisiSibiV1 ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"ifvg_bisi_sibi_max_bars\": %d,\r\n", InpIfvgBisiSibiMaxBars);
+   json += "    \"ifvg_require_close_inversion\": " + (InpIfvgRequireCloseInversion ? "true" : "false") + ",\r\n";
+   json += "    \"ifvg_track_retest\": " + (InpIfvgTrackRetest ? "true" : "false") + ",\r\n";
+   json += "    \"ifvg_score_enabled\": " + (InpIfvgScoreEnabled ? "true" : "false") + ",\r\n";
    json += "    \"entry_fill_feasibility_v1_enabled\": " + (InpEnableEntryFillFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += StringFormat("    \"entry_fill_feasibility_near_miss_points\": %d,\r\n", InpEntryFillFeasibilityNearMissPoints);
    json += "    \"entry_fill_feasibility_score_enabled\": " + (InpEntryFillFeasibilityScoreEnabled ? "true" : "false") + ",\r\n";
@@ -7988,7 +8561,7 @@ string WriteSummaryJson(void)
 //+------------------------------------------------------------------+
 string WriteTradesHeader(void)
   {
-   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_edge_missed_by_points,entry_variant_25_missed_by_points,entry_variant_50_missed_by_points,entry_variant_75_missed_by_points,entry_variant_adaptive_missed_by_points,entry_variant_edge_bars_to_touch,entry_variant_25_bars_to_touch,entry_variant_50_bars_to_touch,entry_variant_75_bars_to_touch,entry_variant_adaptive_bars_to_touch,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,entry_variant_outcome_sim_enabled,entry_variant_outcome_sim_reasons,entry_variant_edge_sim_status,entry_variant_edge_sim_result_r,entry_variant_edge_sim_entry_price,entry_variant_edge_sim_sl_price,entry_variant_edge_sim_tp_price,entry_variant_edge_sim_risk_points,entry_variant_edge_sim_effective_rr,entry_variant_edge_sim_bars_to_fill,entry_variant_edge_sim_bars_to_close,entry_variant_edge_sim_ambiguous,entry_variant_edge_sim_invalid_risk,entry_variant_25_sim_status,entry_variant_25_sim_result_r,entry_variant_25_sim_entry_price,entry_variant_25_sim_sl_price,entry_variant_25_sim_tp_price,entry_variant_25_sim_risk_points,entry_variant_25_sim_effective_rr,entry_variant_25_sim_bars_to_fill,entry_variant_25_sim_bars_to_close,entry_variant_25_sim_ambiguous,entry_variant_25_sim_invalid_risk,entry_variant_50_sim_status,entry_variant_50_sim_result_r,entry_variant_50_sim_entry_price,entry_variant_50_sim_sl_price,entry_variant_50_sim_tp_price,entry_variant_50_sim_risk_points,entry_variant_50_sim_effective_rr,entry_variant_50_sim_bars_to_fill,entry_variant_50_sim_bars_to_close,entry_variant_50_sim_ambiguous,entry_variant_50_sim_invalid_risk,entry_variant_75_sim_status,entry_variant_75_sim_result_r,entry_variant_75_sim_entry_price,entry_variant_75_sim_sl_price,entry_variant_75_sim_tp_price,entry_variant_75_sim_risk_points,entry_variant_75_sim_effective_rr,entry_variant_75_sim_bars_to_fill,entry_variant_75_sim_bars_to_close,entry_variant_75_sim_ambiguous,entry_variant_75_sim_invalid_risk,entry_variant_adaptive_sim_status,entry_variant_adaptive_sim_result_r,entry_variant_adaptive_sim_entry_price,entry_variant_adaptive_sim_sl_price,entry_variant_adaptive_sim_tp_price,entry_variant_adaptive_sim_risk_points,entry_variant_adaptive_sim_effective_rr,entry_variant_adaptive_sim_bars_to_fill,entry_variant_adaptive_sim_bars_to_close,entry_variant_adaptive_sim_ambiguous,entry_variant_adaptive_sim_invalid_risk,entry_variant_best_sim_variant,entry_variant_best_sim_result_r,entry_variant_best_sim_status,entry_variant_best_sim_reasons,session_bucket,trade_window_status,spread_status,news_mode";
+   return "run_id,trade_id,setup_event_id,timestamp,entry_time,exit_time,symbol,timeframe,direction,bias_direction,setup_direction,entry,sl,tp,exit_price,result_r,result_money,outcome,exit_reason,setup_reason,bias_reason,rejection_reason,bars_to_fill,bars_held,fvg_low,fvg_high,fvg_points,parameter_set_id,entry_mode,stop_mode,ambiguity_mode,entry_quality_score,entry_quality_grade,htf_narrative_score,liquidity_event_score,displacement_fvg_quality_score,entry_confirmation_score,target_quality_score,session_news_spread_score,risk_overtrading_score,ambiguous_risk_score,quality_reasons,missing_quality_components,ambiguous_risk_reasons,liquidity_event_detected,liquidity_event_type,liquidity_event_direction,liquidity_event_age_bars,liquidity_event_level,liquidity_event_sweep_price,liquidity_event_distance_points,liquidity_event_reasons,liquidity_sweep_quality_score,liquidity_sweep_quality_grade,liquidity_sweep_recency_score,liquidity_sweep_directional_score,liquidity_sweep_reaction_score,liquidity_sweep_displacement_score,liquidity_sweep_distance_score,liquidity_sweep_quality_reasons,liquidity_chain_detected,liquidity_chain_grade,liquidity_chain_score,liquidity_chain_sweep_to_setup_bars,liquidity_chain_sweep_to_fvg_bars,liquidity_chain_reaction_confirmed,liquidity_chain_displacement_confirmed,liquidity_chain_fvg_created_after_sweep,liquidity_chain_distance_to_fvg_points,liquidity_chain_reasons,liquidity_chain_reaction_failure_reason,liquidity_chain_reaction_close_price,liquidity_chain_reaction_level,liquidity_chain_reaction_bars_checked,htf_structure_enabled,h4_structure_state,h1_structure_state,h4_structure_direction,h1_structure_direction,htf_structure_aligned,htf_structure_conflict,htf_structure_score,h4_protected_high,h4_protected_low,h1_protected_high,h1_protected_low,h4_external_liquidity_high,h4_external_liquidity_low,h1_external_liquidity_high,h1_external_liquidity_low,htf_structure_reasons,mss_choch_enabled,mss_detected,mss_direction,mss_break_level,mss_close_price,mss_bars_after_sweep,mss_bars_before_entry,mss_valid_close,choch_detected,choch_direction,choch_break_level,choch_close_price,choch_valid_close,wick_break_only,internal_swing_high,internal_swing_low,internal_swing_high_age_bars,internal_swing_low_age_bars,mss_choch_score,mss_choch_reasons,mss_temporal_relevance_score,mss_temporal_relevance_grade,mss_after_sweep,mss_before_entry,mss_near_entry_window,mss_too_early,mss_too_late,mss_after_fvg,mss_before_fvg,mss_sweep_to_mss_bars,mss_fvg_to_mss_bars,mss_mss_to_entry_bars,mss_temporal_relevance_reasons,choch_temporal_relevance_score,choch_temporal_relevance_grade,choch_after_sweep,choch_before_entry,choch_near_entry_window,choch_too_early,choch_too_late,choch_after_fvg,choch_before_fvg,choch_sweep_to_choch_bars,choch_fvg_to_choch_bars,choch_choch_to_entry_bars,choch_temporal_relevance_reasons,premium_discount_enabled,pd_range_source,pd_range_high,pd_range_low,pd_midpoint_50,pd_position_pct,pd_entry_zone,pd_entry_in_premium,pd_entry_in_discount,pd_entry_in_equilibrium,pd_entry_outside_range,pd_entry_zone_valid_for_direction,pd_entry_zone_conflict,pd_entry_too_deep,pd_entry_too_shallow,pd_range_size_points,pd_entry_distance_to_midpoint_points,premium_discount_score,premium_discount_grade,premium_discount_reasons,ifvg_bisi_sibi_enabled,fvg_class,fvg_direction,fvg_upper_price,fvg_lower_price,fvg_ce_price,fvg_size_points,fvg_age_bars_at_entry,fvg_mitigation_state,fvg_mitigation_depth_pct,fvg_ce_touched,fvg_fully_filled,fvg_wick_only_fill,ifvg_inversion_detected,ifvg_inversion_confirmed_close,ifvg_inversion_wick_only,ifvg_inversion_bars_after_fvg,ifvg_inversion_close_price,ifvg_retest_detected,ifvg_retest_bars_after_inversion,ifvg_retest_depth_pct,ifvg_valid_for_trade_direction,ifvg_conflict_with_trade_direction,ifvg_bisi_sibi_score,ifvg_bisi_sibi_grade,ifvg_bisi_sibi_reasons,entry_fill_feasibility_enabled,entry_fill_status,entry_fill_feasibility_score,entry_fill_feasibility_grade,entry_fill_feasibility_reasons,entry_price_for_fill_audit,fvg_near_edge_price,fvg_far_edge_price,fvg_ce_price,entry_depth_in_fvg_pct,entry_distance_from_near_edge_points,entry_distance_from_far_edge_points,entry_distance_from_ce_points,fvg_touch_reached,fvg_ce_touch_reached,entry_price_reached,max_retrace_into_fvg_pct,max_retrace_price,max_retrace_to_entry_distance_points,missed_entry_by_points,bars_to_fvg_touch,bars_to_ce_touch,bars_to_entry_fill,bars_to_max_retrace,bars_until_expiration_or_resolution,entry_expired_unfilled,entry_missed_shallow_retrace,entry_too_deep_for_retest,entry_near_miss,entry_filled_fast,entry_filled_late,entry_invalidated_before_fill,entry_outside_fvg,entry_geometry_unknown,entry_variant_feasibility_enabled,entry_variant_edge_price,entry_variant_25_price,entry_variant_50_price,entry_variant_75_price,entry_variant_adaptive_price,entry_variant_adaptive_type,entry_variant_edge_reached,entry_variant_25_reached,entry_variant_50_reached,entry_variant_75_reached,entry_variant_adaptive_reached,entry_variant_edge_missed_by_points,entry_variant_25_missed_by_points,entry_variant_50_missed_by_points,entry_variant_75_missed_by_points,entry_variant_adaptive_missed_by_points,entry_variant_edge_bars_to_touch,entry_variant_25_bars_to_touch,entry_variant_50_bars_to_touch,entry_variant_75_bars_to_touch,entry_variant_adaptive_bars_to_touch,entry_variant_best_reached,entry_variant_best_reached_depth_pct,entry_variant_official_depth_pct,entry_variant_fill_gap_pct,entry_variant_shallow_would_fill,entry_variant_deeper_would_not_fill,entry_variant_feasibility_score,entry_variant_feasibility_grade,entry_variant_feasibility_reasons,entry_variant_outcome_sim_enabled,entry_variant_outcome_sim_reasons,entry_variant_edge_sim_status,entry_variant_edge_sim_result_r,entry_variant_edge_sim_entry_price,entry_variant_edge_sim_sl_price,entry_variant_edge_sim_tp_price,entry_variant_edge_sim_risk_points,entry_variant_edge_sim_effective_rr,entry_variant_edge_sim_bars_to_fill,entry_variant_edge_sim_bars_to_close,entry_variant_edge_sim_ambiguous,entry_variant_edge_sim_invalid_risk,entry_variant_25_sim_status,entry_variant_25_sim_result_r,entry_variant_25_sim_entry_price,entry_variant_25_sim_sl_price,entry_variant_25_sim_tp_price,entry_variant_25_sim_risk_points,entry_variant_25_sim_effective_rr,entry_variant_25_sim_bars_to_fill,entry_variant_25_sim_bars_to_close,entry_variant_25_sim_ambiguous,entry_variant_25_sim_invalid_risk,entry_variant_50_sim_status,entry_variant_50_sim_result_r,entry_variant_50_sim_entry_price,entry_variant_50_sim_sl_price,entry_variant_50_sim_tp_price,entry_variant_50_sim_risk_points,entry_variant_50_sim_effective_rr,entry_variant_50_sim_bars_to_fill,entry_variant_50_sim_bars_to_close,entry_variant_50_sim_ambiguous,entry_variant_50_sim_invalid_risk,entry_variant_75_sim_status,entry_variant_75_sim_result_r,entry_variant_75_sim_entry_price,entry_variant_75_sim_sl_price,entry_variant_75_sim_tp_price,entry_variant_75_sim_risk_points,entry_variant_75_sim_effective_rr,entry_variant_75_sim_bars_to_fill,entry_variant_75_sim_bars_to_close,entry_variant_75_sim_ambiguous,entry_variant_75_sim_invalid_risk,entry_variant_adaptive_sim_status,entry_variant_adaptive_sim_result_r,entry_variant_adaptive_sim_entry_price,entry_variant_adaptive_sim_sl_price,entry_variant_adaptive_sim_tp_price,entry_variant_adaptive_sim_risk_points,entry_variant_adaptive_sim_effective_rr,entry_variant_adaptive_sim_bars_to_fill,entry_variant_adaptive_sim_bars_to_close,entry_variant_adaptive_sim_ambiguous,entry_variant_adaptive_sim_invalid_risk,entry_variant_best_sim_variant,entry_variant_best_sim_result_r,entry_variant_best_sim_status,entry_variant_best_sim_reasons,session_bucket,trade_window_status,spread_status,news_mode";
   }
 
 //+------------------------------------------------------------------+

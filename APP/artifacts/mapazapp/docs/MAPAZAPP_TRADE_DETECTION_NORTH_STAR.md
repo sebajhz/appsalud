@@ -395,15 +395,16 @@ Strategy Tester smoke **PASS** on benchmark bundle — [`BUFFERED_EVOS_SMOKE_EVI
 
 Research-only frame for entry families (edge / 25 % / 50 % CE / adaptive / no-trade) — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge serious research candidate; **not** approved; official entry 50 % / CE unchanged.
 
-### E5.14 — IFVG / BISI / SIBI Classification (**siguiente — repo**)
+### E5.14 — IFVG / BISI / SIBI Classification (**completed — export repo**)
 
-Classify imbalance quality more professionally:
+Diagnostic export V1 in TestEA — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md), build `MZP_TestEA_E5_14`:
 
-- bullish imbalance / bearish imbalance
-- IFVG behavior
-- BISI / SIBI
-- inversion behavior
-- clean, mitigated, inverted, or weak FVG
+- BISI / SIBI via existing `DetectIfvgSetupV1` geometry
+- Mitigation states (untouched → filled)
+- Close-confirmed IFVG inversion + optional retest
+- Per-trade score/grade/reasons + summary counters
+
+**Does not** change official entry (50 % / CE) or trade generation. Operator smoke ST pending.
 
 ### E5.15 — Liquidity Target Quality
 

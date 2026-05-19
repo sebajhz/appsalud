@@ -59,8 +59,8 @@ export function listBufferedEvosSummaryRollupKeys(): string[] {
 }
 
 /** Placeholder summary fields for fictional samples (diagnostic-only zeros). */
-export function buildBufferedEvosSummaryRollupPlaceholders(): Record<string, number | string> {
-  const out: Record<string, number | string> = {
+export function buildBufferedEvosSummaryRollupPlaceholders(): Record<string, number | string | boolean> {
+  const out: Record<string, number | string | boolean> = {
     has_buffered_evos_v1_logic: true,
     buffered_evos_enabled: true,
     buffered_evos_best_variant_by_expectancy_b0: "",

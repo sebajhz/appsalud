@@ -164,6 +164,32 @@ export interface BacktestTrade {
   premiumDiscountScore?: number | undefined;
   premiumDiscountGrade?: string | undefined;
   premiumDiscountReasons?: string | undefined;
+  /** E5.14 IFVG / BISI / SIBI classification observation columns (optional; older CSV). */
+  ifvgBisiSibiEnabled?: boolean | undefined;
+  fvgClass?: string | undefined;
+  fvgDirection?: string | undefined;
+  fvgUpperPrice?: number | undefined;
+  fvgLowerPrice?: number | undefined;
+  fvgSizePoints?: number | undefined;
+  fvgAgeBarsAtEntry?: number | undefined;
+  fvgMitigationState?: string | undefined;
+  fvgMitigationDepthPct?: number | undefined;
+  fvgCeTouched?: boolean | undefined;
+  fvgFullyFilled?: boolean | undefined;
+  fvgWickOnlyFill?: boolean | undefined;
+  ifvgInversionDetected?: boolean | undefined;
+  ifvgInversionConfirmedClose?: boolean | undefined;
+  ifvgInversionWickOnly?: boolean | undefined;
+  ifvgInversionBarsAfterFvg?: number | undefined;
+  ifvgInversionClosePrice?: number | undefined;
+  ifvgRetestDetected?: boolean | undefined;
+  ifvgRetestBarsAfterInversion?: number | undefined;
+  ifvgRetestDepthPct?: number | undefined;
+  ifvgValidForTradeDirection?: boolean | undefined;
+  ifvgConflictWithTradeDirection?: boolean | undefined;
+  ifvgBisiSibiScore?: number | undefined;
+  ifvgBisiSibiGrade?: string | undefined;
+  ifvgBisiSibiReasons?: string | undefined;
   /** E5.13.2 Entry fill feasibility post-candidate diagnostic columns (optional; older CSV). */
   entryFillFeasibilityEnabled?: boolean | undefined;
   entryFillStatus?: string | undefined;

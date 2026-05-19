@@ -34,6 +34,11 @@ import {
   BUFFERED_EVOS_SUMMARY_AGGREGATE_STRING_KEYS,
   listBufferedEvosSummaryRollupKeys,
 } from "./buffered-evos-export-keys";
+import {
+  IFVG_BISI_SIBI_OPTIMIZATION_PARAMETER_KEYS,
+  IFVG_BISI_SIBI_SUMMARY_NUMERIC_KEYS,
+  IFVG_BISI_SIBI_TRADE_COLUMNS,
+} from "./ifvg-bisi-sibi-export-keys";
 
 const FILE_NAME_TO_KIND: Record<string, ExportSampleFileKind> = {
   "bridge_status.json": "bridge_status_json",
@@ -1847,6 +1852,89 @@ export function validateTestEaExportSample(
               ),
             );
             status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
+        if (summaryJson["has_ifvg_bisi_sibi_v1_logic"] === true) {
+          if (!("ifvg_bisi_sibi_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_IFVG_E5_14_KEY",
+                `E5.14: when has_ifvg_bisi_sibi_v1_logic is true, summary must include "ifvg_bisi_sibi_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else if (typeof summaryJson["ifvg_bisi_sibi_enabled"] !== "boolean") {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_IFVG_E5_14_BOOL",
+                `E5.14: "ifvg_bisi_sibi_enabled" must be a boolean`,
+                { fileName: sj.fileName, detail: String(summaryJson["ifvg_bisi_sibi_enabled"]) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          for (const k of IFVG_BISI_SIBI_SUMMARY_NUMERIC_KEYS) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_IFVG_E5_14_KEY",
+                  `E5.14: when has_ifvg_bisi_sibi_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const val = summaryJson[k];
+              if (typeof val !== "number" || !Number.isFinite(val)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_IFVG_E5_14_NUM",
+                    `E5.14: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(val) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          const optParams = summaryJson["optimization_parameters"];
+          if (optParams && typeof optParams === "object" && !Array.isArray(optParams)) {
+            const op = optParams as Record<string, unknown>;
+            for (const k of IFVG_BISI_SIBI_OPTIMIZATION_PARAMETER_KEYS) {
+              if (!(k in op)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_IFVG_E5_14_OPT",
+                    `E5.14: optimization_parameters must include "${k}" when has_ifvg_bisi_sibi_v1_logic is true`,
+                    { fileName: sj.fileName },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            for (const col of IFVG_BISI_SIBI_TRADE_COLUMNS) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_IFVG_E5_14",
+                    `E5.14: backtest_trades.csv header must include "${col}" when has_ifvg_bisi_sibi_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
           }
         }
         if (summaryJson["has_buffered_evos_v1_logic"] === true) {

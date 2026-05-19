@@ -110,7 +110,7 @@ It **must not**:
 | 75 % | **Not primary** in current track |
 | Live / gates / automation | **Not approved** |
 | Buffered EVOS | **Implemented and smoke-validated** — use for research, not for auto-approval |
-| Next technical roadmap | **E5.14** IFVG / BISI / SIBI classification recommended (see §7) |
+| Next technical roadmap | **E5.14** IFVG / BISI / SIBI export — [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md) (diagnostic-only; operator smoke pending) |
 
 Edge candidate research is **parked under governance** while setup-quality and classification work proceeds.
 
