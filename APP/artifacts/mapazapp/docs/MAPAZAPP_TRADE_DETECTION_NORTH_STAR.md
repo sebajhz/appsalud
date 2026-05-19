@@ -391,22 +391,11 @@ Buffered EVOS summary rollups in TestEA (`MZP_TestEA_E5_13_6_11`): diagnostic on
 
 Strategy Tester smoke **PASS** on benchmark bundle — [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md). Edge: serious research candidate; **not** approved; official entry remains 50 % / CE.
 
-### E5.13.6.13 — Entry Model Candidate Policy (**siguiente — research**)
+### E5.13.6.13 — Entry Candidate Policy (**completed — research docs**)
 
-Define a candidate policy, not a fixed entry.
+Research-only frame for entry families (edge / 25 % / 50 % CE / adaptive / no-trade) — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge serious research candidate; **not** approved; official entry 50 % / CE unchanged.
 
-Example:
-
-```text
-If context A → edge candidate
-If context B → 25/adaptive candidate
-If context C → CE/50 candidate
-If context weak → reject/wait
-```
-
-This should remain research-only until validated.
-
-### E5.14 — IFVG / BISI / SIBI Classification
+### E5.14 — IFVG / BISI / SIBI Classification (**siguiente — repo**)
 
 Classify imbalance quality more professionally:
 

@@ -121,7 +121,7 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 | Guardrail manual read-only | **Vigente** |
 | Estatus edge en investigación | **Candidato serio de investigación** (antes: candidato interesante) |
 
-**Próximo repo (elección PM):** **E5.13.6.13** — política de candidatos de entry (research-only), **o** **E5.14** — IFVG / BISI / SIBI si se aparca la decisión de entry.
+**E5.13.6.13 —** política de candidatos documentada — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). **Siguiente técnico recomendado:** **E5.14** IFVG / BISI / SIBI.
 
 ---
 

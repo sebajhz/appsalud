@@ -49,7 +49,7 @@ Buffer must **never** improve fillability (only worsens entry after fill).
 
 ## Operator evidence (E5.13.6.12)
 
-Smoke Strategy Tester evidence documented in [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md) — bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, 1697 trades, technical **PASS**; edge serious research candidate; **not** approved as official entry.
+Smoke evidence: [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md). Entry candidate policy (research): [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 
 ## References
 
