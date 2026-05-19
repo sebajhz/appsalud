@@ -169,7 +169,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.13.6.7 (docs) —** transition audit evidence — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md); PASS; **no** aprobar edge/25 %.
 - **E5.13.6.8 (repo) —** edge robustness audit — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md); CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **E5.13.6.9 (docs) —** edge robustness evidence — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md); PASS; **no** aprobar edge.
-- **Siguiente:** **E5.13.6.10** Buffered EVOS decision; luego **E5.14** — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
+- **E5.13.6.10 (docs) —** Buffered EVOS decision — [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md); MQL5 required; manual-control guardrail.
+- **Siguiente:** **E5.13.6.11** MQL5 Buffered EVOS diagnostics; luego **E5.14** — ver [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §D.
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -255,7 +256,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.13.6.7 | Transition audit **evidence** (operator) | **completed** | Operador + Cursor | Audit PASS; edge + riesgo ~2×; no aprobar — [`ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md`](./ENTRY_VARIANT_TRANSITION_AUDIT_EVIDENCE_E5_13_6_7.md). | **E5.13.6.8** |
 | E5.13.6.8 | **Edge Entry Realism / Robustness Audit** | **completed** | Cursor | Core + CLI robustness audit — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md). | **E5.13.6.9** |
 | E5.13.6.9 | Edge robustness **evidence** (operator) | **completed** | Operador + Cursor | PASS post-8.1; edge frágil; **no** aprobar — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md). | **E5.13.6.10** |
-| E5.13.6.10 | **Buffered EVOS decision** | **pending** | Cursor + PM | Proxy TS vs MQL5 buffered exact; sin aprobar entry. | **E5.14** |
+| E5.13.6.10 | **Buffered EVOS decision** + manual guardrail | **completed** | Cursor + PM | MQL5 buffered required; TS proxy not sufficient — [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md). | **E5.13.6.11** |
+| E5.13.6.11 | **MQL5 Buffered EVOS diagnostics** | **pending** | Cursor | TestEA export rollups; diagnostic only; no entry change. | **E5.14** |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |

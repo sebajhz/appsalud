@@ -19,6 +19,10 @@ Main rule:
 
 > Configurability is allowed only when it serves the setup logic and is validated by evidence.
 
+### 1.1 Manual-control guardrail (E5.13.6.10)
+
+Mapazapp is **manual / read-only decision support** until explicitly approved otherwise. It may detect, classify, export, score, alert, and explain setup states; it must **not** execute trades automatically. The final trade decision remains **manual**. See [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md).
+
 ---
 
 ## 2. Optimization Philosophy
@@ -470,7 +474,7 @@ Current rules:
 - 25/adaptive are not approved
 - 75 is not approved
 - edge robustness evidence must be documented
-- if proxy is inconclusive, exact MQL5 buffered EVOS may be required
+- **E5.13.6.10 decided:** exact MQL5 buffered EVOS **is required** before entry-model decision — [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md)
 - no live/funding/gates
 - continue toward E5.14+ after the entry-model research checkpoint is closed or bounded
 
@@ -478,9 +482,10 @@ Current rules:
 
 ## 15. Recommended Near-Term Execution
 
-1. Document E5.13.6.9 edge robustness evidence.
-2. Decide whether E5.13.6.10 requires exact buffered EVOS in MQL5.
-3. Define an entry model candidate policy only if evidence supports it.
+1. ~~Document E5.13.6.9 edge robustness evidence.~~ **Done.**
+2. ~~Decide E5.13.6.10 buffered EVOS.~~ **Done** — MQL5 required; see [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md).
+3. **Next:** E5.13.6.11 MQL5 Buffered EVOS diagnostics (repo).
+4. Define entry model candidate policy only if buffered evidence supports it (post-11).
 4. Continue roadmap:
    - E5.14 IFVG / BISI / SIBI
    - E5.15 liquidity target quality

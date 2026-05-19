@@ -214,15 +214,9 @@ Comparación ligera edge vs **25 %** vs **adaptive** bajo la misma lente de buff
 
 ## Siguiente recomendado
 
-**E5.13.6.10 — Buffered EVOS decision**
+**E5.13.6.10 (docs) — cerrado:** [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md) — proxy TS **no** basta; **Buffered EVOS MQL5 requerido**; guardrail control manual vigente.
 
-Decidir si el proxy TypeScript basta o si hace falta simulación EVOS buffered exacta en MQL5 (spread/slippage bar-a-bar). Ver [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) §14.
-
-Alternativas documentadas (sin aprobar aún):
-
-- EVOS buffered en MQL5 si el proxy es inconcluso para stakeholders.
-- Profundizar 25 % / adaptive bajo misma lente de robustez multi-bundle.
-- Retomar calidad de setup (IFVG / targets) antes de selección de entry — **E5.14+**.
+**E5.13.6.11 —** implementar diagnósticos MQL5 Buffered EVOS (ver decisión § alcance futuro).
 
 ---
 

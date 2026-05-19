@@ -70,6 +70,10 @@ Script: `mapazapp:testea-entry-edge-robustness-audit`
 
 **Cerrado — docs:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md) — re-run post–E5.13.6.8.1; PASS; edge frágil bajo buffer; **no** aprobar edge.
 
+## Decisión E5.13.6.10
+
+**Cerrado — docs:** [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md) — proxy TS insuficiente; **MQL5 Buffered EVOS requerido** (E5.13.6.11); control manual vigente.
+
 ## Próximo paso operador
 
 Ejecutar el CLI sobre el bundle **E5_13_6_3** (si aún no se hizo):
@@ -90,8 +94,9 @@ CSV local (no versionar): `*_DO_NOT_COMMIT.csv` si se usa `--csv-output`.
 
 ## Después de la evidencia
 
-1. Documento de evidencia operador (estilo E5.13.6.7) con flags e interpretación.
-2. O, si el proxy no basta: variantes EVOS buffered exactas en MQL5 (fuera de alcance de este checkpoint).
+1. ~~E5.13.6.9 evidencia operador.~~ **Done.**
+2. ~~E5.13.6.10 decisión buffered EVOS.~~ **Done** — MQL5 requerido.
+3. **Siguiente:** E5.13.6.11 — MQL5 Buffered EVOS diagnostics.
 
 ---
 

@@ -375,18 +375,19 @@ Goal:
 - do not approve edge yet
 - decide whether exact MQL5 buffered EVOS is required
 
-### E5.13.6.10 — Buffered EVOS Decision
+### E5.13.6.10 — Buffered EVOS Decision (**cerrado — docs**)
 
-Decide whether TypeScript proxy robustness is sufficient or whether Mapazapp needs exact buffered EVOS variants inside MQL5.
+**Decisión:** [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md)
 
-Possible outcomes:
+- TypeScript proxy robustness is **useful for direction**, **not sufficient** to approve edge or change official entry.
+- **Exact MQL5 Buffered EVOS is required** before any entry-model decision.
+- **Manual-control guardrail:** Mapazapp remains manual/read-only decision support; the trader decides; no automatic execution until separate governance approves it.
 
-- edge remains interesting but requires exact buffered simulation
-- edge is too fragile and must remain diagnostic only
-- 25/adaptive become better candidates for further research
-- return to imbalance/target quality before entry selection
+### E5.13.6.11 — MQL5 Buffered EVOS Diagnostics (**siguiente — repo**)
 
-### E5.13.6.11 — Entry Model Candidate Policy
+Add buffered EVOS rollups in TestEA export (edge / 25 / adaptive / 50 control; configurable buffer points; diagnostic only). See decision doc § future scope.
+
+### E5.13.6.12 — Entry Model Candidate Policy (renumbered placeholder)
 
 Define a candidate policy, not a fixed entry.
 
