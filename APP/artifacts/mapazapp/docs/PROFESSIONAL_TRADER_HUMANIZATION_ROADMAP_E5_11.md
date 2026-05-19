@@ -56,7 +56,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.16** | **Session / Spread / Volatility** context V1 | **completed (export)** — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md) |
 | **E5.16.1** | **Session / Spread / Volatility smoke** | **completed** — [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) |
 | **E5.16.2** | **Execution environment calibration audit** | **completed (repo)** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md) |
-| **E5.16.3** | **Calibration audit evidence** | planificado — operator |
+| **E5.16.3** | **Calibration audit evidence** | **completed** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) |
+| **E5.16.4** | **Symbol/timeframe execution profile policy** | planificado — research only |
 | **E5.17** | **Frequency / Risk / Overtrading** discipline V1 | planificado — §H |
 | **E5.18** | **BridgeEA / Dashboard** setup state contract | planificado — §I |
 | **E5.19** | **Forward demo** read-only readiness | planificado — §J |
@@ -208,7 +209,8 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 - **E5.15.4 (policy):** [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — bloque E5.15 cerrado.
 - **E5.16 (export):** [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md).
 - **E5.16.1 (smoke):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS.
-- **E5.16.2 (audit):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md) — **siguiente:** **E5.16.3** evidence **o** **E5.17**.
+- **E5.16.2 (audit):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md).
+- **E5.16.3 (evidence):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — **siguiente:** **E5.16.4** **o** **E5.17**.
 
 ### E5.13.6.9 (**cerrado — docs**)
 

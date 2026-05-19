@@ -448,9 +448,13 @@ Strategy Tester smoke **PASS** — [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5
 
 TypeScript audit — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`. Simulates alternative ATR profiles; **no** MQL5 threshold change without governance.
 
-### E5.16.3 — Calibration audit evidence (**planned — operator**)
+### E5.16.3 — Calibration audit evidence (**completed — operator**)
 
-Run audit on benchmark bundle; document flags and sensitivity. **No** threshold change without governance.
+Benchmark audit **PASS** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md). V1 extreme-dominated; profile-specific thresholds recommended; **no** MQL5 change in this checkpoint.
+
+### E5.16.4 — Symbol/Timeframe Execution Profile Policy (**planned — research only**)
+
+Define `XAUUSD_M15_Profile_V1` (and related) threshold policy in docs before any MQL5 change.
 
 ### E5.16+ — Session / News / Spread / Volatility (future)
 

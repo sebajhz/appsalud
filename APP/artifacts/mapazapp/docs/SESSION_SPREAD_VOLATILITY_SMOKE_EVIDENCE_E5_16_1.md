@@ -142,7 +142,9 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 
 **Cerrado (TypeScript research):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md) — CLI `mapazapp:testea-execution-environment-calibration-audit`; simula perfiles ATR alternativos **sin** cambiar MQL5.
 
-**Siguiente:** **E5.16.3** evidencia operador post-audit sobre bundle benchmark **o** **E5.17+**.
+**E5.16.3 (evidencia audit):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS.
+
+**Siguiente:** **E5.16.4** profile policy **o** **E5.17+**.
 
 ---
 
@@ -150,7 +152,7 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 
 | Opción | Descripción |
 |--------|-------------|
-| **E5.16.3** | Ejecutar audit en `SET001_…` y documentar evidencia |
+| **E5.16.4** | Symbol/timeframe execution profile policy (research) |
 | **E5.17+** | Continuar roadmap humanization / checklist según North Star |
 
 ---

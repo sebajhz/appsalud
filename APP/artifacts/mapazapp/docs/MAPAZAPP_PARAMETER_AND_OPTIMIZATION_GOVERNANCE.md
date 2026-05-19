@@ -500,7 +500,8 @@ Current rules:
    - ~~**E5.16** session/spread/volatility context V1 export.~~ **Done (repo)** — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md); build `MZP_TestEA_E5_16`.
    - ~~**E5.16.1** operator smoke + bundle validation.~~ **Done** — [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md); PASS; **no** threshold/TP/entry change.
    - ~~**E5.16.2** execution environment calibration audit.~~ **Done (repo)** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`.
-   - **E5.16.3** operator evidence post-calibration audit (next)
+   - ~~**E5.16.3** operator evidence post-calibration audit.~~ **Done** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md); PASS; **no** threshold/TP/entry change.
+   - **E5.16.4** symbol/timeframe execution profile policy (research docs)
    - E5.17 frequency/risk/discipline
    - E5.18 setup state contract
    - E5.19 forward demo read-only

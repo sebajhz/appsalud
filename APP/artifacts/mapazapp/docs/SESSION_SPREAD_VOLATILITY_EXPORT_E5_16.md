@@ -124,7 +124,7 @@ Event `details` may include: `sess=… spr=… vol=… env_score=…` via `MapzS
 
 **Cerrado — docs:** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; sesión/spread OK; volatilidad **extreme** dominante (~71.5 %) — **no** recalibrar umbrales en E5.16.1.
 
-**E5.16.2 (audit repo):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md). **Siguiente:** **E5.16.3** operator evidence **o** **E5.17+**.
+**E5.16.3 (evidencia audit):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS. **Siguiente:** **E5.16.4** profile policy **o** **E5.17+**.
 
 ---
 

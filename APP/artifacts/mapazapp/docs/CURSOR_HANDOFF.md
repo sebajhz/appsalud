@@ -79,7 +79,8 @@
 - **E5.15.4 cerrado (policy research):** [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — bloque E5.15 cerrado a nivel política.
 - **E5.16 cerrado (repo export):** [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md), build **`MZP_TestEA_E5_16`**.
 - **E5.16.1 cerrado (smoke operador):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS.
-- **E5.16.2 cerrado (audit repo):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`. **Siguiente:** **E5.16.3** evidencia operador **o** **E5.17**. **Futuro:** Setup Readiness Checklist (North Star E5.18).
+- **E5.16.2 cerrado (audit repo):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`.
+- **E5.16.3 cerrado (evidencia operador):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS; V1 extreme 1213/1697; candidatos B/C plausibles; **no** cambiar umbrales. **Siguiente:** **E5.16.4** profile policy **o** **E5.17**. **Futuro:** Setup Readiness Checklist (North Star E5.18).
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)

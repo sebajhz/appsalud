@@ -64,13 +64,11 @@ Script: `mapazapp:testea-execution-environment-calibration-audit`
 
 ---
 
-## Evidencia operador (E5.16.3 — pendiente)
+## Evidencia operador (E5.16.3)
 
-Ejecutar el CLI sobre el bundle benchmark E5.16 y documentar resultados en evidencia operador (futuro hito docs-only).
+**Cerrado — docs:** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; V1 extreme 1213/1697; candidatos B/C más plausibles; **no** cambiar umbrales aquí.
 
-**E5.16.1 (smoke):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS.
-
-**Siguiente:** **E5.16.3** operator evidence post-audit **o** **E5.17** frequency/risk/discipline.
+**Siguiente:** **E5.16.4** profile policy (research) **o** **E5.17** frequency/risk/discipline.
 
 ---
 
