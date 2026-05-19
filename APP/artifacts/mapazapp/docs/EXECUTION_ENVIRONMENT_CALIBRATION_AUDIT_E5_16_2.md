@@ -68,7 +68,7 @@ Script: `mapazapp:testea-execution-environment-calibration-audit`
 
 **Cerrado — docs:** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; V1 extreme 1213/1697; candidatos B/C más plausibles; **no** cambiar umbrales aquí.
 
-**Siguiente:** **E5.16.4** profile policy (research) **o** **E5.17** frequency/risk/discipline.
+**E5.16.4 (policy):** [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — cerrado. **Siguiente:** **E5.17**.
 
 ---
 

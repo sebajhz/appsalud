@@ -144,7 +144,7 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 
 **E5.16.3 (evidencia audit):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS.
 
-**Siguiente:** **E5.16.4** profile policy **o** **E5.17+**.
+**E5.16.4 (policy):** [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md). **Siguiente:** **E5.17+**.
 
 ---
 
@@ -152,8 +152,8 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 
 | Opción | Descripción |
 |--------|-------------|
-| **E5.16.4** | Symbol/timeframe execution profile policy (research) |
-| **E5.17+** | Continuar roadmap humanization / checklist según North Star |
+| **E5.17** | Frequency / risk / overtrading discipline V1 |
+| **E5.18** | Setup Readiness Checklist |
 
 ---
 

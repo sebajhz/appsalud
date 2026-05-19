@@ -193,17 +193,11 @@ Umbrales percentile C (del bundle):
 
 ---
 
-## Futuro (solo planificación): E5.16.4 — Symbol/Timeframe Execution Profile Policy
+## E5.16.4 — Profile policy (cerrado)
 
-**Propósito (docs/research only):** definir política de umbrales de entorno **por símbolo y timeframe** — p.ej. `XAUUSD_M15_Profile_V1` — integrando evidencia E5.16.3 (candidate B/C, percentiles) con gobernanza North Star.
+**Cerrado — docs:** [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — bloque E5.16 cerrado en gobernanza; V1 = stress label; **no** cambio umbrales.
 
-Posibles entregables:
-
-- Vocabulario de perfiles (stress V1 vs calibrated profile).
-- Criterios de aprobación antes de cambiar inputs MQL5.
-- Relación con Setup Readiness Checklist (E5.18).
-
-**Restricciones E5.16.4:** no modificar umbrales MQL5 salvo hito explícito aprobado; no gates; no live.
+**Siguiente:** **E5.17** Frequency / Risk / Overtrading discipline V1.
 
 ---
 
@@ -211,8 +205,8 @@ Posibles entregables:
 
 | Opción | Descripción |
 |--------|-------------|
-| **E5.16.4** | **Recomendado** — Symbol/Timeframe Execution Profile Policy (research docs) |
-| **E5.17** | Frequency / Risk / Overtrading discipline V1 |
+| **E5.17** | **Recomendado** — Frequency / Risk / Overtrading discipline V1 |
+| **E5.18** | Setup Readiness Checklist (consume E5.16 + esta política) |
 
 ---
 

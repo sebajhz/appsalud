@@ -124,7 +124,7 @@ Checklist output is **advisory** for trader review and dashboard explanation. It
 | Edge / variant approval | **No** |
 | Live / gates | **No** |
 
-**E5.16.3 (evidence):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS. **Siguiente:** **E5.16.4** profile policy **o** **E5.17+**.
+**E5.16.4 (policy):** [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md). **Siguiente:** **E5.17+**.
 
 **Optional later:** E5.18 Setup Readiness Checklist implementation consuming E5.15 target fields + E5.16 context + entry policy labels.
 

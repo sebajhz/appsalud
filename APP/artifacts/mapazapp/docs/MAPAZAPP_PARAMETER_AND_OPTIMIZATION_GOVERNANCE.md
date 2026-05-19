@@ -501,7 +501,8 @@ Current rules:
    - ~~**E5.16.1** operator smoke + bundle validation.~~ **Done** — [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md); PASS; **no** threshold/TP/entry change.
    - ~~**E5.16.2** execution environment calibration audit.~~ **Done (repo)** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`.
    - ~~**E5.16.3** operator evidence post-calibration audit.~~ **Done** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md); PASS; **no** threshold/TP/entry change.
-   - **E5.16.4** symbol/timeframe execution profile policy (research docs)
+   - ~~**E5.16.4** symbol/timeframe execution profile policy.~~ **Done** — [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md); E5.16 block closed; **no** threshold change.
+   - **E5.17** frequency/risk/overtrading discipline V1 (next)
    - E5.17 frequency/risk/discipline
    - E5.18 setup state contract
    - E5.19 forward demo read-only

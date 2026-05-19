@@ -452,9 +452,9 @@ TypeScript audit — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EX
 
 Benchmark audit **PASS** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md). V1 extreme-dominated; profile-specific thresholds recommended; **no** MQL5 change in this checkpoint.
 
-### E5.16.4 — Symbol/Timeframe Execution Profile Policy (**planned — research only**)
+### E5.16.4 — Symbol/Timeframe Execution Profile Policy (**completed — docs only**)
 
-Define `XAUUSD_M15_Profile_V1` (and related) threshold policy in docs before any MQL5 change.
+[`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — profile vocabulary, XAUUSD M15 policy, governance bars; V1 stress labels; **no** MQL5 change. E5.16 block closed at policy level. **Next:** E5.17.
 
 ### E5.16+ — Session / News / Spread / Volatility (future)
 
