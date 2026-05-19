@@ -95,7 +95,8 @@ On setup preview / virtual details: `lq_tgt`, `lq_tgt_type`, `lq_tgt_score` via 
 - **Bundle:** `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` · `trade_count` 1697
 - **E5.15.2 (repo):** target realism audit — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md); CLI `mapazapp:testea-liquidity-target-realism-audit`
 - **E5.15.3 (operator):** [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md) — PASS benchmark SET001
-- **Next (decision):** **E5.15.4** target policy research **or** **E5.16** session/spread/volatility
+- **E5.15.4 (policy):** [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md)
+- **Next:** **E5.16** session/spread/volatility
 
 ## References
 

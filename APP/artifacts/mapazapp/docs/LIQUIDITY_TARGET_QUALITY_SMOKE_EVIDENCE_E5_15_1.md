@@ -108,7 +108,7 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 | Aprobación edge / 25 % / adaptive | **No** |
 | Live / gates / automatización | **No** |
 | Guardrail manual read-only | **Vigente** |
-| Siguiente (decisión roadmap) | **E5.15.4** target policy research **o** **E5.16** session/spread/volatility |
+| Siguiente (decisión roadmap) | **E5.16** session/spread/volatility (bloque E5.15 cerrado en política — [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md)) |
 
 ---
 
@@ -119,6 +119,10 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 ## E5.15.3 — Target Realism audit evidence (operador)
 
 [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md) — PASS; contadores alineados con este smoke; TP conservador vs nearest en ~74 % de trades; **no** cambiar TP ni entry.
+
+## E5.15.4 — Target policy (research)
+
+[`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — familias de objetivo + gobernanza; bloque E5.15 cerrado a nivel política.
 
 ---
 

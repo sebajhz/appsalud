@@ -180,21 +180,9 @@ pnpm --filter @workspace/scripts mapazapp:testea-liquidity-target-realism-audit 
 
 ---
 
-## Futuro (solo planificación): E5.15.4 — Conservative RR Target vs Liquidity Target Policy
+## E5.15.4 — Target policy (cerrado, research only)
 
-**Propósito (research only):** definir cómo Mapazapp debe pensar, por perfil y por evidencia, en:
-
-| Concepto | Rol tentativo |
-|----------|----------------|
-| **Conservative fixed RR TP** | Objetivo oficial actual (benchmark SET001 RR2) |
-| **Liquidity-aligned TP** | Objetivo alineado con pool/swing/HTF detectado |
-| **Extended TP** | TP más allá de nearest (cohorte `beyond_nearest`) |
-| **Partial target** | Take parcial / múltiples objetivos (solo diseño) |
-| **No-trade** | Sin objetivo defendible (`missing` / weak sin liquidez clara) |
-
-**Restricciones E5.15.4:** documentación y diseño de política únicamente; **no** cambiar TP, outcomes, entry ni MQL5 en este hito sin aprobación explícita.
-
-**Relación:** alimenta North Star **Setup Readiness Checklist** (E5.18) y posible contraste con **E5.16** (sesión / spread / volatilidad).
+**Documento:** [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — vocabulario de familias de objetivo, gobernanza, checklist futuro, barras de evidencia antes de cambiar TP. **No** cambia TP RR2 ni entry.
 
 ---
 
@@ -202,5 +190,4 @@ pnpm --filter @workspace/scripts mapazapp:testea-liquidity-target-realism-audit 
 
 | Opción | Descripción |
 |--------|-------------|
-| **E5.15.4** | Research doc: política conservative RR vs liquidity vs extended target |
-| **E5.16** | Export diagnóstico session / spread / volatilidad (si se prioriza contexto de ejecución) |
+| **E5.16** | **Recomendado** — Session / Spread / Volatility Context V1 (export diagnóstico) |

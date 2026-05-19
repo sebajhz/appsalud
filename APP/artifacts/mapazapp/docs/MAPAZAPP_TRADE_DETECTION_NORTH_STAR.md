@@ -430,7 +430,11 @@ TypeScript audit over exported bundle — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15
 
 ### E5.15.3 — Target Realism audit evidence (**completed — operator**)
 
-Benchmark audit **PASS** — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md). Official RR2 TP often conservative vs nearest liquidity; target quality diagnostic-only. **Next:** E5.15.4 policy research or E5.16.
+Benchmark audit **PASS** — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md). Official RR2 TP often conservative vs nearest liquidity; target quality diagnostic-only.
+
+### E5.15.4 — Target policy research (**completed — docs only**)
+
+[`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — conservative RR vs liquidity-aligned vs extended vs no-trade vocabulary; E5.15 block closed at policy level. **Next:** E5.16.
 
 ### E5.16 — Session / News / Spread / Volatility Context
 

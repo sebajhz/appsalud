@@ -58,7 +58,7 @@ Script: `mapazapp:testea-liquidity-target-realism-audit`
 
 **Cerrado — docs:** [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md) — PASS; 1249/1697 TP antes de nearest; 406 supported; flags conservador + bajo supported + grado C; **no** cambiar TP ni entry.
 
-**Siguiente (decisión roadmap):** **E5.15.4** target policy research **o** **E5.16** session/spread/volatility.
+**E5.15.4 (policy):** [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — cerrado research-only. **Siguiente:** **E5.16** session/spread/volatility.
 
 ---
 
