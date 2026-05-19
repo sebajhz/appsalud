@@ -444,9 +444,13 @@ Diagnostic export — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SP
 
 Strategy Tester smoke **PASS** — [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md). Session/spread OK; volatility extreme-dominated under V1 thresholds — calibration research **E5.16.2** before threshold change.
 
-### E5.16.2 — Execution Environment Calibration Audit (**planned — research only**)
+### E5.16.2 — Execution Environment Calibration Audit (**completed — repo, research only**)
 
-Evaluate symbol/profile-specific volatility thresholds (e.g. XAUUSD M15). **No** threshold change without governance.
+TypeScript audit — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`. Simulates alternative ATR profiles; **no** MQL5 threshold change without governance.
+
+### E5.16.3 — Calibration audit evidence (**planned — operator**)
+
+Run audit on benchmark bundle; document flags and sensitivity. **No** threshold change without governance.
 
 ### E5.16+ — Session / News / Spread / Volatility (future)
 

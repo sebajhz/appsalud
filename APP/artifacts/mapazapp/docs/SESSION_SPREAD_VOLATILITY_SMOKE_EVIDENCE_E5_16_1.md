@@ -138,18 +138,11 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 
 ---
 
-## Futuro (solo planificación): E5.16.2 — Execution Environment Calibration Audit
+## E5.16.2 — Calibration audit (repo)
 
-**Propósito (research only):** evaluar si los umbrales de volatilidad (y eventualmente spread/session) deben ser **específicos por símbolo y perfil** — en particular XAUUSD M15, donde el 71.5 % de trades quedan en `volatility_extreme` con umbrales V1 por defecto.
+**Cerrado (TypeScript research):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md) — CLI `mapazapp:testea-execution-environment-calibration-audit`; simula perfiles ATR alternativos **sin** cambiar MQL5.
 
-Posibles entregables E5.16.2 (sin cambiar MQL5 en el hito salvo gobernanza explícita):
-
-- Distribución ATR/range por cohorte de sesión y outcome.
-- Comparación multi-campaña / multi-periodo.
-- Propuesta de perfiles de umbral (documentación) vs evidencia de P/L.
-- Recomendación: calibrar antes de usar `execution_environment_grade` en checklist con peso alto.
-
-**Restricciones E5.16.2:** no cambiar umbrales ni TP sin decisión de gobernanza; no gates; no live.
+**Siguiente:** **E5.16.3** evidencia operador post-audit sobre bundle benchmark **o** **E5.17+**.
 
 ---
 
@@ -157,7 +150,7 @@ Posibles entregables E5.16.2 (sin cambiar MQL5 en el hito salvo gobernanza expl�
 
 | Opción | Descripción |
 |--------|-------------|
-| **E5.16.2** | **Recomendado si se prioriza calibración de entorno** — audit research de umbrales XAUUSD M15 |
+| **E5.16.3** | Ejecutar audit en `SET001_…` y documentar evidencia |
 | **E5.17+** | Continuar roadmap humanization / checklist según North Star |
 
 ---
