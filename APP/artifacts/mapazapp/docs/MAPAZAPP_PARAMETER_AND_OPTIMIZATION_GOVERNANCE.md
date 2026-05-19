@@ -494,8 +494,9 @@ Current rules:
 4. Define entry model candidate policy only if buffered evidence supports it (post-11).
 4. Continue roadmap:
    - ~~**E5.15.1** liquidity target smoke ST.~~ **Done** — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md).
-   - ~~**E5.15.2** target realism audit (research).~~ **Done (repo)** — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md); CLI `mapazapp:testea-liquidity-target-realism-audit`.
-   - **E5.15.3** operator evidence post-audit **or** **E5.16** session/news/spread/volatility
+   - ~~**E5.15.2** target realism audit (research).~~ **Done (repo)** — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md).
+   - ~~**E5.15.3** operator evidence post-audit.~~ **Done** — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md); PASS; **no** TP/entry change.
+   - **E5.15.4** target policy research **or** **E5.16** session/news/spread/volatility
    - E5.17 frequency/risk/discipline
    - E5.18 setup state contract
    - E5.19 forward demo read-only

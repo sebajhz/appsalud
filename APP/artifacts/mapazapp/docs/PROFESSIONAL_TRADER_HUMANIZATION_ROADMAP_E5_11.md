@@ -51,7 +51,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.15** | **Liquidity Target Quality** V1 | **completed (export)** — [`LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md`](./LIQUIDITY_TARGET_QUALITY_EXPORT_E5_15.md) |
 | **E5.15.1** | **Liquidity Target Quality smoke** | **completed** — [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md) |
 | **E5.15.2** | **Target realism / TP vs liquidity audit** | **completed (repo)** — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md) |
-| **E5.15.3** | **Target realism audit evidence** | planificado — operator docs |
+| **E5.15.3** | **Target realism audit evidence** | **completed** — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md) |
+| **E5.15.4** | **Conservative RR vs liquidity target policy** | planificado — research only |
 | **E5.16** | **Session / News / Spread / Volatility** context V1 | planificado — §G |
 | **E5.17** | **Frequency / Risk / Overtrading** discipline V1 | planificado — §H |
 | **E5.18** | **BridgeEA / Dashboard** setup state contract | planificado — §I |
@@ -199,7 +200,8 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 - **Implementación:** core `testea-entry-edge-robustness-audit.ts` + CLI `mapazapp:testea-entry-edge-robustness-audit`.
 - **Doc:** [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md).
 - **E5.15.1 (smoke):** [`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md) — PASS.
-- **E5.15.2 (repo):** [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md) — CLI `mapazapp:testea-liquidity-target-realism-audit`; **siguiente:** **E5.15.3** evidence **o** **E5.16**.
+- **E5.15.2 (repo):** [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md) — CLI `mapazapp:testea-liquidity-target-realism-audit`.
+- **E5.15.3 (evidence):** [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md) — PASS; **siguiente:** **E5.15.4** policy research **o** **E5.16**.
 
 ### E5.13.6.9 (**cerrado — docs**)
 

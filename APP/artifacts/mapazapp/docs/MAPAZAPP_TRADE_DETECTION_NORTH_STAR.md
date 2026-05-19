@@ -426,7 +426,11 @@ Strategy Tester smoke **PASS** on benchmark bundle — [`LIQUIDITY_TARGET_QUALIT
 
 ### E5.15.2 — Target Realism / TP vs Liquidity Distance Audit (**completed — repo, research only**)
 
-TypeScript audit over exported bundle — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md); CLI `mapazapp:testea-liquidity-target-realism-audit`. Investigates TP vs nearest liquidity (counts, crosstabs, distance stats, buckets, flags). **Must not** change TP or outcome logic without explicit governance. **Next:** E5.15.3 operator evidence or E5.16.
+TypeScript audit over exported bundle — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md); CLI `mapazapp:testea-liquidity-target-realism-audit`. Investigates TP vs nearest liquidity (counts, crosstabs, distance stats, buckets, flags). **Must not** change TP or outcome logic without explicit governance.
+
+### E5.15.3 — Target Realism audit evidence (**completed — operator**)
+
+Benchmark audit **PASS** — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md). Official RR2 TP often conservative vs nearest liquidity; target quality diagnostic-only. **Next:** E5.15.4 policy research or E5.16.
 
 ### E5.16 — Session / News / Spread / Volatility Context
 

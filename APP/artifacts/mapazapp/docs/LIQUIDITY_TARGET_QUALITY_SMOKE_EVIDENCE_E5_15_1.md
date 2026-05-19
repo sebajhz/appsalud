@@ -108,13 +108,17 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 | Aprobación edge / 25 % / adaptive | **No** |
 | Live / gates / automatización | **No** |
 | Guardrail manual read-only | **Vigente** |
-| Siguiente (decisión roadmap) | **E5.15.3** evidencia operador post-audit **o** **E5.16** session/spread/volatility |
+| Siguiente (decisión roadmap) | **E5.15.4** target policy research **o** **E5.16** session/spread/volatility |
 
 ---
 
-## E5.15.2 — Target Realism audit (repo, research only)
+## E5.15.2 — Target Realism audit (repo)
 
-**Implementación:** [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md) — CLI `mapazapp:testea-liquidity-target-realism-audit`. **No** cambia TP ni outcomes. **Siguiente:** ejecutar CLI sobre bundle benchmark y documentar **E5.15.3** evidence.
+[`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md) — CLI `mapazapp:testea-liquidity-target-realism-audit`.
+
+## E5.15.3 — Target Realism audit evidence (operador)
+
+[`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md) — PASS; contadores alineados con este smoke; TP conservador vs nearest en ~74 % de trades; **no** cambiar TP ni entry.
 
 ---
 

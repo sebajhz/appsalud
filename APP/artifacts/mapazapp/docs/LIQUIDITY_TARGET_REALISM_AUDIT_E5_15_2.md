@@ -54,23 +54,11 @@ Script: `mapazapp:testea-liquidity-target-realism-audit`
 
 ---
 
-## Próximo paso operador (E5.15.3 evidence)
+## Evidencia operador (E5.15.3)
 
-Ejecutar sobre bundle **E5.15** benchmark:
+**Cerrado — docs:** [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md) — PASS; 1249/1697 TP antes de nearest; 406 supported; flags conservador + bajo supported + grado C; **no** cambiar TP ni entry.
 
-- Build: `MZP_TestEA_E5_15`
-- Bundle: `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`
-
-```bash
-pnpm --filter @workspace/scripts mapazapp:testea-liquidity-target-realism-audit -- \
-  --bundle "$RunDir" \
-  --json \
-  --max-examples 10
-```
-
-Documentar métricas y flags en evidencia **E5.15.3** (docs only). Comparar con smoke E5.15.1 (`before_nearest` 1249, `reached_by_tp` 406, etc.).
-
-**Alternativa roadmap:** continuar **E5.16** session/spread/volatility si se difiere evidencia E5.15.3.
+**Siguiente (decisión roadmap):** **E5.15.4** target policy research **o** **E5.16** session/spread/volatility.
 
 ---
 

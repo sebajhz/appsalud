@@ -5,10 +5,14 @@
 - **North Star:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) — framework de descubrimiento de setup parametrizado; XAUUSD laboratorio primario, no producto «solo oro»; perfiles futuros por símbolo con evidencia.
 - **Parameter / optimization governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) — campañas controladas, anti-overfit, escalera de evidencia; **no** aprobar entry desde un bundle; edge / 25 % / adaptive experimentales; oficial **50 % / CE**; sin live / gates / ejecución real hasta aprobación explícita.
 
+## E5.15.3 checkpoint context
+
+- **Cerrado (evidencia operador):** Target Realism audit — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md), bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, build `MZP_TestEA_E5_15`. PASS; 1249/1697 before nearest; **no** cambio TP/entry.
+- **Siguiente (decisión roadmap):** **E5.15.4** Conservative RR vs Liquidity Target Policy (research) **o** **E5.16** session/spread/volatility.
+
 ## E5.15.2 checkpoint context
 
 - **Cerrado (repo):** Target Realism / TP vs Liquidity Distance Audit — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md); CLI `mapazapp:testea-liquidity-target-realism-audit`. Research-only; **no** cambia TP ni outcomes.
-- **Siguiente (decisión roadmap):** **E5.15.3** evidencia operador post-audit **o** **E5.16** session/spread/volatility.
 
 ## E5.15.1 checkpoint context
 
@@ -24,7 +28,7 @@
 - **Cerrado (smoke operador):** IFVG / BISI / SIBI — [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md), build `MZP_TestEA_E5_14`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`. PASS técnico; diagnostic-only; **no** edge approval.
 - **Cerrado (repo export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 - **Cerrado (research docs):** Entry candidate policy — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
-- **Siguiente recomendado:** **E5.15.3** target realism evidence **o** **E5.16** session/spread/volatility.
+- **Siguiente recomendado:** **E5.15.4** target policy research **o** **E5.16** session/spread/volatility.
 - **Futuro (planificación):** Mapazapp Setup Readiness Checklist — checklist read-only desde diagnósticos + razones de bloqueo agregables (ver North Star E5.18 / smoke E5.14.1).
 
 ## E5.13.6.12 checkpoint context
