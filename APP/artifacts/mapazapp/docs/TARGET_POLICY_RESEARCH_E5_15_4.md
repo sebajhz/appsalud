@@ -124,7 +124,7 @@ Checklist output is **advisory** for trader review and dashboard explanation. It
 | Edge / variant approval | **No** |
 | Live / gates | **No** |
 
-**Next recommended technical milestone:** **E5.16.1** operator smoke post-export — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md). **E5.16** repo export implemented (`MZP_TestEA_E5_16`).
+**E5.16.1 (smoke):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS. **Siguiente:** **E5.16.2** execution environment calibration (research) **o** **E5.17+**.
 
 **Optional later:** E5.18 Setup Readiness Checklist implementation consuming E5.15 target fields + E5.16 context + entry policy labels.
 

@@ -77,7 +77,8 @@
 - **E5.15.2 cerrado (repo):** target realism audit — [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md); CLI `mapazapp:testea-liquidity-target-realism-audit`.
 - **E5.15.3 cerrado (evidencia operador):** [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md) — PASS SET001; TP RR2 a menudo conservador vs nearest; **no** cambiar TP/entry.
 - **E5.15.4 cerrado (policy research):** [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — bloque E5.15 cerrado a nivel política.
-- **E5.16 cerrado (repo export):** [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md), build **`MZP_TestEA_E5_16`**. **Siguiente:** **E5.16.1** smoke operador. **Futuro:** Setup Readiness Checklist (North Star E5.18).
+- **E5.16 cerrado (repo export):** [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md), build **`MZP_TestEA_E5_16`**.
+- **E5.16.1 cerrado (smoke operador):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS; volatilidad extreme dominante; **no** recalibrar umbrales aquí. **Siguiente:** **E5.16.2** calibration audit (research) **o** **E5.17**. **Futuro:** Setup Readiness Checklist (North Star E5.18).
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)

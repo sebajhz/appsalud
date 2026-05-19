@@ -438,7 +438,15 @@ Benchmark audit **PASS** — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.m
 
 ### E5.16 — Session / Spread / Volatility Context V1 (**completed — export repo**)
 
-Diagnostic export — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md), build `MZP_TestEA_E5_16`. **Next:** operator smoke evidence.
+Diagnostic export — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md), build `MZP_TestEA_E5_16`.
+
+### E5.16.1 — Session / Spread / Volatility smoke evidence (**completed — operator**)
+
+Strategy Tester smoke **PASS** — [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md). Session/spread OK; volatility extreme-dominated under V1 thresholds — calibration research **E5.16.2** before threshold change.
+
+### E5.16.2 — Execution Environment Calibration Audit (**planned — research only**)
+
+Evaluate symbol/profile-specific volatility thresholds (e.g. XAUUSD M15). **No** threshold change without governance.
 
 ### E5.16+ — Session / News / Spread / Volatility (future)
 

@@ -120,15 +120,11 @@ Event `details` may include: `sess=… spr=… vol=… env_score=…` via `MapzS
 
 ---
 
-## Next operator step
+## Evidencia operador (E5.16.1)
 
-1. Compile **`Mapazapp_TestEA_E5_16.ex5`** (0 errors / 0 warnings).  
-2. Strategy Tester smoke on benchmark bundle (`SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`).  
-3. Validate bundle:  
-   `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<RunDir>" --json`  
-4. Document smoke evidence (future milestone).
+**Cerrado — docs:** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; sesión/spread OK; volatilidad **extreme** dominante (~71.5 %) — **no** recalibrar umbrales en E5.16.1.
 
-**Repo TypeScript audit (optional):** none required for E5.16 export itself.
+**Siguiente:** **E5.16.2** calibration audit (research) **o** roadmap **E5.17+**.
 
 ---
 

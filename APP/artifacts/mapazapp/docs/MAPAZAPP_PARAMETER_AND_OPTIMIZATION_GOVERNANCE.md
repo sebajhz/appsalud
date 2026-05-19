@@ -498,7 +498,8 @@ Current rules:
    - ~~**E5.15.3** operator evidence post-audit.~~ **Done** — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.md); PASS; **no** TP/entry change.
    - ~~**E5.15.4** target policy research.~~ **Done** — [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md); official TP RR2 unchanged.
    - ~~**E5.16** session/spread/volatility context V1 export.~~ **Done (repo)** — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md); build `MZP_TestEA_E5_16`.
-   - **E5.16.1** operator smoke + bundle validation (next)
+   - ~~**E5.16.1** operator smoke + bundle validation.~~ **Done** — [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md); PASS; **no** threshold/TP/entry change.
+   - **E5.16.2** execution environment calibration audit (research only; symbol/profile thresholds)
    - E5.17 frequency/risk/discipline
    - E5.18 setup state contract
    - E5.19 forward demo read-only

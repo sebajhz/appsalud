@@ -5,10 +5,14 @@
 - **North Star:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) — framework de descubrimiento de setup parametrizado; XAUUSD laboratorio primario, no producto «solo oro»; perfiles futuros por símbolo con evidencia.
 - **Parameter / optimization governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) — campañas controladas, anti-overfit, escalera de evidencia; **no** aprobar entry desde un bundle; edge / 25 % / adaptive experimentales; oficial **50 % / CE**; sin live / gates / ejecución real hasta aprobación explícita.
 
+## E5.16.1 checkpoint context
+
+- **Cerrado (smoke operador):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md), build `MZP_TestEA_E5_16`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`. PASS; session/spread OK; ~71.5 % volatility extreme; **no** threshold change in this checkpoint.
+- **Siguiente:** **E5.16.2** Execution Environment Calibration Audit (research) **o** **E5.17** frequency/risk/discipline.
+
 ## E5.16 checkpoint context
 
 - **Cerrado (repo export):** Session / Spread / Volatility V1 — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md), build `MZP_TestEA_E5_16`.
-- **Siguiente:** **E5.16.1** operator smoke evidence.
 
 ## E5.15.4 checkpoint context
 
