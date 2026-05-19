@@ -216,7 +216,7 @@ Comparación ligera edge vs **25 %** vs **adaptive** bajo la misma lente de buff
 
 **E5.13.6.10 (docs) — cerrado:** [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md) — proxy TS **no** basta; **Buffered EVOS MQL5 requerido**; guardrail control manual vigente.
 
-**E5.13.6.11 —** diagnósticos MQL5 Buffered EVOS en repo — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). **Siguiente operador:** Strategy Tester + validar bundle + inspeccionar summary buffered.
+**E5.13.6.11 —** MQL5 Buffered EVOS en repo — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). **E5.13.6.12 —** smoke ST PASS — [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md): edge confirma dominio MQL5 b0/b30/b50; fragilidad 736/907 wins frágiles a b30/b50; **no** aprobación edge.
 
 ---
 

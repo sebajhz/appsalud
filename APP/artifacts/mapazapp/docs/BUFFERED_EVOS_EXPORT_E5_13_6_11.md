@@ -47,12 +47,9 @@ Buffer must **never** improve fillability (only worsens entry after fill).
 - Does **not** approve edge, 25%, or adaptive entry.
 - Does **not** add gates or live `OrderSend` / `CTrade` / `WebRequest`.
 
-## Next operator step
+## Operator evidence (E5.13.6.12)
 
-1. Compile **`MZP_TestEA_E5_13_6_11`** in MetaEditor.
-2. Run Strategy Tester on XAUUSD M15 (same campaign as E5.13.6.9 evidence).
-3. Validate bundle: `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<export_path>" --json`
-4. Inspect summary: compare `buffered_evos_p50_b0_*` vs official control; edge `b30`/`b50` fragile and `wins_failing_min_effective_rr_count`.
+Smoke Strategy Tester evidence documented in [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md) — bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, 1697 trades, technical **PASS**; edge serious research candidate; **not** approved as official entry.
 
 ## References
 

@@ -129,6 +129,7 @@ Cualquier automatización futura (semi-auto, auto-entry, routing a broker) requi
 | Proxy TS suficiente para aprobar edge | **NO** |
 | Buffered EVOS MQL5 requerido antes de decisión entry | **SÍ** |
 | Implementar E5.13.6.11 (MQL5 diagnostics) | **Done** — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md) |
+| Smoke operador E5.13.6.12 (MQL5 ST) | **Done** — [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md) — PASS técnico; edge candidato serio; sin aprobación |
 | Aprobar edge / 25 % / adaptive | **NO** |
 | Cambiar entry oficial 50 % / CE | **NO** |
 | Gates / live / trading | **NO** |
@@ -142,7 +143,7 @@ Cualquier automatización futura (semi-auto, auto-entry, routing a broker) requi
 
 Implementar en `Mapazapp_TestEA.mq5` (o módulo EVOS acoplado) los inputs y rollups de summary descritos arriba; mantener 50 %/CE como control; edge/25/adaptive solo diagnóstico; **sin** cambiar outcome/entry oficial.
 
-Tras E5.13.6.11 + evidencia operador: reevaluar edge bajo North Star; luego **E5.14+** (IFVG / calidad de setup) si entry model sigue sin aprobación.
+Tras E5.13.6.12 smoke: edge promovido a **candidato serio de investigación** (ver smoke doc); entry oficial **50 % / CE** sin cambio. Siguiente: **E5.13.6.13** entry candidate policy (research) o **E5.14+** IFVG si se aparca entry.
 
 ---
 

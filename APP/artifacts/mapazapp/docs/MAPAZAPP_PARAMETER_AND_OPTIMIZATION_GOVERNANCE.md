@@ -484,7 +484,8 @@ Current rules:
 
 1. ~~Document E5.13.6.9 edge robustness evidence.~~ **Done.**
 2. ~~Decide E5.13.6.10 buffered EVOS.~~ **Done** — MQL5 required; see [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md).
-3. ~~E5.13.6.11 MQL5 Buffered EVOS diagnostics.~~ **Done** — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). **Next:** operator Strategy Tester evidence; entry-model policy only if buffered evidence supports it.
+3. ~~E5.13.6.11 MQL5 Buffered EVOS diagnostics.~~ **Done** — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md).
+4. ~~E5.13.6.12 smoke ST.~~ **Done** — [`BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md`](./BUFFERED_EVOS_SMOKE_EVIDENCE_E5_13_6_12.md). **Next:** E5.13.6.13 entry candidate policy (research-only) or E5.14; **no** edge approval without explicit governance.
 4. Define entry model candidate policy only if buffered evidence supports it (post-11).
 4. Continue roadmap:
    - E5.14 IFVG / BISI / SIBI
