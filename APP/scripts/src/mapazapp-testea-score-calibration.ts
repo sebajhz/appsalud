@@ -89,6 +89,7 @@ export function analyzeTestEaBundleScoreCalibration(
       entry_variant_feasibility_component_stats: null,
       ifvg_bisi_sibi_component_stats: null,
       liquidity_target_component_stats: null,
+      execution_environment_component_stats: null,
     };
   }
   return analyzeTestEaScoreCalibrationFromTexts({

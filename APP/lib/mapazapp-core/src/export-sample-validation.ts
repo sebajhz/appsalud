@@ -44,6 +44,11 @@ import {
   LIQUIDITY_TARGET_QUALITY_SUMMARY_NUMERIC_KEYS,
   LIQUIDITY_TARGET_QUALITY_TRADE_COLUMNS,
 } from "./liquidity-target-quality-export-keys";
+import {
+  SESSION_SPREAD_VOLATILITY_OPTIMIZATION_PARAMETER_KEYS,
+  SESSION_SPREAD_VOLATILITY_SUMMARY_NUMERIC_KEYS,
+  SESSION_SPREAD_VOLATILITY_TRADE_COLUMNS,
+} from "./session-spread-volatility-export-keys";
 
 const FILE_NAME_TO_KIND: Record<string, ExportSampleFileKind> = {
   "bridge_status.json": "bridge_status_json",
@@ -2017,6 +2022,89 @@ export function validateTestEaExportSample(
                     "error",
                     "TESTEA_TRADES_HEADER_LQ_TGT_E5_15",
                     `E5.15: backtest_trades.csv header must include "${col}" when has_liquidity_target_quality_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+        }
+        if (summaryJson["has_session_spread_volatility_v1_logic"] === true) {
+          if (!("session_spread_volatility_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_SSV_E5_16_KEY",
+                `E5.16: when has_session_spread_volatility_v1_logic is true, summary must include "session_spread_volatility_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else if (typeof summaryJson["session_spread_volatility_enabled"] !== "boolean") {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_SSV_E5_16_BOOL",
+                `E5.16: "session_spread_volatility_enabled" must be a boolean`,
+                { fileName: sj.fileName, detail: String(summaryJson["session_spread_volatility_enabled"]) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          for (const k of SESSION_SPREAD_VOLATILITY_SUMMARY_NUMERIC_KEYS) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_SSV_E5_16_KEY",
+                  `E5.16: when has_session_spread_volatility_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const val = summaryJson[k];
+              if (typeof val !== "number" || !Number.isFinite(val)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_SSV_E5_16_NUM",
+                    `E5.16: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(val) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          const optParamsSsv = summaryJson["optimization_parameters"];
+          if (optParamsSsv && typeof optParamsSsv === "object" && !Array.isArray(optParamsSsv)) {
+            const op = optParamsSsv as Record<string, unknown>;
+            for (const k of SESSION_SPREAD_VOLATILITY_OPTIMIZATION_PARAMETER_KEYS) {
+              if (!(k in op)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_SSV_E5_16_OPT",
+                    `E5.16: optimization_parameters must include "${k}" when has_session_spread_volatility_v1_logic is true`,
+                    { fileName: sj.fileName },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            for (const col of SESSION_SPREAD_VOLATILITY_TRADE_COLUMNS) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_SSV_E5_16",
+                    `E5.16: backtest_trades.csv header must include "${col}" when has_session_spread_volatility_v1_logic is true (see ${tr.fileName})`,
                     { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
                   ),
                 );

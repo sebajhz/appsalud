@@ -190,4 +190,5 @@ pnpm --filter @workspace/scripts mapazapp:testea-liquidity-target-realism-audit 
 
 | Opción | Descripción |
 |--------|-------------|
-| **E5.16** | **Recomendado** — Session / Spread / Volatility Context V1 (export diagnóstico) |
+| **E5.16** | **Repo cerrado** — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md) |
+| **E5.16.1** | **Recomendado** — smoke operador + validación bundle |

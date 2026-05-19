@@ -216,6 +216,34 @@ export interface BacktestTrade {
   liquidityTargetScore?: number | undefined;
   liquidityTargetGrade?: string | undefined;
   liquidityTargetReasons?: string | undefined;
+  /** E5.16 Session / spread / volatility context (optional; older CSV). */
+  sessionSpreadVolatilityEnabled?: boolean | undefined;
+  sessionBucket?: string | undefined;
+  sessionPhase?: string | undefined;
+  sessionHour?: number | undefined;
+  sessionTimezoneOffsetHours?: number | undefined;
+  isAsianSession?: boolean | undefined;
+  isLondonSession?: boolean | undefined;
+  isNewYorkSession?: boolean | undefined;
+  isLondonNewYorkOverlap?: boolean | undefined;
+  isOffSession?: boolean | undefined;
+  spreadContextEnabled?: boolean | undefined;
+  spreadPoints?: number | undefined;
+  spreadBucket?: string | undefined;
+  spreadIsWarning?: boolean | undefined;
+  spreadIsHigh?: boolean | undefined;
+  spreadIsExtreme?: boolean | undefined;
+  volatilityContextEnabled?: boolean | undefined;
+  volatilityAtrPoints?: number | undefined;
+  volatilityBucket?: string | undefined;
+  volatilityIsLow?: boolean | undefined;
+  volatilityIsHigh?: boolean | undefined;
+  volatilityIsExtreme?: boolean | undefined;
+  volatilityRangePoints?: number | undefined;
+  volatilityRangeToAtrRatio?: number | undefined;
+  executionEnvironmentScore?: number | undefined;
+  executionEnvironmentGrade?: string | undefined;
+  executionEnvironmentReasons?: string | undefined;
   /** E5.13.2 Entry fill feasibility post-candidate diagnostic columns (optional; older CSV). */
   entryFillFeasibilityEnabled?: boolean | undefined;
   entryFillStatus?: string | undefined;

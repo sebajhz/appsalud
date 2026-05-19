@@ -5,10 +5,14 @@
 - **North Star:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) — framework de descubrimiento de setup parametrizado; XAUUSD laboratorio primario, no producto «solo oro»; perfiles futuros por símbolo con evidencia.
 - **Parameter / optimization governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) — campañas controladas, anti-overfit, escalera de evidencia; **no** aprobar entry desde un bundle; edge / 25 % / adaptive experimentales; oficial **50 % / CE**; sin live / gates / ejecución real hasta aprobación explícita.
 
+## E5.16 checkpoint context
+
+- **Cerrado (repo export):** Session / Spread / Volatility V1 — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md), build `MZP_TestEA_E5_16`.
+- **Siguiente:** **E5.16.1** operator smoke evidence.
+
 ## E5.15.4 checkpoint context
 
 - **Cerrado (policy research):** [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — vocabulario conservative RR / liquidity-aligned / extended / partial / no-trade; official TP RR2 sin cambio; bloque E5.15 cerrado en política.
-- **Siguiente recomendado:** **E5.16** Session / Spread / Volatility Context V1.
 
 ## E5.15.3 checkpoint context
 

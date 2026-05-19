@@ -436,7 +436,11 @@ Benchmark audit **PASS** — [`LIQUIDITY_TARGET_REALISM_AUDIT_EVIDENCE_E5_15_3.m
 
 [`TARGET_POLICY_RESEARCH_E5_15_4.md`](./TARGET_POLICY_RESEARCH_E5_15_4.md) — conservative RR vs liquidity-aligned vs extended vs no-trade vocabulary; E5.15 block closed at policy level. **Next:** E5.16.
 
-### E5.16 — Session / News / Spread / Volatility Context
+### E5.16 — Session / Spread / Volatility Context V1 (**completed — export repo**)
+
+Diagnostic export — [`SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md`](./SESSION_SPREAD_VOLATILITY_EXPORT_E5_16.md), build `MZP_TestEA_E5_16`. **Next:** operator smoke evidence.
+
+### E5.16+ — Session / News / Spread / Volatility (future)
 
 Add execution context:
 

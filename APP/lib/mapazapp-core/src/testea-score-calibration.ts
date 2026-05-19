@@ -87,6 +87,12 @@ export const LIQUIDITY_TARGET_CALIBRATION_COLUMNS = ["liquidity_target_score"] a
 
 export type LiquidityTargetCalibrationColumn = (typeof LIQUIDITY_TARGET_CALIBRATION_COLUMNS)[number];
 
+/** E5.16 optional execution environment score when CSV includes `execution_environment_score`. */
+export const EXECUTION_ENVIRONMENT_CALIBRATION_COLUMNS = ["execution_environment_score"] as const;
+
+export type ExecutionEnvironmentCalibrationColumn =
+  (typeof EXECUTION_ENVIRONMENT_CALIBRATION_COLUMNS)[number];
+
 /**
  * E5.13.2 optional Entry Fill Feasibility post-candidate diagnostic score when CSV includes
  * `entry_fill_feasibility_score`. Not a pre-trade operational gate.
@@ -247,6 +253,10 @@ export interface TestEaScoreCalibrationBundleAnalysis {
   /** Present when trades CSV includes E5.15 `liquidity_target_score`. */
   liquidity_target_component_stats: Partial<
     Record<LiquidityTargetCalibrationColumn, TestEaScoreComponentStats>
+  > | null;
+  /** Present when trades CSV includes E5.16 `execution_environment_score`. */
+  execution_environment_component_stats: Partial<
+    Record<ExecutionEnvironmentCalibrationColumn, TestEaScoreComponentStats>
   > | null;
 }
 
@@ -414,6 +424,7 @@ export interface TradeScoreAuxiliary {
   ifvg_bisi_sibi: Partial<Record<IfvgBisiSibiCalibrationColumn, number | null>> | null;
   /** E5.15 optional Liquidity Target Quality observation score when CSV includes `liquidity_target_score`. */
   liquidity_target: Partial<Record<LiquidityTargetCalibrationColumn, number | null>> | null;
+  execution_environment: Partial<Record<ExecutionEnvironmentCalibrationColumn, number | null>> | null;
   missing_raw: string;
   missing_tokens: string[];
 }
@@ -433,6 +444,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   hasEntryVariantFeasibilityScoreColumn: boolean;
   hasIfvgBisiSibiScoreColumn: boolean;
   hasLiquidityTargetScoreColumn: boolean;
+  hasExecutionEnvironmentScoreColumn: boolean;
   warnings: string[];
 } {
   const warnings: string[] = [];
@@ -454,6 +466,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       hasEntryVariantFeasibilityScoreColumn: false,
       hasIfvgBisiSibiScoreColumn: false,
       hasLiquidityTargetScoreColumn: false,
+      hasExecutionEnvironmentScoreColumn: false,
       warnings,
     };
   }
@@ -471,6 +484,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
   const hasEntryVariantFeasibilityScoreColumn = col.has("entry_variant_feasibility_score");
   const hasIfvgBisiSibiScoreColumn = col.has("ifvg_bisi_sibi_score");
   const hasLiquidityTargetScoreColumn = col.has("liquidity_target_score");
+  const hasExecutionEnvironmentScoreColumn = col.has("execution_environment_score");
 
   const emptyComponents = (): Record<ScoreComponentColumn, number | null> => ({
     htf_narrative_score: null,
@@ -585,6 +599,16 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       }
     }
 
+    let execution_environment: Partial<
+      Record<ExecutionEnvironmentCalibrationColumn, number | null>
+    > | null = null;
+    if (hasExecutionEnvironmentScoreColumn) {
+      execution_environment = {};
+      for (const c of EXECUTION_ENVIRONMENT_CALIBRATION_COLUMNS) {
+        execution_environment[c] = parseFiniteNumber(pick(cells, col, c));
+      }
+    }
+
     const aux: TradeScoreAuxiliary = {
       entry_quality_grade: pick(cells, col, "entry_quality_grade")?.trim() ?? null,
       score: parseFiniteNumber(pick(cells, col, "score_total")),
@@ -601,6 +625,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
       entry_variant_feasibility,
       ifvg_bisi_sibi,
       liquidity_target,
+      execution_environment,
       missing_raw: missingRaw,
       missing_tokens,
     };
@@ -621,6 +646,7 @@ export function parseTradeScoreAuxiliaryByTradeId(tradesCsvText: string): {
     hasEntryVariantFeasibilityScoreColumn,
     hasIfvgBisiSibiScoreColumn,
     hasLiquidityTargetScoreColumn,
+    hasExecutionEnvironmentScoreColumn,
     warnings,
   };
 }
@@ -1258,6 +1284,50 @@ function buildLiquidityTargetComponentStats(
   return any ? out : null;
 }
 
+function buildExecutionEnvironmentComponentStats(
+  rows: { trade: BacktestTrade; aux: TradeScoreAuxiliary | undefined }[],
+): Partial<Record<ExecutionEnvironmentCalibrationColumn, TestEaScoreComponentStats>> | null {
+  const out: Partial<Record<ExecutionEnvironmentCalibrationColumn, TestEaScoreComponentStats>> = {};
+  let any = false;
+  for (const col of EXECUTION_ENVIRONMENT_CALIBRATION_COLUMNS) {
+    const vals: number[] = [];
+    const byOutcome: Partial<Record<TestEaScoreOutcomeGroup, { sum: number; count: number }>> = {};
+    let allSum = 0;
+    let allCnt = 0;
+    for (const { trade, aux } of rows) {
+      const v = aux?.execution_environment?.[col];
+      if (v == null || !Number.isFinite(v)) continue;
+      any = true;
+      vals.push(v);
+      allSum += v;
+      allCnt += 1;
+      const g = outcomeGroup(trade);
+      const cur = byOutcome[g] ?? { sum: 0, count: 0 };
+      cur.sum += v;
+      cur.count += 1;
+      byOutcome[g] = cur;
+    }
+    const byOutFin: TestEaScoreComponentStats["by_outcome"] = {};
+    if (allCnt > 0) byOutFin.all = { count: allCnt, average: allSum / allCnt };
+    for (const [k, v] of Object.entries(byOutcome)) {
+      const og = k as TestEaScoreOutcomeGroup;
+      byOutFin[og] = { count: v!.count, average: v!.count > 0 ? v!.sum / v!.count : null };
+    }
+    if (vals.length === 0) {
+      out[col] = { min: null, max: null, average: null, by_outcome: byOutFin };
+    } else {
+      const sorted = [...vals].sort((a, b) => a - b);
+      out[col] = {
+        min: sorted[0]!,
+        max: sorted[sorted.length - 1]!,
+        average: average(vals),
+        by_outcome: byOutFin,
+      };
+    }
+  }
+  return any ? out : null;
+}
+
 function missingFrequency(rows: { aux: TradeScoreAuxiliary | undefined }[]): Record<string, number> {
   const freq: Record<string, number> = {};
   for (const { aux } of rows) {
@@ -1345,6 +1415,7 @@ export function analyzeTestEaScoreCalibrationFromTexts(
     entry_variant_feasibility_component_stats: null,
     ifvg_bisi_sibi_component_stats: null,
     liquidity_target_component_stats: null,
+    execution_environment_component_stats: null,
   };
 
   let summary: Record<string, unknown>;
@@ -1581,6 +1652,9 @@ export function analyzeTestEaScoreCalibrationFromTexts(
       : null,
     liquidity_target_component_stats: auxParse.hasLiquidityTargetScoreColumn
       ? buildLiquidityTargetComponentStats(merged)
+      : null,
+    execution_environment_component_stats: auxParse.hasExecutionEnvironmentScoreColumn
+      ? buildExecutionEnvironmentComponentStats(merged)
       : null,
   };
 

@@ -329,7 +329,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_15"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_16"/);
   assert.match(src, /input bool\s+InpEnablePremiumDiscountV1\s*=\s*true/);
   assert.match(src, /input int\s+InpPremiumDiscountSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpPremiumDiscountMaxBars\s*=\s*200/);
@@ -527,7 +527,7 @@ test("AA — E5.13.6.11 Buffered EVOS diagnostics (summary-only; no orders)", ()
 
 test("AC — E5.15 Liquidity Target Quality V1 (export-only; no orders)", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_15"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_16"/);
   assert.match(src, /input bool\s+InpEnableLiquidityTargetQualityV1\s*=\s*true/);
   assert.match(src, /input int\s+InpLiquidityTargetLookbackBars\s*=\s*200/);
   assert.match(src, /input int\s+InpLiquidityTargetSwingLookbackBars\s*=\s*2/);
@@ -544,6 +544,35 @@ test("AC — E5.15 Liquidity Target Quality V1 (export-only; no orders)", () => 
   assert.match(src, /liquidity_target_score/);
   assert.match(src, /liquidity_target_reasons/);
   assert.match(src, /MapzLqTgtCompactSuffix/);
+  assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
+  assert.match(src, /entry_variant_sim_p50_official_control/);
+  for (const bad of FORBIDDEN_SUBSTRINGS) {
+    assert.equal(src.includes(bad), false, `must not contain ${bad}`);
+  }
+});
+
+test("AD — E5.16 Session / Spread / Volatility Context V1 (export-only; no orders)", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_16"/);
+  assert.match(src, /input bool\s+InpEnableSessionSpreadVolatilityV1\s*=\s*true/);
+  assert.match(src, /input int\s+InpSessionTimezoneOffsetHours\s*=\s*0/);
+  assert.match(src, /input int\s+InpSpreadWarningPoints\s*=\s*30/);
+  assert.match(src, /input int\s+InpVolatilityAtrPeriod\s*=\s*14/);
+  assert.match(src, /\\"has_session_spread_volatility_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /session_spread_volatility_enabled/);
+  assert.match(src, /session_asian_count/);
+  assert.match(src, /spread_normal_count/);
+  assert.match(src, /average_volatility_atr_points/);
+  assert.match(src, /average_execution_environment_score/);
+  assert.match(src, /execution_environment_grade_a_count/);
+  assert.match(src, /MapzSsvBuildTradeSnap/);
+  assert.match(src, /MapzSsvFinalize/);
+  assert.match(src, /session_bucket/);
+  assert.match(src, /spread_bucket/);
+  assert.match(src, /volatility_bucket/);
+  assert.match(src, /execution_environment_score/);
+  assert.match(src, /execution_environment_reasons/);
+  assert.match(src, /MapzSsvCompactSuffix/);
   assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
   assert.match(src, /entry_variant_sim_p50_official_control/);
   for (const bad of FORBIDDEN_SUBSTRINGS) {

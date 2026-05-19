@@ -1190,6 +1190,125 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       trade.liquidityTargetConflict = v;
     });
 
+    const ssvEnRaw = pick(cells, col, "session_spread_volatility_enabled");
+    const ssvBucketRaw = pick(cells, col, "session_bucket");
+    const ssvPhaseRaw = pick(cells, col, "session_phase");
+    const ssvHourRaw = pick(cells, col, "session_hour");
+    const ssvTzRaw = pick(cells, col, "session_timezone_offset_hours");
+    const ssvAsianRaw = pick(cells, col, "is_asian_session");
+    const ssvLondonRaw = pick(cells, col, "is_london_session");
+    const ssvNyRaw = pick(cells, col, "is_new_york_session");
+    const ssvOverlapRaw = pick(cells, col, "is_london_new_york_overlap");
+    const ssvOffRaw = pick(cells, col, "is_off_session");
+    const ssvSprEnRaw = pick(cells, col, "spread_context_enabled");
+    const ssvSprPtsRaw = pick(cells, col, "spread_points");
+    const ssvSprBucketRaw = pick(cells, col, "spread_bucket");
+    const ssvSprWarnRaw = pick(cells, col, "spread_is_warning");
+    const ssvSprHighRaw = pick(cells, col, "spread_is_high");
+    const ssvSprExtRaw = pick(cells, col, "spread_is_extreme");
+    const ssvVolEnRaw = pick(cells, col, "volatility_context_enabled");
+    const ssvVolAtrRaw = pick(cells, col, "volatility_atr_points");
+    const ssvVolBucketRaw = pick(cells, col, "volatility_bucket");
+    const ssvVolLowRaw = pick(cells, col, "volatility_is_low");
+    const ssvVolHighRaw = pick(cells, col, "volatility_is_high");
+    const ssvVolExtRaw = pick(cells, col, "volatility_is_extreme");
+    const ssvVolRangeRaw = pick(cells, col, "volatility_range_points");
+    const ssvVolRatioRaw = pick(cells, col, "volatility_range_to_atr_ratio");
+    const ssvEnvScrRaw = pick(cells, col, "execution_environment_score");
+    const ssvEnvGrdRaw = pick(cells, col, "execution_environment_grade");
+    const ssvEnvRsnRaw = pick(cells, col, "execution_environment_reasons");
+    const ssvBool = (
+      raw: string | undefined,
+      field: string,
+      assign: (v: boolean) => void,
+    ) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const b = parseOptionalCsvBool(raw, field, rowNum);
+      if (b.ok) assign(b.val);
+      else warnings.push({ code: "CSV_SSV_BOOL_INVALID", message: b.message, row: rowNum });
+    };
+    ssvBool(ssvEnRaw, "session_spread_volatility_enabled", (v) => {
+      trade.sessionSpreadVolatilityEnabled = v;
+    });
+    if (ssvBucketRaw?.trim()) trade.sessionBucket = ssvBucketRaw.trim();
+    if (ssvPhaseRaw?.trim()) trade.sessionPhase = ssvPhaseRaw.trim();
+    if (ssvSprBucketRaw?.trim()) trade.spreadBucket = ssvSprBucketRaw.trim();
+    if (ssvVolBucketRaw?.trim()) trade.volatilityBucket = ssvVolBucketRaw.trim();
+    if (ssvEnvGrdRaw?.trim()) trade.executionEnvironmentGrade = ssvEnvGrdRaw.trim();
+    if (ssvEnvRsnRaw?.trim()) trade.executionEnvironmentReasons = ssvEnvRsnRaw.trim();
+    ssvBool(ssvAsianRaw, "is_asian_session", (v) => {
+      trade.isAsianSession = v;
+    });
+    ssvBool(ssvLondonRaw, "is_london_session", (v) => {
+      trade.isLondonSession = v;
+    });
+    ssvBool(ssvNyRaw, "is_new_york_session", (v) => {
+      trade.isNewYorkSession = v;
+    });
+    ssvBool(ssvOverlapRaw, "is_london_new_york_overlap", (v) => {
+      trade.isLondonNewYorkOverlap = v;
+    });
+    ssvBool(ssvOffRaw, "is_off_session", (v) => {
+      trade.isOffSession = v;
+    });
+    ssvBool(ssvSprEnRaw, "spread_context_enabled", (v) => {
+      trade.spreadContextEnabled = v;
+    });
+    ssvBool(ssvSprWarnRaw, "spread_is_warning", (v) => {
+      trade.spreadIsWarning = v;
+    });
+    ssvBool(ssvSprHighRaw, "spread_is_high", (v) => {
+      trade.spreadIsHigh = v;
+    });
+    ssvBool(ssvSprExtRaw, "spread_is_extreme", (v) => {
+      trade.spreadIsExtreme = v;
+    });
+    ssvBool(ssvVolEnRaw, "volatility_context_enabled", (v) => {
+      trade.volatilityContextEnabled = v;
+    });
+    ssvBool(ssvVolLowRaw, "volatility_is_low", (v) => {
+      trade.volatilityIsLow = v;
+    });
+    ssvBool(ssvVolHighRaw, "volatility_is_high", (v) => {
+      trade.volatilityIsHigh = v;
+    });
+    ssvBool(ssvVolExtRaw, "volatility_is_extreme", (v) => {
+      trade.volatilityIsExtreme = v;
+    });
+    const ssvNum = (
+      raw: string | undefined,
+      field: string,
+      assign: (v: number) => void,
+    ) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const p = parseNumber(raw, field, rowNum);
+      if (p.ok) assign(p.value);
+      else warnings.push({ code: "CSV_SSV_NUMERIC", message: p.message, row: rowNum });
+    };
+    ssvNum(ssvHourRaw, "session_hour", (v) => {
+      trade.sessionHour = Math.trunc(v);
+    });
+    ssvNum(ssvTzRaw, "session_timezone_offset_hours", (v) => {
+      trade.sessionTimezoneOffsetHours = Math.trunc(v);
+    });
+    ssvNum(ssvSprPtsRaw, "spread_points", (v) => {
+      trade.spreadPoints = v;
+    });
+    ssvNum(ssvVolAtrRaw, "volatility_atr_points", (v) => {
+      trade.volatilityAtrPoints = v;
+    });
+    ssvNum(ssvVolRangeRaw, "volatility_range_points", (v) => {
+      trade.volatilityRangePoints = v;
+    });
+    ssvNum(ssvVolRatioRaw, "volatility_range_to_atr_ratio", (v) => {
+      trade.volatilityRangeToAtrRatio = v;
+    });
+    if (ssvEnvScrRaw !== undefined && ssvEnvScrRaw.trim() !== "") {
+      const p = parseNumber(ssvEnvScrRaw, "execution_environment_score", rowNum);
+      if (p.ok) trade.executionEnvironmentScore = Math.trunc(p.value);
+      else warnings.push({ code: "CSV_SSV_NUMERIC", message: p.message, row: rowNum });
+    }
+
     const effEnRaw = pick(cells, col, "entry_fill_feasibility_enabled");
     const effStatRaw = pick(cells, col, "entry_fill_status");
     const effScrRaw = pick(cells, col, "entry_fill_feasibility_score");
