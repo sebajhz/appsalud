@@ -121,6 +121,7 @@ export * from "./testea-entry-variant-outcome-simulation";
 export * from "./testea-entry-variant-outcome-reconciliation";
 export * from "./testea-entry-variant-transition-audit";
 export * from "./testea-entry-edge-robustness-audit";
+export * from "./testea-liquidity-target-realism-audit";
 export * from "./testea-score-calibration";
 export * from "./export-sample-validation-fixtures";
 export * from "./manual-campaign-types";

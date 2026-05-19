@@ -108,17 +108,13 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 | Aprobación edge / 25 % / adaptive | **No** |
 | Live / gates / automatización | **No** |
 | Guardrail manual read-only | **Vigente** |
-| Siguiente (decisión roadmap) | **E5.15.2** target realism audit (research) **o** **E5.16** session/spread/volatility |
+| Siguiente (decisión roadmap) | **E5.15.3** evidencia operador post-audit **o** **E5.16** session/spread/volatility |
 
 ---
 
-## Futuro (solo planificación): E5.15.2 — Target Realism / TP vs Liquidity Distance Audit
+## E5.15.2 — Target Realism audit (repo, research only)
 
-**Propósito (research only):** investigar si el TP oficial de RR fijo es demasiado conservador, demasiado lejano o bien alineado respecto a la liquidez detectada (distancias TP vs nearest pool, cohortes por outcome, sesión futura E5.16).
-
-**Restricciones:** no cambiar TP ni lógica de outcomes en E5.15.2 sin gobernanza explícita; no aprobar edge ni entry alternativas.
-
-**Relación:** alimenta el futuro **Setup Readiness Checklist** (calidad de objetivo de liquidez como ítem read-only) — ver North Star E5.18 y [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) § futuro.
+**Implementación:** [`LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md`](./LIQUIDITY_TARGET_REALISM_AUDIT_E5_15_2.md) — CLI `mapazapp:testea-liquidity-target-realism-audit`. **No** cambia TP ni outcomes. **Siguiente:** ejecutar CLI sobre bundle benchmark y documentar **E5.15.3** evidence.
 
 ---
 
