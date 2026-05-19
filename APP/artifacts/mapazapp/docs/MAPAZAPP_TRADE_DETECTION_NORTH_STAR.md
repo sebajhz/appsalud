@@ -383,9 +383,9 @@ Goal:
 - **Exact MQL5 Buffered EVOS is required** before any entry-model decision.
 - **Manual-control guardrail:** Mapazapp remains manual/read-only decision support; the trader decides; no automatic execution until separate governance approves it.
 
-### E5.13.6.11 — MQL5 Buffered EVOS Diagnostics (**siguiente — repo**)
+### E5.13.6.11 — MQL5 Buffered EVOS Diagnostics (**completed — repo**)
 
-Add buffered EVOS rollups in TestEA export (edge / 25 / adaptive / 50 control; configurable buffer points; diagnostic only). See decision doc § future scope.
+Buffered EVOS summary rollups in TestEA (`MZP_TestEA_E5_13_6_11`): edge / p25 / p50 / adaptive × buffers 0–50 pts; diagnostic only. [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). **Operator next:** Strategy Tester evidence before any entry-model decision.
 
 ### E5.13.6.12 — Entry Model Candidate Policy (renumbered placeholder)
 

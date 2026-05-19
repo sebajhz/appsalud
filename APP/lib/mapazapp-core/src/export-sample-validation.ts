@@ -29,6 +29,11 @@ import {
   createBacktestCampaignDatasetFromManualImport,
   importManualCandleDataset,
 } from "./manual-candle-dataset-importer";
+import {
+  BUFFERED_EVOS_OPTIMIZATION_PARAMETER_KEYS,
+  BUFFERED_EVOS_SUMMARY_AGGREGATE_STRING_KEYS,
+  listBufferedEvosSummaryRollupKeys,
+} from "./buffered-evos-export-keys";
 
 const FILE_NAME_TO_KIND: Record<string, ExportSampleFileKind> = {
   "bridge_status.json": "bridge_status_json",
@@ -1842,6 +1847,95 @@ export function validateTestEaExportSample(
               ),
             );
             status = bumpStatus(status, "valid_with_warnings");
+          }
+        }
+        if (summaryJson["has_buffered_evos_v1_logic"] === true) {
+          if (!("buffered_evos_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_BUFFERED_EVOS_E5_13_6_11_KEY",
+                `E5.13.6.11: when has_buffered_evos_v1_logic is true, summary must include "buffered_evos_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else if (typeof summaryJson["buffered_evos_enabled"] !== "boolean") {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_BUFFERED_EVOS_E5_13_6_11_BOOL",
+                `E5.13.6.11: "buffered_evos_enabled" must be a boolean`,
+                { fileName: sj.fileName, detail: String(summaryJson["buffered_evos_enabled"]) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          for (const k of listBufferedEvosSummaryRollupKeys()) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_BUFFERED_EVOS_E5_13_6_11_KEY",
+                  `E5.13.6.11: when has_buffered_evos_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const val = summaryJson[k];
+              if (typeof val !== "number" || !Number.isFinite(val)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_BUFFERED_EVOS_E5_13_6_11_NUM",
+                    `E5.13.6.11: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(val) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          for (const k of BUFFERED_EVOS_SUMMARY_AGGREGATE_STRING_KEYS) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_BUFFERED_EVOS_E5_13_6_11_KEY",
+                  `E5.13.6.11: when has_buffered_evos_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            }
+          }
+          const optParams = summaryJson["optimization_parameters"];
+          if (optParams && typeof optParams === "object" && !Array.isArray(optParams)) {
+            const op = optParams as Record<string, unknown>;
+            for (const k of BUFFERED_EVOS_OPTIMIZATION_PARAMETER_KEYS) {
+              if (!(k in op)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_BUFFERED_EVOS_E5_13_6_11_OPT",
+                    `E5.13.6.11: optimization_parameters must include "${k}" when has_buffered_evos_v1_logic is true`,
+                    { fileName: sj.fileName },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          } else {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_BUFFERED_EVOS_E5_13_6_11_OPT",
+                "E5.13.6.11: optimization_parameters object required for buffered EVOS parameter keys",
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
           }
         }
         if (!byKind.has("backtest_events_csv")) {

@@ -73,7 +73,7 @@
 - **E5.13.6.8.1 (repo):** fix `transition_robustness.fast_fill_close_count` (per-bucket, no multiplicar por buffers).
 - **E5.13.6.9 cerrado (docs):** edge robustness evidence — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md); PASS post-8.1; edge frágil (buffer/velocidad/riesgo ~2×); **no** aprobar edge; oficial **50 % / CE**.
 - **E5.13.6.10 cerrado (docs):** Buffered EVOS decision + manual-control guardrail — [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md); proxy TS no basta; **MQL5 Buffered EVOS requerido**; Mapazapp manual/read-only.
-- **Siguiente canónico:** **E5.13.6.11** MQL5 Buffered EVOS diagnostics; luego **E5.14**. **Nota:** track **`tester_orders`** (E5.1) aparte.
+- **E5.13.6.11 cerrado (repo):** Buffered EVOS summary diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). **Siguiente operador:** Strategy Tester + evidencia buffered; luego **E5.14**. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
 

@@ -46,7 +46,9 @@ Este documento **cierra** la pregunta «¿basta el proxy TypeScript de robustez?
 3. La gobernanza exige **evidencia ejecutable**, no solo headline R de un bundle XAUUSD.
 4. Sin simulación buffered en el mismo motor EVOS que genera variantes, no se puede cerrar el ciclo «¿edge sobrevive ejecución conservadora?».
 
-### Alcance requerido de Buffered EVOS (E5.13.6.11 — implementación futura)
+### Alcance requerido de Buffered EVOS (E5.13.6.11 — **implementado**)
+
+Ver export contract: [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md).
 
 **Solo diagnóstico.** Sin cambiar generación oficial de trades, outcome oficial, entry oficial ni lógica de aprobación.
 
@@ -126,7 +128,7 @@ Cualquier automatización futura (semi-auto, auto-entry, routing a broker) requi
 | Proxy TS útil para dirección | **SÍ** |
 | Proxy TS suficiente para aprobar edge | **NO** |
 | Buffered EVOS MQL5 requerido antes de decisión entry | **SÍ** |
-| Implementar E5.13.6.11 (MQL5 diagnostics) | **SIGUIENTE** |
+| Implementar E5.13.6.11 (MQL5 diagnostics) | **Done** — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md) |
 | Aprobar edge / 25 % / adaptive | **NO** |
 | Cambiar entry oficial 50 % / CE | **NO** |
 | Gates / live / trading | **NO** |

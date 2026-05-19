@@ -257,7 +257,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.13.6.8 | **Edge Entry Realism / Robustness Audit** | **completed** | Cursor | Core + CLI robustness audit — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_E5_13_6_8.md). | **E5.13.6.9** |
 | E5.13.6.9 | Edge robustness **evidence** (operator) | **completed** | Operador + Cursor | PASS post-8.1; edge frágil; **no** aprobar — [`EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md`](./EDGE_ENTRY_ROBUSTNESS_AUDIT_EVIDENCE_E5_13_6_9.md). | **E5.13.6.10** |
 | E5.13.6.10 | **Buffered EVOS decision** + manual guardrail | **completed** | Cursor + PM | MQL5 buffered required; TS proxy not sufficient — [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md). | **E5.13.6.11** |
-| E5.13.6.11 | **MQL5 Buffered EVOS diagnostics** | **pending** | Cursor | TestEA export rollups; diagnostic only; no entry change. | **E5.14** |
+| E5.13.6.11 | **MQL5 Buffered EVOS diagnostics** | **completed** | Cursor | `MZP_TestEA_E5_13_6_11`; summary rollups — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). | **E5.14** (operator ST evidence) |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |

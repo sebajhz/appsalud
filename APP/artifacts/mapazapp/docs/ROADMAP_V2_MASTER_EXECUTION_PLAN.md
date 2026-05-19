@@ -7,7 +7,7 @@
 
 ## E5.13.6.11 checkpoint context
 
-- **Siguiente:** **E5.13.6.11** MQL5 Buffered EVOS diagnostics — ver [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md) § future scope.
+- **Cerrado (repo):** MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). **Siguiente operador:** compile `MZP_TestEA_E5_13_6_11`, Strategy Tester, validar bundle.
 
 ## E5.13.6.10 checkpoint context
 

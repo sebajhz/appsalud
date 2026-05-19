@@ -216,7 +216,7 @@ Comparación ligera edge vs **25 %** vs **adaptive** bajo la misma lente de buff
 
 **E5.13.6.10 (docs) — cerrado:** [`BUFFERED_EVOS_DECISION_E5_13_6_10.md`](./BUFFERED_EVOS_DECISION_E5_13_6_10.md) — proxy TS **no** basta; **Buffered EVOS MQL5 requerido**; guardrail control manual vigente.
 
-**E5.13.6.11 —** implementar diagnósticos MQL5 Buffered EVOS (ver decisión § alcance futuro).
+**E5.13.6.11 —** diagnósticos MQL5 Buffered EVOS en repo — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFFERED_EVOS_EXPORT_E5_13_6_11.md). **Siguiente operador:** Strategy Tester + validar bundle + inspeccionar summary buffered.
 
 ---
 

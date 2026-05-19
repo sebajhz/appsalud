@@ -85,7 +85,19 @@ input bool              InpEntryVariantFeasibilityScoreEnabled = true;
 input bool              InpEnableEntryVariantOutcomeSimulationV1 = true;
 input bool              InpEntryVariantOutcomeSimulationScoreEnabled = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_13_6_3"
+input bool              InpEnableBufferedEvosV1 = true;
+input int               InpBufferedEvosBufferA_Points = 0;
+input int               InpBufferedEvosBufferB_Points = 5;
+input int               InpBufferedEvosBufferC_Points = 10;
+input int               InpBufferedEvosBufferD_Points = 20;
+input int               InpBufferedEvosBufferE_Points = 30;
+input int               InpBufferedEvosBufferF_Points = 50;
+input double            InpBufferedEvosMinEffectiveRr = 1.5;
+input bool              InpBufferedEvosScoreEnabled = true;
+
+#define TESTEA_BUILD            "MZP_TestEA_E5_13_6_11"
+#define BUF_EVOS_VAR_N          4
+#define BUF_EVOS_BUF_N          6
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
 #define EVT_SETUP_DETECTED      "setup_detected"
 #define EVT_SETUP_ALLOWED       "setup_allowed"
@@ -398,6 +410,53 @@ string            g_evos_lowest_ambiguous_variant = "";
 long              g_evos_lowest_ambiguous_count = 999999999;
 string            g_evos_highest_fill_variant = "";
 long              g_evos_highest_fill_count = -1;
+
+struct MapzBufferedEvosCell
+  {
+   bool              armed;
+   bool              invalid_risk;
+   bool              reached;
+   bool              sim_open;
+   bool              finalized;
+   int               bars_to_fill;
+   int               bars_since_fill;
+   double            buffered_entry;
+   double            sl_price;
+   double            tp_price;
+   double            risk_points;
+   double            reward_points;
+   double            effective_rr;
+   bool              fragile;
+   string            status;
+   double            result_r;
+   bool              ambiguous_flag;
+  };
+
+struct MapzBufferedEvosRollup
+  {
+   long              filled_count;
+   long              win_count;
+   long              loss_count;
+   long              ambiguous_count;
+   long              unresolved_count;
+   long              not_filled_count;
+   long              invalid_risk_count;
+   long              fragile_count;
+   long              fast_fill_close_count;
+   long              wins_failing_min_rr_count;
+   double            total_r;
+   long              risk_samples;
+   double            sum_risk_pts;
+   long              reward_samples;
+   double            sum_reward_pts;
+   long              eff_rr_samples;
+   double            sum_eff_rr;
+  };
+
+MapzBufferedEvosCell    g_buf_evos_cells[BUF_EVOS_VAR_N][BUF_EVOS_BUF_N];
+MapzBufferedEvosRollup  g_buf_evos_rollups[BUF_EVOS_VAR_N][BUF_EVOS_BUF_N];
+string                  g_buf_evos_best_expectancy_variant[BUF_EVOS_BUF_N];
+double                  g_buf_evos_best_expectancy_r[BUF_EVOS_BUF_N];
 
 struct MapzHtfTradeSnap
   {
@@ -5124,6 +5183,7 @@ void MapzEvosSyncP50StrictOnOfficialFill(const int barsToFillOfficial)
    g_vt.evos.p50.bars_since_fill = 0;
    MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_filled");
    MapzEffAppendReasonOnce(g_vt.evos.reasons, "entry_variant_sim_p50_official_parity");
+   MapzBufEvosArmCellsFromBase(g_vt.dir, g_vt.evos.p50, 2);
   }
 
 //+------------------------------------------------------------------+
@@ -5289,6 +5349,7 @@ void MapzEvosInitFromTrade(const ENUM_MAPZ_SETUP_DIR dir,
       MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_invalid_risk");
    MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_ce_reference");
    MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_p50_official_control");
+   MapzBufEvosClearTrade();
   }
 
 //+------------------------------------------------------------------+
@@ -5314,6 +5375,7 @@ void MapzEvosTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
    MapzEvosResolveSlotBar(dir, lo, hi, out.p25, out.reasons);
    MapzEvosResolveSlotBar(dir, lo, hi, out.p75, out.reasons);
    MapzEvosResolveSlotBar(dir, lo, hi, out.adaptive, out.reasons);
+   MapzBufEvosTrackBar(dir, lo, hi, out);
   }
 
 //+------------------------------------------------------------------+
@@ -5395,6 +5457,7 @@ void MapzEvosFinalizeTrade(MapzEntryVariantOutcomeSimSnap &out)
    if(out.adaptive.reached)
       MapzEffAppendReasonOnce(out.reasons, "entry_variant_sim_adaptive_reference");
    MapzEvosPickBest(out);
+   MapzBufEvosFinalizeTrade(out);
    if(!InpEntryVariantOutcomeSimulationScoreEnabled)
      {
       out.score = 0;
@@ -5527,6 +5590,412 @@ void MapzEvosAppendSummaryRollup(string &json, const string prefix, const MapzEv
    json += StringFormat("  \"entry_variant_%s_sim_expectancy_r\": %.6f,\r\n", prefix, expectancy);
    json += StringFormat("  \"entry_variant_%s_sim_winrate\": %.6f,\r\n", prefix, winrate);
    json += StringFormat("  \"entry_variant_%s_sim_average_risk_points\": %.6f,\r\n", prefix, avgRisk);
+  }
+
+//+------------------------------------------------------------------+
+bool MapzBufEvosEnabled(void)
+  {
+   return (InpEnableBufferedEvosV1 && InpEnableEntryVariantOutcomeSimulationV1);
+  }
+
+//+------------------------------------------------------------------+
+int MapzBufEvosBufferPoints(const int bi)
+  {
+   if(bi == 0)
+      return InpBufferedEvosBufferA_Points;
+   if(bi == 1)
+      return InpBufferedEvosBufferB_Points;
+   if(bi == 2)
+      return InpBufferedEvosBufferC_Points;
+   if(bi == 3)
+      return InpBufferedEvosBufferD_Points;
+   if(bi == 4)
+      return InpBufferedEvosBufferE_Points;
+   if(bi == 5)
+      return InpBufferedEvosBufferF_Points;
+   return 0;
+  }
+
+//+------------------------------------------------------------------+
+string MapzBufEvosBufferLabel(const int bi)
+  {
+   const int pts = MapzBufEvosBufferPoints(bi);
+   if(pts == 0)
+      return "b0";
+   if(pts == 5)
+      return "b5";
+   if(pts == 10)
+      return "b10";
+   if(pts == 20)
+      return "b20";
+   if(pts == 30)
+      return "b30";
+   if(pts == 50)
+      return "b50";
+   return "b" + IntegerToString(pts);
+  }
+
+//+------------------------------------------------------------------+
+string MapzBufEvosVariantPrefix(const int vi)
+  {
+   if(vi == 0)
+      return "edge";
+   if(vi == 1)
+      return "p25";
+   if(vi == 2)
+      return "p50";
+   if(vi == 3)
+      return "adaptive";
+   return "";
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosCellClear(MapzBufferedEvosCell &cell)
+  {
+   cell.armed = false;
+   cell.invalid_risk = false;
+   cell.reached = false;
+   cell.sim_open = false;
+   cell.finalized = false;
+   cell.bars_to_fill = 0;
+   cell.bars_since_fill = 0;
+   cell.buffered_entry = 0.0;
+   cell.sl_price = 0.0;
+   cell.tp_price = 0.0;
+   cell.risk_points = 0.0;
+   cell.reward_points = 0.0;
+   cell.effective_rr = 0.0;
+   cell.fragile = false;
+   cell.status = "";
+   cell.result_r = 0.0;
+   cell.ambiguous_flag = false;
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosClearTrade(void)
+  {
+   for(int vi = 0; vi < BUF_EVOS_VAR_N; vi++)
+      for(int bi = 0; bi < BUF_EVOS_BUF_N; bi++)
+         MapzBufEvosCellClear(g_buf_evos_cells[vi][bi]);
+  }
+
+//+------------------------------------------------------------------+
+bool MapzBufEvosComputeGeometry(const ENUM_MAPZ_SETUP_DIR dir,
+                                const double baseEntry,
+                                const double slPrice,
+                                const double tpPrice,
+                                const int bufferPts,
+                                MapzBufferedEvosCell &cell)
+  {
+   const double pt = SymbolInfoDouble(g_brokerSymbol, SYMBOL_POINT);
+   const double ptSafe = (pt > 0.0 ? pt : 1e-9);
+   const double bufPx = (double)bufferPts * ptSafe;
+   cell.sl_price = NormalizeDouble(slPrice, _Digits);
+   cell.tp_price = NormalizeDouble(tpPrice, _Digits);
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      cell.buffered_entry = NormalizeDouble(baseEntry + bufPx, _Digits);
+      cell.risk_points = (cell.buffered_entry - cell.sl_price) / ptSafe;
+      cell.reward_points = (cell.tp_price - cell.buffered_entry) / ptSafe;
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      cell.buffered_entry = NormalizeDouble(baseEntry - bufPx, _Digits);
+      cell.risk_points = (cell.sl_price - cell.buffered_entry) / ptSafe;
+      cell.reward_points = (cell.buffered_entry - cell.tp_price) / ptSafe;
+     }
+   else
+     {
+      cell.invalid_risk = true;
+      cell.status = "invalid_risk";
+      cell.finalized = true;
+      return false;
+     }
+   if(cell.risk_points <= 0.0 || cell.reward_points <= 0.0)
+     {
+      cell.invalid_risk = true;
+      cell.status = "invalid_risk";
+      cell.finalized = true;
+      return false;
+     }
+   cell.effective_rr = cell.reward_points / cell.risk_points;
+   cell.fragile = (cell.effective_rr < InpBufferedEvosMinEffectiveRr);
+   return true;
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosArmCellsFromBase(const ENUM_MAPZ_SETUP_DIR dir,
+                                 const MapzVariantSimSlot &base,
+                                 const int vi)
+  {
+   if(!MapzBufEvosEnabled() || base.invalid_risk || !base.reached)
+      return;
+   if(g_buf_evos_cells[vi][0].armed)
+      return;
+   for(int bi = 0; bi < BUF_EVOS_BUF_N; bi++)
+     {
+      MapzBufEvosCellClear(g_buf_evos_cells[vi][bi]);
+      g_buf_evos_cells[vi][bi].armed = true;
+      const int bufferPts = MapzBufEvosBufferPoints(bi);
+      if(!MapzBufEvosComputeGeometry(dir, base.entry_price, base.sl_price, base.tp_price, bufferPts, g_buf_evos_cells[vi][bi]))
+         continue;
+      g_buf_evos_cells[vi][bi].reached = true;
+      g_buf_evos_cells[vi][bi].sim_open = true;
+      g_buf_evos_cells[vi][bi].bars_to_fill = base.bars_to_fill;
+      g_buf_evos_cells[vi][bi].bars_since_fill = 0;
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosResolveCellBar(const ENUM_MAPZ_SETUP_DIR dir,
+                               const double lo,
+                               const double hi,
+                               MapzBufferedEvosCell &cell)
+  {
+   if(!cell.sim_open || cell.finalized || cell.invalid_risk)
+      return;
+   cell.bars_since_fill++;
+   bool tpTouched = false;
+   bool slTouched = false;
+   if(dir == MAPZ_SETUP_LONG)
+     {
+      tpTouched = (hi >= cell.tp_price);
+      slTouched = (lo <= cell.sl_price);
+     }
+   else if(dir == MAPZ_SETUP_SHORT)
+     {
+      tpTouched = (lo <= cell.tp_price);
+      slTouched = (hi >= cell.sl_price);
+     }
+   if(tpTouched && !slTouched)
+     {
+      cell.status = "win";
+      cell.result_r = cell.reward_points / cell.risk_points;
+      cell.finalized = true;
+      return;
+     }
+   if(slTouched && !tpTouched)
+     {
+      cell.status = "loss";
+      cell.result_r = -1.0;
+      cell.finalized = true;
+      return;
+     }
+   if(tpTouched && slTouched)
+     {
+      if(Trim(InpVirtualAmbiguityMode) == "ambiguous")
+        {
+         cell.status = "ambiguous";
+         cell.result_r = 0.0;
+         cell.ambiguous_flag = true;
+         cell.finalized = true;
+        }
+      return;
+     }
+   if(cell.bars_since_fill > InpVirtualMaxBarsInTrade)
+     {
+      cell.status = "unresolved";
+      cell.result_r = 0.0;
+      cell.finalized = true;
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosTrackVariant(const ENUM_MAPZ_SETUP_DIR dir,
+                             const double lo,
+                             const double hi,
+                             const MapzVariantSimSlot &base,
+                             const int vi)
+  {
+   if(!MapzBufEvosEnabled() || base.invalid_risk)
+      return;
+   MapzBufEvosArmCellsFromBase(dir, base, vi);
+   if(!g_buf_evos_cells[vi][0].armed)
+      return;
+   for(int bi = 0; bi < BUF_EVOS_BUF_N; bi++)
+     {
+      if(g_buf_evos_cells[vi][bi].finalized || g_buf_evos_cells[vi][bi].invalid_risk || !g_buf_evos_cells[vi][bi].sim_open)
+         continue;
+      MapzBufEvosResolveCellBar(dir, lo, hi, g_buf_evos_cells[vi][bi]);
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosTrackBar(const ENUM_MAPZ_SETUP_DIR dir,
+                         const double lo,
+                         const double hi,
+                         MapzEntryVariantOutcomeSimSnap &out)
+  {
+   if(!MapzBufEvosEnabled() || !out.log_enabled || out.finalized)
+      return;
+   MapzBufEvosTrackVariant(dir, lo, hi, out.edge, 0);
+   MapzBufEvosTrackVariant(dir, lo, hi, out.p25, 1);
+   MapzBufEvosTrackVariant(dir, lo, hi, out.p50, 2);
+   MapzBufEvosTrackVariant(dir, lo, hi, out.adaptive, 3);
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosFinalizeCell(MapzBufferedEvosCell &cell)
+  {
+   if(cell.finalized)
+      return;
+   if(cell.invalid_risk)
+     {
+      if(cell.status == "")
+         cell.status = "invalid_risk";
+      cell.finalized = true;
+      return;
+     }
+   if(!cell.armed || !cell.reached)
+     {
+      cell.status = "not_filled";
+      cell.result_r = 0.0;
+      cell.finalized = true;
+      return;
+     }
+   if(cell.sim_open && !cell.finalized)
+     {
+      cell.status = "unresolved";
+      cell.result_r = 0.0;
+      cell.finalized = true;
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosFinalizeTrade(MapzEntryVariantOutcomeSimSnap &out)
+  {
+   if(!MapzBufEvosEnabled() || !out.log_enabled)
+      return;
+   for(int vi = 0; vi < BUF_EVOS_VAR_N; vi++)
+      for(int bi = 0; bi < BUF_EVOS_BUF_N; bi++)
+         MapzBufEvosFinalizeCell(g_buf_evos_cells[vi][bi]);
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosRegisterCell(const MapzBufferedEvosCell &cell, MapzBufferedEvosRollup &rollup)
+  {
+   if(cell.invalid_risk)
+     {
+      rollup.invalid_risk_count++;
+      return;
+     }
+   if(!cell.armed || !cell.reached || cell.status == "not_filled")
+     {
+      rollup.not_filled_count++;
+      return;
+     }
+   rollup.filled_count++;
+   rollup.total_r += cell.result_r;
+   if(cell.risk_points > 0.0)
+     {
+      rollup.risk_samples++;
+      rollup.sum_risk_pts += cell.risk_points;
+     }
+   if(cell.reward_points > 0.0)
+     {
+      rollup.reward_samples++;
+      rollup.sum_reward_pts += cell.reward_points;
+     }
+   if(cell.effective_rr > 0.0)
+     {
+      rollup.eff_rr_samples++;
+      rollup.sum_eff_rr += cell.effective_rr;
+     }
+   if(cell.fragile)
+      rollup.fragile_count++;
+   if(cell.bars_to_fill <= 1 && cell.finalized && cell.bars_since_fill <= 1
+      && (cell.status == "win" || cell.status == "loss" || cell.status == "ambiguous"))
+      rollup.fast_fill_close_count++;
+   if(cell.status == "win")
+     {
+      rollup.win_count++;
+      if(cell.fragile)
+         rollup.wins_failing_min_rr_count++;
+     }
+   else if(cell.status == "loss")
+      rollup.loss_count++;
+   else if(cell.status == "ambiguous")
+      rollup.ambiguous_count++;
+   else if(cell.status == "unresolved")
+      rollup.unresolved_count++;
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosRegisterTrade(const MapzEntryVariantOutcomeSimSnap &out)
+  {
+   if(!MapzBufEvosEnabled() || !out.log_enabled)
+      return;
+   for(int vi = 0; vi < BUF_EVOS_VAR_N; vi++)
+      for(int bi = 0; bi < BUF_EVOS_BUF_N; bi++)
+         MapzBufEvosRegisterCell(g_buf_evos_cells[vi][bi], g_buf_evos_rollups[vi][bi]);
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosComputeBestVariants(void)
+  {
+   for(int bi = 0; bi < BUF_EVOS_BUF_N; bi++)
+     {
+      g_buf_evos_best_expectancy_variant[bi] = "";
+      g_buf_evos_best_expectancy_r[bi] = -1e12;
+      for(int vi = 0; vi < BUF_EVOS_VAR_N; vi++)
+        {
+         const MapzBufferedEvosRollup r = g_buf_evos_rollups[vi][bi];
+         const double e = (r.filled_count > 0 ? r.total_r / (double)r.filled_count : 0.0);
+         if(e > g_buf_evos_best_expectancy_r[bi])
+           {
+            g_buf_evos_best_expectancy_r[bi] = e;
+            g_buf_evos_best_expectancy_variant[bi] = MapzBufEvosVariantPrefix(vi);
+           }
+        }
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosAppendRollup(string &json, const int vi, const int bi)
+  {
+   const MapzBufferedEvosRollup &r = g_buf_evos_rollups[vi][bi];
+   const string vp = MapzBufEvosVariantPrefix(vi);
+   const string bl = MapzBufEvosBufferLabel(bi);
+   const string keyBase = "buffered_evos_" + vp + "_" + bl + "_";
+   const double winrate = ((r.win_count + r.loss_count) > 0
+                           ? (double)r.win_count / (double)(r.win_count + r.loss_count)
+                           : 0.0);
+   const double expectancy = (r.filled_count > 0 ? r.total_r / (double)r.filled_count : 0.0);
+   const double avgRisk = (r.risk_samples > 0 ? r.sum_risk_pts / (double)r.risk_samples : 0.0);
+   const double avgReward = (r.reward_samples > 0 ? r.sum_reward_pts / (double)r.reward_samples : 0.0);
+   const double avgEffRr = (r.eff_rr_samples > 0 ? r.sum_eff_rr / (double)r.eff_rr_samples : 0.0);
+   json += StringFormat("  \"%sfilled_count\": %I64d,\r\n", keyBase, r.filled_count);
+   json += StringFormat("  \"%swin_count\": %I64d,\r\n", keyBase, r.win_count);
+   json += StringFormat("  \"%sloss_count\": %I64d,\r\n", keyBase, r.loss_count);
+   json += StringFormat("  \"%sambiguous_count\": %I64d,\r\n", keyBase, r.ambiguous_count);
+   json += StringFormat("  \"%sunresolved_count\": %I64d,\r\n", keyBase, r.unresolved_count);
+   json += StringFormat("  \"%snot_filled_count\": %I64d,\r\n", keyBase, r.not_filled_count);
+   json += StringFormat("  \"%sinvalid_risk_count\": %I64d,\r\n", keyBase, r.invalid_risk_count);
+   json += StringFormat("  \"%sfragile_count\": %I64d,\r\n", keyBase, r.fragile_count);
+   json += StringFormat("  \"%stotal_r\": %.6f,\r\n", keyBase, r.total_r);
+   json += StringFormat("  \"%sexpectancy_r\": %.6f,\r\n", keyBase, expectancy);
+   json += StringFormat("  \"%swinrate\": %.6f,\r\n", keyBase, winrate);
+   json += StringFormat("  \"%saverage_effective_rr\": %.6f,\r\n", keyBase, avgEffRr);
+   json += StringFormat("  \"%saverage_risk_points\": %.6f,\r\n", keyBase, avgRisk);
+   json += StringFormat("  \"%saverage_reward_points\": %.6f,\r\n", keyBase, avgReward);
+   json += StringFormat("  \"%sfast_fill_close_count\": %I64d,\r\n", keyBase, r.fast_fill_close_count);
+   if(vi == 0)
+     {
+      json += StringFormat("  \"%swins_failing_min_effective_rr_count\": %I64d,\r\n", keyBase, r.wins_failing_min_rr_count);
+      json += StringFormat("  \"%sedge_wins_fragile_count\": %I64d,\r\n", keyBase, r.wins_failing_min_rr_count);
+     }
+  }
+
+//+------------------------------------------------------------------+
+void MapzBufEvosAppendSummary(string &json)
+  {
+   MapzBufEvosComputeBestVariants();
+   for(int vi = 0; vi < BUF_EVOS_VAR_N; vi++)
+      for(int bi = 0; bi < BUF_EVOS_BUF_N; bi++)
+         MapzBufEvosAppendRollup(json, vi, bi);
+   json += "  \"buffered_evos_best_variant_by_expectancy_b0\": \"" + JsonStringEscape(g_buf_evos_best_expectancy_variant[0]) + "\",\r\n";
+   json += "  \"buffered_evos_best_variant_by_expectancy_b30\": \"" + JsonStringEscape(g_buf_evos_best_expectancy_variant[4]) + "\",\r\n";
+   json += "  \"buffered_evos_best_variant_by_expectancy_b50\": \"" + JsonStringEscape(g_buf_evos_best_expectancy_variant[5]) + "\",\r\n";
   }
 
 //+------------------------------------------------------------------+
@@ -6492,7 +6961,11 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
      }
 
    if(InpEnableEntryVariantOutcomeSimulationV1)
+     {
       MapzEvosRegisterTradeCampaign(g_vt.evos);
+      MapzBufEvosRegisterTrade(g_vt.evos);
+      MapzBufEvosClearTrade();
+     }
 
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
@@ -7224,6 +7697,8 @@ string WriteSummaryJson(void)
    json += "  \"entry_variant_feasibility_enabled\": " + (InpEnableEntryVariantFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_variant_outcome_sim_v1_logic\": true,\r\n";
    json += "  \"has_entry_variant_outcome_sim_v1_parity_control\": true,\r\n";
+   json += "  \"has_buffered_evos_v1_logic\": true,\r\n";
+   json += "  \"buffered_evos_enabled\": " + (InpEnableBufferedEvosV1 ? "true" : "false") + ",\r\n";
    json += "  \"entry_variant_outcome_sim_enabled\": " + (InpEnableEntryVariantOutcomeSimulationV1 ? "true" : "false") + ",\r\n";
    json += "  \"has_entry_quality_score_logic\": true,\r\n";
    json += "  \"score_observation_only\": true,\r\n";
@@ -7453,6 +7928,8 @@ string WriteSummaryJson(void)
    json += "  \"entry_variant_outcome_sim_best_variant_by_total_r\": \"" + JsonStringEscape(g_evos_best_total_r_variant) + "\",\r\n";
    json += "  \"entry_variant_outcome_sim_lowest_ambiguous_variant\": \"" + JsonStringEscape(g_evos_lowest_ambiguous_variant) + "\",\r\n";
    json += "  \"entry_variant_outcome_sim_highest_fill_variant\": \"" + JsonStringEscape(g_evos_highest_fill_variant) + "\",\r\n";
+   MapzBufEvosComputeBestVariants();
+   MapzBufEvosAppendSummary(json);
    json += "  \"campaign_id\": \"" + JsonStringEscape(g_campaignIdForSummary) + "\",\r\n";
    json += "  \"export_campaign_folder\": \"" + JsonStringEscape(Trim(InpExportCampaignFolder)) + "\",\r\n";
    json += "  \"export_parameter_folder\": \"" + JsonStringEscape(Trim(InpExportParameterFolder)) + "\",\r\n";
@@ -7491,7 +7968,16 @@ string WriteSummaryJson(void)
    json += "    \"entry_variant_feasibility_v1_enabled\": " + (InpEnableEntryVariantFeasibilityV1 ? "true" : "false") + ",\r\n";
    json += "    \"entry_variant_feasibility_score_enabled\": " + (InpEntryVariantFeasibilityScoreEnabled ? "true" : "false") + ",\r\n";
    json += "    \"entry_variant_outcome_sim_v1_enabled\": " + (InpEnableEntryVariantOutcomeSimulationV1 ? "true" : "false") + ",\r\n";
-   json += "    \"entry_variant_outcome_sim_score_enabled\": " + (InpEntryVariantOutcomeSimulationScoreEnabled ? "true" : "false") + "\r\n";
+   json += "    \"entry_variant_outcome_sim_score_enabled\": " + (InpEntryVariantOutcomeSimulationScoreEnabled ? "true" : "false") + ",\r\n";
+   json += "    \"buffered_evos_v1_enabled\": " + (InpEnableBufferedEvosV1 ? "true" : "false") + ",\r\n";
+   json += StringFormat("    \"buffered_evos_buffer_a_points\": %d,\r\n", InpBufferedEvosBufferA_Points);
+   json += StringFormat("    \"buffered_evos_buffer_b_points\": %d,\r\n", InpBufferedEvosBufferB_Points);
+   json += StringFormat("    \"buffered_evos_buffer_c_points\": %d,\r\n", InpBufferedEvosBufferC_Points);
+   json += StringFormat("    \"buffered_evos_buffer_d_points\": %d,\r\n", InpBufferedEvosBufferD_Points);
+   json += StringFormat("    \"buffered_evos_buffer_e_points\": %d,\r\n", InpBufferedEvosBufferE_Points);
+   json += StringFormat("    \"buffered_evos_buffer_f_points\": %d,\r\n", InpBufferedEvosBufferF_Points);
+   json += StringFormat("    \"buffered_evos_min_effective_rr\": %.6f,\r\n", InpBufferedEvosMinEffectiveRr);
+   json += "    \"buffered_evos_score_enabled\": " + (InpBufferedEvosScoreEnabled ? "true" : "false") + "\r\n";
    json += "  },\r\n";
    json += "  \"exported_at_utc\": \"" + JsonStringEscape(exportedAt) + "\",\r\n";
    json += "  \"notes\": \"" + JsonStringEscape(g_exportNotes) + "\"\r\n";

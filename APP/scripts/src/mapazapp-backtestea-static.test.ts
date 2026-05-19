@@ -490,3 +490,26 @@ test("Z — E5.8 + E5.10 + E5.10.2 + E5.10.4: score field tokens + liquidity cha
   assert.match(src, /htf_structure_aligned/);
   assert.match(src, /MapzHtfBuildTradeSnap/);
 });
+
+test("AA — E5.13.6.11 Buffered EVOS diagnostics (summary-only; no orders)", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /MZP_TestEA_E5_13_6_11/);
+  assert.match(src, /InpEnableBufferedEvosV1/);
+  assert.match(src, /InpBufferedEvosBufferA_Points/);
+  assert.match(src, /InpBufferedEvosBufferF_Points/);
+  assert.match(src, /InpBufferedEvosMinEffectiveRr/);
+  assert.match(src, /\\"has_buffered_evos_v1_logic\\"\s*:\s*true/);
+  assert.match(src, /buffered_evos_edge_b0_filled_count/);
+  assert.match(src, /buffered_evos_edge_b30_fragile_count/);
+  assert.match(src, /buffered_evos_p25_b30_total_r/);
+  assert.match(src, /buffered_evos_p50_b0_total_r/);
+  assert.match(src, /buffered_evos_adaptive_b50_expectancy_r/);
+  assert.match(src, /buffered_evos_best_variant_by_expectancy_b30/);
+  assert.match(src, /buffered_evos_edge_b30_wins_failing_min_effective_rr_count/);
+  assert.match(src, /MapzBufEvosTrackBar/);
+  assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
+  assert.match(src, /entry_variant_sim_p50_official_control/);
+  for (const bad of FORBIDDEN_SUBSTRINGS) {
+    assert.equal(src.includes(bad), false, `must not contain ${bad}`);
+  }
+});
