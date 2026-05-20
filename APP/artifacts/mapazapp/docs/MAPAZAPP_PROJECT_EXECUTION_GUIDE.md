@@ -281,8 +281,9 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.16.3 | **Calibration audit evidence** | **completed** | Operator + docs | PASS — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md). | **E5.16.4** |
 | E5.16.4 | **Execution profile policy** | **completed** | Docs only | [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md). | — |
 | E5.17 | **Frequency / risk discipline export** | **completed** | TestEA export | [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md). | — |
-| E5.17.0.1 | **Discipline score bound fix** | **completed** | TestEA fix | Build `MZP_TestEA_E5_17_0_1`; avg score ≤ 15. | **E5.17.1 rerun** |
-| E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | **E5.17.1** |
+| E5.17.0.1 | **Discipline score bound fix** | **completed** | TestEA fix | Build `MZP_TestEA_E5_17_0_1`; avg score ≤ 15. | — |
+| E5.17.1 | **Discipline smoke evidence** | **completed** | Operator ST | [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). | **E5.17.1.1** |
+| E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |
 | E8 | Setup decision gate | pending | PM + trader | Compuerta humana explícita. | |

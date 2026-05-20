@@ -122,17 +122,14 @@ Low-risk events may include: `disc_score`, `disc_grade`, `disc_flags` via `MapzD
 
 **Fix (`MZP_TestEA_E5_17_0_1`):** single accumulation in `MapzDiscFinalizeSummary`; `MapzDiscClampScore`; grades from bounded score. Flags/counters unchanged.
 
-**E5.17.1 smoke evidence** must be **rerun** after recompiling `MZP_TestEA_E5_17_0_1`. Prior PASS on bundle schema remains useful; score/grade evidence is **not final** until rerun.
+**E5.17.1 smoke (operador):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md) — PASS técnico; `average_discipline_score` = 10.533883; max row = 15. **Follow-up:** E5.17.1.1 duplicate `fvg_ce_price` CSV header.
 
 ---
 
 ## Operator next step
 
-1. Compile **`MZP_TestEA_E5_17_0_1`** in MetaEditor.  
-2. Run Strategy Tester smoke (operator machine only) — **E5.17.1 evidence rerun required**.  
-3. Validate bundle:  
-   `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<export_folder>" --json`  
-4. Confirm `average_discipline_score` ≤ 15 and CSV `discipline_score` ≤ 15 per trade.  
-5. Compare discipline flags vs manual journal — **research only**.
+1. ~~Compile / smoke E5.17.1~~ **Done** — ver evidencia E5.17.1.  
+2. **E5.17.1.1** — CSV header cleanup (`fvg_ce_price` duplicate).  
+3. **E5.18** — Setup Readiness Checklist.
 
 **Optimization policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md).

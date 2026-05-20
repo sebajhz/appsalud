@@ -8,7 +8,7 @@
 ## E5.16.4 checkpoint context
 
 - **Cerrado (policy docs):** [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — perfiles por símbolo/timeframe; XAUUSD M15 V1 = stress label; candidate B/C research only; bloque E5.16 cerrado en gobernanza.
-- **E5.17.0.1 (fix):** discipline score 0–15 — `MZP_TestEA_E5_17_0_1`; **E5.17.1 smoke rerun** required. **E5.17.2 (policy):** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). **Siguiente:** E5.17.1 smoke rerun; E5.18 checklist.
+- **E5.17.1 (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **Siguiente:** E5.17.1.1 CSV header; E5.18 checklist.
 
 ## E5.16.3 checkpoint context
 
