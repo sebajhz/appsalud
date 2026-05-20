@@ -53,7 +53,7 @@
 - **Cerrado (repo export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 - **Cerrado (research docs):** Entry candidate policy — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 - **Siguiente recomendado:** **E5.16** session/spread/volatility.
-- **E5.18.1 (smoke):** Setup Readiness Checklist V1 — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md); PASS; no strategy approval. **Siguiente:** E5.19.1 ([`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md)).
+- **E5.18.1 (smoke):** Setup Readiness Checklist V1 — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md); PASS; no strategy approval. **E5.19:** informe operador OK en benchmark; **E5.19.0.1:** UX bundle/warnings. **Siguiente:** E5.19.1 re-run ([`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md)).
 
 ## E5.13.6.12 checkpoint context
 

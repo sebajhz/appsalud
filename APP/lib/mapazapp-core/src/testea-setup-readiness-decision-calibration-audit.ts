@@ -3,9 +3,8 @@
  * Audits score/grade vs final decision consistency without changing MQL5 or checklist logic.
  */
 
-import { importBacktestTradesFromCsv } from "./backtest-importer";
+import { buildTestEaBundleImportOptions, importBacktestTradesFromCsv } from "./backtest-importer";
 import type { BacktestTrade } from "./backtest-types";
-import type { ImportBacktestCsvOptions } from "./backtest-types";
 
 export interface TestEaSetupReadinessDecisionCalibrationAuditBundleTextInput {
   bundleName: string;
@@ -124,18 +123,6 @@ const RESEARCH_NOTE =
 
 const CANDIDATE_MANY_WARNINGS_THRESHOLD = 3;
 const WAIT_STRONG_BLOCKER_MIN = 2;
-
-function defaultImportOptions(): ImportBacktestCsvOptions {
-  return {
-    strategyId: "MZP_TESTEA",
-    parameterSetId: "default",
-    canonicalSymbol: "XAUUSD",
-    brokerSymbol: "XAUUSD",
-    accountId: "setup-readiness-decision-cal-audit",
-    sourceType: "mapazapp_testea_csv",
-    datasetSplit: "train",
-  };
-}
 
 function addCross(
   table: SetupReadinessCalibrationCrossTabTable,
@@ -312,7 +299,12 @@ export function analyzeTestEaSetupReadinessDecisionCalibrationAuditFromTexts(
     );
   }
 
-  const imported = importBacktestTradesFromCsv(input.tradesCsvText, defaultImportOptions());
+  const importOptions = buildTestEaBundleImportOptions(
+    summaryJson,
+    input.bundleName,
+    "setup-readiness-decision-cal-audit",
+  );
+  const imported = importBacktestTradesFromCsv(input.tradesCsvText, importOptions);
   if (!imported.ok) {
     errors.push(...imported.errors.map((e) => e.message));
   }

@@ -3,9 +3,12 @@
  * Consumes exported TestEA bundle and produces human-readable setup readiness reports.
  */
 
-import { importBacktestTradesFromCsv } from "./backtest-importer";
+import {
+  buildTestEaBundleImportOptions,
+  importBacktestTradesFromCsv,
+  resolveTestEaBundleLabel,
+} from "./backtest-importer";
 import type { BacktestTrade } from "./backtest-types";
-import type { ImportBacktestCsvOptions } from "./backtest-types";
 import { findDuplicateCsvHeaders } from "./export-sample-validation";
 import {
   analyzeTestEaSetupReadinessDecisionCalibrationAuditFromTexts,
@@ -24,6 +27,8 @@ export interface TestEaSetupReadinessReportBundleTextInput {
 }
 
 export interface SetupReadinessReportHeader {
+  /** Operator-facing bundle label (summary.bundle → effective_export_folder_label → folder basename). */
+  bundle: string;
   bundle_name: string;
   ea_build: string | null;
   symbol: string | null;
@@ -142,18 +147,6 @@ const WARNING_REASON_TOKENS = [
   "checklist_discipline",
   "daily_loss_limit_warning",
 ] as const;
-
-function defaultImportOptions(): ImportBacktestCsvOptions {
-  return {
-    strategyId: "MZP_TESTEA",
-    parameterSetId: "default",
-    canonicalSymbol: "XAUUSD",
-    brokerSymbol: "XAUUSD",
-    accountId: "setup-readiness-report",
-    sourceType: "mapazapp_testea_csv",
-    datasetSplit: "train",
-  };
-}
 
 function normDecision(raw: string | undefined): string {
   const d = (raw ?? "").trim().toLowerCase();
@@ -388,6 +381,8 @@ export function buildTestEaSetupReadinessReportFromTexts(
     }
   }
 
+  const bundleLabel = resolveTestEaBundleLabel(summaryJson, input.bundleName);
+
   const calibration = analyzeTestEaSetupReadinessDecisionCalibrationAuditFromTexts(
     {
       bundleName: input.bundleName,
@@ -399,12 +394,18 @@ export function buildTestEaSetupReadinessReportFromTexts(
   errors.push(...calibration.errors);
   warnings.push(...calibration.warnings);
 
-  const imported = importBacktestTradesFromCsv(input.tradesCsvText, defaultImportOptions());
+  const importOptions = buildTestEaBundleImportOptions(
+    summaryJson,
+    input.bundleName,
+    "setup-readiness-report",
+  );
+  const imported = importBacktestTradesFromCsv(input.tradesCsvText, importOptions);
   const trades = imported.trades;
 
   if (!hasReadyLogic || dupHeaders.length > 0 || calibration.errors.length > 0) {
     const emptyHeader: SetupReadinessReportHeader = {
-      bundle_name: input.bundleName,
+      bundle: bundleLabel,
+      bundle_name: bundleLabel,
       ea_build: strField(summaryJson, "ea_build") ?? strField(summaryJson, "testea_build"),
       symbol: strField(summaryJson, "canonical_symbol") ?? strField(summaryJson, "symbol"),
       timeframe: strField(summaryJson, "timeframe"),
@@ -551,7 +552,8 @@ export function buildTestEaSetupReadinessReportFromTexts(
     warnings,
     language,
     header: {
-      bundle_name: input.bundleName,
+      bundle: bundleLabel,
+      bundle_name: bundleLabel,
       ea_build: strField(summaryJson, "ea_build") ?? strField(summaryJson, "testea_build"),
       symbol: strField(summaryJson, "canonical_symbol") ?? strField(summaryJson, "symbol"),
       timeframe: strField(summaryJson, "timeframe"),
@@ -633,7 +635,7 @@ export function renderSetupReadinessReportMarkdown(report: SetupReadinessReport)
 
   lines.push(`# ${es ? "Informe Setup Readiness" : "Setup Readiness Report"}`);
   lines.push("");
-  lines.push(`- **Bundle:** ${h.bundle_name}`);
+  lines.push(`- **Bundle:** ${h.bundle}`);
   if (h.ea_build) lines.push(`- **Build:** ${h.ea_build}`);
   if (h.symbol) lines.push(`- **Símbolo / Symbol:** ${h.symbol}`);
   if (h.timeframe) lines.push(`- **Timeframe:** ${h.timeframe}`);

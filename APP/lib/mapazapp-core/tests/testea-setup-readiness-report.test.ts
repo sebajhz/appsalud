@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { importBacktestTradesFromCsv, resolveTestEaBundleLabel } from "../src/backtest-importer";
 import {
   buildTestEaSetupReadinessReportFromTexts,
   decisionDisplayLabel,
@@ -166,6 +167,74 @@ describe("testea-setup-readiness-report (E5.19)", () => {
     expect(md).toContain("Gobernanza");
     expect(md).toContain("no es permiso");
     expect(md).not.toMatch(/^#\s*Score:\s*\d+\s*$/m);
+  });
+
+  it("populates header.bundle from summary effective_export_folder_label or basename", () => {
+    const summaryWithLabel = JSON.stringify({
+      has_setup_readiness_checklist_v1_logic: true,
+      effective_export_folder_label: "SET001_FVG2_RR2_00_BIASBODY0_RALIGN1",
+      ea_build: "MZP_TestEA_E5_18",
+    });
+    const csv = tradesCsv(readyRow("t1", "win", { decision: "candidate" }));
+    const r = buildTestEaSetupReadinessReportFromTexts({
+      bundleName: "folder_basename_fallback",
+      summaryJsonText: summaryWithLabel,
+      tradesCsvText: csv,
+    });
+    expect(r.header.bundle).toBe("SET001_FVG2_RR2_00_BIASBODY0_RALIGN1");
+    expect(r.header.bundle_name).toBe(r.header.bundle);
+
+    const summaryBundleField = JSON.stringify({
+      has_setup_readiness_checklist_v1_logic: true,
+      bundle: "FROM_SUMMARY_BUNDLE",
+      effective_export_folder_label: "SET001_FVG2_RR2_00_BIASBODY0_RALIGN1",
+    });
+    const r2 = buildTestEaSetupReadinessReportFromTexts({
+      bundleName: "basename_only",
+      summaryJsonText: summaryBundleField,
+      tradesCsvText: csv,
+    });
+    expect(r2.header.bundle).toBe("FROM_SUMMARY_BUNDLE");
+
+    expect(
+      resolveTestEaBundleLabel({ effective_export_folder_label: "L" }, "basename"),
+    ).toBe("L");
+  });
+
+  it("does not flood warnings when CSV parameter_set_id differs from implicit import default", () => {
+    const hdr =
+      "trade_id,direction,entry_time,exit_time,entry_price,exit_price,result_r,parameter_set_id";
+    const rows = Array.from(
+      { length: 5 },
+      (_, i) => `t${i},BUY,2026-01-01T10:00:00Z,2026-01-01T11:00:00Z,1,1,1,PS_FROM_CSV`,
+    ).join("\n");
+    const imported = importBacktestTradesFromCsv(`${hdr}\n${rows}`, {
+      strategyId: "MZP_TESTEA",
+      parameterSetId: "default",
+      canonicalSymbol: "XAUUSD",
+      sourceType: "mapazapp_testea_csv",
+      datasetSplit: "train",
+    });
+    const psWarnings = imported.warnings.filter((w) => w.code === "CSV_PARAMETER_SET_OVERRIDE");
+    expect(psWarnings).toHaveLength(0);
+    expect(imported.warnings.some((w) => w.code === "CSV_RUN_ID_SYNTHETIC")).toBe(false);
+  });
+
+  it("aggregates explicit parameter_set_id mismatch into one warning", () => {
+    const hdr =
+      "trade_id,direction,entry_time,exit_time,entry_price,exit_price,result_r,parameter_set_id";
+    const rows = ["t1,BUY,2026-01-01T10:00:00Z,2026-01-01T11:00:00Z,1,1,1,PS_CSV"].join("\n");
+    const imported = importBacktestTradesFromCsv(`${hdr}\n${rows}`, {
+      strategyId: "MZP_TESTEA",
+      parameterSetId: "PS_OPTIONS",
+      explicitParameterSetId: true,
+      canonicalSymbol: "XAUUSD",
+      sourceType: "mapazapp_testea_csv",
+      datasetSplit: "train",
+    });
+    const psWarnings = imported.warnings.filter((w) => w.code === "CSV_PARAMETER_SET_OVERRIDE");
+    expect(psWarnings).toHaveLength(1);
+    expect(psWarnings[0]!.message).toContain("1 row");
   });
 
   it("JSON contains governance footer and minimum display unit", () => {

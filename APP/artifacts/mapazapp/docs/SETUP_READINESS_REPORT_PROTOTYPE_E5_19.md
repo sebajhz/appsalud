@@ -38,6 +38,7 @@ Opciones:
 | `--html-output` | — | HTML estático (CSS embebido mínimo) |
 | `--language` | `es` | `es` \| `en` |
 | `--strict` | — | exit 1 si `ok=false` |
+| `--verbose` | — | volcar advertencias detalladas a stderr |
 | `--search-root` | — | Buscar bundles |
 
 **Requisitos bundle:** `has_setup_readiness_checklist_v1_logic=true` en summary; CSV sin headers duplicados.
@@ -46,7 +47,7 @@ Opciones:
 
 ## Secciones del informe
 
-1. **Header** — bundle, build, symbol, timeframe, campaign, trade_count, read_only  
+1. **Header** — `bundle` (summary.bundle → `effective_export_folder_label` → basename de `--bundle`), build, symbol, timeframe, campaign, trade_count, read_only  
 2. **Resumen ejecutivo** — score medio, decisiones, grades, blockers/warnings top  
 3. **Distribución de decisiones** — % + interpretación (candidate ≠ perfecto; reject con score alto)  
 4. **Puntaje y grade** — min/avg/max, high-score reject, candidate-with-warnings  
@@ -69,8 +70,16 @@ Opciones:
 
 ---
 
+## E5.19.0.1 — UX operador (metadata warnings)
+
+- **E5.19** operador: informe generado con éxito sobre bundle benchmark `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` (`MZP_TestEA_E5_18`); artefactos locales `*_DO_NOT_COMMIT` / sin commit.
+- **E5.19.0.1:** `header.bundle` poblado; import CSV usa `run_id` / `parameter_set_id` del summary cuando existen; sin spam de warnings por fila en flujo normal; CLI escribe éxito en **stdout** (PowerShell ya no marca `NativeCommandError` en runs `ok=true`); `--verbose` para detalle.
+- **E5.19.1:** re-ejecutar evidencia operador **después** de E5.19.0.1.
+
+---
+
 ## Siguiente recomendado
 
-**E5.19.1** — evidencia operador: ejecutar CLI sobre bundle benchmark `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` (`MZP_TestEA_E5_18`) y archivar `.md`/`.json` local (no commitear CSV/artefactos `_DO_NOT_COMMIT`).
+**E5.19.1** — evidencia operador: re-ejecutar CLI sobre bundle benchmark `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` (`MZP_TestEA_E5_18`) y archivar `.md`/`.json` local (no commitear CSV/artefactos `_DO_NOT_COMMIT`).
 
 Alternativas: **E5.18.6** severity audit, **E5.18.7** per-symbol comparison, **E5.20** BridgeEA consumption plan.

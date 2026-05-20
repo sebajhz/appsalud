@@ -507,4 +507,12 @@ export interface ImportBacktestCsvOptions {
   /** When omitted, importer synthesizes a stable-ish id from options + row count (see warnings). */
   runId?: BacktestRunId | undefined;
   importedAt?: IsoDateTimeString | undefined;
+  /** When true, CSV rows with a different parameter_set_id emit an aggregated mismatch warning. */
+  explicitParameterSetId?: boolean | undefined;
+  /** When true, CSV rows with a different strategy_id emit an aggregated mismatch warning. */
+  explicitStrategyId?: boolean | undefined;
+  /** When true, CSV rows with a different run_id emit per-row override warnings. */
+  explicitRunId?: boolean | undefined;
+  /** When true, emit detailed row-level metadata warnings (default: false). */
+  verboseImportWarnings?: boolean | undefined;
 }

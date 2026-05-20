@@ -17,6 +17,30 @@ const TRADES = [
 ].join("\n");
 
 describe("mapazapp-testea-setup-readiness-report CLI (E5.19)", () => {
+  it("exits 0 without stderr warning spam when report ok", () => {
+    const dir = mkdtempSync(join(tmpdir(), "ready-report-quiet-"));
+    writeFileSync(join(dir, "backtest_summary.json"), SUMMARY);
+    writeFileSync(join(dir, "backtest_trades.csv"), TRADES);
+    const jsonPath = join(dir, "out.json");
+    const stderrLines: string[] = [];
+    const stdoutLines: string[] = [];
+    const code = runSetupReadinessReportCli(["--bundle", dir, "--json-output", jsonPath], {
+      stdoutWrite: (s) => {
+        stdoutLines.push(s);
+      },
+      stderrWrite: (s) => {
+        stderrLines.push(s);
+      },
+      existsSync: (p) => p.endsWith(".json") || p.endsWith(".csv"),
+      readFileUtf8: (p) => (p.endsWith(".json") ? SUMMARY : TRADES),
+      readdirSync: () => [],
+      writeFileUtf8: (p, d) => writeFileSync(p, d),
+    });
+    assert.equal(code, 0);
+    assert.equal(stderrLines.filter((l) => l.startsWith("warn:")).length, 0);
+    assert.ok(stdoutLines.some((l) => l.includes("Wrote report")));
+  });
+
   it("writes json and markdown outputs", () => {
     const dir = mkdtempSync(join(tmpdir(), "ready-report-"));
     writeFileSync(join(dir, "backtest_summary.json"), SUMMARY);

@@ -1,4 +1,4 @@
-import type { AccountId, BacktestRunId, BacktestTradeId } from "./ids";
+import type { AccountId, BacktestRunId, BacktestTradeId, ParameterSetId, StrategyId } from "./ids";
 import { calculateBacktestSummary } from "./backtest-metrics";
 import type {
   BacktestDatasetSplit,
@@ -27,6 +27,51 @@ export const MAPZ_TESTEA_TRADE_OUTCOMES = [
 ] as const;
 
 const OUTCOME_SET = new Set<string>(MAPZ_TESTEA_TRADE_OUTCOMES);
+
+function readSummaryString(summary: Record<string, unknown>, key: string): string | undefined {
+  const v = summary[key];
+  return typeof v === "string" && v.trim() ? v.trim() : undefined;
+}
+
+/** Resolve operator-facing bundle label from summary metadata or folder basename. */
+export function resolveTestEaBundleLabel(
+  summary: Record<string, unknown>,
+  bundlePathBasename: string,
+): string {
+  return (
+    readSummaryString(summary, "bundle") ??
+    readSummaryString(summary, "effective_export_folder_label") ??
+    bundlePathBasename.trim()
+  );
+}
+
+/** Build CSV import options from TestEA `backtest_summary.json` (E5.19+ report/audit flows). */
+export function buildTestEaBundleImportOptions(
+  summary: Record<string, unknown>,
+  bundlePathBasename: string,
+  accountId: AccountId,
+): ImportBacktestCsvOptions {
+  const parameterSetId = readSummaryString(summary, "parameter_set_id");
+  const strategyId = readSummaryString(summary, "strategy_id");
+  const runId = readSummaryString(summary, "run_id") ?? readSummaryString(summary, "effective_run_id");
+  const canonicalSymbol =
+    readSummaryString(summary, "canonical_symbol") ?? readSummaryString(summary, "symbol") ?? "XAUUSD";
+  const brokerSymbol = readSummaryString(summary, "broker_symbol") ?? canonicalSymbol;
+
+  return {
+    strategyId: (strategyId ?? "MZP_TESTEA") as StrategyId,
+    parameterSetId: (parameterSetId ?? "default") as ParameterSetId,
+    canonicalSymbol,
+    brokerSymbol,
+    accountId,
+    sourceType: "mapazapp_testea_csv",
+    datasetSplit: "train",
+    runId: runId as BacktestRunId | undefined,
+    explicitParameterSetId: parameterSetId !== undefined,
+    explicitStrategyId: strategyId !== undefined,
+    explicitRunId: runId !== undefined,
+  };
+}
 
 function parseOptionalCsvBool(raw: string | undefined, colLabel: string, rowNum: number): { ok: true; val: boolean } | { ok: false; message: string } {
   if (raw === undefined || raw.trim() === "") return { ok: true, val: false };
@@ -249,13 +294,15 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
   let runId = options.runId?.trim();
   if (!runId) {
     runId = `synthetic-run-${options.parameterSetId}-${rows.length - 1}`;
-    warnings.push({
-      code: "CSV_RUN_ID_SYNTHETIC",
-      message: "run_id not provided in options; synthesized run id for import assembly.",
-    });
   }
 
   const importedAt = options.importedAt ?? "1970-01-01T00:00:00.000Z";
+  const verbose = options.verboseImportWarnings === true;
+  const explicitParameterSetId = options.explicitParameterSetId === true;
+  const explicitStrategyId = options.explicitStrategyId === true;
+  const explicitRunId = options.explicitRunId === true || !!options.runId?.trim();
+  let parameterSetIdMismatchCount = 0;
+  let strategyIdMismatchCount = 0;
 
   for (let r = 1; r < rows.length; r++) {
     const rowNum = r + 1;
@@ -306,19 +353,31 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     const rowPs = pick(cells, col, "parameter_set_id")?.trim() || options.parameterSetId;
     const rowSym = pick(cells, col, "symbol")?.trim() || options.canonicalSymbol;
 
-    if (pick(cells, col, "strategy_id")?.trim() && pick(cells, col, "strategy_id")!.trim() !== options.strategyId) {
-      warnings.push({
-        code: "CSV_STRATEGY_OVERRIDE",
-        message: `Row ${rowNum}: strategy_id in CSV differs from import options (using CSV value).`,
-        row: rowNum,
-      });
+    const csvStrategyId = pick(cells, col, "strategy_id")?.trim();
+    if (csvStrategyId && csvStrategyId !== options.strategyId) {
+      if (explicitStrategyId) {
+        strategyIdMismatchCount++;
+        if (verbose) {
+          warnings.push({
+            code: "CSV_STRATEGY_OVERRIDE",
+            message: `Row ${rowNum}: strategy_id in CSV differs from import options (using CSV value).`,
+            row: rowNum,
+          });
+        }
+      }
     }
-    if (pick(cells, col, "parameter_set_id")?.trim() && pick(cells, col, "parameter_set_id")!.trim() !== options.parameterSetId) {
-      warnings.push({
-        code: "CSV_PARAMETER_SET_OVERRIDE",
-        message: `Row ${rowNum}: parameter_set_id in CSV differs from import options (using CSV value).`,
-        row: rowNum,
-      });
+    const csvParameterSetId = pick(cells, col, "parameter_set_id")?.trim();
+    if (csvParameterSetId && csvParameterSetId !== options.parameterSetId) {
+      if (explicitParameterSetId) {
+        parameterSetIdMismatchCount++;
+        if (verbose) {
+          warnings.push({
+            code: "CSV_PARAMETER_SET_OVERRIDE",
+            message: `Row ${rowNum}: parameter_set_id in CSV differs from import options (using CSV value).`,
+            row: rowNum,
+          });
+        }
+      }
     }
 
     let resultMoney = 0;
@@ -372,11 +431,7 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
 
     const csvRunId = pick(cells, col, "run_id")?.trim();
     const tradeRunId = (csvRunId || runId) as BacktestRunId;
-    if (
-      csvRunId &&
-      options.runId?.trim() &&
-      csvRunId !== options.runId.trim()
-    ) {
+    if (csvRunId && explicitRunId && options.runId?.trim() && csvRunId !== options.runId.trim()) {
       warnings.push({
         code: "CSV_RUN_ID_OVERRIDE",
         message: `Row ${rowNum}: run_id in CSV differs from import options (using CSV value).`,
@@ -1894,6 +1949,19 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
     }
 
     trades.push(trade);
+  }
+
+  if (strategyIdMismatchCount > 0 && !verbose) {
+    warnings.push({
+      code: "CSV_STRATEGY_OVERRIDE",
+      message: `strategy_id in CSV differs from import options on ${strategyIdMismatchCount} row(s) (using CSV value).`,
+    });
+  }
+  if (parameterSetIdMismatchCount > 0 && !verbose) {
+    warnings.push({
+      code: "CSV_PARAMETER_SET_OVERRIDE",
+      message: `parameter_set_id in CSV differs from import options on ${parameterSetIdMismatchCount} row(s) (using CSV value).`,
+    });
   }
 
   const ok = errors.length === 0;

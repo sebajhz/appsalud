@@ -40,6 +40,7 @@ Options:
   --max-examples <n>           Example trade cards per category (default 10)
   --search-root <path>         Recursively find bundle folders
   --strict                     Exit 1 if report ok=false
+  --verbose                    Print detailed report/import warnings to stderr
   --help, -h
 
 Exit codes:
@@ -76,6 +77,7 @@ export function runSetupReadinessReportCli(
   let language: SetupReadinessReportLanguage = "es";
   let maxExamples = 10;
   let strict = false;
+  let verbose = false;
 
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
@@ -118,6 +120,10 @@ export function runSetupReadinessReportCli(
       strict = true;
       continue;
     }
+    if (a === "--verbose") {
+      verbose = true;
+      continue;
+    }
     io.stderrWrite(`Unknown argument: ${a}\n${USAGE}`);
     return 2;
   }
@@ -149,7 +155,6 @@ export function runSetupReadinessReportCli(
     const report = buildTestEaSetupReadinessReportFromTexts(loaded, { maxExamples, language });
     lastReport = report;
 
-    for (const w of report.warnings) io.stderrWrite(`warn: ${w}\n`);
     for (const e of report.errors) io.stderrWrite(`error: ${e}\n`);
 
     if (!report.ok) {
@@ -162,7 +167,16 @@ export function runSetupReadinessReportCli(
     if (jsonOutput) io.writeFileUtf8(jsonOutput, setupReadinessReportToJson(report));
     if (htmlOutput) io.writeFileUtf8(htmlOutput, renderSetupReadinessReportHtml(report));
 
-    io.stderrWrite(`Wrote report for ${b} (ok=${report.ok})\n`);
+    io.stdoutWrite(
+      `Wrote report for ${report.header.bundle} (ok=${report.ok}, trades=${report.header.trade_count})\n`,
+    );
+    if (report.warnings.length > 0) {
+      if (verbose) {
+        for (const w of report.warnings) io.stderrWrite(`warn: ${w}\n`);
+      } else {
+        io.stdoutWrite(`warnings: ${report.warnings.length} (use --verbose for details)\n`);
+      }
+    }
   }
 
   if (!lastReport) return strict ? 1 : 2;
