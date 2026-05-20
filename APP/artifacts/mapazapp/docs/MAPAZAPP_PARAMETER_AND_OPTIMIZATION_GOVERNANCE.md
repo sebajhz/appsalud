@@ -507,7 +507,7 @@ Current rules:
    - ~~**E5.17** frequency/risk/overtrading discipline V1.~~ **Done** — [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) (`MZP_TestEA_E5_17`).
    - ~~**E5.17.2** optimization governance + MT5 visual review policy.~~ **Done** — [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) (docs only).
    - ~~**E5.17.1** smoke evidence.~~ **Done** — [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md).
-   - **Next:** E5.17.1.1 CSV header cleanup; E5.18 Setup Readiness Checklist
+   - **E5.18:** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md) (repo export, observation-only)
    - E5.18 setup state contract
    - E5.19 forward demo read-only
    - E5.20 evidence-based gate/score decision

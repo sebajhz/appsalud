@@ -274,6 +274,35 @@ export interface BacktestTrade {
   disciplineScore?: number | undefined;
   disciplineGrade?: string | undefined;
   disciplineReasons?: string | undefined;
+  /** E5.18 Setup readiness checklist (optional; older CSV). */
+  setupReadinessChecklistEnabled?: boolean | undefined;
+  checklistBiasAligned?: boolean | undefined;
+  checklistStructureOk?: boolean | undefined;
+  checklistLiquidityEventOk?: boolean | undefined;
+  checklistIfvgQualityOk?: boolean | undefined;
+  checklistIfvgGrade?: string | undefined;
+  checklistMssChochOk?: boolean | undefined;
+  checklistMssChochTimingOk?: boolean | undefined;
+  checklistPremiumDiscountOk?: boolean | undefined;
+  checklistPdZoneValid?: boolean | undefined;
+  checklistEntryFeasible?: boolean | undefined;
+  checklistEntryCandidateFamily?: string | undefined;
+  checklistEntryFragilityWarning?: boolean | undefined;
+  checklistTargetOk?: boolean | undefined;
+  checklistTargetGrade?: string | undefined;
+  checklistTargetType?: string | undefined;
+  checklistExecutionEnvironmentOk?: boolean | undefined;
+  checklistExecutionEnvironmentGrade?: string | undefined;
+  checklistDisciplineOk?: boolean | undefined;
+  checklistDisciplineGrade?: string | undefined;
+  checklistOvertradingWarning?: boolean | undefined;
+  setupReadinessScore?: number | undefined;
+  setupReadinessGrade?: string | undefined;
+  setupReadinessDecision?: string | undefined;
+  setupReadinessBlockerCount?: number | undefined;
+  setupReadinessWarningCount?: number | undefined;
+  setupReadinessPrimaryBlocker?: string | undefined;
+  setupReadinessReasons?: string | undefined;
   /** E5.13.2 Entry fill feasibility post-candidate diagnostic columns (optional; older CSV). */
   entryFillFeasibilityEnabled?: boolean | undefined;
   entryFillStatus?: string | undefined;

@@ -1476,6 +1476,109 @@ export function importBacktestTradesFromCsv(csvText: string, options: ImportBack
       else warnings.push({ code: "CSV_DISC_NUMERIC", message: p.message, row: rowNum });
     }
 
+    const readyBool = (
+      raw: string | undefined,
+      field: string,
+      assign: (v: boolean) => void,
+    ) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const b = parseOptionalCsvBool(raw, field, rowNum);
+      if (b.ok) assign(b.val);
+      else warnings.push({ code: "CSV_READY_BOOL_INVALID", message: b.message, row: rowNum });
+    };
+    const readyNum = (
+      raw: string | undefined,
+      field: string,
+      assign: (v: number) => void,
+    ) => {
+      if (raw === undefined || raw.trim() === "") return;
+      const p = parseNumber(raw, field, rowNum);
+      if (p.ok) assign(p.value);
+      else warnings.push({ code: "CSV_READY_NUMERIC", message: p.message, row: rowNum });
+    };
+    readyBool(pick(cells, col, "setup_readiness_checklist_enabled"), "setup_readiness_checklist_enabled", (v) => {
+      trade.setupReadinessChecklistEnabled = v;
+    });
+    readyBool(pick(cells, col, "checklist_bias_aligned"), "checklist_bias_aligned", (v) => {
+      trade.checklistBiasAligned = v;
+    });
+    readyBool(pick(cells, col, "checklist_structure_ok"), "checklist_structure_ok", (v) => {
+      trade.checklistStructureOk = v;
+    });
+    readyBool(pick(cells, col, "checklist_liquidity_event_ok"), "checklist_liquidity_event_ok", (v) => {
+      trade.checklistLiquidityEventOk = v;
+    });
+    readyBool(pick(cells, col, "checklist_ifvg_quality_ok"), "checklist_ifvg_quality_ok", (v) => {
+      trade.checklistIfvgQualityOk = v;
+    });
+    const readyIfvgGrdRaw = pick(cells, col, "checklist_ifvg_grade");
+    if (readyIfvgGrdRaw?.trim()) trade.checklistIfvgGrade = readyIfvgGrdRaw.trim();
+    readyBool(pick(cells, col, "checklist_mss_choch_ok"), "checklist_mss_choch_ok", (v) => {
+      trade.checklistMssChochOk = v;
+    });
+    readyBool(pick(cells, col, "checklist_mss_choch_timing_ok"), "checklist_mss_choch_timing_ok", (v) => {
+      trade.checklistMssChochTimingOk = v;
+    });
+    readyBool(pick(cells, col, "checklist_premium_discount_ok"), "checklist_premium_discount_ok", (v) => {
+      trade.checklistPremiumDiscountOk = v;
+    });
+    readyBool(pick(cells, col, "checklist_pd_zone_valid"), "checklist_pd_zone_valid", (v) => {
+      trade.checklistPdZoneValid = v;
+    });
+    readyBool(pick(cells, col, "checklist_entry_feasible"), "checklist_entry_feasible", (v) => {
+      trade.checklistEntryFeasible = v;
+    });
+    const readyFamRaw = pick(cells, col, "checklist_entry_candidate_family");
+    if (readyFamRaw?.trim()) trade.checklistEntryCandidateFamily = readyFamRaw.trim();
+    readyBool(
+      pick(cells, col, "checklist_entry_fragility_warning"),
+      "checklist_entry_fragility_warning",
+      (v) => {
+        trade.checklistEntryFragilityWarning = v;
+      },
+    );
+    readyBool(pick(cells, col, "checklist_target_ok"), "checklist_target_ok", (v) => {
+      trade.checklistTargetOk = v;
+    });
+    const readyTgtGrdRaw = pick(cells, col, "checklist_target_grade");
+    if (readyTgtGrdRaw?.trim()) trade.checklistTargetGrade = readyTgtGrdRaw.trim();
+    const readyTgtTypeRaw = pick(cells, col, "checklist_target_type");
+    if (readyTgtTypeRaw?.trim()) trade.checklistTargetType = readyTgtTypeRaw.trim();
+    readyBool(
+      pick(cells, col, "checklist_execution_environment_ok"),
+      "checklist_execution_environment_ok",
+      (v) => {
+        trade.checklistExecutionEnvironmentOk = v;
+      },
+    );
+    const readyEnvGrdRaw = pick(cells, col, "checklist_execution_environment_grade");
+    if (readyEnvGrdRaw?.trim()) trade.checklistExecutionEnvironmentGrade = readyEnvGrdRaw.trim();
+    readyBool(pick(cells, col, "checklist_discipline_ok"), "checklist_discipline_ok", (v) => {
+      trade.checklistDisciplineOk = v;
+    });
+    const readyDiscGrdRaw = pick(cells, col, "checklist_discipline_grade");
+    if (readyDiscGrdRaw?.trim()) trade.checklistDisciplineGrade = readyDiscGrdRaw.trim();
+    readyBool(pick(cells, col, "checklist_overtrading_warning"), "checklist_overtrading_warning", (v) => {
+      trade.checklistOvertradingWarning = v;
+    });
+    const readyGrdRaw = pick(cells, col, "setup_readiness_grade");
+    if (readyGrdRaw?.trim()) trade.setupReadinessGrade = readyGrdRaw.trim();
+    const readyDecRaw = pick(cells, col, "setup_readiness_decision");
+    if (readyDecRaw?.trim()) trade.setupReadinessDecision = readyDecRaw.trim();
+    const readyPriBlkRaw = pick(cells, col, "setup_readiness_primary_blocker");
+    if (readyPriBlkRaw?.trim()) trade.setupReadinessPrimaryBlocker = readyPriBlkRaw.trim();
+    const readyRsnRaw = pick(cells, col, "setup_readiness_reasons");
+    if (readyRsnRaw?.trim()) trade.setupReadinessReasons = readyRsnRaw.trim();
+    readyNum(pick(cells, col, "setup_readiness_score"), "setup_readiness_score", (v) => {
+      trade.setupReadinessScore = Math.trunc(v);
+    });
+    readyNum(pick(cells, col, "setup_readiness_blocker_count"), "setup_readiness_blocker_count", (v) => {
+      trade.setupReadinessBlockerCount = Math.trunc(v);
+    });
+    readyNum(pick(cells, col, "setup_readiness_warning_count"), "setup_readiness_warning_count", (v) => {
+      trade.setupReadinessWarningCount = Math.trunc(v);
+    });
+
     const effEnRaw = pick(cells, col, "entry_fill_feasibility_enabled");
     const effStatRaw = pick(cells, col, "entry_fill_status");
     const effScrRaw = pick(cells, col, "entry_fill_feasibility_score");

@@ -86,4 +86,4 @@ Los bounds **0–15** se mantienen idénticos al smoke E5.17.1; el fix de header
 
 ## Siguiente recomendado
 
-**E5.18** — Setup Readiness Checklist (contrato export / consumo de discipline + E5.16 + target + IFVG). Ver North Star § E5.18 y [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md) §I.
+**E5.18** — Setup Readiness Checklist: contrato export en repo — [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md), build `MZP_TestEA_E5_18`. Siguiente: smoke operador.

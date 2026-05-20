@@ -8,7 +8,7 @@
 ## E5.16.4 checkpoint context
 
 - **Cerrado (policy docs):** [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — perfiles por símbolo/timeframe; XAUUSD M15 V1 = stress label; candidate B/C research only; bloque E5.16 cerrado en gobernanza.
-- **E5.17.1 (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **E5.17.1.1 (cerrado):** [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — bundle real, `Import-Csv` OK. **Siguiente:** **E5.18** Setup Readiness Checklist.
+- **E5.17.1 (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **E5.17.1.1 (cerrado):** [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md). **E5.18 (repo):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md) — `MZP_TestEA_E5_18`. **Siguiente operador:** smoke.
 
 ## E5.16.3 checkpoint context
 

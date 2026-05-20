@@ -82,7 +82,8 @@
 - **E5.16.2 cerrado (audit repo):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`.
 - **E5.16.3 cerrado (evidencia operador):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS.
 - **E5.17.1 cerrado (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md) — `MZP_TestEA_E5_17_0_1`, bundle SET001, PASS; avg score 10.53; max 15.
-- **E5.17.1.1 cerrado (repo + operador):** [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — `MZP_TestEA_E5_17_1_1`, SET001, `Import-Csv` OK, sin headers duplicados. **Siguiente:** **E5.18** Setup Readiness Checklist.
+- **E5.17.1.1 cerrado (repo + operador):** [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — `MZP_TestEA_E5_17_1_1`, SET001, `Import-Csv` OK, sin headers duplicados.
+- **E5.18 cerrado (repo export):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md), build **`MZP_TestEA_E5_18`**. **Siguiente operador:** compilar y smoke tester.
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)

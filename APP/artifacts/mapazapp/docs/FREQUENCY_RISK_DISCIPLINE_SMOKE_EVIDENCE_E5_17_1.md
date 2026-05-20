@@ -150,4 +150,4 @@ El contrato diagnóstico **0–15** queda respetado en summary y en el máximo p
 ## Siguiente recomendado
 
 1. ~~**E5.17.1.1**~~ — cleanup + verificación bundle real (`Import-Csv` OK).
-2. **E5.18** — Setup Readiness Checklist export contract (consumir discipline + E5.16 + target + IFVG).
+2. **E5.18** — Setup Readiness Checklist: repo [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md) (`MZP_TestEA_E5_18`); smoke operador pendiente.

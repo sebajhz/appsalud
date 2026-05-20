@@ -54,6 +54,12 @@ import {
   FREQUENCY_RISK_DISCIPLINE_SUMMARY_NUMERIC_KEYS,
   FREQUENCY_RISK_DISCIPLINE_TRADE_COLUMNS,
 } from "./frequency-risk-discipline-export-keys";
+import {
+  SETUP_READINESS_DECISIONS,
+  SETUP_READINESS_OPTIMIZATION_PARAMETER_KEYS,
+  SETUP_READINESS_SUMMARY_NUMERIC_KEYS,
+  SETUP_READINESS_TRADE_COLUMNS,
+} from "./setup-readiness-export-keys";
 
 const FILE_NAME_TO_KIND: Record<string, ExportSampleFileKind> = {
   "bridge_status.json": "bridge_status_json",
@@ -2275,6 +2281,150 @@ export function validateTestEaExportSample(
                         "error",
                         "TESTEA_TRADES_DISC_E5_17_0_1_SCORE",
                         `E5.17.0.1: discipline_score must be <= 15 per trade (row ${ri + 1}); got ${v}`,
+                        { fileName: tr.fileName },
+                      ),
+                    );
+                    status = bumpStatus(status, "invalid");
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+        if (summaryJson["has_setup_readiness_checklist_v1_logic"] === true) {
+          if (!("setup_readiness_checklist_enabled" in summaryJson)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_READY_E5_18_KEY",
+                `E5.18: when has_setup_readiness_checklist_v1_logic is true, summary must include "setup_readiness_checklist_enabled"`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          } else if (typeof summaryJson["setup_readiness_checklist_enabled"] !== "boolean") {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_READY_E5_18_BOOL",
+                `E5.18: "setup_readiness_checklist_enabled" must be a boolean`,
+                { fileName: sj.fileName, detail: String(summaryJson["setup_readiness_checklist_enabled"]) },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          for (const k of SETUP_READINESS_SUMMARY_NUMERIC_KEYS) {
+            if (!(k in summaryJson)) {
+              diagnostics.push(
+                exportSampleDiagnostic(
+                  "error",
+                  "TESTEA_SUMMARY_READY_E5_18_KEY",
+                  `E5.18: when has_setup_readiness_checklist_v1_logic is true, summary must include "${k}"`,
+                  { fileName: sj.fileName },
+                ),
+              );
+              status = bumpStatus(status, "invalid");
+            } else {
+              const val = summaryJson[k];
+              if (typeof val !== "number" || !Number.isFinite(val)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_READY_E5_18_NUM",
+                    `E5.18: "${k}" must be a finite number`,
+                    { fileName: sj.fileName, detail: String(val) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          const avgReadyRaw = summaryJson["average_setup_readiness_score"];
+          if (typeof avgReadyRaw === "number" && Number.isFinite(avgReadyRaw) && (avgReadyRaw < 0 || avgReadyRaw > 100)) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_READY_E5_18_AVG",
+                `E5.18: "average_setup_readiness_score" must be in [0, 100]; got ${avgReadyRaw}`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
+          const optParamsReady = summaryJson["optimization_parameters"];
+          if (optParamsReady && typeof optParamsReady === "object" && !Array.isArray(optParamsReady)) {
+            const op = optParamsReady as Record<string, unknown>;
+            for (const k of SETUP_READINESS_OPTIMIZATION_PARAMETER_KEYS) {
+              if (!(k in op)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_SUMMARY_READY_E5_18_OPT",
+                    `E5.18: optimization_parameters must include "${k}" when has_setup_readiness_checklist_v1_logic is true`,
+                    { fileName: sj.fileName },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+          }
+          if (tr?.text) {
+            const headerLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+            const h = headerLine.toLowerCase();
+            for (const col of SETUP_READINESS_TRADE_COLUMNS) {
+              if (!h.includes(col)) {
+                diagnostics.push(
+                  exportSampleDiagnostic(
+                    "error",
+                    "TESTEA_TRADES_HEADER_READY_E5_18",
+                    `E5.18: backtest_trades.csv header must include "${col}" when has_setup_readiness_checklist_v1_logic is true (see ${tr.fileName})`,
+                    { fileName: sj.fileName, detail: headerLine.slice(0, 240) },
+                  ),
+                );
+                status = bumpStatus(status, "invalid");
+              }
+            }
+            if (h.includes("setup_readiness_score")) {
+              const lines = tr.text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+              const headerCells = lines[0]!.split(",");
+              const readyIdx = headerCells.findIndex(
+                (c) => c.trim().toLowerCase() === "setup_readiness_score",
+              );
+              const decisionIdx = headerCells.findIndex(
+                (c) => c.trim().toLowerCase() === "setup_readiness_decision",
+              );
+              if (readyIdx >= 0) {
+                for (let ri = 1; ri < lines.length; ri++) {
+                  const cells = lines[ri]!.split(",");
+                  const raw = cells[readyIdx]?.trim() ?? "";
+                  if (raw === "") continue;
+                  const v = Number(raw);
+                  if (Number.isFinite(v) && (v < 0 || v > 100)) {
+                    diagnostics.push(
+                      exportSampleDiagnostic(
+                        "error",
+                        "TESTEA_TRADES_READY_E5_18_SCORE",
+                        `E5.18: setup_readiness_score must be in [0, 100] per trade (row ${ri + 1}); got ${v}`,
+                        { fileName: tr.fileName },
+                      ),
+                    );
+                    status = bumpStatus(status, "invalid");
+                    break;
+                  }
+                }
+              }
+              if (decisionIdx >= 0) {
+                for (let ri = 1; ri < lines.length; ri++) {
+                  const cells = lines[ri]!.split(",");
+                  const raw = cells[decisionIdx]?.trim() ?? "";
+                  if (raw === "") continue;
+                  if (!SETUP_READINESS_DECISIONS.includes(raw as (typeof SETUP_READINESS_DECISIONS)[number])) {
+                    diagnostics.push(
+                      exportSampleDiagnostic(
+                        "error",
+                        "TESTEA_TRADES_READY_E5_18_DECISION",
+                        `E5.18: setup_readiness_decision must be one of ${SETUP_READINESS_DECISIONS.join("/")} (row ${ri + 1}); got ${raw}`,
                         { fileName: tr.fileName },
                       ),
                     );
