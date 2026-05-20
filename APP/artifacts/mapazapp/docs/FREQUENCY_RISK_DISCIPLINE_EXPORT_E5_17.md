@@ -2,7 +2,7 @@
 
 **Status:** Export-only diagnostic (TestEA). **Does not** change official entry (50 % / CE), TP (fixed RR2), outcomes, gates, or live trading.
 
-**Build:** `MZP_TestEA_E5_17`  
+**Build:** `MZP_TestEA_E5_17_0_1` (E5.17.0.1 — score bound fix; was `MZP_TestEA_E5_17`)  
 **Gobernanza:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md), [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)
 
 ---
@@ -116,12 +116,23 @@ Low-risk events may include: `disc_score`, `disc_grade`, `disc_flags` via `MapzD
 
 ---
 
+## E5.17.0.1 — Score bound fix
+
+**Smoke finding (E5.17 operator benchmark):** `average_discipline_score` ≈ 21.07 with per-trade contract **0–15**. Root cause: `g_disc_sum_score` was accumulated **twice** per trade (`MapzDiscFinalizeSummary` + `VirtualAppendTradeCsvRow`), inflating the summary average. Per-trade `MapzDiscScoreAndFinalize` already clamped to [0, 15].
+
+**Fix (`MZP_TestEA_E5_17_0_1`):** single accumulation in `MapzDiscFinalizeSummary`; `MapzDiscClampScore`; grades from bounded score. Flags/counters unchanged.
+
+**E5.17.1 smoke evidence** must be **rerun** after recompiling `MZP_TestEA_E5_17_0_1`. Prior PASS on bundle schema remains useful; score/grade evidence is **not final** until rerun.
+
+---
+
 ## Operator next step
 
-1. Compile **`MZP_TestEA_E5_17`** in MetaEditor.  
-2. Run Strategy Tester smoke (operator machine only).  
+1. Compile **`MZP_TestEA_E5_17_0_1`** in MetaEditor.  
+2. Run Strategy Tester smoke (operator machine only) — **E5.17.1 evidence rerun required**.  
 3. Validate bundle:  
    `pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- --bundle "<export_folder>" --json`  
-4. Compare discipline flags vs manual journal — **research only**.
+4. Confirm `average_discipline_score` ≤ 15 and CSV `discipline_score` ≤ 15 per trade.  
+5. Compare discipline flags vs manual journal — **research only**.
 
-**Recommended follow-up:** E5.17.1 smoke evidence doc (operator). **Optimization policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) — discipline enters future profile scoring; **no** parameter change in E5.17.2.
+**Optimization policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md).

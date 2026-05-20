@@ -329,7 +329,7 @@ test("W — E5.5.0.3: FileOpen must not use FILE_REWRITE; direct-write fallback 
 
 test("X — E5.12 + E5.11 + E5.10.6 + E5.5.0.5: build marker, MSS/CHoCH V1 + HTF structure V1 inputs, entry quality + liquidity sweep inputs, campaign defaults + short export folder + MT5 presets", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17_0_1"/);
   assert.match(src, /input bool\s+InpEnablePremiumDiscountV1\s*=\s*true/);
   assert.match(src, /input int\s+InpPremiumDiscountSwingLookbackBars\s*=\s*2/);
   assert.match(src, /input int\s+InpPremiumDiscountMaxBars\s*=\s*200/);
@@ -527,7 +527,7 @@ test("AA — E5.13.6.11 Buffered EVOS diagnostics (summary-only; no orders)", ()
 
 test("AC — E5.15 Liquidity Target Quality V1 (export-only; no orders)", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17_0_1"/);
   assert.match(src, /input bool\s+InpEnableLiquidityTargetQualityV1\s*=\s*true/);
   assert.match(src, /input int\s+InpLiquidityTargetLookbackBars\s*=\s*200/);
   assert.match(src, /input int\s+InpLiquidityTargetSwingLookbackBars\s*=\s*2/);
@@ -582,7 +582,8 @@ test("AD — E5.16 Session / Spread / Volatility Context V1 (export-only; no ord
 
 test("AE — E5.17 Frequency / Risk / Overtrading Discipline V1 (export-only; no orders)", () => {
   const src = readFileSync(EA_PATH, "utf8");
-  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17"/);
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17_0_1"/);
+  assert.match(src, /MapzDiscClampScore/);
   assert.match(src, /input bool\s+InpEnableFrequencyRiskDisciplineV1\s*=\s*true/);
   assert.match(src, /input int\s+InpDisciplineMaxTradesPerDay\s*=\s*3/);
   assert.match(src, /input double\s+InpDisciplineMaxDailyLossR\s*=\s*-2\.0/);
@@ -600,6 +601,22 @@ test("AE — E5.17 Frequency / Risk / Overtrading Discipline V1 (export-only; no
   assert.match(src, /MapzDiscCompactSuffix/);
   assert.match(src, /has_entry_variant_outcome_sim_v1_parity_control/);
   assert.match(src, /entry_variant_sim_p50_official_control/);
+  for (const bad of FORBIDDEN_SUBSTRINGS) {
+    assert.equal(src.includes(bad), false, `must not contain ${bad}`);
+  }
+});
+
+test("AE0.1 — E5.17.0.1 discipline score bounded 0–15 (export-only)", () => {
+  const src = readFileSync(EA_PATH, "utf8");
+  assert.match(src, /#define\s+TESTEA_BUILD\s+"MZP_TestEA_E5_17_0_1"/);
+  assert.match(src, /int MapzDiscClampScore\(const int sc\)/);
+  assert.match(src, /sc = MapzDiscClampScore\(sc\)/);
+  assert.match(src, /g_disc_sum_score \+= \(double\)boundedScore/);
+  assert.doesNotMatch(
+    src,
+    /VirtualAppendTradeCsvRow[\s\S]{0,800}g_disc_sum_score \+= \(double\)g_vt\.disc\.score/,
+  );
+  assert.match(src, /MapzDiscGradeFromScore\(boundedScore\)/);
   for (const bad of FORBIDDEN_SUBSTRINGS) {
     assert.equal(src.includes(bad), false, `must not contain ${bad}`);
   }

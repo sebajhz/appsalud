@@ -61,6 +61,33 @@ describe("Frequency / Risk / Discipline export validation E5.17", () => {
     expect(r.status).not.toBe("invalid");
   });
 
+  it("rejects average_discipline_score above 15 when E5.17 logic flag is true", () => {
+    const placeholders = buildFrequencyRiskDisciplineSummaryPlaceholders();
+    placeholders.average_discipline_score = 21.07;
+    const summary = {
+      schema_version: "backtest_ea_v1",
+      official_ea: "Mapazapp_TestEA",
+      backtest_role: true,
+      tester_only: true,
+      has_real_ifvg_logic: true,
+      has_full_ifvg_pipeline: false,
+      has_real_daily_bias_logic: true,
+      has_real_trading_orders: false,
+      has_real_virtual_trade_logic: true,
+      trade_count: 1,
+      virtual_trade_count: 1,
+      optimization_parameters: { frequency_risk_discipline_v1_enabled: true },
+      ...placeholders,
+    };
+    const r = validateTestEaExportSample({
+      bundleKind: "testea_export_bundle",
+      files: [{ fileName: "backtest_summary.json", text: JSON.stringify(summary) }],
+      privacyMode: "relaxed",
+    });
+    expect(r.status).toBe("invalid");
+    expect(r.diagnostics.some((d) => d.code === "TESTEA_SUMMARY_DISC_E5_17_0_1_AVG")).toBe(true);
+  });
+
   it("importer parses optional discipline fields", () => {
     const hdr =
       "trade_id,direction,entry_time,exit_time,entry,sl,tp,exit_price,result_r,result_money,outcome,bars_to_fill,bars_held,frequency_risk_discipline_enabled,discipline_trade_date,discipline_session_bucket,discipline_trades_so_far_today,discipline_trades_so_far_session,discipline_closed_r_so_far_today,discipline_consecutive_losses_before_trade,discipline_consecutive_wins_before_trade,discipline_bars_since_last_trade,discipline_bars_since_last_loss,discipline_daily_trade_limit_reached,discipline_session_trade_limit_reached,discipline_max_consecutive_losses_reached,discipline_daily_loss_limit_reached,discipline_daily_profit_protect_reached,discipline_cooldown_after_loss_active,discipline_cooldown_after_trade_active,discipline_overtrading_risk,discipline_revenge_trade_risk,discipline_profit_giveback_risk,discipline_trade_result_r,discipline_closed_r_after_trade_today,discipline_consecutive_losses_after_trade,discipline_consecutive_wins_after_trade,discipline_daily_trade_sequence,discipline_session_trade_sequence,discipline_score,discipline_grade,discipline_reasons";

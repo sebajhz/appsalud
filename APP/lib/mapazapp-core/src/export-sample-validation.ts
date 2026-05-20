@@ -2166,6 +2166,18 @@ export function validateTestEaExportSample(
               }
             }
           }
+          const avgDiscRaw = summaryJson["average_discipline_score"];
+          if (typeof avgDiscRaw === "number" && Number.isFinite(avgDiscRaw) && avgDiscRaw > 15) {
+            diagnostics.push(
+              exportSampleDiagnostic(
+                "error",
+                "TESTEA_SUMMARY_DISC_E5_17_0_1_AVG",
+                `E5.17.0.1: "average_discipline_score" must be <= 15 (diagnostic contract); got ${avgDiscRaw}`,
+                { fileName: sj.fileName },
+              ),
+            );
+            status = bumpStatus(status, "invalid");
+          }
           const optParamsDisc = summaryJson["optimization_parameters"];
           if (optParamsDisc && typeof optParamsDisc === "object" && !Array.isArray(optParamsDisc)) {
             const op = optParamsDisc as Record<string, unknown>;
@@ -2197,6 +2209,33 @@ export function validateTestEaExportSample(
                   ),
                 );
                 status = bumpStatus(status, "invalid");
+              }
+            }
+            if (h.includes("discipline_score")) {
+              const lines = tr.text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+              const headerCells = lines[0]!.split(",");
+              const discIdx = headerCells.findIndex(
+                (c) => c.trim().toLowerCase() === "discipline_score",
+              );
+              if (discIdx >= 0) {
+                for (let ri = 1; ri < lines.length; ri++) {
+                  const cells = lines[ri]!.split(",");
+                  const raw = cells[discIdx]?.trim() ?? "";
+                  if (raw === "") continue;
+                  const v = Number(raw);
+                  if (Number.isFinite(v) && v > 15) {
+                    diagnostics.push(
+                      exportSampleDiagnostic(
+                        "error",
+                        "TESTEA_TRADES_DISC_E5_17_0_1_SCORE",
+                        `E5.17.0.1: discipline_score must be <= 15 per trade (row ${ri + 1}); got ${v}`,
+                        { fileName: tr.fileName },
+                      ),
+                    );
+                    status = bumpStatus(status, "invalid");
+                    break;
+                  }
+                }
               }
             }
           }

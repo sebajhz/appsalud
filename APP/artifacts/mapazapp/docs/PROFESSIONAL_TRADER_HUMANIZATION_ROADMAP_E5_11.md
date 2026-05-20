@@ -59,6 +59,7 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.16.3** | **Calibration audit evidence** | **completed** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) |
 | **E5.16.4** | **Symbol/timeframe execution profile policy** | **completed** — [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) |
 | **E5.17** | **Frequency / Risk / Overtrading** discipline V1 | **completed (export)** — [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) |
+| **E5.17.0.1** | **Discipline score bound fix** | **completed** — build `MZP_TestEA_E5_17_0_1`; E5.17.1 smoke rerun |
 | **E5.17.2** | **Optimization governance + visual review** | **completed (policy)** — [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) |
 | **E5.18** | **BridgeEA / Dashboard** setup state contract | planificado — §I |
 | **E5.19** | **Forward demo** read-only readiness | planificado — §J |

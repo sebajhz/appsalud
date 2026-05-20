@@ -81,7 +81,7 @@
 - **E5.16.1 cerrado (smoke operador):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS.
 - **E5.16.2 cerrado (audit repo):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md); CLI `mapazapp:testea-execution-environment-calibration-audit`.
 - **E5.16.3 cerrado (evidencia operador):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md) — PASS.
-- **E5.17.2 cerrado (policy):** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) — optimización multi-perfil, anti-overfit, MT5 genético solo investigación, Visual Trace futuro; **sin** código/parámetros. **Siguiente:** E5.17.1 smoke (operador); E5.18 checklist.
+- **E5.17.0.1 (fix):** `MZP_TestEA_E5_17_0_1` — `discipline_score` / `average_discipline_score` acotados 0–15 (doble suma en summary corregida). **E5.17.1 smoke debe repetirse** tras recompilar. **E5.17.2 policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). **Siguiente:** E5.17.1 smoke rerun; E5.18 checklist.
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)

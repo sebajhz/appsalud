@@ -141,7 +141,7 @@ input int               InpDisciplineCooldownBarsAfterLoss = 4;
 input int               InpDisciplineCooldownBarsAfterTrade = 0;
 input bool              InpDisciplineScoreEnabled = true;
 
-#define TESTEA_BUILD            "MZP_TestEA_E5_17"
+#define TESTEA_BUILD            "MZP_TestEA_E5_17_0_1"
 #define BUF_EVOS_VAR_N          4
 #define BUF_EVOS_BUF_N          6
 #define EVT_DAILY_BIAS_EVAL     "daily_bias_evaluated"
@@ -5848,15 +5848,26 @@ string MapzDiscDateWire(const datetime t)
   }
 
 //+------------------------------------------------------------------+
+int MapzDiscClampScore(const int sc)
+  {
+   if(sc < 0)
+      return 0;
+   if(sc > 15)
+      return 15;
+   return sc;
+  }
+
+//+------------------------------------------------------------------+
 string MapzDiscGradeFromScore(const int sc)
   {
-   if(sc >= 12)
+   const int bounded = MapzDiscClampScore(sc);
+   if(bounded >= 12)
       return "A";
-   if(sc >= 9)
+   if(bounded >= 9)
       return "B";
-   if(sc >= 6)
+   if(bounded >= 6)
       return "C";
-   if(sc >= 3)
+   if(bounded >= 3)
       return "Weak";
    return "None";
   }
@@ -5972,10 +5983,7 @@ void MapzDiscScoreAndFinalize(MapzFrequencyRiskDisciplineSnap &out)
       MapzEffAppendReasonOnce(out.reasons, "discipline_profit_giveback_risk");
      }
 
-   if(sc < 0)
-      sc = 0;
-   if(sc > 15)
-      sc = 15;
+   sc = MapzDiscClampScore(sc);
    out.score = sc;
    out.grade = MapzDiscGradeFromScore(sc);
    if(out.grade == "A")
@@ -6096,7 +6104,11 @@ void MapzDiscFinalizeSummary(MapzFrequencyRiskDisciplineSnap &out)
    if(out.profit_giveback_risk)
       g_disc_profit_giveback_risk_count++;
 
-   g_disc_sum_score += (double)out.score;
+   const int boundedScore = MapzDiscClampScore(out.score);
+   out.score = boundedScore;
+   if(out.grade != MapzDiscGradeFromScore(boundedScore))
+      out.grade = MapzDiscGradeFromScore(boundedScore);
+   g_disc_sum_score += (double)boundedScore;
    if(out.grade == "A")
       g_disc_grade_a++;
    else if(out.grade == "B")
@@ -9120,8 +9132,7 @@ void VirtualAppendTradeCsvRow(const int bars_to_fill_export,
       MapzBufEvosClearTrade();
      }
 
-   if(InpEnableFrequencyRiskDisciplineV1 && g_vt.disc.log_enabled)
-      g_disc_sum_score += (double)g_vt.disc.score;
+   // E5.17.0.1: discipline score summed once in MapzDiscFinalizeSummary (post-trade), not here.
 
    if(StringLen(g_tradesDataLines) > 0)
       g_tradesDataLines += "\r\n";
