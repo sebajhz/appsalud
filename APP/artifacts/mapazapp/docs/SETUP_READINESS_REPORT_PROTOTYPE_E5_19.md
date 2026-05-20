@@ -72,14 +72,17 @@ Opciones:
 
 ## E5.19.0.1 — UX operador (metadata warnings)
 
-- **E5.19** operador: informe generado con éxito sobre bundle benchmark `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` (`MZP_TestEA_E5_18`); artefactos locales `*_DO_NOT_COMMIT` / sin commit.
-- **E5.19.0.1:** `header.bundle` poblado; import CSV usa `run_id` / `parameter_set_id` del summary cuando existen; sin spam de warnings por fila en flujo normal; CLI escribe éxito en **stdout** (PowerShell ya no marca `NativeCommandError` en runs `ok=true`); `--verbose` para detalle.
-- **E5.19.1:** re-ejecutar evidencia operador **después** de E5.19.0.1.
+- **E5.19.0.1:** `header.bundle` poblado; import CSV usa `run_id` / `parameter_set_id` del summary cuando existen; sin spam de warnings por fila en flujo normal; CLI escribe éxito en **stdout**; `--verbose` para detalle.
+
+## E5.19.1 — Evidencia operador
+
+- **PASS** — [`SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md`](./SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md).
+- Bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, `MZP_TestEA_E5_18`, 1697 trades; `ok=true`, `warnings_count=0`; artefactos en `_local_E5_19_1_setup_readiness_report_DO_NOT_COMMIT/` (no commit).
 
 ---
 
 ## Siguiente recomendado
 
-**E5.19.1** — evidencia operador: re-ejecutar CLI sobre bundle benchmark `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` (`MZP_TestEA_E5_18`) y archivar `.md`/`.json` local (no commitear CSV/artefactos `_DO_NOT_COMMIT`).
+**E5.19.2** — report UX polish (aliases warnings, markdown headings, example dedup) — ver observaciones en evidencia E5.19.1.
 
 Alternativas: **E5.18.6** severity audit, **E5.18.7** per-symbol comparison, **E5.20** BridgeEA consumption plan.

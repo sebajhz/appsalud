@@ -356,6 +356,8 @@ Cualquier UI que no cumpla §2–§6 se considera **no conforme** con gobernanza
 | **E5.18.6** | Readiness severity calibration audit (research-only) |
 | **E5.18.7** | Per-symbol readiness profile comparison |
 | ~~**E5.19** report prototype (CLI).~~ **Done** — [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md); `mapazapp:testea-setup-readiness-report` |
+| ~~**E5.19.1** operator report evidence.~~ **Done** — [`SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md`](./SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md); PASS |
+| **E5.19.2** | Report UX polish (aliases, headings, examples) |
 | **E5.20** | BridgeEA / dashboard consumption plan (read-only) |
 
 Cambios MQL5 score/decision: solo tras gobernanza explícita post E5.18.6+.

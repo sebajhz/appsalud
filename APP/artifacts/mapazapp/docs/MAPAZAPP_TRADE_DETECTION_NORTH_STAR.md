@@ -491,7 +491,7 @@ Export setup state for BridgeEA/dashboard:
 - invalidated
 - target reached
 
-**Setup Readiness Checklist V1 (export — done):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); smoke [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md). Read-only aggregation from diagnostics; **Candidate / Wait / Reject**; critical blockers can override high score (e.g. `pd_conflict`). **Not** a live execution panel; manual-control aligned. **Next:** E5.19.1 operator report evidence ([`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md)).
+**Setup Readiness Checklist V1 (export — done):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); smoke [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md). Read-only aggregation from diagnostics; **Candidate / Wait / Reject**; critical blockers can override high score (e.g. `pd_conflict`). **Not** a live execution panel; manual-control aligned. **E5.19.1 report evidence:** [`SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md`](./SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md) — PASS. **Next:** E5.19.2 UX polish or E5.18.6+.
 
 ### E5.19 — Forward Demo Read-only
 
