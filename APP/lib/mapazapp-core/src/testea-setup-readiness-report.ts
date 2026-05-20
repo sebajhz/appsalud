@@ -49,18 +49,22 @@ export interface SetupReadinessLeaderboardEntry {
 export interface SetupReadinessComponentSummaryRow {
   component: string;
   ok_count: number;
-  warning_or_weak_count: number;
-  blocker_count: number;
+  warning_or_issue_count: number;
   notes: string;
 }
 
+export type SetupReadinessExampleCategory =
+  | "candidate"
+  | "wait"
+  | "reject"
+  | "high_score_reject"
+  | "candidate_with_warnings";
+
 export interface SetupReadinessReportTradeCard {
-  category:
-    | "candidate"
-    | "wait"
-    | "reject"
-    | "high_score_reject"
-    | "candidate_with_warnings";
+  /** E5.19.2: unique trade may belong to multiple example categories (badges). */
+  categories: SetupReadinessExampleCategory[];
+  /** @deprecated Presentation uses `categories`; kept for JSON consumers. */
+  category: SetupReadinessExampleCategory;
   trade_id: string;
   entry_time: string | null;
   direction: string;
@@ -78,6 +82,10 @@ export interface SetupReadinessReportTradeCard {
   checklist_discipline_grade: string;
   checklist_entry_candidate_family: string;
   decision_display_label: string;
+  /** `main_reason` when blocker_count=0 but primary is set; else `primary_blocker`. */
+  primary_context_kind: "primary_blocker" | "main_reason";
+  primary_context_label: string;
+  primary_context_note: string | null;
 }
 
 export interface SetupReadinessReport {
@@ -135,18 +143,27 @@ export interface SetupReadinessReport {
 const RESEARCH_NOTE =
   "E5.19 read-only report prototype. No live trading, gates, MQL5 changes, or strategy approval.";
 
-const WARNING_REASON_TOKENS = [
-  "checklist_target_before_liquidity",
-  "target_before_liquidity",
-  "checklist_overtrading_warning",
-  "overtrading_warning",
-  "checklist_environment_weak",
-  "environment_weak",
-  "checklist_entry_fragile",
-  "entry_fragile",
-  "checklist_discipline",
-  "daily_loss_limit_warning",
-] as const;
+/** Maps export reason tokens → single canonical warning key (E5.19.2 display). */
+const WARNING_ALIAS_TO_CANONICAL: Record<string, string> = {
+  checklist_target_before_liquidity: "target_before_liquidity",
+  target_before_liquidity: "target_before_liquidity",
+  checklist_overtrading_warning: "overtrading_warning",
+  overtrading_warning: "overtrading_warning",
+  checklist_environment_weak: "environment_weak",
+  environment_weak: "environment_weak",
+  checklist_entry_fragile: "entry_fragile",
+  entry_fragile: "entry_fragile",
+  checklist_discipline: "discipline_warning",
+  daily_loss_limit_warning: "discipline_warning",
+};
+
+const EXAMPLE_CATEGORY_PRIORITY: SetupReadinessExampleCategory[] = [
+  "high_score_reject",
+  "candidate_with_warnings",
+  "reject",
+  "wait",
+  "candidate",
+];
 
 function normDecision(raw: string | undefined): string {
   const d = (raw ?? "").trim().toLowerCase();
@@ -158,6 +175,33 @@ function normBlocker(raw: string | undefined): string {
   const b = (raw ?? "").trim();
   if (!b || b === "-" || b.toLowerCase() === "none") return "none";
   return b;
+}
+
+/** Normalize a setup_readiness_reasons token to a canonical warning key, or null. */
+export function normalizeSetupReadinessWarningToken(token: string): string | null {
+  const t = token.trim();
+  if (!t) return null;
+  if (WARNING_ALIAS_TO_CANONICAL[t]) return WARNING_ALIAS_TO_CANONICAL[t]!;
+  for (const [alias, canonical] of Object.entries(WARNING_ALIAS_TO_CANONICAL)) {
+    if (t.includes(alias)) return canonical;
+  }
+  return null;
+}
+
+/** Per-trade deduped warning counts aggregated across the bundle (E5.19.2). */
+export function countNormalizedSetupReadinessWarnings(trades: BacktestTrade[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const t of trades) {
+    const seen = new Set<string>();
+    for (const tok of parseReasonTokens(t.setupReadinessReasons)) {
+      const canonical = normalizeSetupReadinessWarningToken(tok);
+      if (canonical && !seen.has(canonical)) {
+        seen.add(canonical);
+        counts[canonical] = (counts[canonical] ?? 0) + 1;
+      }
+    }
+  }
+  return counts;
 }
 
 function parseReasonTokens(reasons: string | undefined): string[] {
@@ -186,6 +230,33 @@ function strField(summary: Record<string, unknown>, key: string): string | null 
 function boolField(summary: Record<string, unknown>, key: string, defaultVal: boolean): boolean {
   const v = summary[key];
   return typeof v === "boolean" ? v : defaultVal;
+}
+
+function resolvePrimaryContext(
+  blockerCount: number | null,
+  primaryBlocker: string,
+  language: SetupReadinessReportLanguage,
+): Pick<
+  SetupReadinessReportTradeCard,
+  "primary_context_kind" | "primary_context_label" | "primary_context_note"
+> {
+  const b = blockerCount ?? 0;
+  const primary = normBlocker(primaryBlocker);
+  if (b === 0 && primary !== "none") {
+    return {
+      primary_context_kind: "main_reason",
+      primary_context_label: language === "es" ? "Motivo principal" : "Main reason",
+      primary_context_note:
+        language === "es"
+          ? "Motivo mostrado por contexto; no contado como bloqueador duro."
+          : "Reason shown for context; not counted as a hard blocker.",
+    };
+  }
+  return {
+    primary_context_kind: "primary_blocker",
+    primary_context_label: language === "es" ? "Bloqueador principal" : "Primary blocker",
+    primary_context_note: null,
+  };
 }
 
 export function decisionDisplayLabel(
@@ -222,16 +293,75 @@ export function decisionDisplayLabel(
   return "Unknown — insufficient diagnostic data";
 }
 
+function classifyExampleCategories(t: BacktestTrade): SetupReadinessExampleCategory[] {
+  const decision = normDecision(t.setupReadinessDecision);
+  const warningsN = t.setupReadinessWarningCount ?? 0;
+  const cats: SetupReadinessExampleCategory[] = [];
+  if (decision === "candidate") cats.push("candidate");
+  if (decision === "wait") cats.push("wait");
+  if (decision === "reject") cats.push("reject");
+  if (isHighSetupReadinessScore(t.setupReadinessScore) && decision === "reject") {
+    cats.push("high_score_reject");
+  }
+  if (decision === "candidate" && warningsN > 0) cats.push("candidate_with_warnings");
+  return cats;
+}
+
+/** E5.19.2: unique example cards with merged category badges. */
+export function buildDedupedExampleCards(
+  trades: BacktestTrade[],
+  maxExamples: number,
+  language: SetupReadinessReportLanguage,
+): SetupReadinessReportTradeCard[] {
+  const merged = new Map<string, { trade: BacktestTrade; categories: Set<SetupReadinessExampleCategory> }>();
+  for (const t of trades) {
+    const cats = classifyExampleCategories(t);
+    if (cats.length === 0) continue;
+    const prev = merged.get(t.tradeId);
+    if (prev) {
+      for (const c of cats) prev.categories.add(c);
+    } else {
+      merged.set(t.tradeId, { trade: t, categories: new Set(cats) });
+    }
+  }
+
+  const selectedIds = new Set<string>();
+  const ordered: SetupReadinessReportTradeCard[] = [];
+
+  const tryPick = (cat: SetupReadinessExampleCategory) => {
+    if (ordered.length >= maxExamples) return;
+    for (const [id, { trade, categories }] of merged) {
+      if (selectedIds.has(id) || !categories.has(cat)) continue;
+      selectedIds.add(id);
+      ordered.push(buildTradeCard(trade, [...categories], language));
+      return;
+    }
+  };
+
+  for (const cat of EXAMPLE_CATEGORY_PRIORITY) tryPick(cat);
+  for (const [id, { trade, categories }] of merged) {
+    if (ordered.length >= maxExamples) break;
+    if (selectedIds.has(id)) continue;
+    selectedIds.add(id);
+    ordered.push(buildTradeCard(trade, [...categories], language));
+  }
+
+  return ordered;
+}
+
 function buildTradeCard(
   t: BacktestTrade,
-  category: SetupReadinessReportTradeCard["category"],
+  categories: SetupReadinessExampleCategory[],
   language: SetupReadinessReportLanguage,
 ): SetupReadinessReportTradeCard {
   const reasons = parseReasonTokens(t.setupReadinessReasons);
   const warningCount = t.setupReadinessWarningCount ?? 0;
   const decision = normDecision(t.setupReadinessDecision);
+  const primaryCategory = categories[0] ?? "reject";
+  const primaryCtx = resolvePrimaryContext(t.setupReadinessBlockerCount ?? null, t.setupReadinessPrimaryBlocker ?? "", language);
   return {
-    category,
+    categories,
+    category: primaryCategory,
     trade_id: t.tradeId,
     entry_time: t.entryTime ?? null,
     direction: t.direction?.trim() || "unknown",
@@ -255,6 +385,7 @@ function buildTradeCard(
       warningCount,
       language,
     ),
+    ...primaryCtx,
   };
 }
 
@@ -293,27 +424,25 @@ function buildComponentSummary(trades: BacktestTrade[]): SetupReadinessComponent
   const row = (
     component: string,
     ok: number,
-    weak: number,
-    blocker: number,
+    issue: number,
     notes: string,
   ): SetupReadinessComponentSummaryRow => ({
     component,
     ok_count: ok,
-    warning_or_weak_count: weak,
-    blocker_count: blocker,
+    warning_or_issue_count: issue,
     notes,
   });
 
   return [
-    row("bias_structure", biasOk, n - biasOk, 0, "checklist_bias_aligned / structure_ok"),
-    row("liquidity", liquidityOk, n - liquidityOk, 0, "checklist_liquidity_event_ok"),
-    row("ifvg_bisi_sibi", ifvgOk, n - ifvgOk, 0, "checklist_ifvg_quality_ok + grade"),
-    row("mss_choch", mssOk, n - mssOk, 0, "checklist_mss_choch_ok"),
-    row("premium_discount", pdOk, n - pdOk, 0, "checklist_premium_discount_ok"),
-    row("entry", entryFeasible, entryFragileWarn, 0, "entry_feasible; fragile warnings"),
-    row("target", targetOk, n - targetOk, 0, "checklist_target_ok + grade"),
-    row("execution_environment", envOk, n - envOk, 0, "checklist_execution_environment_ok"),
-    row("discipline", disciplineOk, overtradingWarn, 0, "discipline_ok; overtrading_warning"),
+    row("bias_structure", biasOk, n - biasOk, "checklist_bias_aligned / structure_ok"),
+    row("liquidity", liquidityOk, n - liquidityOk, "checklist_liquidity_event_ok"),
+    row("ifvg_bisi_sibi", ifvgOk, n - ifvgOk, "checklist_ifvg_quality_ok + grade"),
+    row("mss_choch", mssOk, n - mssOk, "checklist_mss_choch_ok"),
+    row("premium_discount", pdOk, n - pdOk, "checklist_premium_discount_ok"),
+    row("entry", entryFeasible, entryFragileWarn, "entry_feasible; fragile warnings"),
+    row("target", targetOk, n - targetOk, "checklist_target_ok + grade"),
+    row("execution_environment", envOk, n - envOk, "checklist_execution_environment_ok"),
+    row("discipline", disciplineOk, overtradingWarn, "discipline_ok; overtrading_warning"),
   ];
 }
 
@@ -338,7 +467,7 @@ function governanceFooter(language: SetupReadinessReportLanguage): string[] {
     return [
       "Informe de solo lectura (research / backtest). Sin trading en vivo.",
       "Sin gates ni ejecución automática.",
-      "El puntaje no es permiso para operar; los bloqueos críticos pueden anular la readiness.",
+      "No tomar el puntaje como permiso de entrada; los bloqueadores críticos pueden anular la readiness.",
       "Entry oficial: 50 % / CE. Edge / p25 / adaptive: solo investigación.",
       "TP oficial: RR2 fijo. Checklist: soporte de decisión read-only.",
     ];
@@ -467,16 +596,7 @@ export function buildTestEaSetupReadinessReportFromTexts(
   }
 
   const n = calibration.overall.trade_count;
-  const warningCounts: Record<string, number> = {};
-  for (const t of trades) {
-    for (const tok of parseReasonTokens(t.setupReadinessReasons)) {
-      for (const w of WARNING_REASON_TOKENS) {
-        if (tok.includes(w) || tok === w) {
-          warningCounts[w] = (warningCounts[w] ?? 0) + 1;
-        }
-      }
-    }
-  }
+  const warningCounts = countNormalizedSetupReadinessWarnings(trades);
 
   const primaryBlockerMap: Record<string, number> = {};
   for (const [k, v] of Object.entries(calibration.primary_blocker_by_decision.counts)) {
@@ -497,47 +617,11 @@ export function buildTestEaSetupReadinessReportFromTexts(
     decisionPct[k] = pct(v, n);
   }
 
-  const exampleBuckets = new Map<SetupReadinessReportTradeCard["category"], SetupReadinessReportTradeCard[]>();
-  const cats: SetupReadinessReportTradeCard["category"][] = [
-    "candidate",
-    "wait",
-    "reject",
-    "high_score_reject",
-    "candidate_with_warnings",
-  ];
-  for (const c of cats) exampleBuckets.set(c, []);
-
-  for (const t of trades) {
-    const decision = normDecision(t.setupReadinessDecision);
-    const warningsN = t.setupReadinessWarningCount ?? 0;
-    if (decision === "candidate") {
-      const ex = exampleBuckets.get("candidate")!;
-      if (ex.length < maxExamples) ex.push(buildTradeCard(t, "candidate", language));
-    }
-    if (decision === "wait") {
-      const ex = exampleBuckets.get("wait")!;
-      if (ex.length < maxExamples) ex.push(buildTradeCard(t, "wait", language));
-    }
-    if (decision === "reject") {
-      const ex = exampleBuckets.get("reject")!;
-      if (ex.length < maxExamples) ex.push(buildTradeCard(t, "reject", language));
-    }
-    if (isHighSetupReadinessScore(t.setupReadinessScore) && decision === "reject") {
-      const ex = exampleBuckets.get("high_score_reject")!;
-      if (ex.length < maxExamples) ex.push(buildTradeCard(t, "high_score_reject", language));
-    }
-    if (decision === "candidate" && warningsN > 0) {
-      const ex = exampleBuckets.get("candidate_with_warnings")!;
-      if (ex.length < maxExamples) ex.push(buildTradeCard(t, "candidate_with_warnings", language));
-    }
-  }
-
-  const example_cards: SetupReadinessReportTradeCard[] = [];
-  for (const c of cats) example_cards.push(...(exampleBuckets.get(c) ?? []));
+  const example_cards = buildDedupedExampleCards(trades, maxExamples, language);
 
   const interpretation_es = [
-    "Candidato no implica trade perfecto; revisar advertencias.",
-    "Rechazado puede ocurrir con puntaje alto por bloqueo crítico.",
+    "Candidato — revisar advertencias; no implica trade perfecto.",
+    "Rechazado — bloqueador crítico; puede ocurrir con puntaje alto.",
     "No tomar el puntaje como permiso de entrada.",
   ];
   const interpretation_en = [
@@ -622,10 +706,56 @@ function renderCrossTabMarkdown(
   return `### ${title}\n\n${header}\n${sep}\n${body.join("\n")}\n\n`;
 }
 
-function renderLeaderboardMarkdown(title: string, entries: SetupReadinessLeaderboardEntry[]): string {
-  if (entries.length === 0) return `### ${title}\n\n_(sin datos)_\n\n`;
-  const lines = entries.map((e) => `- **${e.key}**: ${e.count} (${e.pct.toFixed(1)} %)`);
+function formatWarningLeaderboardKey(key: string, language: SetupReadinessReportLanguage): string {
+  if (language === "es") {
+    const labels: Record<string, string> = {
+      target_before_liquidity: "TP antes que liquidez",
+      overtrading_warning: "Sobreoperación",
+      environment_weak: "Entorno débil",
+      entry_fragile: "Entrada frágil",
+      discipline_warning: "Disciplina / riesgo",
+    };
+    return labels[key] ?? key;
+  }
+  return key;
+}
+
+function renderLeaderboardMarkdown(
+  title: string,
+  entries: SetupReadinessLeaderboardEntry[],
+  options?: { formatKey?: (key: string) => string },
+): string {
+  const formatKey = options?.formatKey ?? ((k) => k);
+  if (entries.length === 0) {
+    if (!title.trim()) return "";
+    return `### ${title}\n\n_(sin datos)_\n\n`;
+  }
+  const lines = entries.map((e) => `- **${formatKey(e.key)}**: ${e.count} (${e.pct.toFixed(1)} %)`);
+  if (!title.trim()) return `${lines.join("\n")}\n\n`;
   return `### ${title}\n\n${lines.join("\n")}\n\n`;
+}
+
+function formatExampleCategoryBadges(
+  categories: SetupReadinessExampleCategory[],
+  language: SetupReadinessReportLanguage,
+): string {
+  const labels =
+    language === "es"
+      ? {
+          candidate: "candidato",
+          wait: "esperar",
+          reject: "rechazado",
+          high_score_reject: "high_score_reject",
+          candidate_with_warnings: "candidato_con_advertencias",
+        }
+      : {
+          candidate: "candidate",
+          wait: "wait",
+          reject: "reject",
+          high_score_reject: "high_score_reject",
+          candidate_with_warnings: "candidate_with_warnings",
+        };
+  return categories.map((c) => labels[c]).join(", ");
 }
 
 export function renderSetupReadinessReportMarkdown(report: SetupReadinessReport): string {
@@ -694,6 +824,7 @@ export function renderSetupReadinessReportMarkdown(report: SetupReadinessReport)
   lines.push(renderLeaderboardMarkdown(
     es ? "Advertencias principales" : "Top warnings",
     ex.top_warnings,
+    { formatKey: (k) => formatWarningLeaderboardKey(k, report.language) },
   ));
 
   lines.push(`## ${es ? "Distribución de decisiones" : "Decision distribution"}`);
@@ -731,21 +862,56 @@ export function renderSetupReadinessReportMarkdown(report: SetupReadinessReport)
   ));
 
   lines.push(`## ${es ? "Ranking de advertencias" : "Warning leaderboard"}`);
-  lines.push(renderLeaderboardMarkdown("", report.warning_leaderboard));
+  lines.push(
+    es
+      ? "_Claves normalizadas (sin duplicar alias checklist_*)._"
+      : "_Normalized keys (checklist_* aliases merged)._",
+  );
+  lines.push("");
+  lines.push(
+    renderLeaderboardMarkdown(
+      es ? "Advertencias agregadas" : "Aggregated warnings",
+      report.warning_leaderboard,
+      { formatKey: (k) => formatWarningLeaderboardKey(k, report.language) },
+    ),
+  );
 
   lines.push(`## ${es ? "Resumen de componentes" : "Component summary"}`);
-  lines.push("| Componente | OK | Warning/weak | Blocker | Notas |");
-  lines.push("| --- | ---: | ---: | ---: | --- |");
+  lines.push(
+    es
+      ? "_Salud por componente del checklist. Los bloqueadores principales se resumen en el ranking global; esta tabla no atribuye bloqueadores duros por componente._"
+      : "_Per-component checklist health. Primary blockers are summarized globally; this table does not attribute hard blockers per component._",
+  );
+  lines.push("");
+  lines.push(
+    es
+      ? "| Componente | OK | Advertencia o incidencia | Notas |"
+      : "| Component | OK | Warning or issue | Notes |",
+  );
+  lines.push(es ? "| --- | ---: | ---: | --- |" : "| --- | ---: | ---: | --- |");
   for (const r of report.component_summary) {
-    lines.push(`| ${r.component} | ${r.ok_count} | ${r.warning_or_weak_count} | ${r.blocker_count} | ${r.notes} |`);
+    lines.push(`| ${r.component} | ${r.ok_count} | ${r.warning_or_issue_count} | ${r.notes} |`);
   }
   lines.push("");
 
   lines.push(`## ${es ? "Ejemplos de trades" : "Example trade cards"}`);
+  lines.push(
+    es
+      ? "_Cada trade aparece una sola vez; las categorías son insignias informativas._"
+      : "_Each trade appears once; categories are informational badges._",
+  );
+  lines.push("");
   for (const card of report.example_cards) {
+    const badges = formatExampleCategoryBadges(card.categories, report.language);
     lines.push(`### ${card.trade_id} — ${card.decision_display_label}`);
+    if (badges) {
+      lines.push(`- **${es ? "Categorías" : "Categories"}:** ${badges}`);
+    }
     lines.push(`- **Decisión / decision:** ${card.setup_readiness_decision} | **Score:** ${card.setup_readiness_score ?? "n/a"} | **Grade:** ${card.setup_readiness_grade}`);
-    lines.push(`- **Primary blocker:** ${card.setup_readiness_primary_blocker} | **Blockers:** ${card.setup_readiness_blocker_count ?? 0} | **Warnings:** ${card.setup_readiness_warning_count ?? 0}`);
+    lines.push(
+      `- **${card.primary_context_label}:** ${card.setup_readiness_primary_blocker} | **${es ? "Bloqueadores" : "Blockers"}:** ${card.setup_readiness_blocker_count ?? 0} | **${es ? "Advertencias" : "Warnings"}:** ${card.setup_readiness_warning_count ?? 0}`,
+    );
+    if (card.primary_context_note) lines.push(`- _${card.primary_context_note}_`);
     lines.push(`- **Outcome (research):** ${card.outcome} | **Direction:** ${card.direction} | **Entry:** ${card.entry_time ?? "n/a"}`);
     lines.push(`- **IFVG:** ${card.checklist_ifvg_grade} | **Target:** ${card.checklist_target_grade} | **Env:** ${card.checklist_execution_environment_grade} | **Discipline:** ${card.checklist_discipline_grade}`);
     lines.push(`- **Entry family:** ${card.checklist_entry_candidate_family}`);
@@ -786,16 +952,19 @@ export function renderSetupReadinessReportHtml(report: SetupReadinessReport): st
 <meta charset="utf-8"/>
 <title>Setup Readiness Report — ${report.header.bundle_name}</title>
 <style>
-body{font-family:system-ui,sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem;line-height:1.5}
-h1,h2,h3{color:#1a1a2e}
+body{font-family:system-ui,sans-serif;max-width:960px;margin:2rem auto;padding:0 1.25rem 3rem;line-height:1.55;color:#1a1a2e}
+h1{margin-top:0;padding-bottom:.5rem;border-bottom:2px solid #e0e0e8}
+h2{margin-top:2rem;padding-top:.25rem}
+h3{margin-top:1.25rem;color:#2d2d44}
+pre{white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace;font-size:.92rem;background:#fafafc;border:1px solid #e8e8ef;border-radius:6px;padding:1rem 1.1rem;line-height:1.45}
 table{border-collapse:collapse;width:100%;margin:1rem 0}
-th,td{border:1px solid #ccc;padding:.4rem .6rem;text-align:left}
-blockquote{background:#f5f5f5;border-left:4px solid #666;padding:.5rem 1rem}
-li{margin:.25rem 0}
+th,td{border:1px solid #ccc;padding:.45rem .65rem;text-align:left}
+blockquote{background:#f5f5f5;border-left:4px solid #666;padding:.5rem 1rem;margin:1rem 0}
+li{margin:.35rem 0}
 </style>
 </head>
 <body>
-<pre style="white-space:pre-wrap;font-family:inherit">${escaped}</pre>
+<pre>${escaped}</pre>
 </body>
 </html>
 `;

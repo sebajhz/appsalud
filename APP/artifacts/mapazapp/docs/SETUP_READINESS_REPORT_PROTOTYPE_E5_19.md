@@ -81,8 +81,15 @@ Opciones:
 
 ---
 
+## E5.19.2 — UX polish (presentación)
+
+- [`SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md`](./SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md) — aliases warnings, headings, example dedup, component table, HTML spacing.
+- **Sin** cambios de cálculo ni MQL5.
+
+---
+
 ## Siguiente recomendado
 
-**E5.19.2** — report UX polish (aliases warnings, markdown headings, example dedup) — ver observaciones en evidencia E5.19.1.
+**E5.19.3** — evidencia operador post E5.19.2 (re-run SET001).
 
 Alternativas: **E5.18.6** severity audit, **E5.18.7** per-symbol comparison, **E5.20** BridgeEA consumption plan.

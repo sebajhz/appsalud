@@ -152,9 +152,11 @@ Los artefactos generados permanecen **untracked** / `*_DO_NOT_COMMIT` — solo e
 
 ---
 
-## E5.19.2 — Polish UX (no bloqueante)
+## E5.19.2 — Polish UX (cerrado en repo)
 
-Observaciones de presentación para un hito futuro **E5.19.2** — **no** invalidan E5.19.1:
+Los ítems siguientes se documentaron como no bloqueantes en E5.19.1 y se corrigieron en **E5.19.2** — [`SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md`](./SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md). **Re-run operador recomendado:** E5.19.3.
+
+Observaciones originales (referencia histórica):
 
 1. **Warning leaderboard — aliases duplicados:** el ranking muestra pares `checklist_*` y token corto (`target_before_liquidity` / `checklist_target_before_liquidity`, etc.). Futuro: normalizar aliases en una sola etiqueta UI.
 2. **Markdown — subheading vacío:** bajo «Ranking de advertencias» aparece `###` sin título. Futuro: eliminar o etiquetar.
@@ -166,7 +168,7 @@ Observaciones de presentación para un hito futuro **E5.19.2** — **no** invali
 
 ## Siguiente recomendado
 
-- **E5.19.2** — report UX polish (ítems anteriores), o
+- **E5.19.3** — re-ejecutar evidencia operador con informe E5.19.2, o
 - **E5.18.6** severity calibration audit, **E5.18.7** per-symbol comparison, **E5.20** BridgeEA consumption plan.
 
 ---

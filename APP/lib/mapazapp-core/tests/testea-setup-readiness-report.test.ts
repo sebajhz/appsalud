@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest";
 import { importBacktestTradesFromCsv, resolveTestEaBundleLabel } from "../src/backtest-importer";
 import {
   buildTestEaSetupReadinessReportFromTexts,
+  countNormalizedSetupReadinessWarnings,
   decisionDisplayLabel,
+  normalizeSetupReadinessWarningToken,
+  renderSetupReadinessReportHtml,
   renderSetupReadinessReportMarkdown,
   setupReadinessReportToJson,
   type SetupReadinessReport,
 } from "../src/testea-setup-readiness-report";
+import type { BacktestTrade } from "../src/backtest-types";
 
 const SUMMARY_READY = JSON.stringify({
   has_setup_readiness_checklist_v1_logic: true,
@@ -165,7 +169,7 @@ describe("testea-setup-readiness-report (E5.19)", () => {
     expect(md).toContain("Rechazados");
     expect(md).toContain("Bloqueadores principales");
     expect(md).toContain("Gobernanza");
-    expect(md).toContain("no es permiso");
+    expect(md).toContain("permiso de entrada");
     expect(md).not.toMatch(/^#\s*Score:\s*\d+\s*$/m);
   });
 
@@ -235,6 +239,110 @@ describe("testea-setup-readiness-report (E5.19)", () => {
     const psWarnings = imported.warnings.filter((w) => w.code === "CSV_PARAMETER_SET_OVERRIDE");
     expect(psWarnings).toHaveLength(1);
     expect(psWarnings[0]!.message).toContain("1 row");
+  });
+
+  it("E5.19.2 normalizes warning aliases without double-counting per trade", () => {
+    expect(normalizeSetupReadinessWarningToken("checklist_target_before_liquidity")).toBe(
+      "target_before_liquidity",
+    );
+    expect(normalizeSetupReadinessWarningToken("target_before_liquidity")).toBe(
+      "target_before_liquidity",
+    );
+    expect(normalizeSetupReadinessWarningToken("checklist_overtrading_warning")).toBe(
+      "overtrading_warning",
+    );
+
+    const trade = {
+      tradeId: "t1",
+      setupReadinessReasons:
+        "checklist_target_before_liquidity|target_before_liquidity|checklist_overtrading_warning",
+    } as BacktestTrade;
+    const counts = countNormalizedSetupReadinessWarnings([trade]);
+    expect(counts.target_before_liquidity).toBe(1);
+    expect(counts.overtrading_warning).toBe(1);
+    expect(Object.keys(counts)).toHaveLength(2);
+  });
+
+  it("E5.19.2 markdown has no empty ### heading and uses aggregated warnings title", () => {
+    const csv = tradesCsv(
+      readyRow("dup", "win", {
+        score: 88,
+        decision: "reject",
+        primary: "pd_conflict",
+        reasons: "checklist_target_before_liquidity|checklist_overtrading_warning",
+      }),
+    );
+    const md = renderSetupReadinessReportMarkdown(
+      buildTestEaSetupReadinessReportFromTexts(
+        { bundleName: "w", summaryJsonText: SUMMARY_READY, tradesCsvText: csv },
+        { language: "es" },
+      ),
+    );
+    expect(md).not.toMatch(/^###\s*$/m);
+    expect(md).toContain("### Advertencias agregadas");
+    expect(md).not.toMatch(/\*\*checklist_target_before_liquidity\*\*/);
+    expect(md).toContain("TP antes que liquidez");
+    expect(md).toContain("Salud por componente");
+    expect(md).not.toMatch(/\| Blocker \|/);
+  });
+
+  it("E5.19.2 deduplicates example cards and adds category badges", () => {
+    const csv = tradesCsv(
+      readyRow("hr", "win", {
+        score: 88,
+        decision: "reject",
+        primary: "ifvg_conflict",
+        warnings: 2,
+      }),
+    );
+    const r = buildTestEaSetupReadinessReportFromTexts(
+      { bundleName: "w", summaryJsonText: SUMMARY_READY, tradesCsvText: csv },
+      { maxExamples: 10, language: "es" },
+    );
+    const ids = r.example_cards.map((c) => c.trade_id);
+    expect(new Set(ids).size).toBe(ids.length);
+    const hr = r.example_cards.find((c) => c.trade_id === "hr");
+    expect(hr?.categories).toContain("reject");
+    expect(hr?.categories).toContain("high_score_reject");
+    const md = renderSetupReadinessReportMarkdown(r);
+    expect(md).toContain("**Categorías:**");
+    expect(md).toContain("high_score_reject");
+  });
+
+  it("E5.19.2 shows main_reason when blocker_count=0 with non-none primary", () => {
+    const csv = tradesCsv(
+      readyRow("w0", "win", {
+        score: 72,
+        decision: "wait",
+        primary: "pd_conflict",
+        warnings: 1,
+      }).replace(
+        /,1,1,pd_conflict,/,
+        ",0,1,pd_conflict,",
+      ),
+    );
+    const r = buildTestEaSetupReadinessReportFromTexts(
+      { bundleName: "w", summaryJsonText: SUMMARY_READY, tradesCsvText: csv },
+      { language: "es" },
+    );
+    const card = r.example_cards.find((c) => c.trade_id === "w0");
+    expect(card?.primary_context_kind).toBe("main_reason");
+    expect(card?.primary_context_note).toContain("bloqueador duro");
+    const md = renderSetupReadinessReportMarkdown(r);
+    expect(md).toContain("Motivo principal");
+    expect(md).toContain("no contado como bloqueador duro");
+  });
+
+  it("E5.19.2 HTML still renders with improved pre styling", () => {
+    const r = buildTestEaSetupReadinessReportFromTexts({
+      bundleName: "h",
+      summaryJsonText: SUMMARY_READY,
+      tradesCsvText: tradesCsv(readyRow("t1", "win", { decision: "candidate" })),
+    });
+    const html = renderSetupReadinessReportHtml(r);
+    expect(html).toContain("<!DOCTYPE html>");
+    expect(html).toContain("ui-monospace");
+    expect(html).toContain("Gobernanza");
   });
 
   it("JSON contains governance footer and minimum display unit", () => {

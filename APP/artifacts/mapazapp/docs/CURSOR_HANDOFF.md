@@ -89,7 +89,7 @@
 - **E5.18.3 cerrado:** [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md).
 - **E5.18.4 (policy):** [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md).
 - **E5.18.5 (contract):** [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md).
-- **E5.19.1 (report evidencia):** [`SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md`](./SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md) — PASS; SET001, 1697 trades, `warnings_count=0`. Artefactos `_local_E5_19_1_*_DO_NOT_COMMIT` sin commit. **Siguiente:** E5.19.2 UX polish o E5.18.6+.
+- **E5.19.2 (report UX):** [`SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md`](./SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md) — aliases, headings, dedup examples. **Siguiente:** E5.19.3 re-run evidencia o E5.20.
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
