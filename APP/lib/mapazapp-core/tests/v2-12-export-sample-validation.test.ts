@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  findDuplicateCsvHeaders,
   inferExportSampleFileKind,
   scanExportSamplePrivacy,
   validateBridgeEaExportSample,
@@ -300,5 +301,37 @@ describe("V2-12 export sample validation", () => {
     expect(r.tradesImport?.trades[0]?.mssDetected).toBe(true);
     expect(r.tradesImport?.trades[0]?.premiumDiscountScore).toBe(14);
     expect(r.tradesImport?.trades[0]?.pdEntryZone).toBe("discount");
+  });
+
+  it("J. E5.17.1.1 — repo sample backtest_trades.csv has unique CSV headers", () => {
+    const sampleDir = join(__dirname, "../../../artifacts/mt5/experts/Mapazapp_TestEA/samples");
+    const tradesCsv = readFileSync(join(sampleDir, "backtest_trades.csv"), "utf8");
+    const headerLine = tradesCsv.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+    expect(findDuplicateCsvHeaders(headerLine)).toEqual([]);
+  });
+
+  it("K. E5.17.1.1 — duplicate fvg_ce_price header is rejected (DUPLICATE_CSV_HEADER)", () => {
+    const headerLine = V2_12_TESTEA_BACKTEST_TRADES_CSV.split(/\r?\n/)[0] ?? "";
+    const dupHeader = headerLine.includes("fvg_ce_price")
+      ? headerLine.replace("fvg_ce_price", "fvg_ce_price,fvg_ce_price")
+      : `${headerLine},fvg_ce_price,fvg_ce_price`;
+    expect(findDuplicateCsvHeaders(dupHeader).some((d) => d.name === "fvg_ce_price" && d.count === 2)).toBe(
+      true,
+    );
+    const r = validateTestEaExportSample(
+      {
+        bundleKind: "testea_export_bundle",
+        files: [
+          { fileName: "backtest_summary.json", text: V2_12_TESTEA_E342_SUMMARY_JSON },
+          { fileName: "backtest_trades.csv", text: `${dupHeader}\n` },
+        ],
+        privacyMode: "relaxed",
+      },
+      testEaImportOpts,
+    );
+    expect(r.status).toBe("invalid");
+    expect(r.diagnostics.some((d) => d.code === "DUPLICATE_CSV_HEADER" && d.detail === "fvg_ce_price")).toBe(
+      true,
+    );
   });
 });

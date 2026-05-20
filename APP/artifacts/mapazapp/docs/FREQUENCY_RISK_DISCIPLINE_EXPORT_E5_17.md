@@ -2,7 +2,7 @@
 
 **Status:** Export-only diagnostic (TestEA). **Does not** change official entry (50 % / CE), TP (fixed RR2), outcomes, gates, or live trading.
 
-**Build:** `MZP_TestEA_E5_17_0_1` (E5.17.0.1 — score bound fix; was `MZP_TestEA_E5_17`)  
+**Build:** `MZP_TestEA_E5_17_1_1` (E5.17.1.1 — CSV header cleanup; was `MZP_TestEA_E5_17_0_1`)  
 **Gobernanza:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md), [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)
 
 ---
@@ -122,14 +122,22 @@ Low-risk events may include: `disc_score`, `disc_grade`, `disc_flags` via `MapzD
 
 **Fix (`MZP_TestEA_E5_17_0_1`):** single accumulation in `MapzDiscFinalizeSummary`; `MapzDiscClampScore`; grades from bounded score. Flags/counters unchanged.
 
-**E5.17.1 smoke (operador):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md) — PASS técnico; `average_discipline_score` = 10.533883; max row = 15. **Follow-up:** E5.17.1.1 duplicate `fvg_ce_price` CSV header.
+**E5.17.1 smoke (operador):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md) — PASS técnico; `average_discipline_score` = 10.533883; max row = 15. Evidencia **sigue válida** tras E5.17.1.1.
+
+## E5.17.1.1 — Duplicate CSV header cleanup (`fvg_ce_price`)
+
+**Root cause:** `WriteTradesHeader` / `VirtualAppendTradeCsvRow` exportaban `fvg_ce_price` dos veces — bloque IFVG (E5.14) y bloque Entry Fill Feasibility (E5.13.2). Misma semántica `(fvg_low + fvg_high) / 2`.
+
+**Fix (`MZP_TestEA_E5_17_1_1`):** una sola columna canónica `fvg_ce_price` (IFVG). El bloque EFF conserva `fvg_near_edge_price`, `fvg_far_edge_price`, `entry_distance_from_ce_points`, etc. Validador repo: `DUPLICATE_CSV_HEADER`.
+
+**Compatibilidad:** PowerShell `Import-Csv`, Excel, dashboards E5.18.
 
 ---
 
 ## Operator next step
 
 1. ~~Compile / smoke E5.17.1~~ **Done** — ver evidencia E5.17.1.  
-2. **E5.17.1.1** — CSV header cleanup (`fvg_ce_price` duplicate).  
+2. ~~**E5.17.1.1** — CSV header cleanup~~ **Done** — compilar `MZP_TestEA_E5_17_1_1`; smoke ligero o `mapazapp:testea-export-validate` + `Import-Csv`.  
 3. **E5.18** — Setup Readiness Checklist.
 
 **Optimization policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md).

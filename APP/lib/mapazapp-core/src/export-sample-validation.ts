@@ -94,6 +94,42 @@ function isTestEaKind(k: ExportSampleFileKind | undefined): boolean {
   return k === "backtest_trades_csv" || k === "backtest_events_csv" || k === "backtest_summary_json";
 }
 
+/** Detect duplicate column names in a CSV header row (case-insensitive). */
+export function findDuplicateCsvHeaders(headerLine: string): { name: string; count: number }[] {
+  const trimmed = headerLine.trim();
+  if (!trimmed) return [];
+  const headers = trimmed.split(",");
+  const counts = new Map<string, number>();
+  for (const raw of headers) {
+    const key = raw.trim().toLowerCase();
+    if (!key) continue;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([name, count]) => ({ name, count }));
+}
+
+function validateCsvHeaderUniqueness(
+  fileName: string,
+  headerLine: string,
+  diagnostics: ExportSampleValidationDiagnostic[],
+): ExportSampleValidationStatus {
+  const dups = findDuplicateCsvHeaders(headerLine);
+  if (dups.length === 0) return "valid";
+  for (const { name, count } of dups) {
+    diagnostics.push(
+      exportSampleDiagnostic(
+        "error",
+        "DUPLICATE_CSV_HEADER",
+        `CSV header column "${name}" appears ${count} times (must be unique for Import-Csv / Excel)`,
+        { fileName, detail: name },
+      ),
+    );
+  }
+  return "invalid";
+}
+
 /** Privacy heuristics for sanitized samples — conservative; no disk access. */
 export function scanExportSamplePrivacy(
   files: ExportSampleFileText[],
@@ -420,6 +456,11 @@ export function validateTestEaExportSample(
     );
     status = bumpStatus(status, "valid_with_warnings");
   } else {
+    const tradesHeaderLine = tr.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+    status = bumpStatus(
+      status,
+      validateCsvHeaderUniqueness(tr.fileName, tradesHeaderLine, diagnostics),
+    );
     tradesImport = importBacktestTradesFromCsv(tr.text, testEaOptions.importOptions);
     tradeCount = tradesImport.trades.length;
     if (!tradesImport.ok) {
@@ -440,6 +481,11 @@ export function validateTestEaExportSample(
 
   const ev = byKind.get("backtest_events_csv");
   if (ev) {
+    const eventsHeaderLine = ev.text.split(/\r?\n/).find((l) => l.trim().length > 0) ?? "";
+    status = bumpStatus(
+      status,
+      validateCsvHeaderUniqueness(ev.fileName, eventsHeaderLine, diagnostics),
+    );
     eventsCsvPresent = true;
     eventsParseAttempted = true;
     const pr = parseBacktestEventsCsv(ev.text, testEaOptions.eventsParseOptions);
