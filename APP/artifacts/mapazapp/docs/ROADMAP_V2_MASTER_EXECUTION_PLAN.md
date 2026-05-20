@@ -53,7 +53,7 @@
 - **Cerrado (repo export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 - **Cerrado (research docs):** Entry candidate policy — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 - **Siguiente recomendado:** **E5.16** session/spread/volatility.
-- **E5.18.1 (smoke):** Setup Readiness Checklist V1 — PASS. **E5.19.1–E5.19.3:** report CLI + UX + evidencia pulida PASS. **E5.20 (plan):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) — alinea V2-17/V2-18 consumo read-only. **Siguiente:** E5.20.1 o E5.18.6+.
+- **E5.18.1 (smoke):** Setup Readiness Checklist V1 — PASS. **E5.19.1–E5.19.3:** report CLI + UX + evidencia pulida PASS. **E5.20.1:** [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md) — índice local CLI. **Siguiente:** E5.20.2 o E5.18.6+.
 
 ## E5.13.6.12 checkpoint context
 
@@ -304,7 +304,7 @@ Interpretation:
 - **Must not add:** watcher daemon, auto-import, hidden background scans.
 - **Validation required:** import UX/CLI flow tests + parser integration tests.
 - **Definition of done:** operator can manually import data and launch analysis reproducibly.
-- **E5.20 alignment:** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) — tracks **E5.20.1** (bundle index) y **E5.20.2** (validate + report) como primer paso CLI hacia V2-17.
+- **E5.20 alignment:** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) — **E5.20.1 done**; **E5.20.2** (validate + report) siguiente paso CLI hacia V2-17.
 
 ### V2-18 — Persistence Decision / Local SQLite Design
 

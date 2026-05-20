@@ -98,4 +98,4 @@ Opciones:
 
 Bloque **Detection / Readiness / Report V1** cerrado (E5.19.3 PASS). Plan consumo dashboard: [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 
-**Siguiente implementación recomendada:** **E5.20.1** local bundle index CLI. Alternativas: **E5.18.6** severity audit, **E5.18.7** per-symbol comparison.
+**E5.20.1 cerrado:** [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md). **Siguiente:** **E5.20.2** latest valid report generator CLI.

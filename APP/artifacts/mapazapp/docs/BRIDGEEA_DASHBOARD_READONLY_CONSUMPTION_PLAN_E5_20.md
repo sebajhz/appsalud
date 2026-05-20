@@ -7,7 +7,7 @@
 | **Checkpoint** | E5.20 — plan de arquitectura / gobernanza (docs-only) |
 | **Baseline Git** | `499843e` o posterior — `docs(mapazapp): E5.19.3 setup readiness report UX polish evidence` |
 | **Bloque cerrado upstream** | Detection / Readiness / Report V1 (E5.18 → E5.19.3) |
-| **Implementación** | **No** en este hito |
+| **Implementación** | **E5.20.1** índice CLI — ver [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); dashboard/informe batch en E5.20.2+ |
 | **Referencia contrato UI** | [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) |
 | **Referencia informe CLI** | [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md) |
 
@@ -104,7 +104,7 @@ Artefactos **soportados** para consumo futuro (dashboard, CLI índice, revisión
         backtest_trades.csv
 ```
 
-- **Raíz configurada:** ruta absoluta definida por operador o archivo de config local (futuro `E5.20.1`). No hardcodear rutas MT5 `MQL5/Files` en el core sin capa de configuración.
+- **Raíz configurada:** ruta absoluta definida por operador; CLI **`mapazapp:testea-bundle-index`** (`E5.20.1`). No hardcodear rutas MT5 `MQL5/Files` en el core sin capa de configuración.
 - **Carpeta perfil/símbolo:** agrupa campañas del mismo `symbol` + `execution_timeframe` + política de ejecución ([`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md)).
 - **Carpeta campaña:** alineada a `campaign_id` / `InpExportCampaignFolder` (E5.5.0+).
 - **Carpeta run (hoja):** contiene exactamente el triple E3.6/E4.1; puede ser anidada bajo rutas cortas de optimización ([`TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md`](./TESTEA_OPTIMIZATION_SAFE_EXPORTS_E5_5_0.md)).
@@ -338,7 +338,7 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 
 | ID | Track | Entregable | Depende de |
 |----|-------|------------|------------|
-| **E5.20.1** | Local bundle index CLI | Escaneo de raíz → `bundles.index.json`, estados valid/stale | E5.20 aprobado |
+| **E5.20.1** | Local bundle index CLI | **Done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md) | E5.20 aprobado |
 | **E5.20.2** | Latest valid report generator CLI | validate + report en un comando | E5.20.1 |
 | **E5.20.3** | Dashboard read-only data adapter | TS: JSON informe → `SetupReadinessTradeView` | E5.18.5, E5.20.2 |
 | **E5.20.4** | Dashboard mock / prototype | UI read-only sin POST | E5.20.3, aprobación PM |

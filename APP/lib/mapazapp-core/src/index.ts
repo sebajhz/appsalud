@@ -116,6 +116,7 @@ export * from "./export-sample-validation";
 export * from "./buffered-evos-export-keys";
 export * from "./ifvg-bisi-sibi-export-keys";
 export * from "./testea-export-bundle-validate";
+export * from "./testea-bundle-index";
 export * from "./testea-ambiguity-sensitivity";
 export * from "./testea-entry-variant-outcome-simulation";
 export * from "./testea-entry-variant-outcome-reconciliation";
