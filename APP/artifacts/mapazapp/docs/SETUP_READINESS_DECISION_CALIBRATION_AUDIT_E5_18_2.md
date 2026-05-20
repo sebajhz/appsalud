@@ -66,9 +66,9 @@ Script: `mapazapp:testea-setup-readiness-decision-calibration-audit`
 
 ---
 
-## Evidencia operador (E5.18.3 — pendiente)
+## Evidencia operador (E5.18.3 — cerrado)
 
-Ejecutar el CLI sobre el bundle benchmark E5.18 (`MZP_TestEA_E5_18`, `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`) y documentar en `SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`. **No** cambiar scoring/decision hasta revisión humana.
+[`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md) — PASS; bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`; 466 high-score rejects; 1196 decision overrides; checklist útil para dashboard **con explicación**. **Siguiente:** E5.18.4 decision policy refinement (docs/research).
 
 ---
 

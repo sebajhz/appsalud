@@ -86,4 +86,4 @@ Los bounds **0–15** se mantienen idénticos al smoke E5.17.1; el fix de header
 
 ## Siguiente recomendado
 
-~~**E5.18** smoke operador~~ **Done** — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) (`MZP_TestEA_E5_18`, SET001, `Import-Csv` OK). **Siguiente:** E5.18.3 evidencia operador calibration audit ([`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md)).
+~~**E5.18** smoke operador~~ **Done** — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) (`MZP_TestEA_E5_18`, SET001, `Import-Csv` OK). **Siguiente:** E5.18.4 policy refinement ([`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md)).

@@ -78,6 +78,10 @@ Trade event `details` may include: `ready_score=`, `ready_decision=`, `ready_blo
 
 [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md) — auditor research-only score/grade vs decisión; CLI `mapazapp:testea-setup-readiness-decision-calibration-audit`. **No** cambia MQL5 ni scoring.
 
+## E5.18.3 calibration evidence (operator — completed)
+
+[`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md) — PASS; SET001; decisiones no puramente score-based; dashboard OK con score+grade+decision+blockers+reasons.
+
 ## Next recommended
 
-**E5.18.3** — ejecutar auditor sobre bundle benchmark E5.18 y documentar evidencia operador (research-only).
+**E5.18.4** — Setup Readiness Decision Policy Refinement (docs/research; no MQL5 scoring/decision change yet).

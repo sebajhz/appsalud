@@ -167,4 +167,4 @@ El ejemplo de primera fila muestra **`setup_readiness_grade = A`** y **`setup_re
 
 ## Siguiente recomendado
 
-**E5.18.3** — evidencia operador del calibration audit sobre bundle SET001 (`mapazapp:testea-setup-readiness-decision-calibration-audit`). Repo E5.18.2: [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md).
+**E5.18.4** — decision policy refinement (docs/research). Evidencia calibration audit: [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md) — PASS; 466 high-score rejects explicados por override de blockers.
