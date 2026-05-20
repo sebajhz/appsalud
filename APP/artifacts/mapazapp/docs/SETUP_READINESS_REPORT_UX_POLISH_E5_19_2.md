@@ -46,11 +46,16 @@ En Markdown ES se muestran etiquetas legibles (p. ej. «TP antes que liquidez»)
 
 ---
 
+## E5.19.3 — Evidencia operador
+
+- **PASS** — [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md).
+- Artefactos: `_local_E5_19_3_setup_readiness_report_polished_DO_NOT_COMMIT/` (no commit).
+
+---
+
 ## Siguiente recomendado
 
-- **E5.19.3** — re-ejecutar evidencia operador sobre SET001 con informe pulido (artefactos `*_DO_NOT_COMMIT`), **o**
-- **E5.20** BridgeEA / dashboard consumption plan, **o**
-- **E5.18.6+** research audits.
+**E5.20** BridgeEA / dashboard consumption plan, **o** E5.18.6+ research audits.
 
 ---
 

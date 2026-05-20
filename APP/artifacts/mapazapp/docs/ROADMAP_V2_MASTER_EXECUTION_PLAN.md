@@ -53,7 +53,7 @@
 - **Cerrado (repo export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 - **Cerrado (research docs):** Entry candidate policy — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 - **Siguiente recomendado:** **E5.16** session/spread/volatility.
-- **E5.18.1 (smoke):** Setup Readiness Checklist V1 — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md); PASS; no strategy approval. **E5.19.1:** PASS. **E5.19.2:** [`SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md`](./SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md). **Siguiente:** E5.19.3 o E5.18.6+.
+- **E5.18.1 (smoke):** Setup Readiness Checklist V1 — PASS. **E5.19.1–E5.19.3:** report CLI + UX + evidencia pulida PASS — [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md). **Siguiente:** E5.20 BridgeEA/dashboard o E5.18.6+.
 
 ## E5.13.6.12 checkpoint context
 

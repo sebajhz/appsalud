@@ -88,8 +88,14 @@ Opciones:
 
 ---
 
+## E5.19.3 — Evidencia UX polish
+
+- **PASS** — [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md).
+
+---
+
 ## Siguiente recomendado
 
-**E5.19.3** — evidencia operador post E5.19.2 (re-run SET001).
+Cerrar bloque **Detection / Readiness / Report V1** (CLI + UX + evidencia SET001). Continuar roadmap: **E5.20** BridgeEA / dashboard consumption plan.
 
-Alternativas: **E5.18.6** severity audit, **E5.18.7** per-symbol comparison, **E5.20** BridgeEA consumption plan.
+Alternativas: **E5.18.6** severity audit, **E5.18.7** per-symbol comparison.

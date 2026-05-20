@@ -168,8 +168,8 @@ Observaciones originales (referencia histórica):
 
 ## Siguiente recomendado
 
-- **E5.19.3** — re-ejecutar evidencia operador con informe E5.19.2, o
-- **E5.18.6** severity calibration audit, **E5.18.7** per-symbol comparison, **E5.20** BridgeEA consumption plan.
+- ~~**E5.19.3** post UX polish.~~ **Done** — [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md).
+- **E5.20** BridgeEA consumption plan, o E5.18.6+.
 
 ---
 
