@@ -132,12 +132,14 @@ Low-risk events may include: `disc_score`, `disc_grade`, `disc_flags` via `MapzD
 
 **Compatibilidad:** PowerShell `Import-Csv`, Excel, dashboards E5.18.
 
+**Verificación operador (bundle real):** [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — PASS; `Import-Csv` OK; 1697 filas; sin headers duplicados; discipline bounds sin regresión.
+
 ---
 
 ## Operator next step
 
 1. ~~Compile / smoke E5.17.1~~ **Done** — ver evidencia E5.17.1.  
-2. ~~**E5.17.1.1** — CSV header cleanup~~ **Done** — compilar `MZP_TestEA_E5_17_1_1`; smoke ligero o `mapazapp:testea-export-validate` + `Import-Csv`.  
+2. ~~**E5.17.1.1** — CSV header cleanup + verificación bundle~~ **Done** — [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md).  
 3. **E5.18** — Setup Readiness Checklist.
 
 **Optimization policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md).

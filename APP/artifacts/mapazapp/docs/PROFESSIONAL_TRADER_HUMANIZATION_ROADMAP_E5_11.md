@@ -61,6 +61,7 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.17** | **Frequency / Risk / Overtrading** discipline V1 | **completed (export)** — [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) |
 | **E5.17.0.1** | **Discipline score bound fix** | **completed** — build `MZP_TestEA_E5_17_0_1` |
 | **E5.17.1** | **Discipline smoke evidence** | **completed** — [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md) |
+| **E5.17.1.1** | **CSV header cleanup + bundle verify** | **completed** — [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) |
 | **E5.17.2** | **Optimization governance + visual review** | **completed (policy)** — [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md) |
 | **E5.18** | **BridgeEA / Dashboard** setup state contract | planificado — §I |
 | **E5.19** | **Forward demo** read-only readiness | planificado — §J |
@@ -214,7 +215,7 @@ Ver [`ENTRY_VARIANT_OUTCOME_RECONCILIATION_E5_13_6_1.md`](./ENTRY_VARIANT_OUTCOM
 - **E5.16.1 (smoke):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS.
 - **E5.16.2 (audit):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md).
 - **E5.16.3 (evidence):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md).
-- **E5.17.1 (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **E5.17.1.1 (repo):** header `fvg_ce_price` único — `MZP_TestEA_E5_17_1_1`. **Siguiente:** E5.18 checklist.
+- **E5.17.1 (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **E5.17.1.1 (cerrado):** [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md). **Siguiente:** **E5.18** Setup Readiness Checklist.
 
 ### E5.13.6.9 (**cerrado — docs**)
 

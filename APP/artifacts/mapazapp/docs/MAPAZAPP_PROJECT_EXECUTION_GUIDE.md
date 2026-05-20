@@ -283,7 +283,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.17 | **Frequency / risk discipline export** | **completed** | TestEA export | [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md). | — |
 | E5.17.0.1 | **Discipline score bound fix** | **completed** | TestEA fix | Build `MZP_TestEA_E5_17_0_1`; avg score ≤ 15. | — |
 | E5.17.1 | **Discipline smoke evidence** | **completed** | Operator ST | [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). | — |
-| E5.17.1.1 | **Duplicate CSV header cleanup** | **completed** | TestEA fix | Build `MZP_TestEA_E5_17_1_1`; `DUPLICATE_CSV_HEADER` validator. | **E5.18** |
+| E5.17.1.1 | **Duplicate CSV header cleanup** | **completed** | TestEA fix + operator | Repo `20dbadf`; verify [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — `Import-Csv` OK. | **E5.18** |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |

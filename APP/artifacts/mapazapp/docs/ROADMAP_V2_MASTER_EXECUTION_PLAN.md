@@ -8,7 +8,7 @@
 ## E5.16.4 checkpoint context
 
 - **Cerrado (policy docs):** [`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — perfiles por símbolo/timeframe; XAUUSD M15 V1 = stress label; candidate B/C research only; bloque E5.16 cerrado en gobernanza.
-- **E5.17.1 (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **E5.17.1.1 (repo):** CSV header `fvg_ce_price` único — `MZP_TestEA_E5_17_1_1`. **Siguiente:** operador compile/validate; **E5.18** checklist.
+- **E5.17.1 (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **E5.17.1.1 (cerrado):** [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — bundle real, `Import-Csv` OK. **Siguiente:** **E5.18** Setup Readiness Checklist.
 
 ## E5.16.3 checkpoint context
 

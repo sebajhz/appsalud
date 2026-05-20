@@ -120,17 +120,17 @@ El contrato diagnóstico **0–15** queda respetado en summary y en el máximo p
 
 ---
 
-## Caveat — CSV header duplicado (`fvg_ce_price`) — resuelto en E5.17.1.1
+## Caveat — CSV header duplicado (`fvg_ce_price`) — cerrado E5.17.1.1
 
 **Observado en operador (este smoke, build `MZP_TestEA_E5_17_0_1`):** `Import-Csv` (PowerShell) fallaba por columna **`fvg_ce_price` duplicada** en el header.
 
-| Aspecto | Estado (smoke E5.17.1) | Tras E5.17.1.1 |
-|---------|------------------------|----------------|
-| `mapazapp:testea-export-validate` | **PASS** | **PASS** (+ `DUPLICATE_CSV_HEADER` guard) |
+| Aspecto | Estado (smoke E5.17.1) | E5.17.1.1 verificado |
+|---------|------------------------|----------------------|
+| `mapazapp:testea-export-validate` | **PASS** | **PASS** (`MZP_TestEA_E5_17_1_1`, bundle SET001) |
 | Verificación manual `discipline_score` | **PASS** | **PASS** |
-| Herramientas CSV estándar (PowerShell) | **FAIL** | **Fix** — build `MZP_TestEA_E5_17_1_1` |
+| Herramientas CSV estándar (PowerShell) | **FAIL** | **PASS** — ver [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) |
 
-**No invalida E5.17.1** como smoke de export MQL5. **E5.17.1.1** elimina el duplicado sin cambiar entry/TP/outcomes; recompilar y validar `Import-Csv` antes de E5.18.
+**No invalida E5.17.1** como smoke de export MQL5. Evidencia E5.17.1 **sigue válida** con compatibilidad CSV confirmada en bundle real.
 
 ---
 
@@ -143,12 +143,11 @@ El contrato diagnóstico **0–15** queda respetado en summary y en el máximo p
 | Cambio entry / TP / outcomes | **No** |
 | Gates / live / edge | **No** |
 | Umbrales discipline MQL5 | **Sin cambio** (solo diagnóstico) |
-| CSV duplicate header | **Resuelto E5.17.1.1** (`MZP_TestEA_E5_17_1_1`) |
+| CSV duplicate header | **Verificado** — [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) |
 
 ---
 
 ## Siguiente recomendado
 
-1. ~~**E5.17.1.1**~~ — cleanup header `fvg_ce_price` (código + validación `DUPLICATE_CSV_HEADER`).
-2. Compilar `MZP_TestEA_E5_17_1_1`; smoke ligero o `Import-Csv` en bundle nuevo.
-3. **E5.18** — Setup Readiness Checklist export contract (consumir discipline + E5.16 + target + IFVG).
+1. ~~**E5.17.1.1**~~ — cleanup + verificación bundle real (`Import-Csv` OK).
+2. **E5.18** — Setup Readiness Checklist export contract (consumir discipline + E5.16 + target + IFVG).
