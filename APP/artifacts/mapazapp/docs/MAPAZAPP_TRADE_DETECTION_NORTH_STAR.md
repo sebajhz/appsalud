@@ -454,7 +454,7 @@ Benchmark audit **PASS** — [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_
 
 ### E5.16.4 — Symbol/Timeframe Execution Profile Policy (**completed — docs only**)
 
-[`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — profile vocabulary, XAUUSD M15 policy; E5.16 block closed at policy level. **E5.17 export:** [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) (`MZP_TestEA_E5_17`). **E5.17.2 policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). **E5.17.1 smoke:** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **E5.18 export:** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md) (`MZP_TestEA_E5_18`). **Next:** smoke operador.
+[`SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md`](./SYMBOL_TIMEFRAME_EXECUTION_PROFILE_POLICY_E5_16_4.md) — profile vocabulary, XAUUSD M15 policy; E5.16 block closed at policy level. **E5.17 export:** [`FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md`](./FREQUENCY_RISK_DISCIPLINE_EXPORT_E5_17.md) (`MZP_TestEA_E5_17`). **E5.17.2 policy:** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). **E5.17.1 smoke:** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). **E5.18 export:** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md) (`MZP_TestEA_E5_18`). **E5.18.1 smoke:** [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) — PASS; caveat grade A + reject por `pd_conflict`. **Next:** E5.18.2 decision calibration audit (research-only).
 
 ### E5.16+ — Session / News / Spread / Volatility (future)
 
@@ -491,7 +491,7 @@ Export setup state for BridgeEA/dashboard:
 - invalidated
 - target reached
 
-**Future (planning only): Mapazapp Setup Readiness Checklist** — automatic read-only checklist from diagnostics (HTF bias, liquidity event, reaction/displacement, IFVG/BISI/SIBI quality, MSS/CHoCH, premium/discount, entry-family candidate, Buffered EVOS, liquidity target, session/spread/volatility, risk/discipline, final **Candidate / Wait / Reject**). Store **blocker reasons** for aggregate reporting (weak IFVG, HTF conflict, poor target, fragile entry, ambiguity, session/spread/volatility, risk discipline). **Not** a live execution panel; manual-control aligned until explicit governance approval. Detail: [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md) § futuro.
+**Setup Readiness Checklist V1 (export — done):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); smoke [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md). Read-only aggregation from diagnostics; **Candidate / Wait / Reject**; critical blockers can override high score (e.g. `pd_conflict`). **Not** a live execution panel; manual-control aligned. **Next:** E5.18.2 decision calibration audit (research-only).
 
 ### E5.19 — Forward Demo Read-only
 

@@ -70,8 +70,10 @@ Trade event `details` may include: `ready_score=`, `ready_decision=`, `ready_blo
 
 `TESTEA_BUILD = MZP_TestEA_E5_18`
 
-## Next operator step
+## E5.18.1 smoke (operator — completed)
 
-1. Compile `MZP_TestEA_E5_18` in MetaEditor.  
-2. Run Strategy Tester smoke on a known parameter set.  
-3. Validate bundle: `Import-Csv` on `backtest_trades.csv`, confirm `has_setup_readiness_checklist_v1_logic`, no duplicate headers, `setup_readiness_score` in 0–100.
+[`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) — build `MZP_TestEA_E5_18`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, **PASS** técnico; `trade_count` 1697; scores 34–94 (avg 65.06); decisions populated (0 unknown); CSV `Import-Csv` OK. **Caveat:** grade A + score 90 puede ser `reject` por blocker crítico (`pd_conflict`) — ver evidencia E5.18.1.
+
+## Next recommended
+
+**E5.18.2** — Setup Readiness Decision Calibration Audit (research-only; no scoring/decision logic change yet).

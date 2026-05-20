@@ -178,7 +178,9 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.16.1 (smoke):** [`SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md`](./SESSION_SPREAD_VOLATILITY_SMOKE_EVIDENCE_E5_16_1.md) — PASS.
 - **E5.16.2 (audit):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_E5_16_2.md).
 - **E5.16.3 (evidence):** [`EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md`](./EXECUTION_ENVIRONMENT_CALIBRATION_AUDIT_EVIDENCE_E5_16_3.md).
-- **E5.17.2 (policy):** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). **Siguiente:** E5.17.1 smoke; E5.18 checklist.
+- **E5.17.2 (policy):** [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md).
+- **E5.18 (export):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md), build **`MZP_TestEA_E5_18`**.
+- **E5.18.1 (smoke):** [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) — PASS; CSV OK; caveat grade A + reject. **Siguiente:** E5.18.2 decision calibration audit (research-only).
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -284,7 +286,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.17.0.1 | **Discipline score bound fix** | **completed** | TestEA fix | Build `MZP_TestEA_E5_17_0_1`; avg score ≤ 15. | — |
 | E5.17.1 | **Discipline smoke evidence** | **completed** | Operator ST | [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). | — |
 | E5.17.1.1 | **Duplicate CSV header cleanup** | **completed** | TestEA fix + operator | Repo `20dbadf`; verify [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — `Import-Csv` OK. | — |
-| E5.18 | **Setup Readiness Checklist V1** | **completed (repo)** | TestEA export | [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); `MZP_TestEA_E5_18`. | **smoke operador** |
+| E5.18 | **Setup Readiness Checklist V1** | **completed (repo)** | TestEA export | [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); `MZP_TestEA_E5_18`. | **E5.18.1** |
+| E5.18.1 | **Checklist smoke evidence** | **completed** | Operator ST | [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md); SET001 PASS. | **E5.18.2** |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |

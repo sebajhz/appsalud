@@ -224,9 +224,10 @@ Campaign review should **penalize** parameter sets that increase checklist **Rej
 **Next recommended sequence:**
 
 1. ~~**E5.17.1** operator smoke.~~ **Done** — [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md).
-2. **E5.17.1.1** — duplicate CSV header cleanup (`fvg_ce_price`).
-3. **E5.18** — Setup Readiness Checklist: repo [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md) (observation-only; no gate).
-3. Profile-specific calibration campaigns under this policy (XAUUSD first, then cross-symbol).
+2. ~~**E5.17.1.1** CSV header cleanup.~~ **Done** — [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md).
+3. ~~**E5.18** smoke operador.~~ **Done** — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) (observation-only; no gate).
+4. **E5.18.2** — decision calibration audit (score/grade vs reject por blockers críticos; research-only).
+5. Profile-specific calibration campaigns under this policy (XAUUSD first, then cross-symbol).
 
 ---
 
