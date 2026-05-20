@@ -70,9 +70,12 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.18.4** | **Decision policy refinement** | **completed** — [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md) |
 | **E5.18.5** | **Dashboard/report contract** | **completed** — [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) |
 | **E5.19** | **Report prototype (CLI)** | **completed** — [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md) |
-| **E5.18** | **BridgeEA / Dashboard** setup state contract | planificado — §I |
-| **E5.19** | **Forward demo** read-only readiness | planificado — §J |
-| **E5.20** | **Evidence-based gate / score** decision checkpoint | planificado — §K (solo tras evidencia multi-bundle; sin tuning ad-hoc) |
+| **E5.19.2–E5.19.3** | **Report UX polish + evidence** | **completed** — PASS SET001 |
+| **E5.20** | **BridgeEA / Dashboard read-only consumption plan** | **completed (docs)** — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) |
+| **E5.20.1–E5.20.4** | Bundle index, report CLI, dashboard adapter, mock UI | planificado — E5.20 §12 |
+| **E5.21** | Alert-only review notifications | planificado — V2-20 |
+| **E5.22** | Risk / prop firm mapping | planificado — V2-21 |
+| *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |
 
 ## Flujo humano intencional (no es señal automática)
 
@@ -391,11 +394,13 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 ## K. Compuerta basada en evidencia (checkpoint explícito)
 
-### E5.20 — Evidence-based gate / score decision checkpoint
+### E5.20 — BridgeEA / Dashboard read-only consumption (cerrado — plan)
 
-**Propósito:** punto de decisión de producto sobre **compuertas** o uso de **score** en flujo real, **solo** cuando exista evidencia acumulada (múltiples bundles, calibración E5.9.x, smokes E5.x) y criterios explícitos — **no** activar gates ni retocar umbrales desde un único run.
+**Documento:** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md). Define descubrimiento de bundles, validación E4.1, consumo de informes JSON y contrato UI E5.18.5. **Sin** implementación dashboard en E5.20.
 
-**Postura:** reconciliar con [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md) §12 y [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md) §15 antes de cualquier «aprobación» automática.
+### Evidence-based gate / score decision (diferido)
+
+**Propósito:** compuertas o score en flujo real **solo** con evidencia multi-bundle. **Postura:** reconciliar con [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md) §12 — **después** de E5.20.4 y tracks de consumo read-only.
 
 ---
 

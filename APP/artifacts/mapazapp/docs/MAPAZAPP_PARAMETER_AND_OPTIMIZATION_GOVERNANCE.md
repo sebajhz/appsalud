@@ -509,10 +509,12 @@ Current rules:
    - ~~**E5.17.1** smoke evidence.~~ **Done** — [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md).
    - ~~**E5.18** repo export.~~ **Done** — [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md) (`MZP_TestEA_E5_18`).
    - ~~**E5.18.1** operator smoke.~~ **Done** — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md); PASS; no strategy approval.
-   - ~~**E5.18.2–E5.19.1** Setup Readiness chain.~~ **Done** — report CLI [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md); evidencia [`SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md`](./SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md) PASS. **Siguiente:** E5.19.2 polish o E5.18.6+.
-   - E5.18 setup state contract (BridgeEA/dashboard)
-   - E5.19 forward demo read-only
-   - E5.20 evidence-based gate/score decision
+   - ~~**E5.18.2–E5.19.3** Setup Readiness chain.~~ **Done** — report CLI + UX + evidencia PASS.
+   - ~~**E5.20** BridgeEA/dashboard read-only consumption plan.~~ **Done** — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) (docs-only).
+   - **E5.20.1+** bundle index / report generator / dashboard adapter (implementation tracks)
+   - E5.21 alert-only review notifications; E5.22 risk/prop mapping
+   - Forward demo read-only (V2-19 / humanization §J) — separado de E5.20
+   - Evidence-based gate/score decision — **deferred** post E5.20.4
 
 ---
 

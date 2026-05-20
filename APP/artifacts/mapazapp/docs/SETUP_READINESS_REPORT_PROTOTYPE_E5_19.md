@@ -96,6 +96,6 @@ Opciones:
 
 ## Siguiente recomendado
 
-Cerrar bloque **Detection / Readiness / Report V1** (CLI + UX + evidencia SET001). Continuar roadmap: **E5.20** BridgeEA / dashboard consumption plan.
+Bloque **Detection / Readiness / Report V1** cerrado (E5.19.3 PASS). Plan consumo dashboard: [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 
-Alternativas: **E5.18.6** severity audit, **E5.18.7** per-symbol comparison.
+**Siguiente implementación recomendada:** **E5.20.1** local bundle index CLI. Alternativas: **E5.18.6** severity audit, **E5.18.7** per-symbol comparison.

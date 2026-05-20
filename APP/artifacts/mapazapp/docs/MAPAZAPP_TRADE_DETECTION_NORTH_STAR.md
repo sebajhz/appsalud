@@ -491,7 +491,7 @@ Export setup state for BridgeEA/dashboard:
 - invalidated
 - target reached
 
-**Setup Readiness Checklist V1 (export — done):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); smoke [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md). Read-only aggregation from diagnostics; **Candidate / Wait / Reject**; critical blockers can override high score (e.g. `pd_conflict`). **Not** a live execution panel; manual-control aligned. **E5.19.1 report evidence:** [`SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md`](./SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md) — PASS. **Next:** E5.19.2 UX polish or E5.18.6+.
+**Setup Readiness Checklist V1 (export — done):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); smoke [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md). Read-only aggregation from diagnostics; **Candidate / Wait / Reject**; critical blockers can override high score (e.g. `pd_conflict`). **Not** a live execution panel; manual-control aligned. **Report V1 (done):** E5.19.1–E5.19.3 PASS. **E5.20 (plan):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) — BridgeEA/dashboard read-only consumption (docs-only). **Next implementation:** E5.20.1+ or E5.18.6+.
 
 ### E5.19 — Forward Demo Read-only
 
@@ -505,17 +505,13 @@ Goal:
 - collect forward evidence
 - no live execution
 
-### E5.20 — Evidence-Based Gate / Score Decision
+### E5.20 — BridgeEA / Dashboard Read-only Consumption (plan)
 
-Decide which components can become:
+**Done (docs-only):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) — bundle discovery, validation before UI, report consumption contract (E5.18.5), operator workflow V1, tracks E5.20.1–E5.20.4. **No** dashboard implementation, gates, or live trading in E5.20.
 
-- score
-- filter
-- gate
-- alert condition
-- profile requirement
+### E5.20+ / deferred — Evidence-Based Gate / Score Decision
 
-No component becomes a hard gate without sufficient evidence.
+Decide which components can become score, filter, gate, alert condition, or profile requirement. **No** hard gate without multi-bundle evidence (post E5.20.4).
 
 ---
 

@@ -117,7 +117,8 @@ Coherente con E5.19.1 / E5.18.3 (mismo bundle, misma lógica de export).
 
 ## Siguiente recomendado
 
-- **E5.20** — BridgeEA / dashboard consumption plan (read-only), **o**
+- ~~**E5.20** BridgeEA / dashboard consumption plan (read-only).~~ **Done** — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md)
+- **E5.20.1** local bundle index CLI, **o**
 - **E5.18.6** severity calibration audit, **E5.18.7** per-symbol comparison.
 
 ---

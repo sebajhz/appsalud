@@ -359,7 +359,8 @@ Cualquier UI que no cumpla §2–§6 se considera **no conforme** con gobernanza
 | ~~**E5.19.1** operator report evidence.~~ **Done** — [`SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md`](./SETUP_READINESS_REPORT_PROTOTYPE_EVIDENCE_E5_19_1.md); PASS |
 | ~~**E5.19.2** report UX polish.~~ **Done** — [`SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md`](./SETUP_READINESS_REPORT_UX_POLISH_E5_19_2.md) |
 | ~~**E5.19.3** operator UX polish evidence.~~ **Done** — [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md); PASS |
-| **E5.20** | BridgeEA / dashboard consumption plan (read-only) |
+| ~~**E5.20** BridgeEA / dashboard consumption plan (read-only).~~ **Done** — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) (docs-only) |
+| **E5.20.1** | Local bundle index CLI | planificado en E5.20 §12 |
 
 Cambios MQL5 score/decision: solo tras gobernanza explícita post E5.18.6+.
 
