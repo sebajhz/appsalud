@@ -82,6 +82,10 @@ Trade event `details` may include: `ready_score=`, `ready_decision=`, `ready_blo
 
 [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md) — PASS; SET001; decisiones no puramente score-based; dashboard OK con score+grade+decision+blockers+reasons.
 
+## E5.18.4 decision policy (docs — completed)
+
+[`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md) — interpretación score/grade/decision, blockers, warnings, wording dashboard.
+
 ## Next recommended
 
-**E5.18.4** — Setup Readiness Decision Policy Refinement (docs/research; no MQL5 scoring/decision change yet).
+**E5.18.5** — dashboard wording / report contract (mockup/API); **no** cambio MQL5 aún.

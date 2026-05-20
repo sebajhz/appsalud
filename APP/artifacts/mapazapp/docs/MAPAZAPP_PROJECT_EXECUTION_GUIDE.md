@@ -182,7 +182,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.18 (export):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md), build **`MZP_TestEA_E5_18`**.
 - **E5.18.1 (smoke):** [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) — PASS; caveat grade A + reject.
 - **E5.18.2 (repo):** [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md).
-- **E5.18.3 (evidencia):** [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md) — PASS. **Siguiente:** E5.18.4 policy refinement.
+- **E5.18.3 (evidencia):** [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md) — PASS.
+- **E5.18.4 (policy):** [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md). **Siguiente:** E5.18.5.
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
 
@@ -289,9 +290,10 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.17.1 | **Discipline smoke evidence** | **completed** | Operator ST | [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md). | — |
 | E5.17.1.1 | **Duplicate CSV header cleanup** | **completed** | TestEA fix + operator | Repo `20dbadf`; verify [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — `Import-Csv` OK. | — |
 | E5.18 | **Setup Readiness Checklist V1** | **completed (repo)** | TestEA export | [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); `MZP_TestEA_E5_18`. | **E5.18.1** |
-| E5.18.1 | **Checklist smoke evidence** | **completed** | Operator ST | [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md); SET001 PASS. | **E5.18.4** |
-| E5.18.2 | **Decision calibration audit (repo)** | **completed** | TS CLI | [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md). | **E5.18.4** |
-| E5.18.3 | **Calibration audit evidence** | **completed** | Operator CLI | [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md); PASS. | **E5.18.4** |
+| E5.18.1 | **Checklist smoke evidence** | **completed** | Operator ST | [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md); SET001 PASS. | **E5.18.5** |
+| E5.18.2 | **Decision calibration audit (repo)** | **completed** | TS CLI | [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md). | **E5.18.5** |
+| E5.18.3 | **Calibration audit evidence** | **completed** | Operator CLI | [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md); PASS. | **E5.18.5** |
+| E5.18.4 | **Decision policy refinement** | **completed** | Docs | [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md). | **E5.18.5** |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |

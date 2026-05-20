@@ -194,7 +194,7 @@ CSV local (operador, **no commitear**):
 | Analyzer funciona en bundle benchmark | **Verificado** |
 | Consistencia score-only | **No** — override por blockers es el modelo actual |
 | Listo para dashboard/reporting | **Sí, con explicación** — mostrar score, grade, decision, primary_blocker, blocker_count, warning_count, reasons juntos |
-| Cambio scoring/decision MQL5 | **No** (hasta E5.18.4 policy / calibración futura) |
+| Cambio scoring/decision MQL5 | **No** (política E5.18.4 cerrada; cambios MQL5 solo con gobernanza) |
 | Gates / live / edge approval | **No** |
 
 ---
@@ -209,12 +209,7 @@ Caso smoke E5.18.1 (primera fila: score 90, grade A, reject, `pd_conflict`) qued
 
 ## Siguiente recomendado
 
-**E5.18.4 — Setup Readiness Decision Policy Refinement** (docs/research primero):
-
-- Definir wording de dashboard y política para high-score rejects, blockers críticos, candidate-with-warnings e interpretación score/decision.
-- **No** modificar aún scoring ni lógica de decisión MQL5.
-
-Alternativa de roadmap: continuar hitos posteriores a E5.18 según [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md) una vez cerrada la política E5.18.4.
+~~**E5.18.4** policy refinement.~~ **Done** — [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md). **Siguiente:** E5.18.5 dashboard/report contract o continuar roadmap.
 
 ---
 

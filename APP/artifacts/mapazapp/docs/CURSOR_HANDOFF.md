@@ -86,7 +86,8 @@
 - **E5.18 cerrado (repo export):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md), build **`MZP_TestEA_E5_18`**.
 - **E5.18.1 cerrado (smoke operador):** [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) — SET001, PASS; caveat grade A + reject (`pd_conflict`).
 - **E5.18.2 cerrado (repo):** [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md) — CLI `mapazapp:testea-setup-readiness-decision-calibration-audit`.
-- **E5.18.3 cerrado (evidencia operador):** [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md) — SET001 PASS; 466 high-score rejects; dashboard con explicación. **Siguiente:** E5.18.4 policy refinement (docs).
+- **E5.18.3 cerrado:** [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md).
+- **E5.18.4 cerrado (policy):** [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md). **Siguiente:** E5.18.5 dashboard/report contract o roadmap.
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)
