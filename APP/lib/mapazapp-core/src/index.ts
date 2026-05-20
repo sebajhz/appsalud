@@ -124,6 +124,7 @@ export * from "./testea-entry-edge-robustness-audit";
 export * from "./testea-liquidity-target-realism-audit";
 export * from "./testea-execution-environment-calibration-audit";
 export * from "./testea-setup-readiness-decision-calibration-audit";
+export * from "./testea-setup-readiness-report";
 export * from "./frequency-risk-discipline-export-keys";
 export * from "./testea-score-calibration";
 export * from "./export-sample-validation-fixtures";

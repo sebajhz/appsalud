@@ -212,6 +212,7 @@ El checklist queda **autorizado para dashboard/reporting** si se cumple la polí
 | Hito | Propósito | Notas |
 |------|-----------|-------|
 | ~~**E5.18.5** dashboard/report contract.~~ **Done** — [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) |
+| ~~**E5.19** report prototype (CLI).~~ **Done** — [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md) |
 | **E5.18.6** | Readiness severity calibration audit | Comparar severidad de blockers entre bundles; research-only |
 | **E5.18.7** | Per-symbol readiness profile comparison | XAUUSD M15 vs otros perfiles |
 | **Posterior (gobernanza)** | Cambios opcionales MQL5 score/decision | Solo tras aprobación explícita en [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) |

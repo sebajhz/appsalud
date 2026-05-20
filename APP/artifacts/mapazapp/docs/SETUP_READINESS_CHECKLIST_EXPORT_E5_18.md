@@ -90,6 +90,10 @@ Trade event `details` may include: `ready_score=`, `ready_decision=`, `ready_blo
 
 [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) — trade card, wording, report summary, API shape propuesta.
 
+## E5.19 report prototype (repo)
+
+[`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md) — CLI `mapazapp:testea-setup-readiness-report`.
+
 ## Next recommended
 
-**E5.18.6** severity calibration audit, **E5.18.7** per-symbol comparison, o **E5.19** dashboard prototype — según prioridad.
+**E5.19.1** evidencia operador sobre SET001, o **E5.18.6** / **E5.18.7** research.
