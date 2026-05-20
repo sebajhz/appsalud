@@ -86,6 +86,10 @@ Trade event `details` may include: `ready_score=`, `ready_decision=`, `ready_blo
 
 [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md) — interpretación score/grade/decision, blockers, warnings, wording dashboard.
 
+## E5.18.5 dashboard/report contract (docs — completed)
+
+[`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) — trade card, wording, report summary, API shape propuesta.
+
 ## Next recommended
 
-**E5.18.5** — dashboard wording / report contract (mockup/API); **no** cambio MQL5 aún.
+**E5.18.6** severity calibration audit, **E5.18.7** per-symbol comparison, o **E5.19** dashboard prototype — según prioridad.

@@ -209,7 +209,7 @@ Caso smoke E5.18.1 (primera fila: score 90, grade A, reject, `pd_conflict`) qued
 
 ## Siguiente recomendado
 
-~~**E5.18.4** policy refinement.~~ **Done** — [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md). **Siguiente:** E5.18.5 dashboard/report contract o continuar roadmap.
+~~**E5.18.4** policy.~~ [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md). ~~**E5.18.5** contract.~~ [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md). **Siguiente:** E5.18.6 / E5.18.7 / E5.19.
 
 ---
 

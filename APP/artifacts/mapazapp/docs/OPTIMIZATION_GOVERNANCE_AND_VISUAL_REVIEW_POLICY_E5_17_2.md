@@ -226,7 +226,7 @@ Campaign review should **penalize** parameter sets that increase checklist **Rej
 1. ~~**E5.17.1** operator smoke.~~ **Done** — [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md).
 2. ~~**E5.17.1.1** CSV header cleanup.~~ **Done** — [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md).
 3. ~~**E5.18** smoke operador.~~ **Done** — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) (observation-only; no gate).
-4. ~~**E5.18.2–E5.18.3** calibration audit.~~ **Done**. ~~**E5.18.4** policy refinement.~~ **Done** — [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md). **Siguiente:** E5.18.5 dashboard contract o roadmap.
+4. ~~**E5.18.2–E5.18.5** Setup Readiness chain.~~ **Done** — contract [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md). **Siguiente:** E5.18.6+ o E5.19 prototype.
 5. Profile-specific calibration campaigns under this policy (XAUUSD first, then cross-symbol).
 
 ---

@@ -509,7 +509,7 @@ Current rules:
    - ~~**E5.17.1** smoke evidence.~~ **Done** — [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md).
    - ~~**E5.18** repo export.~~ **Done** — [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md) (`MZP_TestEA_E5_18`).
    - ~~**E5.18.1** operator smoke.~~ **Done** — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md); PASS; no strategy approval.
-   - ~~**E5.18.2–E5.18.3** calibration audit.~~ **Done**. ~~**E5.18.4** policy refinement.~~ **Done** — [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md). **Siguiente:** E5.18.5 dashboard contract.
+   - ~~**E5.18.2–E5.18.5** Setup Readiness (audit + policy + dashboard contract).~~ **Done** — [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md). **Siguiente:** E5.18.6+ o E5.19.
    - E5.18 setup state contract (BridgeEA/dashboard)
    - E5.19 forward demo read-only
    - E5.20 evidence-based gate/score decision

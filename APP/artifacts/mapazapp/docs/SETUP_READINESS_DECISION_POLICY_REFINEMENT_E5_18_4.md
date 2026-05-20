@@ -203,7 +203,7 @@ Agregaciones útiles (research / gobernanza, no optimización automática de edg
 | Aprobar edge / cambiar entry / TP | **No** |
 | Rol del checklist | **Read-only decision support** — explicación humana, no ejecución |
 
-El checklist queda **autorizado para dashboard/reporting** solo si se implementa la política de display de §8–§10. Hasta entonces, tratar exports como **observación de campaña**.
+El checklist queda **autorizado para dashboard/reporting** si se cumple la política (§8–§10) y el contrato E5.18.5. Hasta implementación UI, tratar exports como **observación de campaña**.
 
 ---
 
@@ -211,7 +211,7 @@ El checklist queda **autorizado para dashboard/reporting** solo si se implementa
 
 | Hito | Propósito | Notas |
 |------|-----------|-------|
-| **E5.18.5** | Dashboard wording / report contract | Tipos UI, i18n keys, columnas mínimas en API/mockup |
+| ~~**E5.18.5** dashboard/report contract.~~ **Done** — [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) |
 | **E5.18.6** | Readiness severity calibration audit | Comparar severidad de blockers entre bundles; research-only |
 | **E5.18.7** | Per-symbol readiness profile comparison | XAUUSD M15 vs otros perfiles |
 | **Posterior (gobernanza)** | Cambios opcionales MQL5 score/decision | Solo tras aprobación explícita en [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) |

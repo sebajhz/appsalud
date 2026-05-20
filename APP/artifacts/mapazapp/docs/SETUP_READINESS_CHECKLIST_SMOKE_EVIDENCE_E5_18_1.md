@@ -167,4 +167,4 @@ El ejemplo de primera fila muestra **`setup_readiness_grade = A`** y **`setup_re
 
 ## Siguiente recomendado
 
-**E5.18.5** — dashboard/report contract. Política: [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md).
+Contrato UI: [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md). **Siguiente:** E5.18.6+ o E5.19 prototype.
