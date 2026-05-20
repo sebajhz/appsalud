@@ -74,6 +74,10 @@ Trade event `details` may include: `ready_score=`, `ready_decision=`, `ready_blo
 
 [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) — build `MZP_TestEA_E5_18`, bundle `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1`, **PASS** técnico; `trade_count` 1697; scores 34–94 (avg 65.06); decisions populated (0 unknown); CSV `Import-Csv` OK. **Caveat:** grade A + score 90 puede ser `reject` por blocker crítico (`pd_conflict`) — ver evidencia E5.18.1.
 
+## E5.18.2 decision calibration audit (repo)
+
+[`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md) — auditor research-only score/grade vs decisión; CLI `mapazapp:testea-setup-readiness-decision-calibration-audit`. **No** cambia MQL5 ni scoring.
+
 ## Next recommended
 
-**E5.18.2** — Setup Readiness Decision Calibration Audit (research-only; no scoring/decision logic change yet).
+**E5.18.3** — ejecutar auditor sobre bundle benchmark E5.18 y documentar evidencia operador (research-only).

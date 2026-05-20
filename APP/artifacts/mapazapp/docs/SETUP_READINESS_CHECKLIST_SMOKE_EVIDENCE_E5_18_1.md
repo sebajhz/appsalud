@@ -135,7 +135,7 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 
 El ejemplo de primera fila muestra **`setup_readiness_grade = A`** y **`setup_readiness_score = 90`** con **`setup_readiness_decision = reject`** y **`setup_readiness_primary_blocker = pd_conflict`**.
 
-**Interpretación:** los **blockers críticos** (p. ej. `pd_conflict`) pueden forzar **`reject`** aunque el score/grade numérico sea alto. Esto es comportamiento de **decisión por override**, no un bug de export. Documentar en revisiones humanas y en calibración futura (**E5.18.2**).
+**Interpretación:** los **blockers críticos** (p. ej. `pd_conflict`) pueden forzar **`reject`** aunque el score/grade numérico sea alto. Esto es comportamiento de **decisión por override**, no un bug de export. Auditar con CLI E5.18.2: [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md).
 
 ---
 
@@ -167,4 +167,4 @@ El ejemplo de primera fila muestra **`setup_readiness_grade = A`** y **`setup_re
 
 ## Siguiente recomendado
 
-**E5.18.2** — Setup Readiness Decision Calibration Audit (research-only): analizar consistencia score/grade vs decisión, especialmente casos con score/grade altos y `reject` por blockers críticos (`pd_conflict`, etc.). **No** cambiar aún scoring ni lógica de decisión del checklist.
+**E5.18.3** — evidencia operador del calibration audit sobre bundle SET001 (`mapazapp:testea-setup-readiness-decision-calibration-audit`). Repo E5.18.2: [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md).

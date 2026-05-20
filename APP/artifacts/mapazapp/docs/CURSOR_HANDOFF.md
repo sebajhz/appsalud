@@ -84,7 +84,8 @@
 - **E5.17.1 cerrado (smoke):** [`FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md`](./FREQUENCY_RISK_DISCIPLINE_SMOKE_EVIDENCE_E5_17_1.md) — `MZP_TestEA_E5_17_0_1`, bundle SET001, PASS; avg score 10.53; max 15.
 - **E5.17.1.1 cerrado (repo + operador):** [`CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md`](./CSV_HEADER_CLEANUP_VERIFICATION_E5_17_1_1.md) — `MZP_TestEA_E5_17_1_1`, SET001, `Import-Csv` OK, sin headers duplicados.
 - **E5.18 cerrado (repo export):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md), build **`MZP_TestEA_E5_18`**.
-- **E5.18.1 cerrado (smoke operador):** [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) — SET001, PASS; avg score 65.06; 0 unknown decisions; CSV OK; caveat grade A + reject (`pd_conflict`). **Siguiente:** E5.18.2 decision calibration audit (research-only).
+- **E5.18.1 cerrado (smoke operador):** [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md) — SET001, PASS; caveat grade A + reject (`pd_conflict`).
+- **E5.18.2 cerrado (repo):** [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md) — CLI `mapazapp:testea-setup-readiness-decision-calibration-audit`. **Siguiente:** E5.18.3 evidencia operador sobre bundle SET001.
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
 ## Phase A0 / A1 — governance (testing / MT5 / runtime docs)

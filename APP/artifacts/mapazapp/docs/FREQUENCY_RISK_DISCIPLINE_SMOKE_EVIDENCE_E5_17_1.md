@@ -151,4 +151,4 @@ El contrato diagnóstico **0–15** queda respetado en summary y en el máximo p
 
 1. ~~**E5.17.1.1**~~ — cleanup + verificación bundle real (`Import-Csv` OK).
 2. ~~**E5.18** smoke operador~~ **Done** — [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md).
-3. **E5.18.2** — Setup Readiness Decision Calibration Audit (research-only).
+3. ~~**E5.18.2** Setup Readiness Decision Calibration Audit.~~ **Repo done** — [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md). **Siguiente:** E5.18.3 evidencia operador.
