@@ -338,8 +338,8 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 
 | ID | Track | Entregable | Depende de |
 |----|-------|------------|------------|
-| **E5.20.1** | Local bundle index CLI | **Done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); smoke operador: re-run tras **E5.20.1.1** | E5.20 aprobado |
-| **E5.20.1.1** | Index read-only derivation fix | `deriveTestEaBundleSafetyPosture` — alinea con export-validate | E5.20.1 |
+| **E5.20.1** | Local bundle index CLI | **Done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md) | E5.20 aprobado |
+| **E5.20.1.1** | Index read-only derivation fix + evidencia | **PASS** — [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) | E5.20.1 |
 | **E5.20.2** | Latest valid report generator CLI | validate + report en un comando | E5.20.1 |
 | **E5.20.3** | Dashboard read-only data adapter | TS: JSON informe → `SetupReadinessTradeView` | E5.18.5, E5.20.2 |
 | **E5.20.4** | Dashboard mock / prototype | UI read-only sin POST | E5.20.3, aprobación PM |

@@ -72,7 +72,7 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.19** | **Report prototype (CLI)** | **completed** — [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md) |
 | **E5.19.2–E5.19.3** | **Report UX polish + evidence** | **completed** — PASS SET001 |
 | **E5.20** | **BridgeEA / Dashboard read-only consumption plan** | **completed (docs)** — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) |
-| **E5.20.1** | Bundle index CLI | **done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); **E5.20.1.1** read-only derivation fix |
+| **E5.20.1** | Bundle index CLI | **done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); evidencia PASS [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) |
 | **E5.20.2–E5.20.4** | Report CLI, dashboard adapter, mock UI | planificado — E5.20 §12 |
 | **E5.21** | Alert-only review notifications | planificado — V2-20 |
 | **E5.22** | Risk / prop firm mapping | planificado — V2-21 |

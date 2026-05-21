@@ -5,7 +5,8 @@
 | Campo | Valor |
 |-------|-------|
 | **Checkpoint** | E5.20.1 — índice local de bundles; **E5.20.1.1** corrección derivación read-only |
-| **Baseline Git** | `9d9112d` (E5.20.1); fix E5.20.1.1 |
+| **Baseline Git** | `9d9112d` (E5.20.1); `b1a3850` (E5.20.1.1) |
+| **Evidencia operador** | **PASS** — [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) |
 | **Alcance** | Escaneo filesystem + `bundles.index.json` (solo metadatos) |
 | **Excluido** | Dashboard, generación de informes, MQL5, MT5, trading |
 
@@ -107,7 +108,7 @@ Si `created_at` y `mtime` empatan entre dos runs elegibles: `ambiguous_latest: t
 
 Core: `buildTestEaBundleIndex` / `indexTestEaBundleLeaf` en `@workspace/mapazapp-core` (`testea-bundle-index.ts`), reutilizando `validateTestEaExportBundleTexts`.
 
-**E5.20.1.1 — Postura read-only:** `deriveTestEaBundleSafetyPosture` (en `testea-export-bundle-validate.ts`) alinea el índice con `mapazapp:testea-export-validate`. Los summary `backtest_ea_v1` reales (p. ej. SET001 / `MZP_TestEA_E5_18`) **no** incluyen `readOnly` / `executionEnabled` en JSON; se derivan de `tester_only`, `backtest_role`, `backtest_mode`, `official_ea`, `has_real_trading_orders` y `validation.testEa.summaryOk`. Evidencia operador E5.20.1 debe **re-ejecutarse** tras este fix.
+**E5.20.1.1 — Postura read-only:** `deriveTestEaBundleSafetyPosture` (en `testea-export-bundle-validate.ts`) alinea el índice con `mapazapp:testea-export-validate`. Los summary `backtest_ea_v1` reales (p. ej. SET001 / `MZP_TestEA_E5_18`) **no** incluyen `readOnly` / `executionEnabled` en JSON; se derivan de `tester_only`, `backtest_role`, `backtest_mode`, `official_ea`, `has_real_trading_orders` y `validation.testEa.summaryOk`. Evidencia operador: [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md).
 
 Checklist consumo (alineado E5.20):
 
