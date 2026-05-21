@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { validateTestEaExportBundleTexts } from "../src/testea-export-bundle-validate";
+import {
+  deriveTestEaBundleSafetyPosture,
+  validateTestEaExportBundleTexts,
+} from "../src/testea-export-bundle-validate";
 import {
   V2_12_TESTEA_E342_EVENTS_CSV,
   V2_12_TESTEA_E342_SUMMARY_JSON,
@@ -208,6 +211,17 @@ describe("E4.1 validateTestEaExportBundleTexts", () => {
     });
     expect(r.ok).toBe(true);
     expect(r.errors).toHaveLength(0);
+  });
+
+  it("E5.20.1.1 deriveTestEaBundleSafetyPosture matches backtest_ea_v1 without readOnly fields", () => {
+    const summary = JSON.parse(V2_12_TESTEA_E342_SUMMARY_JSON) as Record<string, unknown>;
+    const posture = deriveTestEaBundleSafetyPosture(summary);
+    expect(posture.readOnly).toBe(true);
+    expect(posture.executionEnabled).toBe(false);
+    const r = validateTestEaExportBundleTexts(baseInput());
+    const fromValidation = deriveTestEaBundleSafetyPosture(summary, r);
+    expect(fromValidation.readOnly).toBe(true);
+    expect(fromValidation.executionEnabled).toBe(false);
   });
 
   it("Q. outcome-style parameter set without campaign and optimization_safe false warns", async () => {

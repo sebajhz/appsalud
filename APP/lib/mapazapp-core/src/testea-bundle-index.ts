@@ -5,6 +5,7 @@
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { resolveTestEaBundleLabel } from "./backtest-importer";
 import {
+  deriveTestEaBundleSafetyPosture,
   TESTEA_BUNDLE_STRICT_IGNORE_WARNING_CODES,
   validateTestEaExportBundleTexts,
   type TestEaBundleIssue,
@@ -128,21 +129,20 @@ function readSummaryNumber(summary: Record<string, unknown>, key: string): numbe
   return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
-export function extractReadOnlyFromSummary(summary: Record<string, unknown>): boolean {
-  if (summary.readOnly === true || summary.read_only === true) return true;
-  if (summary.readOnly === false || summary.read_only === false) return false;
-  return (
-    summary.tester_only === true &&
-    summary.backtest_role === true &&
-    summary.live_trading_enabled === false &&
-    summary.has_real_trading_orders === false
-  );
+/** @deprecated Use {@link deriveTestEaBundleSafetyPosture} with validation result. */
+export function extractReadOnlyFromSummary(
+  summary: Record<string, unknown>,
+  validation?: Pick<TestEaBundleValidationResult, "ok" | "testEa">,
+): boolean {
+  return deriveTestEaBundleSafetyPosture(summary, validation).readOnly;
 }
 
-export function extractExecutionEnabledFromSummary(summary: Record<string, unknown>): boolean {
-  if (summary.executionEnabled === true || summary.execution_enabled === true) return true;
-  if (summary.executionEnabled === false || summary.execution_enabled === false) return false;
-  return summary.live_trading_enabled === true;
+/** @deprecated Use {@link deriveTestEaBundleSafetyPosture} with validation result. */
+export function extractExecutionEnabledFromSummary(
+  summary: Record<string, unknown>,
+  validation?: Pick<TestEaBundleValidationResult, "ok" | "testEa">,
+): boolean {
+  return deriveTestEaBundleSafetyPosture(summary, validation).executionEnabled;
 }
 
 export function inferProfileIdFromPath(bundlePath: string, root: string): string | null {
@@ -301,20 +301,25 @@ function detectReportPaths(
   return { report_json_path, report_markdown_path, report_html_path };
 }
 
-function passesSafetyGates(summary: Record<string, unknown>): { ok: boolean; errors: TestEaBundleIssue[] } {
+function passesSafetyGates(
+  summary: Record<string, unknown>,
+  validation: TestEaBundleValidationResult,
+): { ok: boolean; errors: TestEaBundleIssue[] } {
+  const posture = deriveTestEaBundleSafetyPosture(summary, validation);
   const errors: TestEaBundleIssue[] = [];
-  if (!extractReadOnlyFromSummary(summary)) {
+  if (!posture.readOnly) {
     errors.push({
       level: "error",
       code: "INDEX_READ_ONLY_REQUIRED",
-      message: "summary must indicate read-only posture (readOnly/read_only or tester_only+backtest_role safe flags)",
+      message:
+        "summary must indicate read-only posture (explicit readOnly/read_only, export validation summaryOk, or backtest_ea_v1 tester flags)",
     });
   }
-  if (extractExecutionEnabledFromSummary(summary)) {
+  if (posture.executionEnabled) {
     errors.push({
       level: "error",
       code: "INDEX_EXECUTION_DISABLED_REQUIRED",
-      message: "executionEnabled/execution_enabled must be false for safe consumption",
+      message: "executionEnabled must be false for safe TestEA consumption",
     });
   }
   if (summary.has_real_trading_orders === true) {
@@ -366,11 +371,12 @@ export function indexTestEaBundleLeaf(input: TestEaBundleLeafInput): TestEaBundl
     inferProfileIdFromPath(bundlePath, root) ??
     null;
 
-  const readOnly = extractReadOnlyFromSummary(summary);
-  const executionEnabled = extractExecutionEnabledFromSummary(summary);
+  const safetyPosture = deriveTestEaBundleSafetyPosture(summary, validation);
+  const readOnly = safetyPosture.readOnly;
+  const executionEnabled = safetyPosture.executionEnabled;
   const hasRealOrders = summary.has_real_trading_orders === true;
   const hasReadiness = summary.has_setup_readiness_checklist_v1_logic === true;
-  const safety = passesSafetyGates(summary);
+  const safety = passesSafetyGates(summary, validation);
 
   const warnings = [...validation.warnings];
   const errors = [...validation.errors, ...safety.errors];

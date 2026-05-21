@@ -104,6 +104,92 @@ function isFiniteNumber(v: unknown): v is number {
  *
  * Enforces E3.6 / E4.1 bundle rules on top of `validateTestEaExportSample` (including `bundleContract` event parse).
  */
+export interface TestEaBundleSafetyPosture {
+  readOnly: boolean;
+  executionEnabled: boolean;
+}
+
+/**
+ * Derives consumption safety flags aligned with `validateTestEaExportBundleTexts` / export-validate CLI.
+ * Raw `backtest_ea_v1` summaries often omit `readOnly` / `executionEnabled`; use tester/backtest flags instead.
+ */
+export function deriveTestEaBundleSafetyPosture(
+  summary: Record<string, unknown> | null,
+  validation?: Pick<TestEaBundleValidationResult, "ok" | "testEa">,
+): TestEaBundleSafetyPosture {
+  if (!summary) {
+    return { readOnly: false, executionEnabled: true };
+  }
+
+  if (summary.readOnly === true || summary.read_only === true) {
+    return {
+      readOnly: true,
+      executionEnabled:
+        summary.executionEnabled === true || summary.execution_enabled === true,
+    };
+  }
+  if (summary.readOnly === false || summary.read_only === false) {
+    return {
+      readOnly: false,
+      executionEnabled:
+        summary.executionEnabled === true || summary.execution_enabled === true,
+    };
+  }
+  if (summary.executionEnabled === true || summary.execution_enabled === true) {
+    return { readOnly: false, executionEnabled: true };
+  }
+  if (summary.executionEnabled === false || summary.execution_enabled === false) {
+    return { readOnly: false, executionEnabled: false };
+  }
+
+  if (validation?.ok && validation.testEa.summaryOk) {
+    return { readOnly: true, executionEnabled: false };
+  }
+
+  const schema = summary.schema_version;
+  if (schema === "backtest_ea_v1") {
+    const backtestMode = summary.backtest_mode;
+    const modeOk = backtestMode === undefined || backtestMode === "virtual";
+    const liveOff = summary.live_trading_enabled !== true;
+    const readOnlyPosture =
+      summary.tester_only === true &&
+      summary.backtest_role === true &&
+      summary.official_ea === "Mapazapp_TestEA" &&
+      summary.has_real_trading_orders === false &&
+      summary.has_full_ifvg_pipeline === false &&
+      summary.has_real_ifvg_logic === true &&
+      summary.has_real_daily_bias_logic === true &&
+      modeOk &&
+      liveOff;
+    if (readOnlyPosture) {
+      return { readOnly: true, executionEnabled: false };
+    }
+  }
+
+  if (schema === "MZP_TESTEA_V1") {
+    const readOnlyPosture =
+      summary.execution_mode === "virtual_export_only" &&
+      summary.live_trading_enabled === false;
+    if (readOnlyPosture) {
+      return { readOnly: true, executionEnabled: false };
+    }
+  }
+
+  if (
+    summary.tester_only === true &&
+    summary.backtest_role === true &&
+    summary.has_real_trading_orders === false &&
+    summary.live_trading_enabled !== true
+  ) {
+    return { readOnly: true, executionEnabled: false };
+  }
+
+  return {
+    readOnly: false,
+    executionEnabled: summary.live_trading_enabled === true,
+  };
+}
+
 export function validateTestEaExportBundleTexts(
   input: TestEaBundleValidationInput,
   options?: TestEaBundleValidationOptions,

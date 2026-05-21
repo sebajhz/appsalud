@@ -11,6 +11,7 @@ import {
   SETUP_READINESS_OPTIMIZATION_PARAMETER_KEYS,
   buildSetupReadinessSummaryPlaceholders,
 } from "../src/setup-readiness-export-keys";
+import { deriveTestEaBundleSafetyPosture } from "../src/testea-export-bundle-validate";
 import {
   buildTestEaBundleIndex,
   computeLatestValidByKey,
@@ -316,5 +317,127 @@ describe("E5.20.1 testea-bundle-index", () => {
       tradesCsv: V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV,
     });
     expect(record.has_setup_readiness_checklist_v1_logic).toBe(true);
+  });
+});
+
+describe("E5.20.1.1 bundle index read-only derivation", () => {
+  it("derives readOnly/executionEnabled from backtest_ea_v1 flags when raw fields are absent", () => {
+    const summary = JSON.parse(
+      parseSummary({
+        tester_only: true,
+        backtest_role: true,
+        backtest_mode: "virtual",
+        official_ea: "Mapazapp_TestEA",
+        has_real_trading_orders: false,
+      }),
+    ) as Record<string, unknown>;
+    delete summary.readOnly;
+    delete summary.read_only;
+    delete summary.executionEnabled;
+    delete summary.execution_enabled;
+    delete summary.live_trading_enabled;
+
+    const posture = deriveTestEaBundleSafetyPosture(summary);
+    expect(posture.readOnly).toBe(true);
+    expect(posture.executionEnabled).toBe(false);
+
+    const record = indexTestEaBundleLeaf({
+      bundlePath: "/tmp/set001-like",
+      root: "/tmp",
+      summaryJson: JSON.stringify(summary),
+      eventsCsv: V2_12_TESTEA_E342_EVENTS_CSV,
+      tradesCsv: V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV,
+    });
+    expect(record.readOnly).toBe(true);
+    expect(record.executionEnabled).toBe(false);
+    expect(record.errors.some((e) => e.code === "INDEX_READ_ONLY_REQUIRED")).toBe(false);
+    expect(record.valid_status).not.toBe("invalid");
+  });
+
+  it("readiness-capable bundle without report JSON is report_missing (no INDEX_READ_ONLY_REQUIRED)", () => {
+    const e342 = JSON.parse(V2_12_TESTEA_E342_SUMMARY_JSON) as Record<string, unknown>;
+    const summaryReady = {
+      ...e342,
+      ...buildSetupReadinessSummaryPlaceholders(),
+      has_real_virtual_trade_logic: true,
+      trade_count: 0,
+      virtual_trade_count: 0,
+      ea_build: "MZP_TestEA_E5_18",
+      campaign_id: "SET001",
+      parameter_set_id: "FVG2_RR2_00",
+      optimization_parameters: Object.fromEntries(
+        SETUP_READINESS_OPTIMIZATION_PARAMETER_KEYS.map((k) => [
+          k,
+          k.includes("enabled") ? true : k.includes("score") ? 70 : 0,
+        ]),
+      ),
+    };
+    delete summaryReady.read_only;
+    delete summaryReady.execution_enabled;
+    delete summaryReady.readOnly;
+    delete summaryReady.executionEnabled;
+
+    const tradesReady = [
+      "trade_id,direction,entry_time,exit_time,entry,sl,tp,exit_price,result_r,result_money,outcome,bars_to_fill,bars_held,setup_readiness_checklist_enabled,checklist_bias_aligned,checklist_structure_ok,checklist_liquidity_event_ok,checklist_ifvg_quality_ok,checklist_ifvg_grade,checklist_mss_choch_ok,checklist_mss_choch_timing_ok,checklist_premium_discount_ok,checklist_pd_zone_valid,checklist_entry_feasible,checklist_entry_candidate_family,checklist_entry_fragility_warning,checklist_target_ok,checklist_target_grade,checklist_target_type,checklist_execution_environment_ok,checklist_execution_environment_grade,checklist_discipline_ok,checklist_discipline_grade,checklist_overtrading_warning,setup_readiness_score,setup_readiness_grade,setup_readiness_decision,setup_readiness_blocker_count,setup_readiness_warning_count,setup_readiness_primary_blocker,setup_readiness_reasons",
+    ].join("\n");
+
+    const record = indexTestEaBundleLeaf({
+      bundlePath: "/tmp/set001-like",
+      root: "/tmp",
+      summaryJson: JSON.stringify(summaryReady),
+      eventsCsv: V2_12_TESTEA_E342_EVENTS_CSV,
+      tradesCsv: tradesReady,
+    });
+    expect(record.valid_status).toBe("report_missing");
+    expect(record.readOnly).toBe(true);
+    expect(record.executionEnabled).toBe(false);
+    expect(record.errors).toHaveLength(0);
+
+    const latest = computeLatestValidByKey([record]);
+    expect(latest).toHaveLength(1);
+    expect(latest[0]?.bundle_id).toBe(record.bundle_id);
+  });
+
+  it("BUNDLE_EVENTS_LARGE warning yields valid_warnings, not invalid", () => {
+    const record = indexTestEaBundleLeaf({
+      bundlePath: "/tmp/large-events",
+      root: "/tmp",
+      summaryJson: parseSummary({
+        tester_only: true,
+        backtest_role: true,
+        has_real_trading_orders: false,
+      }),
+      eventsCsv: V2_12_TESTEA_E342_EVENTS_CSV,
+      tradesCsv: V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV,
+      eventsCsvByteLength: 2_000_000,
+    });
+    expect(record.valid_status).toBe("valid_warnings");
+    expect(record.warnings.some((w) => w.code === "BUNDLE_EVENTS_LARGE")).toBe(true);
+    expect(record.errors.some((e) => e.code === "INDEX_READ_ONLY_REQUIRED")).toBe(false);
+  });
+
+  it("unsafe live-trading posture stays invalid", () => {
+    const record = indexTestEaBundleLeaf({
+      bundlePath: "/tmp/unsafe",
+      root: "/tmp",
+      summaryJson: parseSummary({
+        tester_only: false,
+        backtest_role: false,
+        live_trading_enabled: true,
+        has_real_trading_orders: true,
+      }),
+      eventsCsv: V2_12_TESTEA_E342_EVENTS_CSV,
+      tradesCsv: V2_12_TESTEA_E342_TRADES_HEADER_ONLY_CSV,
+    });
+    expect(record.valid_status).toBe("invalid");
+    expect(record.readOnly).toBe(false);
+    expect(
+      record.errors.some(
+        (e) =>
+          e.code === "INDEX_READ_ONLY_REQUIRED" ||
+          e.code === "INDEX_NO_REAL_TRADING_ORDERS" ||
+          e.code.startsWith("TESTEA_"),
+      ),
+    ).toBe(true);
   });
 });
