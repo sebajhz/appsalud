@@ -11,7 +11,8 @@
 | **E5.22.0.1** | [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) — alineación MT5/repo/estrategia |
 | **E5.22** | [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) — PASS técnico; `MZP_TestEA_E5_18`, SET001 refrescado |
 | **E5.22.2** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md) — CLI `mapazapp:testea-setup-performance-baseline-audit` |
-| **Siguiente recomendado** | **E5.22.2.1** evidencia operador SET001 **o** **E5.22.1** |
+| **E5.22.2.1** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
+| **Siguiente recomendado** | **E5.22.4** HA measurability **o** **E5.23** optimization governance (PM) |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, MetaEditor, Strategy Tester, Telegram, email, push, gates, live trading, entry/TP, edge approval |
 
 ---
@@ -328,4 +329,4 @@ El trabajo engine inmediato (**E5.22.4**) debe identificar qué casos HA son med
 - [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md)
 - [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md)
 
-**Siguiente recomendado:** **E5.22.2.1** evidencia operador baseline audit **o** **E5.22.1** export compatibility.
+**Siguiente recomendado:** **E5.22.4** HA measurability audit **o** **E5.23** optimization governance (decisión PM). E5.22.2.1 baseline evidence — **PASS** — [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md).

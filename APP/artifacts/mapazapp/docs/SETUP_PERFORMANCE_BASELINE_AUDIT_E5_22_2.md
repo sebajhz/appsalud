@@ -5,10 +5,11 @@
 | Campo | Valor |
 |-------|-------|
 | **Checkpoint** | E5.22.2 — Setup Performance Baseline Audit (research-only) |
-| **Baseline Git** | `6f92d4a` o posterior — `docs(mapazapp): E5.22 latest TestEA MT5 ST evidence` |
+| **Baseline Git** | `ec9e5c8` o posterior — `feat(mapazapp): E5.22.2 add setup performance baseline audit` |
 | **Bundle de referencia** | SET001 — `MZP_TestEA_E5_18` — ver [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) |
 | **Implementación** | `@workspace/mapazapp-core` + CLI `@workspace/scripts` |
-| **Siguiente recomendado** | **E5.22.2.1** — evidencia operador sobre bundle SET001 |
+| **Evidencia operador** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
+| **Siguiente recomendado** | **E5.22.4** HA measurability **o** **E5.23** optimization governance (PM) |
 | **Sin cambios** | MQL5, entry, TP, gates, live, aprobación edge/25/adaptive |
 
 ---
@@ -117,7 +118,7 @@ Tras correr sobre evidencia E5.22, se esperan flags como:
 - **E5.22** — evidencia operador compile + ST.
 - **E5.22.0.1** — alineación MT5/repo; winrate ~44,77 % esperado.
 - **E5.22.1** — export compatibility (consumidores E5.18–E5.21).
-- **E5.22.2.1** — evidencia operador de esta auditoría en SET001 (siguiente).
+- **E5.22.2.1** — evidencia operador SET001 — [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS**.
 
 ---
 

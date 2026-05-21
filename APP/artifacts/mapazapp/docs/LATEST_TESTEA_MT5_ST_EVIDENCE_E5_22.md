@@ -9,7 +9,7 @@
 | **Baseline Git** | `c6c012e` o posterior — `docs(mapazapp): E5.22.0.1 align MT5 repo strategy state` |
 | **Checkpoint previo** | [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) |
 | **Decisión** | **PASS técnico** — con caveats de gobernanza (sin aprobación de estrategia) |
-| **Siguiente recomendado** | **E5.22.1** → **E5.22.2** |
+| **Siguiente recomendado** | **E5.22.4** HA measurability **o** **E5.23** optimization governance (PM) |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5 adicional, Strategy Tester adicional, gates, live, entry/TP, aprobación edge/25/adaptive |
 
 ---
@@ -447,6 +447,10 @@ Verificar que el export E5.18 actual alimenta sin rotura:
 ### E5.22.2 — Setup Performance Baseline Audit — **implementado (repo)**
 
 CLI: `mapazapp:testea-setup-performance-baseline-audit` — ver [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md).
+
+### E5.22.2.1 — Setup Performance Baseline Audit Evidence — **PASS (docs)**
+
+Evidencia operador SET001 — ver [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md). Readiness significativo; sin gate/live/edge approval.
 
 Analizar outcome/R por:
 
