@@ -184,4 +184,6 @@ Sigue **read-only**: sin MT5, sin Strategy Tester, sin trading, sin modificar vi
 - [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md)
 - [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md)
 
-**Siguiente recomendado:** **E5.21.2** — gestor de cola JSONL local (estados new/reviewed/dismissed) o decisión de roadmap PM antes de canales externos.
+**E5.21.2:** gestor de cola JSONL — [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md).
+
+**Siguiente recomendado:** **E5.21.2.1** — evidencia operador sobre cola SET001 local.

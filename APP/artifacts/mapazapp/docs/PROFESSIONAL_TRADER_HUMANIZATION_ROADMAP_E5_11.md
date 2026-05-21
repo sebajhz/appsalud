@@ -85,6 +85,7 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.21** | Alert-only review notifications | **Done (plan)** — [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md) |
 | **E5.21.1** | Alert model + formatter | **Done** — [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) |
 | **E5.21.1.1** | Formatter operator evidence | **PASS** — [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) |
+| **E5.21.2** | Alert review queue manager | **Done** — [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md) |
 | **E5.22** | Risk / prop firm mapping | planificado — V2-21 |
 | *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |
 
@@ -417,7 +418,7 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
 
-**E5.21.1.1:** evidencia **PASS**. **Siguiente:** **E5.21.2** cola JSONL o decisión roadmap PM.
+**E5.21.2:** cola JSONL local — [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md). **Siguiente:** **E5.21.2.1** evidencia operador cola SET001.
 
 ### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
 

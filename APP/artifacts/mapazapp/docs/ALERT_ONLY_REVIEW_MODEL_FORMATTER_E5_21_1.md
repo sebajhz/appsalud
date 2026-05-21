@@ -11,6 +11,7 @@
 | **Salida** | `alert_review_queue.jsonl` + `alert_review_summary.json` |
 | **Sin canales** | No Telegram, email, push, panel dashboard, MT5, trading |
 | **Evidencia operador (E5.21.1.1)** | [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) — **PASS** |
+| **Cola local (E5.21.2)** | [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md) — gestor estados JSONL |
 
 ---
 

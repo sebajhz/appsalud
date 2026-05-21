@@ -121,6 +121,7 @@ export * from "./testea-latest-valid-report";
 export * from "./dashboard-readonly-adapter";
 export * from "./dashboard-readonly-mock";
 export * from "./alert-only-review";
+export * from "./alert-review-queue";
 export * from "./testea-ambiguity-sensitivity";
 export * from "./testea-entry-variant-outcome-simulation";
 export * from "./testea-entry-variant-outcome-reconciliation";
