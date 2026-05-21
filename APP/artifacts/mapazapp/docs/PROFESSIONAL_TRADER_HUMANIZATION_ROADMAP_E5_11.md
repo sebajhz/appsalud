@@ -87,7 +87,13 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.21.1.1** | Formatter operator evidence | **PASS** — [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) |
 | **E5.21.2** | Alert review queue manager | **Done** — [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md) |
 | **E5.21.2.1** | Queue manager operator evidence | **PASS** — [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) |
-| **E5.22** | Risk / prop firm mapping | planificado — V2-21 |
+| **E5.21.2.2** | Engine-first roadmap realignment | **Done (docs)** — [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) |
+| **E5.21.3** | Dashboard notification panel | **paused (PM)** |
+| **E5.21.4** | Telegram review-only | **paused (PM)** |
+| **E5.22** | Latest TestEA compile + ST evidence refresh | **next** — motor |
+| **E5.22.4** | Humanized casebook measurability audit | planificado — HA-001…HA-010 |
+| **E5.23** | Optimization governance / symbol profiles | planificado |
+| *(diferido)* | Risk / prop firm mapping | V2-21 — no confundir con E5.22 |
 | *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |
 
 ## Flujo humano intencional (no es señal automática)
@@ -419,7 +425,7 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
 
-**E5.21.2.1:** evidencia cola **PASS**. **Siguiente:** **E5.21.3** panel read-only o **E5.21.4** Telegram (PM).
+**E5.21.2.1:** evidencia cola **PASS**. **E5.21.2.2:** realineación engine-first — E5.21.3+ pausado. **Siguiente:** **E5.22** TestEA + Strategy Tester; **E5.22.4** medibilidad HA.
 
 ### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
 

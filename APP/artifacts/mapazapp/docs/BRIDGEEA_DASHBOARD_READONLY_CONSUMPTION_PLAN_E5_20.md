@@ -362,10 +362,15 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 | **E5.21** | Alert-only review notifications | **Done (plan)** — [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md) | V2-20, **E5.20.4.2** |
 | **E5.21.1** | Alert model + formatter | **Done** — [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) | E5.21 |
 | **E5.21.1.1** | Formatter operator evidence | **PASS** — [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) | E5.21.1 |
-| **E5.22** | Risk / prop firm mapping | Account guard enriquecido | V2-21 |
-| *(diferido)* | Evidence-based gate / score decision | Compuertas solo con evidencia multi-bundle | Post E5.20.4 + calibraciones |
+| **E5.21.2.2** | Engine-first roadmap realignment | **Done (docs)** — [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) | E5.21.2.1 |
+| **E5.21.3** | Dashboard notification panel | **paused (PM)** | PM resume |
+| **E5.21.4** | Telegram review-only | **paused (PM)** | PM resume |
+| **E5.22** | Latest TestEA compile + ST evidence refresh | Motor — **next** | E5.21.2.2 |
+| **E5.23** | Optimization governance / symbol profiles | Multi-símbolo por perfil | E5.22+ |
+| *(diferido)* | Risk / prop firm mapping | V2-21 — **no** confundir con E5.22 motor |
+| *(diferido)* | Evidence-based gate / score decision | Compuertas solo con evidencia multi-bundle | Post E5.22 |
 
-**Orden recomendado:** E5.20.1 → E5.20.2 → E5.20.5 → **E5.20.6** → E5.20.3 → E5.20.4 → **E5.20.4.2 (cierre)** → E5.21.
+**Orden recomendado (post E5.21.2.2):** **E5.22** → E5.22.1…E5.22.4 → **E5.23**; E5.21.3+ solo si PM reanuda.
 
 ---
 
@@ -406,3 +411,4 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 - Handoff: [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - Humanized acceptance: [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)
 - Casebook: [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md)
+- Engine-first realignment: [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md)

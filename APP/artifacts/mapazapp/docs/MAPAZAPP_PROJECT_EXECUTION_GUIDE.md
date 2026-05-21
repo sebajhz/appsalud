@@ -186,7 +186,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.18.4 (policy):** [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md).
 - **E5.18.5 (contract):** [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md).
 - **E5.19.3 (UX evidencia):** [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md) — PASS; bloque Report V1 cerrado.
-- **E5.21.2.1 PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md). **E5.21.2:** [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md). **Siguiente:** E5.21.3 / E5.21.4 (PM).
+- **E5.21.2.1 PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md). **E5.21.2:** [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md).
+- **E5.21.2.2 (docs-only):** [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) — engine-first; E5.21.3+ pausado. **Siguiente:** **E5.22** TestEA + Strategy Tester evidence refresh.
 - **E5.20 (plan consumo):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
@@ -322,7 +323,11 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.21.1 | **Alert-only review model + formatter** | **completed** | TS CLI | [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) | E5.21.1.1 |
 | E5.21.1.1 | **Alert-only formatter operator evidence** | **completed (PASS)** | Docs | [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) | E5.21.2 |
 | E5.21.2 | **Alert review queue manager** | **completed** | TS CLI | [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md) | E5.21.2.1 |
-| E5.21.2.1 | **Alert queue manager operator evidence** | **completed (PASS)** | Docs | [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) | **E5.21.3** |
+| E5.21.2.1 | **Alert queue manager operator evidence** | **completed (PASS)** | Docs | [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) | E5.21.2.2 |
+| E5.21.2.2 | **Engine-first roadmap realignment** | **completed (docs)** | Docs | [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) | **E5.22** |
+| E5.21.3 | Dashboard notification panel (read-only) | **paused (PM)** | UI | — | PM resume |
+| E5.21.4 | Telegram review-only prototype | **paused (PM)** | Integración | — | PM resume |
+| E5.22 | **Latest TestEA compile + ST evidence refresh** | **next** | Operador + docs | E5.21.2.2 | E5.22.1 |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |

@@ -228,4 +228,4 @@ Cola E5.21.1.1 sin modificar. Sigue **read-only**: sin MT5, sin Strategy Tester,
 - [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md)
 - [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md)
 
-**Siguiente recomendado (decisión roadmap PM):** **E5.21.3** panel notificaciones dashboard read-only, o **E5.21.4** prototipo Telegram review-only — solo tras aprobación PM; no iniciar canales sin tarea explícita.
+**E5.21.2.2:** realineación engine-first — [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md). **E5.21.3 / E5.21.4** pausados hasta PM. **Siguiente recomendado:** **E5.22** Latest TestEA Compile + MT5 Strategy Tester Evidence Refresh.

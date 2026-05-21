@@ -303,9 +303,10 @@ Revisión de código en E5.21.x: grep de wording prohibido §8 y de APIs de trad
 | **E5.21.1** | Modelo de alerta + formatter TS | **Done** — [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) | E5.21.1.1 |
 | **E5.21.1.1** | Formatter operator evidence | **PASS** — [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) | E5.21.1 |
 | **E5.21.2** | Cola local en archivo (JSONL) | **Done** — [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md) | E5.21.2.1 |
-| **E5.21.2.1** | Queue manager operator evidence | **PASS** — [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) | E5.21.3 / PM |
-| **E5.21.3** | Panel notificaciones dashboard read-only | UI | PM |
-| **E5.21.4** | Prototipo Telegram review-only | Integración | PM |
+| **E5.21.2.1** | Queue manager operator evidence | **PASS** — [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) | E5.21.2.2 |
+| **E5.21.2.2** | Engine-first roadmap realignment | **Done (docs)** — [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) | **E5.22** |
+| **E5.21.3** | Panel notificaciones dashboard read-only | **paused (PM)** | PM resume |
+| **E5.21.4** | Prototipo Telegram review-only | **paused (PM)** | PM resume |
 | **E5.21.5** | Evidencia operador SET001 | Docs | PM |
 
 **E5.21 (este documento):** solo plan/contrato. **No** iniciar E5.21.1 sin tarea explícita.
@@ -328,4 +329,4 @@ Revisión de código en E5.21.x: grep de wording prohibido §8 y de APIs de trad
 
 **E5.21.2.1:** evidencia operador **PASS** — [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md).
 
-**Siguiente recomendado:** **E5.21.3** panel read-only o **E5.21.4** Telegram (decisión PM).
+**E5.21.2.2:** engine-first — E5.21.3+ **pausado** hasta PM. **Siguiente recomendado:** **E5.22** TestEA + Strategy Tester evidence refresh — [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).

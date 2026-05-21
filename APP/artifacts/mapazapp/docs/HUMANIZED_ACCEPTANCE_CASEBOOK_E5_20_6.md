@@ -552,7 +552,17 @@ El adaptador (**E5.20.3**) y el mock HTML (**E5.20.4** — [`DASHBOARD_READONLY_
 
 ---
 
-## 9. Referencias
+## 9. Próximo trabajo engine (E5.21.2.2)
+
+**E5.22.4** mapeará cada caso HA-001…HA-010 a campos MQL5 existentes con clasificación `measurable_today` / `partially_measurable` / `missing_measurement` / `TS-only` / `future BridgeEA`.
+
+Este casebook **no** se implementa en código hasta que exista evidencia export fresca (**E5.22**) y la auditoría de medibilidad. Cursor **no** inventa reglas fuera de los casos definidos aquí.
+
+Ver: [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
+
+---
+
+## 10. Referencias
 
 - [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)
 - [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md)

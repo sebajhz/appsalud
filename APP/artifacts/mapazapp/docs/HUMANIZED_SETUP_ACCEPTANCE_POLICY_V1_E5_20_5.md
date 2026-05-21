@@ -188,7 +188,17 @@ E5.21.2+  Queue manager / channels      [deferred — PM approval]
 
 ---
 
-## 9. Referencias
+## 9. Engine-first alignment (E5.21.2.2)
+
+Esta política permanece **aprobada** como gobernanza. **No** implementa aceptación en MQL5.
+
+Tras E5.21.2.2 el trabajo engine prioritario es **E5.22** (evidencia TestEA fresca) y **E5.22.4** (auditoría de medibilidad HA-001…HA-010 vs export actual). Dashboard y alertas (E5.21.3+) quedan **pausados** hasta refresh de evidencia motor.
+
+Ver: [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
+
+---
+
+## 10. Referencias
 
 - North Star: [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md)
 - Humanization roadmap: [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md)

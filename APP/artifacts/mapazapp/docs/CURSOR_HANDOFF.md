@@ -90,7 +90,8 @@
 - **E5.18.4 (policy):** [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md).
 - **E5.18.5 (contract):** [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md).
 - **E5.19.3 (UX evidencia):** [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md) — PASS; bloque Report V1 cerrado.
-- **E5.21.2.1 evidencia PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) — SET001, 12 alertas, list/review/dismiss/archive, cola original intacta. **E5.21.2:** [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md). **Siguiente:** E5.21.3 panel o E5.21.4 Telegram (PM).
+- **E5.21.2.1 evidencia PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) — SET001, 12 alertas, list/review/dismiss/archive, cola original intacta. **E5.21.2:** [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md).
+- **E5.21.2.2 (docs-only):** [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) — realineación engine-first; **E5.21.3 / E5.21.4 / canales pausados** hasta PM; prioridad 80/10/10. **Siguiente:** **E5.22** TestEA compile + Strategy Tester evidence refresh.
 - **E5.20 (plan consumo):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 

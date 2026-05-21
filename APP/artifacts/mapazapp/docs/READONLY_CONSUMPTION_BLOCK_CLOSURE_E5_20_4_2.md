@@ -97,7 +97,7 @@ E5.20 **no** autoriza ni entrega:
 |------------------|-------|
 | Trading forward en vivo | Sin `OrderSend` ni panel live |
 | Motor de alertas | **E5.21** — plan/contrato primero; sin implementación en este cierre |
-| Módulo riesgo / prop firm | **E5.22** — diferido |
+| Módulo riesgo / prop firm | **diferido** (V2-21; no confundir con **E5.22** motor) |
 | Persistencia SQLite | V2-18+ — diferido |
 | Evidencia multi-símbolo / multi-bundle | SET001 verificado; comparación amplia pendiente |
 | Gates / score como permiso de trade | Diferido — evidencia multi-bundle |
@@ -156,8 +156,9 @@ Cualquier implementación E5.21 debe validar plantillas contra esta lista antes 
 | **1** | **E5.21** | **Done (docs)** — [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md) |
 | **2** | **E5.21.1** formatter local — [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) |
 | **3** | **E5.21.1.1** evidencia PASS — [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) |
-| **4** | *(post-PM)* | E5.21.2+ cola / canales |
-| **3** | *(diferido)* | E5.22 risk/prop; gates con evidencia multi-bundle |
+| **4** | *(pausado PM)* | E5.21.3 panel / E5.21.4 Telegram — ver [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) |
+| **5** | **E5.22** | TestEA compile + Strategy Tester evidence refresh (motor) |
+| **3** | *(diferido)* | Risk/prop (V2-21); gates con evidencia multi-bundle |
 
 **No** iniciar implementación de alertas en el mismo checkpoint que este cierre (E5.20.4.2).
 

@@ -9,7 +9,8 @@
 ## E5.20.6 checkpoint context
 
 - **Cerrado (casebook docs):** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) — HA-001 … HA-010; ejemplos técnicos; `implementation_status` por caso; **sin** código; Cursor no infiere lógica fuera de casos definidos.
-- **E5.21.2.1 evidencia PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md). **Siguiente:** E5.21.3 / E5.21.4 (PM).
+- **E5.21.2.1 evidencia PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md).
+- **E5.21.2.2 (docs-only):** [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) — engine-first; E5.21.3+ pausado. **Siguiente:** **E5.22** TestEA + Strategy Tester evidence refresh.
 
 ## E5.20.5 checkpoint context
 
@@ -64,7 +65,7 @@
 - **Cerrado (repo export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 - **Cerrado (research docs):** Entry candidate policy — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 - **Siguiente recomendado:** **E5.16** session/spread/volatility.
-- **E5.21 / E5.21.1 / E5.21.1.1 / E5.21.2 / E5.21.2.1:** plan + formatter + cola JSONL + evidencias PASS. **Siguiente:** E5.21.3 o E5.21.4 (PM).
+- **E5.21 / E5.21.1 / E5.21.1.1 / E5.21.2 / E5.21.2.1:** plan + formatter + cola JSONL + evidencias PASS. **E5.21.2.2:** realineación engine-first — [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md). **Siguiente:** **E5.22** (motor); E5.21.3+ pausado.
 
 ## E5.13.6.12 checkpoint context
 
@@ -315,7 +316,7 @@ Interpretation:
 - **Must not add:** watcher daemon, auto-import, hidden background scans.
 - **Validation required:** import UX/CLI flow tests + parser integration tests.
 - **Definition of done:** operator can manually import data and launch analysis reproducibly.
-- **E5.20 alignment:** E5.20 cerrado; **E5.21.2.1** PASS; **E5.21.3+** panel/canales tras PM.
+- **E5.20 alignment:** E5.20 cerrado; **E5.21.2.1** PASS; **E5.21.2.2** engine-first; **E5.21.3+** pausado; **E5.22** motor prioritario.
 
 ### V2-18 — Persistence Decision / Local SQLite Design
 
