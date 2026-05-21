@@ -10,7 +10,8 @@
 | **Checkpoint previo** | [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) |
 | **Decisión** | **PASS técnico** — con caveats de gobernanza (sin aprobación de estrategia) |
 | **Trade model (E5.22.3)** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
-| **Siguiente recomendado** | **E5.22.4** HA measurability audit |
+| **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
+| **Siguiente recomendado** | **E5.22.4.1** o **E5.22.5** |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5 adicional, Strategy Tester adicional, gates, live, entry/TP, aprobación edge/25/adaptive |
 
 ---

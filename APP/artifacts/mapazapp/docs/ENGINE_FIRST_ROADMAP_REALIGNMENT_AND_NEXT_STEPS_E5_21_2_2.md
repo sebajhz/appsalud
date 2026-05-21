@@ -13,7 +13,8 @@
 | **E5.22.2** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md) — CLI `mapazapp:testea-setup-performance-baseline-audit` |
 | **E5.22.2.1** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
 | **E5.22.3** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
-| **Siguiente recomendado** | **E5.22.4** HA measurability audit |
+| **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
+| **Siguiente recomendado** | **E5.22.4.1** o **E5.22.5** |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, MetaEditor, Strategy Tester, Telegram, email, push, gates, live trading, entry/TP, edge approval |
 
 ---
@@ -171,9 +172,9 @@ Dashboard, informes, alertas y Telegram son **capas de soporte**. Son útiles, p
 
 Puede ser **text-first**; visual/MT5 chart objects en fase posterior.
 
-### E5.22.4 — Humanized Casebook Measurability Audit
+### E5.22.4 — Humanized Casebook Measurability Audit — **cerrado (docs)**
 
-**Objetivo:** mapear **HA-001 … HA-010** a campos actuales del export MQL5 y al trade model ([`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md)).
+**Documento:** [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md). Mapeó **HA-001 … HA-010** a campos del export MQL5 y al trade model ([`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md)).
 
 **Aclaración PM (obligatoria en E5.22.4):** la humanización futura debe poder **afectar el trade set**, no solo reporting. E5.22.4 distingue explícitamente:
 
@@ -350,4 +351,4 @@ El trabajo engine inmediato (**E5.22.4**) debe identificar qué casos HA son med
 - [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md)
 - [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md)
 
-**Siguiente recomendado:** **E5.22.4** HA measurability audit. E5.22.3 trade model — [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md). E5.22.2.1 baseline — **PASS**.
+**Siguiente recomendado:** **E5.22.4.1** (trade IDs HA) o **E5.22.5** (trade-set delta design). E5.22.4 medibilidad — [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md). E5.22.2.1 baseline — **PASS**.

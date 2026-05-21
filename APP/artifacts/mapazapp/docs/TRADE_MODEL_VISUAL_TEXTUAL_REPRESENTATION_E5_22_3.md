@@ -8,7 +8,8 @@
 | **Tipo** | Documentación de modelo — **sin implementación** |
 | **Baseline Git** | `f5f659d` o posterior — `docs(mapazapp): E5.22.2.1 setup performance baseline evidence` |
 | **Evidencia previa** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
-| **Siguiente recomendado** | **E5.22.4** — Humanized Casebook Measurability Audit (HA-001…HA-010) |
+| **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
+| **Siguiente recomendado** | **E5.22.4.1** (trade IDs HA) o **E5.22.5** (trade-set delta design) |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, gates, live, entry/TP, edge/25/adaptive, dashboard/Telegram |
 
 ---
@@ -327,7 +328,7 @@ Ninguna etapa anterior implica cambiar entry/TP ni aprobar variantes.
 
 ## 15. Relación con E5.22.4
 
-**E5.22.4 — Humanized Casebook Measurability Audit** debe:
+**E5.22.4 — Humanized Casebook Measurability Audit** — **cerrado:** [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md). El audit original debía:
 
 1. Tomar casos **HA-001…HA-010** del casebook.
 2. Mapearlos a campos disponibles en esta representación (Stage A/B/C + plantilla §8).

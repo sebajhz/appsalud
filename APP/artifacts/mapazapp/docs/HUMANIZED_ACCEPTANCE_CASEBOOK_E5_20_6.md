@@ -554,7 +554,7 @@ El adaptador (**E5.20.3**) y el mock HTML (**E5.20.4** — [`DASHBOARD_READONLY_
 
 ## 9. Próximo trabajo engine (E5.21.2.2)
 
-**E5.22.4** mapeará HA-001…HA-010 con:
+**E5.22.4** — **cerrado:** [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md). Mapeó HA-001…HA-010 con:
 
 - Clasificación técnica: `measurable_today` / `partially_measurable` / `missing_measurement` / `TS-only` / `future BridgeEA`
 - Clasificación PM (obligatoria): **measurable humanized** | **policy-only** | **could change trade set later** | **explain/report only today** | **requires new export fields**

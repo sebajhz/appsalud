@@ -10,7 +10,8 @@
 | **Implementación** | `@workspace/mapazapp-core` + CLI `@workspace/scripts` |
 | **Evidencia operador** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
 | **Trade model (E5.22.3)** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
-| **Siguiente recomendado** | **E5.22.4** HA measurability audit |
+| **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
+| **Siguiente recomendado** | **E5.22.4.1** o **E5.22.5** |
 | **Sin cambios** | MQL5, entry, TP, gates, live, aprobación edge/25/adaptive |
 
 ---
