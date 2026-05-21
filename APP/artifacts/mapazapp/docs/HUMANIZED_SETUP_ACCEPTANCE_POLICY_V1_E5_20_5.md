@@ -9,7 +9,7 @@
 | **Baseline Git** | `327c4d9` — `docs(mapazapp): E5.20.2.1 latest valid report generator evidence` |
 | **Bloque upstream cerrado** | Detection / Readiness / Report V1 (E5.11–E5.19.3) + consumo read-only E5.20 / E5.20.1 / E5.20.2 |
 | **Casebook** | **E5.20.6** — [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) (HA-001 … HA-010) |
-| **Bloquea** | **E5.20.3** (dashboard adapter) hasta revisión PM de E5.20.5 + casebook E5.20.6 |
+| **Desbloquea** | **E5.20.3** (dashboard adapter) — [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md) tras E5.20.5 + E5.20.6 |
 | **No aprueba** | Gates, live trading, edge, 25 %, adaptive, cambio entry oficial, cambio TP, scoring MQL5, decisión checklist |
 
 ---
@@ -88,7 +88,7 @@ Dimensiones explícitas:
 | **Report V1** (E5.19) | Cerrada | Explica; **no** es la humanización |
 | **Consumo read-only** (E5.20.2) | Cerrada | Entrega informes; **no** añade política de aceptación |
 | **Humanized acceptance policy** | **Esta tarea (E5.20.5)** | Marco V1 documentado; implementación en exports/UI **diferida** |
-| **Dashboard adapter** (E5.20.3) | **Pausado** | Depende de E5.20.5 + E5.18.5; no debe sonar a permiso de trade |
+| **Dashboard adapter** (E5.20.3) | **Done** | Consume informe; respeta E5.20.5 + E5.18.5; no permiso de trade |
 
 ---
 
@@ -152,8 +152,8 @@ E5.20.1   Bundle index CLI                [done]
 E5.20.2   Latest valid report CLI         [done]
 E5.20.5   Humanized acceptance policy V1  [done — governance only]
 E5.20.6   Humanized acceptance casebook   [done — HA-001 … HA-010, docs only]
-E5.20.3   Dashboard read-only adapter       [paused — resume after PM review E5.20.5/E5.20.6]
-E5.20.4   Dashboard mock / prototype      [paused — after E5.20.3]
+E5.20.3   Dashboard read-only adapter       [done — DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3]
+E5.20.4   Dashboard mock / prototype      [pending — after E5.20.3]
 E5.21+    Alerts / gates / live           [deferred — explicit governance only]
 ```
 

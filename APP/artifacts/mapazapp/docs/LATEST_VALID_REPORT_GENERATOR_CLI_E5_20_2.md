@@ -121,4 +121,4 @@ El cálculo del informe reutiliza **E5.19** sin cambiar scoring ni decisiones.
 
 ## Siguiente paso
 
-**E5.20.3** — adaptador dashboard read-only que consume `setup_readiness_report.json`.
+**E5.20.3 (done):** [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md) — CLI `mapazapp:dashboard-readonly-adapter` consume `setup_readiness_report.json` (+ optional `latest_valid_report_result.json`).

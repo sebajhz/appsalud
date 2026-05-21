@@ -77,7 +77,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.20.2** | Latest valid report CLI | **done** — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md); evidencia **PASS** [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) |
 | **E5.20.5** | **Humanized Setup Acceptance Policy V1** (governance) | **done — docs** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) |
 | **E5.20.6** | **Humanized Acceptance Casebook V1** | **done — docs** — [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md); HA-001 … HA-010 |
-| **E5.20.3–E5.20.4** | Dashboard adapter, mock UI | **pausado** — tras E5.20.5 + E5.20.6; E5.20 §12 |
+| **E5.20.3** | Dashboard read-only adapter | **done** — [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md) |
+| **E5.20.4** | Dashboard mock UI | **pendiente** — tras E5.20.3 |
 | **E5.21** | Alert-only review notifications | planificado — V2-20 |
 | **E5.22** | Risk / prop firm mapping | planificado — V2-21 |
 | *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |
@@ -411,7 +412,7 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
 
-**Siguiente:** revisión PM → **E5.20.3** (adapter) o calibración futura de política en exports (checkpoint separado con gobernanza explícita).
+**Siguiente:** **E5.20.3.1** evidencia operador con latest valid report, o **E5.20.4** mock UI.
 
 ### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
 

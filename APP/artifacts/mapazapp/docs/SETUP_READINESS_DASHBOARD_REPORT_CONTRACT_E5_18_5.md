@@ -27,7 +27,7 @@ La cadena E5.18 quedó cerrada hasta política de interpretación:
 
 ## 2. Principio de dashboard
 
-**Este contrato es capa de presentación (informe/dashboard), no la política de aceptación humanizada del setup.** La humanización discrecional (accept/wait/reject/observe/no-trade bajo condiciones imperfectas) está en **E5.20.5** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **E5.20.3** queda pausado hasta revisión de E5.20.5.
+**Este contrato es capa de presentación (informe/dashboard), no la política de aceptación humanizada del setup.** La humanización discrecional (accept/wait/reject/observe/no-trade bajo condiciones imperfectas) está en **E5.20.5** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **E5.20.3** implementa el adaptador read-only — [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md) (respeta E5.20.5 + E5.20.6; no recalcula decisión).
 
 **La UI nunca debe mostrar el score solo.**
 
@@ -364,7 +364,7 @@ Cualquier UI que no cumpla §2–§6 se considera **no conforme** con gobernanza
 | ~~**E5.20** BridgeEA / dashboard consumption plan (read-only).~~ **Done** — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) (docs-only) |
 | ~~**E5.20.1** / **E5.20.2**~~ | Bundle index + latest valid report CLI | **Done** |
 | ~~**E5.20.5**~~ | Humanized setup acceptance policy V1 | **Done** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) |
-| **E5.20.3** | Dashboard data adapter | **Pausado** — E5.20 §12 |
+| **E5.20.3** | Dashboard data adapter | **Done** — [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md) |
 
 Cambios MQL5 score/decision: solo tras gobernanza explícita post E5.18.6+.
 

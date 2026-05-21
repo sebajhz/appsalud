@@ -544,7 +544,7 @@ Aligns with E5.18 `wait` semantics (E5.18.4); humanized `wait` is observación d
 
 ## 8. Relación con E5.20.3 (dashboard)
 
-El adaptador dashboard (**E5.20.3**, pausado) debe:
+El adaptador dashboard (**E5.20.3** — [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md)) debe:
 
 - Mostrar etiqueta humanizada **solo** como texto de apoyo, junto a readiness + blockers (E5.18.5).
 - Usar wording de este casebook **sin** convertir `observe` / `accept-for-manual-review` en permiso de ejecución.
