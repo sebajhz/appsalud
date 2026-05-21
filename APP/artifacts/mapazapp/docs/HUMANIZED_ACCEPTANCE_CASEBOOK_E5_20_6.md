@@ -556,9 +556,9 @@ El adaptador (**E5.20.3**) y el mock HTML (**E5.20.4** — [`DASHBOARD_READONLY_
 
 **E5.22.4** mapeará cada caso HA-001…HA-010 a campos MQL5 existentes con clasificación `measurable_today` / `partially_measurable` / `missing_measurement` / `TS-only` / `future BridgeEA`.
 
-Este casebook **no** se implementa en código hasta que exista evidencia export fresca (**E5.22**) y la auditoría de medibilidad. Cursor **no** inventa reglas fuera de los casos definidos aquí.
+**E5.22.0.1:** export SET001 con `MZP_TestEA_E5_18` alineado; casebook sigue sin MQL5. Este casebook **no** se implementa en código hasta **E5.22.4** (medibilidad). Cursor **no** inventa reglas fuera de los casos definidos aquí.
 
-Ver: [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
+Ver: [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md), [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
 
 ---
 

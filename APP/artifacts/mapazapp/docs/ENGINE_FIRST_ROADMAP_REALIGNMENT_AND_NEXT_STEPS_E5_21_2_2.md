@@ -8,7 +8,8 @@
 | **Tipo** | Checkpoint de planificación — **sin implementación** |
 | **Baseline Git** | `400ed27` o posterior — `docs(mapazapp): E5.21.2.1 alert queue manager evidence` |
 | **Upstream cerrado** | E5.20 read-only consumption + E5.21 alert-only local tooling (formatter, cola JSONL, queue manager evidence PASS) |
-| **Siguiente recomendado** | **E5.22** — Latest TestEA Compile + MT5 Strategy Tester Evidence Refresh |
+| **E5.22.0.1** | [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) — alineación MT5/repo/estrategia (docs); MT5 **no** desincronizado; ~44,77 % esperado |
+| **Siguiente recomendado** | Evidencia E5.22 final **o** **E5.22.1** → **E5.22.2** |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, MetaEditor, Strategy Tester, Telegram, email, push, gates, live trading, entry/TP, edge approval |
 
 ---
@@ -141,15 +142,14 @@ Dashboard, informes, alertas y Telegram son **capas de soporte**. Son útiles, p
 
 ### E5.22.2 — Setup Performance Baseline Audit
 
-**Objetivo:** analizar números reales del motor:
+**Objetivo:** analizar números reales del motor (ver dimensiones obligatorias en [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) §9):
 
 - `trade_count`, fills, wins/losses
 - ambiguous, expired, unresolved
 - expectancy, drawdown (si disponible)
-- distribución readiness (candidate / wait / reject)
-- distribución blockers
-- calidad de target
-- presión de disciplina
+- outcome/R por readiness, blocker, IFVG grade, target grade, environment, discipline, session, volatility, entry status, near-miss
+- variantes 50 % vs 25/adaptive/edge (research)
+- impacto ambiguity, overtrading, drawdown y daily R
 
 ### E5.22.3 — Trade Model Visual/Textual Representation
 
@@ -239,7 +239,7 @@ Tras E5.22 el proyecto debe poder responder:
 |---|----------|
 | 1 | ¿El TestEA más reciente compila limpio? |
 | 2 | ¿Cuál es el `TESTEA_BUILD` actual? |
-| 3 | ¿Seguimos usando evidencia `MZP_TestEA_E5_18` mientras el repo avanzó? |
+| 3 | ¿Seguimos usando evidencia `MZP_TestEA_E5_18` mientras el repo avanzó? → **E5.22.0.1:** sí, coherente; avance E5.19–E5.21 no cambia outcome oficial |
 | 4 | ¿El export más reciente sigue validando? |
 | 5 | ¿Informes / dashboard / alertas consumen el export más reciente? |
 | 6 | ¿Cuáles son los números reales del setup actual? |
@@ -323,5 +323,6 @@ El trabajo engine inmediato (**E5.22.4**) debe identificar qué casos HA son med
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
 - [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md)
 - [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md)
+- [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md)
 
-**Siguiente recomendado:** **E5.22** — Latest TestEA Compile + MT5 Strategy Tester Evidence Refresh (operador + docs evidencia).
+**Siguiente recomendado:** evidencia E5.22 final (docs operador) **o** **E5.22.1** export compatibility → **E5.22.2** baseline audit.

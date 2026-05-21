@@ -192,9 +192,9 @@ E5.21.2+  Queue manager / channels      [deferred — PM approval]
 
 Esta política permanece **aprobada** como gobernanza. **No** implementa aceptación en MQL5.
 
-Tras E5.21.2.2 el trabajo engine prioritario es **E5.22** (evidencia TestEA fresca) y **E5.22.4** (auditoría de medibilidad HA-001…HA-010 vs export actual). Dashboard y alertas (E5.21.3+) quedan **pausados** hasta refresh de evidencia motor.
+**E5.22.0.1** confirma alineación MT5/repo (`MZP_TestEA_E5_18`); política humanizada sigue **sin** implementación MQL5. Trabajo engine prioritario: **E5.22.1** → **E5.22.2** → **E5.22.4** (medibilidad HA-001…HA-010). Dashboard y alertas (E5.21.3+) **pausados**.
 
-Ver: [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
+Ver: [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md), [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
 
 ---
 

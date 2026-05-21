@@ -90,7 +90,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.21.2.2** | Engine-first roadmap realignment | **Done (docs)** — [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) |
 | **E5.21.3** | Dashboard notification panel | **paused (PM)** |
 | **E5.21.4** | Telegram review-only | **paused (PM)** |
-| **E5.22** | Latest TestEA compile + ST evidence refresh | **next** — motor |
+| **E5.22.0.1** | MT5 / repo / strategy alignment check | **completed (docs)** |
+| **E5.22** | Latest TestEA compile + ST evidence refresh | evidencia operador; alineación E5.22.0.1 |
 | **E5.22.4** | Humanized casebook measurability audit | planificado — HA-001…HA-010 |
 | **E5.23** | Optimization governance / symbol profiles | planificado |
 | *(diferido)* | Risk / prop firm mapping | V2-21 — no confundir con E5.22 |
@@ -425,7 +426,7 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
 
-**E5.21.2.1:** evidencia cola **PASS**. **E5.21.2.2:** realineación engine-first — E5.21.3+ pausado. **Siguiente:** **E5.22** TestEA + Strategy Tester; **E5.22.4** medibilidad HA.
+**E5.21.2.1:** evidencia cola **PASS**. **E5.21.2.2:** realineación engine-first — E5.21.3+ pausado. **E5.22.0.1:** alineación MT5/repo — winrate ~44,77 % esperado. **Siguiente:** E5.22 evidencia final **o** E5.22.1 / E5.22.2; **E5.22.4** medibilidad HA.
 
 ### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
 

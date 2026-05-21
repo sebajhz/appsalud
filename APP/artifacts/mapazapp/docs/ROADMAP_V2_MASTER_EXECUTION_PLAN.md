@@ -10,7 +10,8 @@
 
 - **Cerrado (casebook docs):** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) — HA-001 … HA-010; ejemplos técnicos; `implementation_status` por caso; **sin** código; Cursor no infiere lógica fuera de casos definidos.
 - **E5.21.2.1 evidencia PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md).
-- **E5.21.2.2 (docs-only):** [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) — engine-first; E5.21.3+ pausado. **Siguiente:** **E5.22** TestEA + Strategy Tester evidence refresh.
+- **E5.21.2.2 (docs-only):** [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) — engine-first; E5.21.3+ pausado.
+- **E5.22.0.1 (docs-only):** [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) — MT5 no desincronizado; ~44,77 % winrate oficial esperado. **Siguiente:** E5.22 evidencia final **o** E5.22.1 → E5.22.2.
 
 ## E5.20.5 checkpoint context
 
@@ -316,7 +317,7 @@ Interpretation:
 - **Must not add:** watcher daemon, auto-import, hidden background scans.
 - **Validation required:** import UX/CLI flow tests + parser integration tests.
 - **Definition of done:** operator can manually import data and launch analysis reproducibly.
-- **E5.20 alignment:** E5.20 cerrado; **E5.21.2.1** PASS; **E5.21.2.2** engine-first; **E5.21.3+** pausado; **E5.22** motor prioritario.
+- **E5.20 alignment:** E5.20 cerrado; **E5.21.2.1** PASS; **E5.21.2.2** engine-first; **E5.22.0.1** alignment check; **E5.21.3+** pausado; **E5.22.1+** motor prioritario.
 
 ### V2-18 — Persistence Decision / Local SQLite Design
 
