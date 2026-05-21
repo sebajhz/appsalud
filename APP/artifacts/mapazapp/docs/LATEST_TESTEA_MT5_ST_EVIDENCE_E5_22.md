@@ -444,7 +444,9 @@ Verificar que el export E5.18 actual alimenta sin rotura:
 - alert formatter
 - queue manager
 
-### E5.22.2 — Setup Performance Baseline Audit
+### E5.22.2 — Setup Performance Baseline Audit — **implementado (repo)**
+
+CLI: `mapazapp:testea-setup-performance-baseline-audit` — ver [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md).
 
 Analizar outcome/R por:
 

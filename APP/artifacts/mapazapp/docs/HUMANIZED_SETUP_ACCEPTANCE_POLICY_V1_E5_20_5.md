@@ -192,7 +192,7 @@ E5.21.2+  Queue manager / channels      [deferred — PM approval]
 
 Esta política permanece **aprobada** como gobernanza. **No** implementa aceptación en MQL5.
 
-**E5.22** evidencia PASS — export SET001 `MZP_TestEA_E5_18` refrescado ([`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md)). Política humanizada sigue **sin** MQL5. Prioridad: **E5.22.1** → **E5.22.2** → **E5.22.4**. Dashboard/alertas (E5.21.3+) **pausados**.
+**E5.22.2** baseline audit implementado ([`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md)). Política humanizada sigue **sin** MQL5. Prioridad: **E5.22.2.1** evidencia **o** **E5.22.1** → **E5.22.4**. Dashboard/alertas (E5.21.3+) **pausados**.
 
 Ver: [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md), [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
 

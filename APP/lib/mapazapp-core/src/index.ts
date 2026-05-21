@@ -130,6 +130,7 @@ export * from "./testea-entry-edge-robustness-audit";
 export * from "./testea-liquidity-target-realism-audit";
 export * from "./testea-execution-environment-calibration-audit";
 export * from "./testea-setup-readiness-decision-calibration-audit";
+export * from "./testea-setup-performance-baseline-audit";
 export * from "./testea-setup-readiness-report";
 export {
   buildSetupReadinessSummaryPlaceholders,
