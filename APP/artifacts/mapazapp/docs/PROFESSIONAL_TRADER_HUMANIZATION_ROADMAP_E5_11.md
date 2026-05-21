@@ -75,8 +75,9 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.20** | **BridgeEA / Dashboard read-only consumption plan** | **completed (docs)** — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) |
 | **E5.20.1** | Bundle index CLI | **done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); evidencia PASS [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) |
 | **E5.20.2** | Latest valid report CLI | **done** — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md); evidencia **PASS** [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) |
-| **E5.20.5** | **Humanized Setup Acceptance Policy V1** (governance) | **done — docs** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); **pausa** E5.20.3 hasta revisión PM |
-| **E5.20.3–E5.20.4** | Dashboard adapter, mock UI | **pausado** — tras E5.20.5; E5.20 §12 |
+| **E5.20.5** | **Humanized Setup Acceptance Policy V1** (governance) | **done — docs** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) |
+| **E5.20.6** | **Humanized Acceptance Casebook V1** | **done — docs** — [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md); HA-001 … HA-010 |
+| **E5.20.3–E5.20.4** | Dashboard adapter, mock UI | **pausado** — tras E5.20.5 + E5.20.6; E5.20 §12 |
 | **E5.21** | Alert-only review notifications | planificado — V2-20 |
 | **E5.22** | Risk / prop firm mapping | planificado — V2-21 |
 | *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |
@@ -412,6 +413,10 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Siguiente:** revisión PM → **E5.20.3** (adapter) o calibración futura de política en exports (checkpoint separado con gobernanza explícita).
 
+### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
+
+**Documento:** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) — diez casos HA-001 … HA-010 (near-miss, valid-but-skip, discipline, target, no-chase, news caution, wait). **Sin** implementación; **sin** inferencia fuera de casos definidos.
+
 ---
 
 ## L. Compuerta basada en evidencia (checkpoint explícito)
@@ -444,4 +449,5 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md) (§12 capacidades de score — reconciliar con esta numeración E5.11+)
 - [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) (aceptación humanizada vs reporting)
+- [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) (casos HA-001 … HA-010)
 - [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md) (§15 roadmap histórico — reconciliar naming)

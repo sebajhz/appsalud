@@ -4,12 +4,17 @@
 
 - **North Star:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) — framework de descubrimiento de setup parametrizado; XAUUSD laboratorio primario, no producto «solo oro»; perfiles futuros por símbolo con evidencia.
 - **Parameter / optimization governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) — campañas controladas, anti-overfit, escalera de evidencia; **no** aprobar entry desde un bundle; edge / 25 % / adaptive experimentales; oficial **50 % / CE**; sin live / gates / ejecución real hasta aprobación explícita.
-- **Humanized setup acceptance (E5.20.5):** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) — informes/dashboard ≠ humanización; política discrecional aparte; **pausa** E5.20.3 hasta revisión PM.
+- **Humanized setup acceptance (E5.20.5):** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **Casebook (E5.20.6):** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md). **Pausa** E5.20.3 hasta revisión PM.
+
+## E5.20.6 checkpoint context
+
+- **Cerrado (casebook docs):** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) — HA-001 … HA-010; ejemplos técnicos; `implementation_status` por caso; **sin** código; Cursor no infiere lógica fuera de casos definidos.
+- **Siguiente:** E5.20.3 (**pausado**).
 
 ## E5.20.5 checkpoint context
 
 - **Cerrado (policy docs / governance):** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) — alinea North Star y roadmap E5.11+ con aceptación humanizada vs Detection/Readiness/Report V1; **sin** MQL5/TS/MT5/dashboard; entry **50 % / CE**; TP **RR2**; edge/25/adaptive research-only.
-- **Siguiente:** E5.20.3 dashboard adapter (**pausado** hasta revisión PM de E5.20.5).
+- **Siguiente:** revisión PM → E5.20.3 (tras E5.20.6).
 
 ## E5.16.4 checkpoint context
 
@@ -59,7 +64,7 @@
 - **Cerrado (repo export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 - **Cerrado (research docs):** Entry candidate policy — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 - **Siguiente recomendado:** **E5.16** session/spread/volatility.
-- **E5.18.1 (smoke):** Setup Readiness Checklist V1 — PASS. **E5.19.1–E5.19.3:** report CLI + UX PASS. **E5.20.1 / E5.20.1.1:** índice PASS. **E5.20.2 / E5.20.2.1:** latest valid report CLI + evidencia operador PASS — [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md). **E5.20.5:** humanized acceptance policy — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **Siguiente:** E5.20.3 (**pausado**).
+- **E5.18.1 (smoke):** Setup Readiness Checklist V1 — PASS. **E5.19.1–E5.19.3:** report CLI + UX PASS. **E5.20.1 / E5.20.1.1:** índice PASS. **E5.20.2 / E5.20.2.1:** latest valid report CLI + evidencia operador PASS — [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md). **E5.20.5:** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **E5.20.6:** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md). **Siguiente:** E5.20.3 (**pausado**).
 
 ## E5.13.6.12 checkpoint context
 

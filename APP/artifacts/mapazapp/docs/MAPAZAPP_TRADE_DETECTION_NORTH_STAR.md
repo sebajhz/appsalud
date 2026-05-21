@@ -52,7 +52,7 @@ The main rule:
 
 > Detection / Readiness / Report V1 explains the setup, but does not complete humanized setup acceptance. Humanization requires a separate policy defining when a trader-like system would accept, wait, reject, observe, or no-trade based on imperfect but meaningful setup conditions.
 
-**Policy checkpoint (docs-only):** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **Dashboard adapter E5.20.3** remains paused until this alignment is reviewed.
+**Policy checkpoint (docs-only):** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **Casebook V1:** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) (HA-001 … HA-010). **Dashboard adapter E5.20.3** remains paused until E5.20.5/E5.20.6 are reviewed.
 
 ---
 
@@ -519,7 +519,7 @@ Goal:
 
 ### E5.20 — BridgeEA / Dashboard Read-only Consumption (plan)
 
-**Done:** E5.20 plan + **E5.20.1** bundle index CLI ([`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md)) + **E5.20.2** latest valid report CLI. **E5.20.5 (done — docs):** humanized setup acceptance policy alignment — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **Pending (paused):** E5.20.3–E5.20.4 dashboard path until E5.20.5 reviewed. **No** live trading.
+**Done:** E5.20 plan + **E5.20.1** bundle index CLI + **E5.20.2** latest valid report CLI. **E5.20.5:** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **E5.20.6:** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md). **Pending (paused):** E5.20.3–E5.20.4. **No** live trading.
 
 ### E5.20+ / deferred — Evidence-Based Gate / Score Decision
 

@@ -353,13 +353,14 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 | **E5.20.1.1** | Index read-only derivation fix + evidencia | **PASS** — [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) | E5.20.1 |
 | **E5.20.2** | Latest valid report generator CLI | validate + report — **done**; evidencia **PASS** E5.20.2.1 | E5.20.1 |
 | **E5.20.5** | Humanized setup acceptance policy V1 | **Done — docs** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); governance only | E5.20.2 |
-| **E5.20.3** | Dashboard read-only data adapter | TS: JSON informe → `SetupReadinessTradeView` — **pausado** | E5.18.5, E5.20.2, **E5.20.5** |
+| **E5.20.6** | Humanized acceptance casebook V1 | **Done — docs** — [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md); HA-001 … HA-010 | E5.20.5 |
+| **E5.20.3** | Dashboard read-only data adapter | TS: JSON informe → `SetupReadinessTradeView` — **pausado** | E5.18.5, E5.20.2, **E5.20.5**, **E5.20.6** |
 | **E5.20.4** | Dashboard mock / prototype | UI read-only sin POST — **pausado** | E5.20.3, aprobación PM |
 | **E5.21** | Alert-only review notifications | Avisos explicativos, sin ejecución | V2-20, E5.20.4 |
 | **E5.22** | Risk / prop firm mapping | Account guard enriquecido | V2-21 |
 | *(diferido)* | Evidence-based gate / score decision | Compuertas solo con evidencia multi-bundle | Post E5.20.4 + calibraciones |
 
-**Orden recomendado:** E5.20.1 → E5.20.2 → **E5.20.5** → E5.20.3 → E5.20.4 → E5.21.
+**Orden recomendado:** E5.20.1 → E5.20.2 → E5.20.5 → **E5.20.6** → E5.20.3 → E5.20.4 → E5.21.
 
 ---
 
@@ -399,3 +400,4 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 - Guía ejecución: [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - Handoff: [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - Humanized acceptance: [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)
+- Casebook: [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md)

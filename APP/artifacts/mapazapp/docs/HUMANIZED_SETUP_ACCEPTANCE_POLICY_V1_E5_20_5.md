@@ -8,7 +8,8 @@
 | **Tipo** | Política / roadmap — **sin código** |
 | **Baseline Git** | `327c4d9` — `docs(mapazapp): E5.20.2.1 latest valid report generator evidence` |
 | **Bloque upstream cerrado** | Detection / Readiness / Report V1 (E5.11–E5.19.3) + consumo read-only E5.20 / E5.20.1 / E5.20.2 |
-| **Bloquea** | **E5.20.3** (dashboard adapter) y cualquier wording operativo de alertas/gates hasta que esta política esté acordada |
+| **Casebook** | **E5.20.6** — [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) (HA-001 … HA-010) |
+| **Bloquea** | **E5.20.3** (dashboard adapter) hasta revisión PM de E5.20.5 + casebook E5.20.6 |
 | **No aprueba** | Gates, live trading, edge, 25 %, adaptive, cambio entry oficial, cambio TP, scoring MQL5, decisión checklist |
 
 ---
@@ -149,13 +150,16 @@ La política V1 **referencia** diagnósticos existentes; **no** redefine sus umb
 E5.20     Plan consumo read-only          [done]
 E5.20.1   Bundle index CLI                [done]
 E5.20.2   Latest valid report CLI         [done]
-E5.20.5   Humanized acceptance policy V1  [done — this doc, governance only]
-E5.20.3   Dashboard read-only adapter       [paused — resume after PM review of E5.20.5]
+E5.20.5   Humanized acceptance policy V1  [done — governance only]
+E5.20.6   Humanized acceptance casebook   [done — HA-001 … HA-010, docs only]
+E5.20.3   Dashboard read-only adapter       [paused — resume after PM review E5.20.5/E5.20.6]
 E5.20.4   Dashboard mock / prototype      [paused — after E5.20.3]
 E5.21+    Alerts / gates / live           [deferred — explicit governance only]
 ```
 
-**Orden recomendado:** E5.20.5 (gobernanza) → revisión PM → **E5.20.3** → E5.20.4 → E5.21.
+**Orden recomendado:** E5.20.5 → E5.20.6 → revisión PM → **E5.20.3** → E5.20.4 → E5.21.
+
+**Casebook:** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) — patrones concretos; Cursor no infiere casos fuera de HA-001 … HA-010.
 
 ---
 
@@ -180,3 +184,4 @@ E5.21+    Alerts / gates / live           [deferred — explicit governance only
 - Entry candidate research: [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md)
 - Handoff: [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - Execution guide: [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
+- Casebook V1: [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md)
