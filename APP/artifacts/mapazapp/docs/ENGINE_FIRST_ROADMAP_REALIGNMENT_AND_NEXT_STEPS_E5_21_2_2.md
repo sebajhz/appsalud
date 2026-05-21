@@ -8,8 +8,9 @@
 | **Tipo** | Checkpoint de planificación — **sin implementación** |
 | **Baseline Git** | `400ed27` o posterior — `docs(mapazapp): E5.21.2.1 alert queue manager evidence` |
 | **Upstream cerrado** | E5.20 read-only consumption + E5.21 alert-only local tooling (formatter, cola JSONL, queue manager evidence PASS) |
-| **E5.22.0.1** | [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) — alineación MT5/repo/estrategia (docs); MT5 **no** desincronizado; ~44,77 % esperado |
-| **Siguiente recomendado** | Evidencia E5.22 final **o** **E5.22.1** → **E5.22.2** |
+| **E5.22.0.1** | [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) — alineación MT5/repo/estrategia |
+| **E5.22** | [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) — PASS técnico; `MZP_TestEA_E5_18`, SET001 refrescado |
+| **Siguiente recomendado** | **E5.22.1** → **E5.22.2** |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, MetaEditor, Strategy Tester, Telegram, email, push, gates, live trading, entry/TP, edge approval |
 
 ---
@@ -123,11 +124,9 @@ Dashboard, informes, alertas y Telegram son **capas de soporte**. Son útiles, p
 
 ## 6. Secuencia del roadmap siguiente
 
-### E5.22 — Latest TestEA Compile + MT5 Strategy Tester Evidence Refresh
+### E5.22 — Latest TestEA Compile + MT5 Strategy Tester Evidence Refresh — **cerrado (PASS)**
 
-**Objetivo:** compilar el TestEA más reciente, archivar EX5, ejecutar benchmark **SET001** (o baseline aprobado), validar export y capturar evidencia engine actual.
-
-**Entregable esperado:** documento de evidencia operador (patrón smoke/audit existente) + actualización de referencias `TESTEA_BUILD`.
+**Evidencia:** [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) — `MZP_TestEA_E5_18`, SET001 validado, winrate 0.447712, Total_R=315. Alineación: [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md).
 
 ### E5.22.1 — Latest Export Compatibility Audit
 
@@ -324,5 +323,6 @@ El trabajo engine inmediato (**E5.22.4**) debe identificar qué casos HA son med
 - [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md)
 - [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md)
 - [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md)
+- [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md)
 
-**Siguiente recomendado:** evidencia E5.22 final (docs operador) **o** **E5.22.1** export compatibility → **E5.22.2** baseline audit.
+**Siguiente recomendado:** **E5.22.1** export compatibility → **E5.22.2** baseline audit.

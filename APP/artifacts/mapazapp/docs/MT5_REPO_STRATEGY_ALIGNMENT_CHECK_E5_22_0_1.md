@@ -8,7 +8,8 @@
 | **Tipo** | Checkpoint de interpretación — **sin implementación** |
 | **Baseline Git** | `f7aa4c1` o posterior — `docs(mapazapp): E5.21.2.2 realign roadmap engine first` |
 | **Upstream** | E5.21.2.2 engine-first; evidencia operador E5.22 (compile + ST SET001) |
-| **Siguiente recomendado** | Documentación evidencia E5.22 final **o** E5.22.1 → E5.22.2 |
+| **E5.22 evidencia** | [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) — PASS técnico; confirma alineación |
+| **Siguiente recomendado** | **E5.22.1** → **E5.22.2** |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, MetaEditor, Strategy Tester, Telegram, gates, live trading, entry/TP, aprobación edge/25/adaptive |
 
 ---
@@ -261,4 +262,4 @@ Este documento es un **checkpoint docs-only** antes de evidencia E5.22 final o s
 - [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)
 - [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md)
 
-**Siguiente recomendado:** evidencia E5.22 final (docs operador) **o** **E5.22.1** export compatibility audit.
+**E5.22 cerrado:** [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md). **Siguiente:** **E5.22.1** export compatibility audit.

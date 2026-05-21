@@ -92,7 +92,8 @@
 - **E5.19.3 (UX evidencia):** [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md) — PASS; bloque Report V1 cerrado.
 - **E5.21.2.1 evidencia PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) — SET001, 12 alertas, list/review/dismiss/archive, cola original intacta. **E5.21.2:** [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md).
 - **E5.21.2.2 (docs-only):** [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) — realineación engine-first; **E5.21.3 / E5.21.4 / canales pausados** hasta PM; prioridad 80/10/10.
-- **E5.22.0.1 (docs-only):** [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) — MT5 alineado (`MZP_TestEA_E5_18`, SET001 ~44,77 % winrate esperado); avance E5.19–E5.21 diagnóstico/reporting. **Siguiente:** evidencia E5.22 final **o** **E5.22.1** / **E5.22.2**.
+- **E5.22.0.1 (docs-only):** [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) — alineación MT5/repo.
+- **E5.22 (evidencia operador PASS):** [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) — compile `MZP_TestEA_E5_18`, SET001 validado, winrate 0.447712, Total_R=315. **Siguiente:** **E5.22.1** → **E5.22.2**.
 - **E5.20 (plan consumo):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 
