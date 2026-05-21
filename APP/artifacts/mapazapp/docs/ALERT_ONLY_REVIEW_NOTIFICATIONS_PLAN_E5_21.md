@@ -7,7 +7,8 @@
 | **Checkpoint** | E5.21 — plan y contrato docs-only |
 | **Baseline Git** | `9014691` o posterior — `docs(mapazapp): E5.20.4.2 close read-only consumption block` |
 | **Bloque upstream cerrado** | [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md) |
-| **Tipo** | Gobernanza + contrato de datos — **sin** implementación en E5.21 |
+| **Tipo** | Gobernanza + contrato de datos — **sin** canales en E5.21 |
+| **Implementación E5.21.1** | [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) — modelo + formatter + CLI local |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, Strategy Tester, Telegram, email, push, gates, trading |
 
 ---
@@ -299,7 +300,7 @@ Revisión de código en E5.21.x: grep de wording prohibido §8 y de APIs de trad
 
 | ID | Entregable | Tipo | Aprobación |
 |----|------------|------|------------|
-| **E5.21.1** | Modelo de alerta + formatter TS | Código | PM |
+| **E5.21.1** | Modelo de alerta + formatter TS | **Done** — [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) | PM para canales |
 | **E5.21.2** | Cola local en archivo (JSONL) | Código | PM |
 | **E5.21.3** | Panel notificaciones dashboard read-only | UI | PM |
 | **E5.21.4** | Prototipo Telegram review-only | Integración | PM |
@@ -317,4 +318,6 @@ Revisión de código en E5.21.x: grep de wording prohibido §8 y de APIs de trad
 - [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)
 - [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md)
 
-**Siguiente recomendado (post-PM):** **E5.21.1** — modelo de alerta + formatter TypeScript.
+**E5.21.1:** modelo + formatter — [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md).
+
+**Siguiente recomendado:** **E5.21.1.1** — evidencia operador SET001; luego E5.21.2 cola persistente (PM).

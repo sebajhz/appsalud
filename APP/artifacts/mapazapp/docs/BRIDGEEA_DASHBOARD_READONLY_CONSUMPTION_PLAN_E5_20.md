@@ -359,7 +359,8 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 | **E5.20.4** | Dashboard mock / prototype | HTML estático read-only — **done** — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md) | E5.20.3.1 |
 | **E5.20.4.1** | Mock operator evidence | **PASS** — [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md) | E5.20.4 |
 | **E5.20.4.2** | Read-only consumption block closure | **Cerrado (docs)** — [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md) | E5.20.4.1 |
-| **E5.21** | Alert-only review notifications | **Done (plan)** — [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md); implementación E5.21.x tras PM | V2-20, **E5.20.4.2** |
+| **E5.21** | Alert-only review notifications | **Done (plan)** — [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md) | V2-20, **E5.20.4.2** |
+| **E5.21.1** | Alert model + formatter | **Done** — [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) | E5.21 |
 | **E5.22** | Risk / prop firm mapping | Account guard enriquecido | V2-21 |
 | *(diferido)* | Evidence-based gate / score decision | Compuertas solo con evidencia multi-bundle | Post E5.20.4 + calibraciones |
 
