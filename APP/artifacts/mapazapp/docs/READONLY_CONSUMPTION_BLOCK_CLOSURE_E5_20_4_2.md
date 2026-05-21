@@ -153,8 +153,8 @@ Cualquier implementación E5.21 debe validar plantillas contra esta lista antes 
 
 | Paso | Track | Entregable |
 |------|-------|------------|
-| **1** | **E5.21** | Plan / contrato docs-only — Alert-only Review Notifications |
-| **2** | *(si PM aprueba)* | Implementación alert-only sin ejecución |
+| **1** | **E5.21** | **Done (docs)** — [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md) |
+| **2** | *(si PM aprueba)* | E5.21.1+ implementación alert-only sin ejecución |
 | **3** | *(diferido)* | E5.22 risk/prop; gates con evidencia multi-bundle |
 
 **No** iniciar implementación de alertas en el mismo checkpoint que este cierre (E5.20.4.2).
@@ -168,3 +168,4 @@ Cualquier implementación E5.21 debe validar plantillas contra esta lista antes 
 - [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)
 - [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
+- [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md)

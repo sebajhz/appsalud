@@ -170,4 +170,4 @@ Sigue **read-only**: sin MT5, sin Strategy Tester, sin trading, sin modificar vi
 
 **Bloque E5.20 cerrado:** [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md).
 
-**Siguiente recomendado:** **E5.21** — plan/contrato alert-only review notifications (sin ejecución) — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
+**E5.21 plan:** [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md). **Siguiente (post-PM):** E5.21.1 modelo + formatter.
