@@ -81,7 +81,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.20.3.1** | Adapter operator evidence | **PASS** — [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md) |
 | **E5.20.4** | Dashboard mock HTML | **done** — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md) |
 | **E5.20.4.1** | Mock operator evidence | **PASS** — [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md) | E5.20.4 |
-| **E5.21** | Alert-only review notifications | planificado — V2-20 |
+| **E5.20.4.2** | Read-only consumption block closure | **Cerrado** — [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md) | E5.20.4.1 |
+| **E5.21** | Alert-only review notifications | plan/contrato siguiente — V2-20 |
 | **E5.22** | Risk / prop firm mapping | planificado — V2-21 |
 | *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |
 
@@ -414,7 +415,7 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
 
-**E5.20.4:** mock HTML read-only — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md). **E5.20.4.1:** evidencia operador **PASS** — [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md). **Siguiente:** **E5.21** alert-only.
+**E5.20.4:** mock HTML read-only — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md). **E5.20.4.1:** evidencia **PASS**. **E5.20.4.2:** bloque consumo read-only **cerrado** — [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md). **Siguiente:** **E5.21** plan alert-only.
 
 ### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
 

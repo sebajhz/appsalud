@@ -9,7 +9,7 @@
 ## E5.20.6 checkpoint context
 
 - **Cerrado (casebook docs):** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) — HA-001 … HA-010; ejemplos técnicos; `implementation_status` por caso; **sin** código; Cursor no infiere lógica fuera de casos definidos.
-- **E5.20.4 mock HTML:** [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md). **E5.20.4.1 evidencia PASS:** [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md). **Siguiente:** E5.21 alert-only.
+- **E5.20.4 / E5.20.4.1:** mock HTML + evidencia PASS. **E5.20.4.2 cierre bloque:** [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md). **Siguiente:** E5.21 plan alert-only.
 
 ## E5.20.5 checkpoint context
 
@@ -64,7 +64,7 @@
 - **Cerrado (repo export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 - **Cerrado (research docs):** Entry candidate policy — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 - **Siguiente recomendado:** **E5.16** session/spread/volatility.
-- **E5.20.3 / E5.20.3.1:** adaptador + evidencia PASS. **E5.20.4 / E5.20.4.1:** mock HTML + evidencia PASS — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md), [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md). **Siguiente:** E5.21 alert-only.
+- **E5.20 consumo read-only:** cadena cerrada E5.20.4.2 — [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md). **Siguiente:** E5.21 plan alert-only.
 
 ## E5.13.6.12 checkpoint context
 
@@ -315,7 +315,7 @@ Interpretation:
 - **Must not add:** watcher daemon, auto-import, hidden background scans.
 - **Validation required:** import UX/CLI flow tests + parser integration tests.
 - **Definition of done:** operator can manually import data and launch analysis reproducibly.
-- **E5.20 alignment:** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) — **E5.20.4 / E5.20.4.1** mock HTML + evidencia PASS; **E5.21** siguiente.
+- **E5.20 alignment:** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) — bloque **cerrado** E5.20.4.2; **E5.21** plan siguiente.
 
 ### V2-18 — Persistence Decision / Local SQLite Design
 

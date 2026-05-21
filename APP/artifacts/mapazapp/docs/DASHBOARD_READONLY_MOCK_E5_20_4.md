@@ -99,4 +99,6 @@ pnpm --filter @workspace/mapazapp-core test
 
 **E5.20.4.1** — **PASS** — [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md): HTML desde `dashboard_readonly_view.json` real (SET001); UTF-8 verificado en navegador.
 
-**Siguiente recomendado:** **E5.21** — alert-only review notifications (sin ejecución).
+**Bloque E5.20:** cerrado — [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md).
+
+**Siguiente recomendado:** **E5.21** — plan/contrato alert-only review notifications (sin ejecución).
