@@ -548,6 +548,22 @@ function mapTradeCard(
   return view;
 }
 
+/** Map decision_summary rows to counts (campaign or example-card subset). */
+export function decisionCountsFromSummaryRows(
+  rows: DashboardDecisionSummaryRow[],
+): Record<DashboardDecisionKey, number> {
+  const counts: Record<DashboardDecisionKey, number> = {
+    candidate: 0,
+    wait: 0,
+    reject: 0,
+    unknown: 0,
+  };
+  for (const row of rows) {
+    counts[row.decision] = row.count;
+  }
+  return counts;
+}
+
 function buildDecisionSummary(
   counts: Record<string, number>,
   tradeCount: number,
@@ -739,6 +755,7 @@ export function dashboardReadonlyViewToJson(view: DashboardReadonlyView): string
 }
 
 export function compactDashboardReadonlyViewSummary(view: DashboardReadonlyView): Record<string, unknown> {
+  const campaignCounts = decisionCountsFromSummaryRows(view.decision_summary);
   return {
     schema_version: view.schema_version,
     ok: view.ok,
@@ -746,10 +763,10 @@ export function compactDashboardReadonlyViewSummary(view: DashboardReadonlyView)
     mode: view.mode,
     bundle: view.header.bundle,
     trade_count: view.header.trade_count,
-    candidate_count: view.campaign_summary.candidate_count,
-    wait_count: view.campaign_summary.wait_count,
-    reject_count: view.campaign_summary.reject_count,
-    unknown_count: view.campaign_summary.unknown_count,
+    candidate_count: campaignCounts.candidate,
+    wait_count: campaignCounts.wait,
+    reject_count: campaignCounts.reject,
+    unknown_count: campaignCounts.unknown,
     trade_cards_count: view.trade_cards.length,
     minimum_display_unit_enforced: view.campaign_summary.minimum_display_unit_enforced,
     errors: view.errors,

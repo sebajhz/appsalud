@@ -9,6 +9,7 @@ import { buildSetupReadinessSummaryPlaceholders } from "../src/setup-readiness-e
 import {
   alignHumanizedCasebook,
   buildDashboardReadonlyView,
+  compactDashboardReadonlyViewSummary,
   DASHBOARD_GOVERNANCE,
   parseSetupReadinessReportJson,
   resolveTradeCardReasonContext,
@@ -208,6 +209,32 @@ describe("dashboard-readonly-adapter", () => {
     expect(validateTradeCardViewMinimumDisplay(view.trade_cards[0]!)).toBeNull();
   });
 
+  it("compact CLI summary counts match persisted decision_summary campaign rows", () => {
+    const base = parseSetupReadinessReportJson(buildFixtureReportJson())!;
+    const patched: SetupReadinessReport = {
+      ...base,
+      header: { ...base.header, trade_count: 1697 },
+      executive_summary: {
+        ...base.executive_summary,
+        decision_counts: { reject: 1300, candidate: 247, wait: 150 },
+      },
+    };
+    const view = buildDashboardReadonlyView({ reportJsonText: JSON.stringify(patched) });
+    const compact = compactDashboardReadonlyViewSummary(view) as {
+      candidate_count: number;
+      wait_count: number;
+      reject_count: number;
+      unknown_count: number;
+    };
+    expect(compact.candidate_count).toBe(247);
+    expect(compact.wait_count).toBe(150);
+    expect(compact.reject_count).toBe(1300);
+    expect(compact.unknown_count).toBe(0);
+    expect(view.decision_summary.find((d) => d.decision === "candidate")?.count).toBe(247);
+    expect(view.decision_summary.find((d) => d.decision === "wait")?.count).toBe(150);
+    expect(view.decision_summary.find((d) => d.decision === "reject")?.count).toBe(1300);
+  });
+
   it("decision_summary uses campaign counts, not example cards", () => {
     const base = parseSetupReadinessReportJson(buildFixtureReportJson())!;
     const patched: SetupReadinessReport = {
@@ -331,11 +358,26 @@ describe("dashboard-readonly-adapter", () => {
     });
     expect(view.ok).toBe(true);
     expect(view.errors).toEqual([]);
+    expect(view.warnings).toEqual([]);
     expect(view.campaign_summary.minimum_display_unit_enforced).toBe(true);
     expect(view.decision_summary.find((d) => d.decision === "reject")?.count).toBe(1300);
     expect(view.decision_summary.find((d) => d.decision === "candidate")?.count).toBe(247);
     expect(view.decision_summary.find((d) => d.decision === "wait")?.count).toBe(150);
-    expect(view.trade_cards.length).toBeGreaterThan(0);
+    expect(view.decision_summary.find((d) => d.decision === "unknown")?.count).toBe(0);
+    expect(view.trade_card_decision_summary.reduce((n, r) => n + r.count, 0)).toBe(view.trade_cards.length);
+    expect(view.trade_cards.length).toBe(10);
+    const vtr003 = view.trade_cards.find((c) => c.trade_id === "VTR_000003");
+    const vtr009 = view.trade_cards.find((c) => c.trade_id === "VTR_000009");
+    if (vtr003) {
+      expect(vtr003.blocker_count).toBe(0);
+      expect(vtr003.primary_blocker).toBe("none");
+      expect(vtr003.main_reason).toBeTruthy();
+    }
+    if (vtr009) {
+      expect(vtr009.blocker_count).toBe(0);
+      expect(vtr009.primary_blocker).toBe("none");
+      expect(vtr009.main_reason).toBeTruthy();
+    }
   });
 
   it("uses Spanish decision labels in decision_summary", () => {

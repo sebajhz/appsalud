@@ -312,7 +312,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.20.5 | **Humanized setup acceptance policy V1** | **completed (docs)** | Docs | [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) | **E5.20.6** |
 | E5.20.6 | **Humanized acceptance casebook V1** | **completed (docs)** | Docs | [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md); HA-001 … HA-010; no code | **E5.20.3** (done) |
 | E5.20.3 | **Dashboard read-only data adapter** | **completed** | TS CLI | [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md) | E5.20.3.0.1 |
-| E5.20.3.0.1 | **Adapter main_reason + campaign counts fix** | **completed** | TS | SET001 smoke; `trade_card_decision_summary` | **E5.20.3.1** re-run |
+| E5.20.3.0.1 | **Adapter main_reason + CLI compact campaign counts** | **completed** | TS | SET001 smoke; `main_reason` fallback | E5.20.3.0.2 |
+| E5.20.3.0.2 | **Persisted JSON decision_summary campaign counts** | **completed** | TS | `decision_summary` ≠ `trade_cards`; tests CLI persistido | **E5.20.3.1** re-run |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |

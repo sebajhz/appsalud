@@ -412,7 +412,7 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
 
-**E5.20.3.0.1:** fix adaptador (main_reason fallback; conteos campaña). **Siguiente:** **E5.20.3.1** evidencia operador re-run, o **E5.20.4** mock UI.
+**E5.20.3.0.1:** fix adaptador (main_reason fallback; CLI compact campaña). **E5.20.3.0.2:** `decision_summary` JSON persistido = campaña (`trade_card_decision_summary` = tarjetas ejemplo). **Siguiente:** **E5.20.3.1** evidencia operador re-run tras 0.2, o **E5.20.4** mock UI.
 
 ### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
 

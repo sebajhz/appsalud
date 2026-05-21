@@ -5,7 +5,7 @@
 | Campo | Valor |
 |-------|-------|
 | **Checkpoint** | E5.20.3 — adaptador TypeScript read-only |
-| **Fix** | **E5.20.3.0.1** — fallback `main_reason` + conteos campaña vs tarjetas ejemplo |
+| **Fix** | **E5.20.3.0.1** — fallback `main_reason` + CLI compact campaña; **E5.20.3.0.2** — `decision_summary` persistido = campaña (`trade_card_decision_summary` = ejemplo) |
 | **Baseline Git** | `b4d3d5f` o posterior — E5.20.3 adaptador |
 | **Tipo** | Capa de presentación / consumo UI — **sin** MQL5, MT5, Strategy Tester, trading, gates |
 | **Política / casebook** | [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md), [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) |
@@ -51,8 +51,9 @@ Campos principales:
 - `ok`, `generated_at_utc`, `mode` = `backtest_research`, `read_only` = true
 - `header` — bundle, build, símbolo, campaña, rutas fuente
 - `campaign_summary` — promedios, conteos decisión, grades, `minimum_display_unit_enforced`
-- `decision_summary` — conteos **campaña** (`executive_summary` / `latest_valid_report_result`)
-- `trade_card_decision_summary` — conteos solo de `example_cards` (subconjunto)
+- `decision_summary` — conteos **campaña** (`executive_summary.decision_counts` + overlay opcional `latest_valid_report_result.decision_counts`); **no** derivar de `trade_cards[]`
+- `trade_card_decision_summary` — conteos solo de `example_cards` (subconjunto UI)
+- Salida compacta `--json` — mismos conteos que `decision_summary` (no `trade_card_decision_summary`)
 - `blocker_summary` / `warning_summary`
 - `trade_cards[]` — tarjetas UI con badges (high-score reject, candidate-with-warnings)
 - `casebook_alignment` — referencias HA-001 … HA-010 sin inferir lógica nueva
@@ -120,4 +121,4 @@ pnpm --filter @workspace/mapazapp-core test
 
 ## 9. Siguiente recomendado
 
-**E5.20.3.1** — **re-ejecutar** evidencia operador tras E5.20.3.0.1 usando salida de [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) → `dashboard_readonly_view.json` (`ok=true`, `decision_summary` 247/150/1300).
+**E5.20.3.1** — **re-ejecutar** evidencia operador tras **E5.20.3.0.2** usando salida de [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) → `dashboard_readonly_view.json` (`ok=true`, `decision_summary` 247/150/1300, `trade_card_decision_summary` ≈ conteo tarjetas ejemplo, `trade_cards_count`=10).

@@ -18,6 +18,17 @@ import {
   type DashboardReadonlyAdapterCliIo,
 } from "./mapazapp-dashboard-readonly-adapter";
 
+function buildCampaignCountReportJson(): string {
+  const base = JSON.parse(buildMinimalReportJson()) as {
+    header: { trade_count: number };
+    executive_summary: { decision_counts: Record<string, number> };
+    example_cards: unknown[];
+  };
+  base.header.trade_count = 1697;
+  base.executive_summary.decision_counts = { reject: 1300, candidate: 247, wait: 150 };
+  return JSON.stringify(base);
+}
+
 function buildMinimalReportJson(): string {
   const e342 = JSON.parse(V2_12_TESTEA_E342_SUMMARY_JSON) as Record<string, unknown>;
   const summary = JSON.stringify({
@@ -103,6 +114,67 @@ function makeIo(
   };
   return { io, stdout, stderr };
 }
+
+test("CLI --output persists decision_summary campaign counts (not example cards)", () => {
+  const root = mkdtempSync(join(tmpdir(), "mapazapp-dash-cli-campaign-"));
+  try {
+    const reportPath = join(root, "setup_readiness_report.json");
+    const outPath = join(root, "dashboard_readonly_view.json");
+    writeFileSync(reportPath, buildCampaignCountReportJson(), "utf8");
+    const { io } = makeIo(root, {});
+    const code = runDashboardReadonlyAdapterCli(
+      ["--report-json", reportPath, "--output", outPath, "--json"],
+      io,
+    );
+    assert.equal(code, 0);
+    const view = JSON.parse(readFileSync(outPath, "utf8")) as {
+      decision_summary: { decision: string; count: number }[];
+      trade_card_decision_summary: { decision: string; count: number }[];
+      trade_cards: unknown[];
+    };
+    const find = (rows: { decision: string; count: number }[], d: string) =>
+      rows.find((r) => r.decision === d)?.count;
+    assert.equal(find(view.decision_summary, "candidate"), 247);
+    assert.equal(find(view.decision_summary, "wait"), 150);
+    assert.equal(find(view.decision_summary, "reject"), 1300);
+    assert.equal(find(view.decision_summary, "unknown"), 0);
+    const exampleTotal = view.trade_card_decision_summary.reduce((n, r) => n + r.count, 0);
+    assert.equal(exampleTotal, view.trade_cards.length);
+    assert.ok(exampleTotal < 1697);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("CLI --json compact counts match persisted decision_summary", () => {
+  const root = mkdtempSync(join(tmpdir(), "mapazapp-dash-cli-compact-"));
+  try {
+    const reportPath = join(root, "setup_readiness_report.json");
+    const outPath = join(root, "dashboard_readonly_view.json");
+    writeFileSync(reportPath, buildCampaignCountReportJson(), "utf8");
+    const { io, stdout } = makeIo(root, {});
+    const code = runDashboardReadonlyAdapterCli(
+      ["--report-json", reportPath, "--output", outPath, "--json"],
+      io,
+    );
+    assert.equal(code, 0);
+    const compact = JSON.parse(stdout.join("").trim()) as {
+      candidate_count: number;
+      wait_count: number;
+      reject_count: number;
+    };
+    const view = JSON.parse(readFileSync(outPath, "utf8")) as {
+      decision_summary: { decision: string; count: number }[];
+    };
+    const find = (d: string) => view.decision_summary.find((r) => r.decision === d)?.count;
+    assert.equal(compact.candidate_count, find("candidate"));
+    assert.equal(compact.wait_count, find("wait"));
+    assert.equal(compact.reject_count, find("reject"));
+    assert.equal(compact.candidate_count, 247);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
 
 test("CLI --report-json + --output writes dashboard_readonly_view.json", () => {
   const root = mkdtempSync(join(tmpdir(), "mapazapp-dash-cli-"));
