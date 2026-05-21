@@ -93,6 +93,7 @@ Dimensiones explícitas:
 | **E5.20.3.0.2** | **Done** | `decision_summary` persistido = campaña; `trade_card_decision_summary` = tarjetas ejemplo |
 | **E5.20.3.1** | **PASS (evidencia)** | [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md) — adaptador UI-ready; read-only |
 | **E5.20.4** | **Done** | Mock HTML read-only — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md); sin ejecución |
+| **E5.20.4.1** | **PASS (evidencia)** | [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md) — HTML SET001; UTF-8 navegador; sin ejecución |
 
 ---
 
@@ -158,6 +159,7 @@ E5.20.5   Humanized acceptance policy V1  [done — governance only]
 E5.20.6   Humanized acceptance casebook   [done — HA-001 … HA-010, docs only]
 E5.20.3   Dashboard read-only adapter       [done — DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3]
 E5.20.4   Dashboard mock / prototype      [done — DASHBOARD_READONLY_MOCK_E5_20_4]
+E5.20.4.1 Mock operator evidence          [PASS — DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1]
 E5.21+    Alerts / gates / live           [deferred — explicit governance only]
 ```
 

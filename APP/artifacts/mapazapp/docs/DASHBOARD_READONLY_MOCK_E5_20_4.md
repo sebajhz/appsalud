@@ -11,6 +11,7 @@
 | **Tipo** | Presentación / mock estático — **sin** MQL5, MT5, Strategy Tester, trading, gates |
 | **Adaptador upstream** | [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md) |
 | **Evidencia adaptador** | [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md) |
+| **Evidencia mock (E5.20.4.1)** | [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md) — **PASS** |
 
 ---
 
@@ -94,6 +95,8 @@ pnpm --filter @workspace/mapazapp-core test
 
 ---
 
-## 7. Siguiente recomendado
+## 7. Evidencia operador y siguiente
 
-**E5.20.4.1** — evidencia operador: generar HTML desde `dashboard_readonly_view.json` real (SET001) y verificar UTF-8 en navegador (no mojibake de consola PowerShell).
+**E5.20.4.1** — **PASS** — [`DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md`](./DASHBOARD_READONLY_MOCK_EVIDENCE_E5_20_4_1.md): HTML desde `dashboard_readonly_view.json` real (SET001); UTF-8 verificado en navegador.
+
+**Siguiente recomendado:** **E5.21** — alert-only review notifications (sin ejecución).
