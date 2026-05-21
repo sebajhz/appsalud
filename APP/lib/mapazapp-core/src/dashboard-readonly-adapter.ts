@@ -131,6 +131,8 @@ export interface DashboardReadonlyView {
     minimum_display_unit_enforced: boolean;
   };
   decision_summary: DashboardDecisionSummaryRow[];
+  /** Example trade cards only (subset); not campaign totals. */
+  trade_card_decision_summary: DashboardDecisionSummaryRow[];
   blocker_summary: {
     top_blockers: SetupReadinessLeaderboardEntry[];
     high_score_reject_by_primary: SetupReadinessLeaderboardEntry[];
@@ -207,9 +209,112 @@ function normToken(t: string): string {
   return t.trim().toLowerCase();
 }
 
-function tokenMatches(token: string, needles: string[]): boolean {
-  const n = normToken(token);
-  return needles.some((needle) => n === needle || n.includes(needle));
+function normBlocker(raw: string | undefined): string {
+  const b = (raw ?? "").trim();
+  if (!b || b === "-" || b.toLowerCase() === "none") return "none";
+  return b;
+}
+
+function isHardBlocker(primaryBlocker: string, blockerCount: number): boolean {
+  return blockerCount > 0 && normBlocker(primaryBlocker) !== "none";
+}
+
+export type MainReasonFallbackId =
+  | "candidate_with_warnings"
+  | "candidate_manual_review_required"
+  | "wait_context_incomplete"
+  | "reject_reason_unspecified"
+  | "reason_not_available";
+
+export interface ResolvedTradeCardReason {
+  primary_blocker: string;
+  main_reason: string | null;
+  reason_is_hard_blocker: boolean;
+}
+
+function decisionFallbackMainReason(
+  decision: DashboardDecisionKey,
+  warningCount: number,
+): string {
+  if (decision === "candidate") {
+    return warningCount > 0 ? "candidate_with_warnings" : "candidate_manual_review_required";
+  }
+  if (decision === "wait") return "wait_context_incomplete";
+  if (decision === "reject") return "reject_reason_unspecified";
+  return "reason_not_available";
+}
+
+/** E5.20.3.0.1 — contextual main_reason when no hard blocker (never score-only). */
+export function resolveTradeCardReasonContext(
+  card: SetupReadinessReportTradeCard,
+): ResolvedTradeCardReason {
+  const decision = normDecision(card.setup_readiness_decision);
+  const blockerCount = card.setup_readiness_blocker_count ?? 0;
+  const warningCount = card.setup_readiness_warning_count ?? 0;
+  const rawPrimary = normBlocker(card.setup_readiness_primary_blocker);
+  const hard = isHardBlocker(rawPrimary, blockerCount);
+
+  if (hard) {
+    return {
+      primary_blocker: rawPrimary,
+      main_reason: null,
+      reason_is_hard_blocker: true,
+    };
+  }
+
+  const existingMain =
+    card.primary_context_kind === "main_reason" ? (card.primary_context_label ?? "").trim() : "";
+  if (existingMain) {
+    return {
+      primary_blocker: "none",
+      main_reason: existingMain,
+      reason_is_hard_blocker: false,
+    };
+  }
+
+  if (rawPrimary !== "none") {
+    return {
+      primary_blocker: "none",
+      main_reason: rawPrimary,
+      reason_is_hard_blocker: false,
+    };
+  }
+
+  const topReason = (card.top_reasons ?? []).map((r) => r.trim()).find(Boolean);
+  if (topReason) {
+    return {
+      primary_blocker: "none",
+      main_reason: topReason,
+      reason_is_hard_blocker: false,
+    };
+  }
+
+  return {
+    primary_blocker: "none",
+    main_reason: decisionFallbackMainReason(decision, warningCount),
+    reason_is_hard_blocker: false,
+  };
+}
+
+function countDecisionsFromExampleCards(cards: SetupReadinessReportTradeCard[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const card of cards) {
+    const d = normDecision(card.setup_readiness_decision);
+    counts[d] = (counts[d] ?? 0) + 1;
+  }
+  return counts;
+}
+
+function resolveCampaignDecisionCounts(
+  report: SetupReadinessReport,
+  latest: LatestValidReportResult | null,
+): Record<string, number> {
+  const fromReport = report.executive_summary?.decision_counts ?? {};
+  const fromLatest = latest?.decision_counts;
+  if (fromLatest && Object.keys(fromLatest).length > 0) {
+    return { ...fromReport, ...fromLatest };
+  }
+  return { ...fromReport };
 }
 
 function collectAlignmentTokens(
@@ -365,27 +470,25 @@ function buildDisplayBadges(
   return badges;
 }
 
-export function validateTradeCardMinimumDisplay(card: SetupReadinessReportTradeCard): string | null {
-  const decision = normDecision(card.setup_readiness_decision);
-  const score = card.setup_readiness_score;
-  const grade = (card.setup_readiness_grade ?? "").trim();
-  const blocker = (card.setup_readiness_primary_blocker ?? "").trim();
-  const mainReason =
-    card.primary_context_kind === "main_reason" ? (card.primary_context_label ?? "").trim() : "";
-  const hasBlockerOrReason =
-    (blocker && blocker.toLowerCase() !== "none") || mainReason.length > 0;
-  const warningCount = card.setup_readiness_warning_count;
-  const reasons = card.top_reasons ?? [];
+export function validateTradeCardViewMinimumDisplay(view: DashboardTradeCardView): string | null {
+  const grade = (view.grade ?? "").trim();
+  const hasBlocker = normBlocker(view.primary_blocker) !== "none";
+  const hasMainReason = !!(view.main_reason ?? "").trim();
+  const reasons = view.top_reasons ?? [];
 
-  if (!decision) return `trade ${card.trade_id}: missing decision`;
-  if (score == null || !Number.isFinite(score)) return `trade ${card.trade_id}: missing score`;
-  if (!grade) return `trade ${card.trade_id}: missing grade`;
-  if (!hasBlockerOrReason) return `trade ${card.trade_id}: missing blocker or main reason`;
-  if (warningCount == null || !Number.isFinite(warningCount)) {
-    return `trade ${card.trade_id}: missing warning_count`;
-  }
-  if (!reasons.length) return `trade ${card.trade_id}: missing reasons`;
+  if (!view.decision) return `trade ${view.trade_id}: missing decision`;
+  if (!Number.isFinite(view.score)) return `trade ${view.trade_id}: missing score`;
+  if (!grade) return `trade ${view.trade_id}: missing grade`;
+  if (!hasBlocker && !hasMainReason) return `trade ${view.trade_id}: missing blocker or main reason`;
+  if (!Number.isFinite(view.warning_count)) return `trade ${view.trade_id}: missing warning_count`;
+  if (!reasons.length) return `trade ${view.trade_id}: missing reasons`;
   return null;
+}
+
+/** @deprecated Prefer validateTradeCardViewMinimumDisplay after mapTradeCard. */
+export function validateTradeCardMinimumDisplay(card: SetupReadinessReportTradeCard): string | null {
+  const view = mapTradeCard(card, "es", "backtest_research");
+  return validateTradeCardViewMinimumDisplay(view);
 }
 
 function mapTradeCard(
@@ -396,9 +499,20 @@ function mapTradeCard(
   const decision = normDecision(card.setup_readiness_decision);
   const score = card.setup_readiness_score ?? 0;
   const warningCount = card.setup_readiness_warning_count ?? 0;
-  const primaryBlocker = (card.setup_readiness_primary_blocker ?? "none").trim() || "none";
-  const mainReason =
-    card.primary_context_kind === "main_reason" ? card.primary_context_label ?? null : null;
+  const resolved = resolveTradeCardReasonContext(card);
+
+  const governanceNotes = [
+    language === "es"
+      ? "Vista read-only; no ejecuta trades ni gates."
+      : "Read-only view; does not execute trades or gates.",
+  ];
+  if (!resolved.reason_is_hard_blocker && resolved.main_reason) {
+    governanceNotes.push(
+      language === "es"
+        ? "Motivo principal contextual; no es bloqueador duro."
+        : "Contextual main reason; not a hard blocker.",
+    );
+  }
 
   const view: DashboardTradeCardView = {
     trade_id: card.trade_id,
@@ -409,8 +523,8 @@ function mapTradeCard(
     decision_label: decisionLabel(decision, language),
     score,
     grade: card.setup_readiness_grade,
-    primary_blocker: primaryBlocker,
-    main_reason: mainReason,
+    primary_blocker: resolved.primary_blocker,
+    main_reason: resolved.main_reason,
     blocker_count: card.setup_readiness_blocker_count ?? 0,
     warning_count: warningCount,
     top_reasons: [...(card.top_reasons ?? [])],
@@ -424,11 +538,7 @@ function mapTradeCard(
     },
     display_badges: buildDisplayBadges(decision, score, warningCount, language),
     warnings: [],
-    governance_notes: [
-      language === "es"
-        ? "Vista read-only; no ejecuta trades ni gates."
-        : "Read-only view; does not execute trades or gates.",
-    ],
+    governance_notes: governanceNotes,
   };
 
   if (mode === "backtest_research") {
@@ -497,6 +607,7 @@ export function buildDashboardReadonlyView(input: DashboardReadonlyAdapterInput)
         minimum_display_unit_enforced: false,
       },
       decision_summary: buildDecisionSummary({}, 0),
+      trade_card_decision_summary: buildDecisionSummary({}, 0),
       blocker_summary: { top_blockers: [], high_score_reject_by_primary: [] },
       warning_summary: { top_warnings: [] },
       trade_cards: [],
@@ -515,16 +626,17 @@ export function buildDashboardReadonlyView(input: DashboardReadonlyAdapterInput)
   let selectedBundleId: string | null = null;
   let validStatusBeforeReport: string | null = null;
   let headerTimeframe = report.header.timeframe;
+  let latestResult: LatestValidReportResult | null = null;
 
   if (input.latestResultJsonText) {
-    const latest = parseLatestValidReportResultJson(input.latestResultJsonText);
-    if (!latest) {
+    latestResult = parseLatestValidReportResultJson(input.latestResultJsonText);
+    if (!latestResult) {
       warnings.push("latest_valid_report_result.json could not be parsed");
     } else {
-      selectedBundleId = latest.selected_bundle_id;
-      validStatusBeforeReport = latest.valid_status_before_report ?? null;
-      if (latest.timeframe) headerTimeframe = latest.timeframe;
-      if (!latest.ok) warnings.push("latest_valid_report_result.json reports ok=false");
+      selectedBundleId = latestResult.selected_bundle_id;
+      validStatusBeforeReport = latestResult.valid_status_before_report ?? null;
+      if (latestResult.timeframe) headerTimeframe = latestResult.timeframe;
+      if (!latestResult.ok) warnings.push("latest_valid_report_result.json reports ok=false");
     }
   }
 
@@ -540,29 +652,32 @@ export function buildDashboardReadonlyView(input: DashboardReadonlyAdapterInput)
   const tradeCards: DashboardTradeCardView[] = [];
   const cardErrors: string[] = [];
 
-  for (const card of report.example_cards ?? []) {
-    const validationErr = validateTradeCardMinimumDisplay(card);
+  const exampleCards = report.example_cards ?? [];
+  for (const card of exampleCards) {
+    const view = mapTradeCard(card, language, mode);
+    const validationErr = validateTradeCardViewMinimumDisplay(view);
     if (validationErr) {
       cardErrors.push(validationErr);
       continue;
     }
-    tradeCards.push(mapTradeCard(card, language, mode));
+    tradeCards.push(view);
   }
 
   if (cardErrors.length) {
     errors.push(...cardErrors);
   }
 
-  const minimumOk =
-    report.minimum_display_unit_enforced === true && cardErrors.length === 0 && tradeCards.length > 0;
+  const minimumOk = cardErrors.length === 0 && tradeCards.length > 0 && exampleCards.length > 0;
 
-  if (!minimumOk && report.example_cards?.length) {
+  if (!minimumOk && exampleCards.length) {
     errors.push("minimum display unit not satisfied for one or more trade cards");
   }
 
   const exec = report.executive_summary;
-  const decisionCounts = exec.decision_counts ?? {};
+  const campaignDecisionCounts = resolveCampaignDecisionCounts(report, latestResult);
   const tradeCount = report.header.trade_count ?? 0;
+  const exampleDecisionCounts = countDecisionsFromExampleCards(exampleCards);
+  const exampleCardCount = exampleCards.length;
 
   const tokens = collectAlignmentTokens(report, tradeCards);
   const casebook = alignHumanizedCasebook(tokens, tradeCards);
@@ -593,16 +708,17 @@ export function buildDashboardReadonlyView(input: DashboardReadonlyAdapterInput)
     },
     campaign_summary: {
       average_setup_readiness_score: exec.average_setup_readiness_score,
-      candidate_count: decisionCounts.candidate ?? 0,
-      wait_count: decisionCounts.wait ?? 0,
-      reject_count: decisionCounts.reject ?? 0,
-      unknown_count: decisionCounts.unknown ?? 0,
+      candidate_count: campaignDecisionCounts.candidate ?? 0,
+      wait_count: campaignDecisionCounts.wait ?? 0,
+      reject_count: campaignDecisionCounts.reject ?? 0,
+      unknown_count: campaignDecisionCounts.unknown ?? 0,
       grade_distribution: { ...exec.grade_counts },
       average_blocker_count: exec.average_blocker_count,
       average_warning_count: exec.average_warning_count,
       minimum_display_unit_enforced: minimumOk,
     },
-    decision_summary: buildDecisionSummary(decisionCounts, tradeCount),
+    decision_summary: buildDecisionSummary(campaignDecisionCounts, tradeCount),
+    trade_card_decision_summary: buildDecisionSummary(exampleDecisionCounts, exampleCardCount),
     blocker_summary: {
       top_blockers: report.blocker_leaderboard?.primary_blocker_counts ?? exec.top_blockers ?? [],
       high_score_reject_by_primary: report.blocker_leaderboard?.high_score_reject_by_primary ?? [],
@@ -630,6 +746,10 @@ export function compactDashboardReadonlyViewSummary(view: DashboardReadonlyView)
     mode: view.mode,
     bundle: view.header.bundle,
     trade_count: view.header.trade_count,
+    candidate_count: view.campaign_summary.candidate_count,
+    wait_count: view.campaign_summary.wait_count,
+    reject_count: view.campaign_summary.reject_count,
+    unknown_count: view.campaign_summary.unknown_count,
     trade_cards_count: view.trade_cards.length,
     minimum_display_unit_enforced: view.campaign_summary.minimum_display_unit_enforced,
     errors: view.errors,

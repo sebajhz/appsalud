@@ -5,7 +5,8 @@
 | Campo | Valor |
 |-------|-------|
 | **Checkpoint** | E5.20.3 — adaptador TypeScript read-only |
-| **Baseline Git** | `460aced` o posterior — E5.20.6 casebook |
+| **Fix** | **E5.20.3.0.1** — fallback `main_reason` + conteos campaña vs tarjetas ejemplo |
+| **Baseline Git** | `b4d3d5f` o posterior — E5.20.3 adaptador |
 | **Tipo** | Capa de presentación / consumo UI — **sin** MQL5, MT5, Strategy Tester, trading, gates |
 | **Política / casebook** | [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md), [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) |
 | **Contrato UI** | [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) |
@@ -50,7 +51,8 @@ Campos principales:
 - `ok`, `generated_at_utc`, `mode` = `backtest_research`, `read_only` = true
 - `header` — bundle, build, símbolo, campaña, rutas fuente
 - `campaign_summary` — promedios, conteos decisión, grades, `minimum_display_unit_enforced`
-- `decision_summary` — etiquetas ES/EN fijas (E5.18.5 / E5.20.5)
+- `decision_summary` — conteos **campaña** (`executive_summary` / `latest_valid_report_result`)
+- `trade_card_decision_summary` — conteos solo de `example_cards` (subconjunto)
 - `blocker_summary` / `warning_summary`
 - `trade_cards[]` — tarjetas UI con badges (high-score reject, candidate-with-warnings)
 - `casebook_alignment` — referencias HA-001 … HA-010 sin inferir lógica nueva
@@ -61,8 +63,13 @@ Campos principales:
 
 ## 5. Unidad mínima de display (trade card)
 
-Cada tarjeta válida incluye **juntos**: `decision`, `score`, `grade`, `primary_blocker` o `main_reason`, `warning_count`, `top_reasons[]`.  
-**Prohibido** emitir tarjeta con solo puntaje. Si falla validación → `ok=false` y error en `errors[]`.
+Cada tarjeta válida incluye **juntos**: `decision`, `score`, `grade`, `warning_count`, `top_reasons[]`, y **primary_blocker** (bloqueador duro) **o** `main_reason` (contextual).
+
+**E5.20.3.0.1 — fallback `main_reason`** cuando `blocker_count = 0` y no hay bloqueador duro: orden → `main_reason` existente → `primary_blocker` → primer `top_reasons[]` → fallback por decisión (`candidate_with_warnings`, `wait_context_incomplete`, etc.) → `reason_not_available`. No se etiqueta como “bloqueador duro” si `blocker_count = 0`.
+
+**Smoke operador (SET001):** E5.20.3 falló correctamente en VTR_000003 / VTR_000009 (`primary_blocker: none`, sin `main_reason`). Tras E5.20.3.0.1 el mismo run debe dar `ok=true`.
+
+**Prohibido** tarjeta con solo puntaje.
 
 ---
 
@@ -113,4 +120,4 @@ pnpm --filter @workspace/mapazapp-core test
 
 ## 9. Siguiente recomendado
 
-**E5.20.3.1** — evidencia operador usando salida de [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) → `dashboard_readonly_view.json`.
+**E5.20.3.1** — **re-ejecutar** evidencia operador tras E5.20.3.0.1 usando salida de [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) → `dashboard_readonly_view.json` (`ok=true`, `decision_summary` 247/150/1300).

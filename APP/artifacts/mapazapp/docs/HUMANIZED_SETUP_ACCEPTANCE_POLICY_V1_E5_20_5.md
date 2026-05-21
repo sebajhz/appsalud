@@ -89,6 +89,7 @@ Dimensiones explícitas:
 | **Consumo read-only** (E5.20.2) | Cerrada | Entrega informes; **no** añade política de aceptación |
 | **Humanized acceptance policy** | **Esta tarea (E5.20.5)** | Marco V1 documentado; implementación en exports/UI **diferida** |
 | **Dashboard adapter** (E5.20.3) | **Done** | Consume informe; respeta E5.20.5 + E5.18.5; no permiso de trade |
+| **E5.20.3.0.1** | **Done** | Fallback `main_reason` cuando no hay bloqueador duro; `decision_summary` = campaña |
 
 ---
 
