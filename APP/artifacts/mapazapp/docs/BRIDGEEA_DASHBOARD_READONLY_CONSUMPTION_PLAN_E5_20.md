@@ -7,7 +7,7 @@
 | **Checkpoint** | E5.20 — plan de arquitectura / gobernanza (docs-only) |
 | **Baseline Git** | `499843e` o posterior — `docs(mapazapp): E5.19.3 setup readiness report UX polish evidence` |
 | **Bloque cerrado upstream** | Detection / Readiness / Report V1 (E5.18 → E5.19.3) |
-| **Implementación** | **E5.20.1** índice — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); **E5.20.2** informe latest valid — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md); **E5.20.2.1 evidencia PASS** — [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md); **E5.20.5** aceptación humanizada — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); **E5.20.3** adaptador — [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md); **E5.20.3.1 evidencia PASS** — [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md); **E5.20.4+** mock UI pendiente |
+| **Implementación** | **E5.20.1** índice — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); **E5.20.2** informe latest valid — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md); **E5.20.2.1 evidencia PASS** — [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md); **E5.20.5** aceptación humanizada — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); **E5.20.3** adaptador — [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md); **E5.20.3.1 evidencia PASS** — [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md); **E5.20.4** mock HTML — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md) |
 | **Referencia contrato UI** | [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) |
 | **Referencia informe CLI** | [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md) |
 
@@ -356,7 +356,8 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 | **E5.20.6** | Humanized acceptance casebook V1 | **Done — docs** — [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md); HA-001 … HA-010 | E5.20.5 |
 | **E5.20.3** | Dashboard read-only data adapter | TS: JSON informe → `dashboard_readonly_view_v1` — **done** | E5.18.5, E5.20.2, **E5.20.5**, **E5.20.6** |
 | **E5.20.3.1** | Adapter operator evidence | **PASS** — [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md) | E5.20.3.0.2 |
-| **E5.20.4** | Dashboard mock / prototype | UI read-only sin POST — **pendiente** | E5.20.3.1, aprobación PM |
+| **E5.20.4** | Dashboard mock / prototype | HTML estático read-only — **done** — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md) | E5.20.3.1 |
+| **E5.20.4.1** | Mock operator evidence | **pendiente** | E5.20.4 |
 | **E5.21** | Alert-only review notifications | Avisos explicativos, sin ejecución | V2-20, E5.20.4 |
 | **E5.22** | Risk / prop firm mapping | Account guard enriquecido | V2-21 |
 | *(diferido)* | Evidence-based gate / score decision | Compuertas solo con evidencia multi-bundle | Post E5.20.4 + calibraciones |

@@ -119,6 +119,7 @@ export * from "./testea-export-bundle-validate";
 export * from "./testea-bundle-index";
 export * from "./testea-latest-valid-report";
 export * from "./dashboard-readonly-adapter";
+export * from "./dashboard-readonly-mock";
 export * from "./testea-ambiguity-sensitivity";
 export * from "./testea-entry-variant-outcome-simulation";
 export * from "./testea-entry-variant-outcome-reconciliation";

@@ -544,7 +544,7 @@ Aligns with E5.18 `wait` semantics (E5.18.4); humanized `wait` is observación d
 
 ## 8. Relación con E5.20.3 (dashboard)
 
-El adaptador dashboard (**E5.20.3** — [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md); fixes **E5.20.3.0.1** / **0.2**; evidencia operador **PASS** [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md)) debe:
+El adaptador (**E5.20.3**) y el mock HTML (**E5.20.4** — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md); evidencia adaptador **PASS** [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md)) deben:
 
 - Mostrar etiqueta humanizada **solo** como texto de apoyo, junto a readiness + blockers (E5.18.5).
 - Usar wording de este casebook **sin** convertir `observe` / `accept-for-manual-review` en permiso de ejecución.

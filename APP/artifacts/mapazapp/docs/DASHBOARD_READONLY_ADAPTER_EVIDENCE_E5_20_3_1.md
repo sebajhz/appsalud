@@ -193,4 +193,4 @@ Sigue **read-only**: sin MT5, sin Strategy Tester, sin trading, sin modificar bu
 - [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)
 - [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md)
 
-**Siguiente recomendado:** **E5.20.4** — dashboard mock / prototipo UI read-only que consuma `dashboard_readonly_view.json` (UTF-8, sin POST ni ejecución).
+**Siguiente recomendado:** **E5.20.4.1** — evidencia operador del mock HTML — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md) (`mapazapp:dashboard-readonly-mock` → `dashboard_readonly_mock.html`).

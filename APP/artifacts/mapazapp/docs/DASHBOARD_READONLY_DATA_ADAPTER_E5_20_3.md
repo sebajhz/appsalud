@@ -122,4 +122,4 @@ pnpm --filter @workspace/mapazapp-core test
 
 ## 9. Siguiente recomendado
 
-**E5.20.3.1** — **PASS** — [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md) (SET001, `ok=true`, `decision_summary` 247/150/1300, `trade_cards_count`=10). **Siguiente:** **E5.20.4** mock UI read-only.
+**E5.20.3.1** — **PASS** — [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md). **E5.20.4** — mock HTML — [`DASHBOARD_READONLY_MOCK_E5_20_4.md`](./DASHBOARD_READONLY_MOCK_E5_20_4.md). **Siguiente:** E5.20.4.1 evidencia operador HTML.
