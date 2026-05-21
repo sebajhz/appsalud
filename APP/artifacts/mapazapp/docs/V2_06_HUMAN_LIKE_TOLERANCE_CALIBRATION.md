@@ -67,3 +67,5 @@ Si no hay `toleranceIntegration` o no hay resultado de calibración, el comporta
 ## Siguiente paso recomendado
 
 **V2-08 — Entry variant model** (`evaluateEntryVariant`, doc `V2_08_ENTRY_VARIANT_MODEL.md`) consume opcionalmente esta matriz para aceptar retests imperfectos; la optimización por bloques de parámetros sigue en el roadmap largo (`CP18_5_FINAL_AUDIT_AND_ROADMAP_V2.md`).
+
+**Track E5 (TestEA / gobernanza):** near-miss y tolerancia dinámica en exports (E5.13.2) y política de **aceptación humanizada** documentada en [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) — el core V2-06 **no** sustituye esa política hasta integración explícita con gobernanza.

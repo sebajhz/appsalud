@@ -124,7 +124,7 @@ Edge candidate research is **parked under governance** while setup-quality and c
 
 **Reason:** Liquidity Target Quality smoke **PASS** ([`LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md`](./LIQUIDITY_TARGET_QUALITY_SMOKE_EVIDENCE_E5_15_1.md)) — official RR2 TP often **before** nearest liquidity; that is diagnostic only and does **not** authorize TP changes.
 
-Entry policy research (this document) stays valid as the **governance frame**; IFVG exports supply **setup taxonomy** inputs to future candidate marking and the future **Setup Readiness Checklist** (read-only; see North Star).
+Entry policy research (this document) stays valid as the **governance frame** for **entry families** (edge/25/50/adaptive/no-trade). It does **not** replace **humanized setup acceptance** (near-miss, incomplete-but-tradable vs valid-but-skip, accept/observe) — see **E5.20.5** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md).
 
 ---
 
@@ -140,3 +140,4 @@ Entry policy research (this document) stays valid as the **governance frame**; I
 - [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md)
 - [`IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md`](./IFVG_BISI_SIBI_SMOKE_EVIDENCE_E5_14_1.md)
 - [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)
+- [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)

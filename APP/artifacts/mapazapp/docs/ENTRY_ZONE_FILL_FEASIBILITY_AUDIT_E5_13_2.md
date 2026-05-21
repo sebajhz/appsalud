@@ -91,3 +91,5 @@ Si el CSV incluye `entry_fill_feasibility_score`, el analyzer expone `entry_fill
 **E5.13.4** — Entry Variant Feasibility Audit (borde / 25 % / CE / 75 % / adaptivo) — [`ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md`](./ENTRY_VARIANT_FEASIBILITY_AUDIT_E5_13_4.md). Build `MZP_TestEA_E5_13_4`.
 
 **E5.13.5** — smoke cerrado — [`ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md`](./ENTRY_VARIANT_FEASIBILITY_SMOKE_EVIDENCE_E5_13_5.md). **E5.13.6** — outcome/risk simulation (siguiente).
+
+**Gobernanza E5.20.5:** near-miss y fill feasibility son **inputs** a la política de aceptación humanizada — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); no sustituyen readiness ni informes.

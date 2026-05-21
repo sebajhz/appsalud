@@ -7,7 +7,7 @@
 | **Checkpoint** | E5.20 — plan de arquitectura / gobernanza (docs-only) |
 | **Baseline Git** | `499843e` o posterior — `docs(mapazapp): E5.19.3 setup readiness report UX polish evidence` |
 | **Bloque cerrado upstream** | Detection / Readiness / Report V1 (E5.18 → E5.19.3) |
-| **Implementación** | **E5.20.1** índice — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); **E5.20.2** informe latest valid — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md); **E5.20.2.1 evidencia PASS** — [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md); dashboard E5.20.3+ |
+| **Implementación** | **E5.20.1** índice — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); **E5.20.2** informe latest valid — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md); **E5.20.2.1 evidencia PASS** — [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md); **E5.20.5** aceptación humanizada — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); dashboard **E5.20.3+ pausado** |
 | **Referencia contrato UI** | [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) |
 | **Referencia informe CLI** | [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md) |
 
@@ -22,6 +22,8 @@ Tras cerrar el bloque **Detection / Readiness / Report V1**, Mapazapp dispone de
 - Generador de informe read-only en CLI (`E5.19`–`E5.19.3`) con evidencia SET001 verificada.
 
 **E5.20** define el **siguiente paso operacional**: cómo Mapazapp **consumirá de forma segura** bundles exportados (TestEA / futuro BridgeEA) y los informes derivados, para **mostrarlos al operador** en dashboard o vistas de revisión — **sin** ejecutar trades, **sin** gates automáticos y **sin** aprobar edge/entry/TP.
+
+**Importante:** informes y dashboard son **capa de presentación**, no la humanización completa. La aceptación discrecional del setup está documentada en **E5.20.5** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **E5.20.3** (adaptador dashboard) queda **pausado** hasta revisión de esa política.
 
 Este checkpoint es un **corte de gobernanza** antes de cualquier trabajo de dashboard o adaptadores de datos. Responde: *¿qué entra, cómo se encuentra, cómo se valida, qué puede mostrar la UI y qué está prohibido?*
 
@@ -350,13 +352,14 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 | **E5.20.1** | Local bundle index CLI | **Done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md) | E5.20 aprobado |
 | **E5.20.1.1** | Index read-only derivation fix + evidencia | **PASS** — [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) | E5.20.1 |
 | **E5.20.2** | Latest valid report generator CLI | validate + report — **done**; evidencia **PASS** E5.20.2.1 | E5.20.1 |
-| **E5.20.3** | Dashboard read-only data adapter | TS: JSON informe → `SetupReadinessTradeView` | E5.18.5, E5.20.2 |
-| **E5.20.4** | Dashboard mock / prototype | UI read-only sin POST | E5.20.3, aprobación PM |
+| **E5.20.5** | Humanized setup acceptance policy V1 | **Done — docs** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); governance only | E5.20.2 |
+| **E5.20.3** | Dashboard read-only data adapter | TS: JSON informe → `SetupReadinessTradeView` — **pausado** | E5.18.5, E5.20.2, **E5.20.5** |
+| **E5.20.4** | Dashboard mock / prototype | UI read-only sin POST — **pausado** | E5.20.3, aprobación PM |
 | **E5.21** | Alert-only review notifications | Avisos explicativos, sin ejecución | V2-20, E5.20.4 |
 | **E5.22** | Risk / prop firm mapping | Account guard enriquecido | V2-21 |
 | *(diferido)* | Evidence-based gate / score decision | Compuertas solo con evidencia multi-bundle | Post E5.20.4 + calibraciones |
 
-**Orden recomendado:** E5.20.1 → E5.20.2 → E5.20.3 → E5.20.4 → E5.21.
+**Orden recomendado:** E5.20.1 → E5.20.2 → **E5.20.5** → E5.20.3 → E5.20.4 → E5.21.
 
 ---
 
@@ -395,3 +398,4 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 - Roadmap V2: [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
 - Guía ejecución: [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - Handoff: [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
+- Humanized acceptance: [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)

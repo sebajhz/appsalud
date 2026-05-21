@@ -44,6 +44,18 @@ The main rule:
 
 ## 3. Humanized Setup Philosophy
 
+### 3.0 Reports vs humanized acceptance (governance)
+
+**Humanization is not** AI reports, dashboard polish, or Setup Readiness presentation alone. Those layers **explain and surface** the setup (Detection / Readiness / Report V1).
+
+**Humanization is** trader-like discretionary acceptance: near-miss tolerance, accept/wait/reject/observe/no-trade under imperfect but meaningful conditions, session/news/volatility/discipline as **context** (not rigid mechanical filters), and knowing when an imperfect setup can still make sense versus when a technically valid setup should be skipped.
+
+> Detection / Readiness / Report V1 explains the setup, but does not complete humanized setup acceptance. Humanization requires a separate policy defining when a trader-like system would accept, wait, reject, observe, or no-trade based on imperfect but meaningful setup conditions.
+
+**Policy checkpoint (docs-only):** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **Dashboard adapter E5.20.3** remains paused until this alignment is reviewed.
+
+---
+
 Mapazapp does not assume that a valid trade always has one fixed entry model.
 
 A professional trader may enter the same structural idea from different logical locations depending on:
@@ -491,7 +503,7 @@ Export setup state for BridgeEA/dashboard:
 - invalidated
 - target reached
 
-**Setup Readiness Checklist V1 (export — done):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); smoke [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md). Read-only aggregation from diagnostics; **Candidate / Wait / Reject**; critical blockers can override high score (e.g. `pd_conflict`). **Not** a live execution panel; manual-control aligned. **Report V1 (done):** E5.19.1–E5.19.3 PASS. **E5.20.1 (done):** [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md). **E5.20 (plan):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md). **Next:** E5.20.2+ or E5.18.6+.
+**Setup Readiness Checklist V1 (export — done):** [`SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md`](./SETUP_READINESS_CHECKLIST_EXPORT_E5_18.md); smoke [`SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md`](./SETUP_READINESS_CHECKLIST_SMOKE_EVIDENCE_E5_18_1.md). Read-only aggregation from diagnostics; **Candidate / Wait / Reject**; critical blockers can override high score (e.g. `pd_conflict`). **Not** a live execution panel; manual-control aligned. **Not** the full humanized acceptance policy — see **E5.20.5**. **Report V1 (done):** E5.19.1–E5.19.3 PASS. **E5.20.1–E5.20.2 (done).** **E5.20.5 (done — docs):** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **E5.20 (plan):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md). **Next:** E5.20.3 (**paused**) or E5.18.6+.
 
 ### E5.19 — Forward Demo Read-only
 
@@ -507,7 +519,7 @@ Goal:
 
 ### E5.20 — BridgeEA / Dashboard Read-only Consumption (plan)
 
-**Done:** E5.20 plan + **E5.20.1** bundle index CLI ([`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md)). **Pending:** E5.20.2–E5.20.4 dashboard path. **No** live trading.
+**Done:** E5.20 plan + **E5.20.1** bundle index CLI ([`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md)) + **E5.20.2** latest valid report CLI. **E5.20.5 (done — docs):** humanized setup acceptance policy alignment — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **Pending (paused):** E5.20.3–E5.20.4 dashboard path until E5.20.5 reviewed. **No** live trading.
 
 ### E5.20+ / deferred — Evidence-Based Gate / Score Decision
 

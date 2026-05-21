@@ -205,6 +205,8 @@ Agregaciones útiles (research / gobernanza, no optimización automática de edg
 
 El checklist queda **autorizado para dashboard/reporting** si se cumple la política (§8–§10) y el contrato E5.18.5. Hasta implementación UI, tratar exports como **observación de campaña**.
 
+**No confundir con humanización completa:** `candidate` / `wait` / `reject` son diagnóstico de readiness, no la política de **aceptación discrecional** del setup (near-miss, accept/observe/no-trade, incomplete-but-tradable vs valid-but-skip). Ver **E5.20.5** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md).
+
 ---
 
 ## 13. Tracks de código futuros (no implementar en E5.18.4)
@@ -218,6 +220,7 @@ El checklist queda **autorizado para dashboard/reporting** si se cumple la polí
 | **E5.18.6** | Readiness severity calibration audit | Comparar severidad de blockers entre bundles; research-only |
 | **E5.18.7** | Per-symbol readiness profile comparison | XAUUSD M15 vs otros perfiles |
 | **Posterior (gobernanza)** | Cambios opcionales MQL5 score/decision | Solo tras aprobación explícita en [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) |
+| **E5.20.5** | Humanized setup acceptance policy V1 | **Done — docs** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); pausa E5.20.3 |
 
 ---
 
@@ -228,3 +231,4 @@ El checklist queda **autorizado para dashboard/reporting** si se cumple la polí
 - Auditor: [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_E5_18_2.md)
 - Evidencia: [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md)
 - Gobernanza visual: [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md)
+- Aceptación humanizada: [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md)

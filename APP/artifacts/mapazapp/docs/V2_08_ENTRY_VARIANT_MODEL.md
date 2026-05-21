@@ -56,3 +56,7 @@ Opcional (`treatClearConfirmationAsConfirmationCloseStyle`): si es `true` y la c
 ## Sin ejecución
 
 Sin órdenes, sin MT5, sin BridgeEA/TestEA, sin DB, watcher, WebSocket, scanner en vivo ni mutación de registry.
+
+## Track E5 (gobernanza TestEA)
+
+Clasificaciones como `accepted_entry` / `weak_observe_entry` alinean el **concepto** de entrada imperfecta aceptable con near-miss y retest en E5.13.2. La **política de aceptación humanizada del setup** (accept/wait/reject/observe/no-trade a nivel setup, no solo variante de precio) está en [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). V2-08 **no** la implementa ni autoriza cambio de entry oficial (**50 % / CE**).

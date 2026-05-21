@@ -3,6 +3,7 @@
 ## Por qué existe este roadmap
 
 - El objetivo es acercar Mapazapp al **razonamiento de un trader discrecional real**, sin copiar cursos ni «influencers» de forma acrítica.
+- **Humanización ≠ informes ni dashboard:** Detection / Readiness / Report V1 **explican** el setup; la **aceptación humanizada** es una política aparte (near-miss, accept/wait/reject/observe/no-trade, contexto discrecional). Ver [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md).
 - **El FVG es una zona**, no una entrada automática por sí sola.
 - **La toma de liquidez (sweep) no basta** para validar un setup.
 - Un **candidato operable** necesita contexto, reacción, estructura, confirmación, objetivo, invalidación y conciencia de sesión/riesgo — todo **medible y auditable**.
@@ -74,7 +75,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.20** | **BridgeEA / Dashboard read-only consumption plan** | **completed (docs)** — [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md) |
 | **E5.20.1** | Bundle index CLI | **done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); evidencia PASS [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) |
 | **E5.20.2** | Latest valid report CLI | **done** — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md); evidencia **PASS** [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) |
-| **E5.20.3–E5.20.4** | Dashboard adapter, mock UI | planificado — E5.20 §12 |
+| **E5.20.5** | **Humanized Setup Acceptance Policy V1** (governance) | **done — docs** — [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md); **pausa** E5.20.3 hasta revisión PM |
+| **E5.20.3–E5.20.4** | Dashboard adapter, mock UI | **pausado** — tras E5.20.5; E5.20 §12 |
 | **E5.21** | Alert-only review notifications | planificado — V2-20 |
 | **E5.22** | Risk / prop firm mapping | planificado — V2-21 |
 | *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |
@@ -394,7 +396,25 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 ---
 
-## K. Compuerta basada en evidencia (checkpoint explícito)
+## K. Aceptación humanizada del setup (E5.20.5)
+
+### E5.20.5 — Humanized Setup Acceptance Policy V1 (**cerrado — docs / gobernanza**)
+
+**Documento:** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md).
+
+**Propósito:** colocar en el roadmap la distinción entre **presentación** (informes, dashboard, readiness) y **criterio discrecional de aceptación** (tolerancia near-miss, incomplete-but-tradable vs valid-but-skip, accept/wait/reject/observe/no-trade, contexto sesión/noticias/volatilidad/disciplina).
+
+**Frase canónica:**
+
+> Detection / Readiness / Report V1 explains the setup, but does not complete humanized setup acceptance. Humanization requires a separate policy defining when a trader-like system would accept, wait, reject, observe, or no-trade based on imperfect but meaningful setup conditions.
+
+**Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
+
+**Siguiente:** revisión PM → **E5.20.3** (adapter) o calibración futura de política en exports (checkpoint separado con gobernanza explícita).
+
+---
+
+## L. Compuerta basada en evidencia (checkpoint explícito)
 
 ### E5.20 — BridgeEA / Dashboard read-only consumption (cerrado — plan)
 
@@ -423,4 +443,5 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md`](./ENTRY_QUALITY_SCORE_CALIBRATION_EVIDENCE_E5_9_1.md) (§12 capacidades de score — reconciliar con esta numeración E5.11+)
+- [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) (aceptación humanizada vs reporting)
 - [`PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md`](./PROFESSIONAL_SETUP_ENTRY_AUDIT_E5_5_2.md) (§15 roadmap histórico — reconciliar naming)
