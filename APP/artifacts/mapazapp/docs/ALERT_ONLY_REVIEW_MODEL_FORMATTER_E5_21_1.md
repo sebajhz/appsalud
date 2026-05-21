@@ -10,6 +10,7 @@
 | **Entrada** | `dashboard_readonly_view.json` (E5.20.3) |
 | **Salida** | `alert_review_queue.jsonl` + `alert_review_summary.json` |
 | **Sin canales** | No Telegram, email, push, panel dashboard, MT5, trading |
+| **Evidencia operador (E5.21.1.1)** | [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) — **PASS** |
 
 ---
 
@@ -104,6 +105,8 @@ pnpm --filter @workspace/scripts test
 
 ## Siguiente recomendado
 
-**E5.21.1.1** — evidencia operador SET001: generar cola desde `dashboard_readonly_view.json` real (`_local_E5_20_3_1_*`).
+**E5.21.1.1** — **PASS** — [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md): 12 alertas SET001; JSONL + summary local.
+
+**Siguiente recomendado:** **E5.21.2** — gestor cola JSONL (estados) o decisión roadmap PM.
 
 **Referencias:** [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md), [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md).

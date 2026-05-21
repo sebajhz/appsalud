@@ -97,6 +97,7 @@ Dimensiones explícitas:
 | **E5.20.4.2** | **Cerrado (bloque)** | [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md) — cierre consumo read-only E5.20 |
 | **E5.21** | **Done (plan)** | [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md) — alertas solo revisión; sin ejecución |
 | **E5.21.1** | **Done (formatter)** | [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) — JSONL local; sin canales |
+| **E5.21.1.1** | **PASS (evidencia)** | [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) — SET001; 12 alertas; sin envío |
 
 ---
 
@@ -166,7 +167,8 @@ E5.20.4.1 Mock operator evidence          [PASS — DASHBOARD_READONLY_MOCK_EVID
 E5.20.4.2 Read-only consumption closure   [closed — READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2]
 E5.21     Alert-only plan (docs)          [done — ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21]
 E5.21.1   Alert model + formatter         [done — ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1]
-E5.21.x+  Channels / panel              [deferred — PM approval]
+E5.21.1.1 Formatter evidence            [PASS — ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1]
+E5.21.2+  Queue manager / channels      [deferred — PM approval]
 ```
 
 **Orden recomendado:** E5.20.5 → E5.20.6 → revisión PM → **E5.20.3** → E5.20.4 → E5.21.

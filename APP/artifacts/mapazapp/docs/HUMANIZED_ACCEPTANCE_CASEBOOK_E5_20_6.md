@@ -562,3 +562,4 @@ El adaptador (**E5.20.3**) y el mock HTML (**E5.20.4** — [`DASHBOARD_READONLY_
 - [`READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md`](./READONLY_CONSUMPTION_BLOCK_CLOSURE_E5_20_4_2.md) — cierre bloque E5.20 read-only
 - [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md) — alertas review-only; HA como explicación, no permiso
 - [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) — generación local desde `dashboard_readonly_view.json`
+- [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) — evidencia SET001 PASS; `missing_measurement_notice` HA-007/008

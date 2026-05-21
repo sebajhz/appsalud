@@ -155,7 +155,8 @@ Cualquier implementación E5.21 debe validar plantillas contra esta lista antes 
 |------|-------|------------|
 | **1** | **E5.21** | **Done (docs)** — [`ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md`](./ALERT_ONLY_REVIEW_NOTIFICATIONS_PLAN_E5_21.md) |
 | **2** | **E5.21.1** formatter local — [`ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md`](./ALERT_ONLY_REVIEW_MODEL_FORMATTER_E5_21_1.md) |
-| **3** | *(post-PM)* | E5.21.1.1 evidencia; E5.21.2+ canales |
+| **3** | **E5.21.1.1** evidencia PASS — [`ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md`](./ALERT_ONLY_REVIEW_FORMATTER_EVIDENCE_E5_21_1_1.md) |
+| **4** | *(post-PM)* | E5.21.2+ cola / canales |
 | **3** | *(diferido)* | E5.22 risk/prop; gates con evidencia multi-bundle |
 
 **No** iniciar implementación de alertas en el mismo checkpoint que este cierre (E5.20.4.2).
