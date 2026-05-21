@@ -155,7 +155,7 @@ pnpm --filter @workspace/scripts test
 
 ## Siguiente paso
 
-**E5.20.2** — CLI que valida el último bundle válido por clave y genera informe readiness en un solo flujo operador.
+**E5.20.2 (done):** [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md) — `mapazapp:testea-latest-valid-report`. **Siguiente:** E5.20.2.1 evidencia operador o E5.20.3.
 
 ---
 

@@ -117,6 +117,7 @@ export * from "./buffered-evos-export-keys";
 export * from "./ifvg-bisi-sibi-export-keys";
 export * from "./testea-export-bundle-validate";
 export * from "./testea-bundle-index";
+export * from "./testea-latest-valid-report";
 export * from "./testea-ambiguity-sensitivity";
 export * from "./testea-entry-variant-outcome-simulation";
 export * from "./testea-entry-variant-outcome-reconciliation";
@@ -126,6 +127,10 @@ export * from "./testea-liquidity-target-realism-audit";
 export * from "./testea-execution-environment-calibration-audit";
 export * from "./testea-setup-readiness-decision-calibration-audit";
 export * from "./testea-setup-readiness-report";
+export {
+  buildSetupReadinessSummaryPlaceholders,
+  SETUP_READINESS_OPTIMIZATION_PARAMETER_KEYS,
+} from "./setup-readiness-export-keys";
 export * from "./frequency-risk-discipline-export-keys";
 export * from "./testea-score-calibration";
 export * from "./export-sample-validation-fixtures";

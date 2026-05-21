@@ -7,7 +7,7 @@
 | **Checkpoint** | E5.20 — plan de arquitectura / gobernanza (docs-only) |
 | **Baseline Git** | `499843e` o posterior — `docs(mapazapp): E5.19.3 setup readiness report UX polish evidence` |
 | **Bloque cerrado upstream** | Detection / Readiness / Report V1 (E5.18 → E5.19.3) |
-| **Implementación** | **E5.20.1** índice CLI — ver [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); dashboard/informe batch en E5.20.2+ |
+| **Implementación** | **E5.20.1** índice CLI — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md); **E5.20.2** informe latest valid — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md); dashboard E5.20.3+ |
 | **Referencia contrato UI** | [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md) |
 | **Referencia informe CLI** | [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md) |
 
@@ -175,18 +175,27 @@ pnpm --filter @workspace/scripts mapazapp:testea-export-validate -- \
 
 ## 6. Modelo de generación de informes
 
-### Flujo operador futuro (post E5.20, implementación E5.20.2)
+### Flujo operador (E5.20.2 implementado)
 
 ```text
-1. Detectar último bundle válido (perfil / campaña)
-2. Validar con mapazapp:testea-export-validate
-3. Ejecutar mapazapp:testea-setup-readiness-report
-4. Escribir artefactos en carpeta local *_DO_NOT_COMMIT o bajo run (política operador)
-5. Dashboard lee setup_readiness_report.json
-6. Operador abre .md / .html para revisión profunda opcional
+1. mapazapp:testea-bundle-index (o índice existente)
+2. mapazapp:testea-latest-valid-report — selección latest_valid + re-validación + informe E5.19
+3. Artefactos en --output-dir local *_DO_NOT_COMMIT
+4. Dashboard lee setup_readiness_report.json (E5.20.3+)
+5. Revisión humana .md / .html opcional
 ```
 
-### Comando de referencia
+### Comando recomendado (E5.20.2)
+
+```bash
+pnpm --filter @workspace/scripts mapazapp:testea-latest-valid-report -- \
+  --root "<TestEaRoot>" \
+  --output-dir "<local>_DO_NOT_COMMIT" \
+  --symbol XAUUSD --timeframe M15 \
+  --json
+```
+
+### Comando manual por bundle (E5.19)
 
 ```bash
 pnpm --filter @workspace/scripts mapazapp:testea-setup-readiness-report -- \
@@ -340,7 +349,7 @@ Cualquier desviación requiere checkpoint de gobernanza y actualización de Nort
 |----|-------|------------|------------|
 | **E5.20.1** | Local bundle index CLI | **Done** — [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md) | E5.20 aprobado |
 | **E5.20.1.1** | Index read-only derivation fix + evidencia | **PASS** — [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) | E5.20.1 |
-| **E5.20.2** | Latest valid report generator CLI | validate + report en un comando | E5.20.1 |
+| **E5.20.2** | Latest valid report generator CLI | validate + report en un comando — **done** | E5.20.1 |
 | **E5.20.3** | Dashboard read-only data adapter | TS: JSON informe → `SetupReadinessTradeView` | E5.18.5, E5.20.2 |
 | **E5.20.4** | Dashboard mock / prototype | UI read-only sin POST | E5.20.3, aprobación PM |
 | **E5.21** | Alert-only review notifications | Avisos explicativos, sin ejecución | V2-20, E5.20.4 |

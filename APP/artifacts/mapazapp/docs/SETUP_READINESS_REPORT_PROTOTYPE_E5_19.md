@@ -98,4 +98,4 @@ Opciones:
 
 Bloque **Detection / Readiness / Report V1** cerrado (E5.19.3 PASS). Plan consumo dashboard: [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 
-**E5.20.1 cerrado:** [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md). **Siguiente:** **E5.20.2** latest valid report generator CLI.
+**E5.20.1 cerrado:** [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md). **E5.20.2:** [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md) — `mapazapp:testea-latest-valid-report`.
