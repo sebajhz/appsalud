@@ -186,7 +186,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.18.4 (policy):** [`SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md`](./SETUP_READINESS_DECISION_POLICY_REFINEMENT_E5_18_4.md).
 - **E5.18.5 (contract):** [`SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md`](./SETUP_READINESS_DASHBOARD_REPORT_CONTRACT_E5_18_5.md).
 - **E5.19.3 (UX evidencia):** [`SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md`](./SETUP_READINESS_REPORT_UX_POLISH_EVIDENCE_E5_19_3.md) — PASS; bloque Report V1 cerrado.
-- **E5.20.2:** [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md). **E5.20.1.1 evidencia PASS:** [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md). **Siguiente:** E5.20.2.1 o E5.20.3.
+- **E5.20.2.1 evidencia PASS:** [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md). **E5.20.2:** [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md). **Siguiente:** E5.20.3.
 - **E5.20 (plan consumo):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
@@ -308,6 +308,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.20.1 | **Local bundle index CLI** | **completed** | Core + scripts | [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md) | E5.20.1.1 |
 | E5.20.1.1 | **Index read-only derivation fix + evidence** | **completed (PASS)** | Core + docs | [`LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md`](./LOCAL_BUNDLE_INDEX_CLI_EVIDENCE_E5_20_1_1.md) | **E5.20.2** |
 | E5.20.2 | **Latest valid report generator CLI** | **completed** | Core + scripts + docs | [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md) | **E5.20.2.1** |
+| E5.20.2.1 | **Latest valid report operator evidence** | **completed (PASS)** | Docs | [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) | **E5.20.3** |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |
 | E6 | Import MT5 backtest evidence into Mapazapp | pending | Cursor | Ingesta controlada; sin watcher sin aprobación. | |
 | E7 | Dashboard results design | pending | PM + Cursor | Después de evidencia real. | |

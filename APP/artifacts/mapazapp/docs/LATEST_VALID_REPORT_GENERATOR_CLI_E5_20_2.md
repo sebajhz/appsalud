@@ -5,7 +5,8 @@
 | Campo | Valor |
 |-------|-------|
 | **Checkpoint** | E5.20.2 — informe Setup Readiness para el último bundle válido indexado |
-| **Baseline Git** | `3cf08dc` o posterior — E5.20.1.1 evidencia índice local |
+| **Baseline Git** | `65720b0` o posterior — E5.20.2 implementación |
+| **Evidencia operador** | **PASS** — [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) |
 | **Depende de** | E5.20.1 (`mapazapp:testea-bundle-index`), E5.19 (`mapazapp:testea-setup-readiness-report`) |
 | **Alcance** | Selección desde `latest_valid_by_key` + re-validación + artefactos MD/JSON/HTML |
 | **Excluido** | Dashboard, MQL5, MT5, Strategy Tester, trading, mutación de carpetas bundle MT5 por defecto |
@@ -120,4 +121,4 @@ El cálculo del informe reutiliza **E5.19** sin cambiar scoring ni decisiones.
 
 ## Siguiente paso
 
-**E5.20.2.1** — evidencia operador en raíz TestEA real (SET001, `report_missing` → informe generado en carpeta local `*_DO_NOT_COMMIT`).
+**E5.20.3** — adaptador dashboard read-only que consume `setup_readiness_report.json`.

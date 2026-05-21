@@ -181,4 +181,4 @@ Resultado coherente con el índice post E5.20.1.1: `ok=true`, `status=warning`, 
 - [`SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md`](./SETUP_READINESS_REPORT_PROTOTYPE_E5_19.md)
 - [`TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md`](./TESTEA_EXPORT_BUNDLE_VALIDATION_E4_1.md)
 
-**Siguiente recomendado:** **E5.20.2.1** evidencia operador — [`LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_E5_20_2.md) (E5.20.2 implementado).
+**Siguiente recomendado:** **E5.20.3** dashboard adapter — evidencia informe latest valid: [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) (**PASS**).
