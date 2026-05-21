@@ -91,6 +91,7 @@ Dimensiones explícitas:
 | **Dashboard adapter** (E5.20.3) | **Done** | Consume informe; respeta E5.20.5 + E5.18.5; no permiso de trade |
 | **E5.20.3.0.1** | **Done** | Fallback `main_reason` cuando no hay bloqueador duro; CLI compact = campaña |
 | **E5.20.3.0.2** | **Done** | `decision_summary` persistido = campaña; `trade_card_decision_summary` = tarjetas ejemplo |
+| **E5.20.3.1** | **PASS (evidencia)** | [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md) — adaptador UI-ready; read-only |
 
 ---
 

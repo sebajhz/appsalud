@@ -6,6 +6,7 @@
 |-------|-------|
 | **Checkpoint** | E5.20.3 — adaptador TypeScript read-only |
 | **Fix** | **E5.20.3.0.1** — fallback `main_reason` + CLI compact campaña; **E5.20.3.0.2** — `decision_summary` persistido = campaña (`trade_card_decision_summary` = ejemplo) |
+| **Evidencia operador** | **E5.20.3.1 PASS** — [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md) |
 | **Baseline Git** | `b4d3d5f` o posterior — E5.20.3 adaptador |
 | **Tipo** | Capa de presentación / consumo UI — **sin** MQL5, MT5, Strategy Tester, trading, gates |
 | **Política / casebook** | [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md), [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) |
@@ -121,4 +122,4 @@ pnpm --filter @workspace/mapazapp-core test
 
 ## 9. Siguiente recomendado
 
-**E5.20.3.1** — **re-ejecutar** evidencia operador tras **E5.20.3.0.2** usando salida de [`LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md`](./LATEST_VALID_REPORT_GENERATOR_CLI_EVIDENCE_E5_20_2_1.md) → `dashboard_readonly_view.json` (`ok=true`, `decision_summary` 247/150/1300, `trade_card_decision_summary` ≈ conteo tarjetas ejemplo, `trade_cards_count`=10).
+**E5.20.3.1** — **PASS** — [`DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md`](./DASHBOARD_READONLY_ADAPTER_EVIDENCE_E5_20_3_1.md) (SET001, `ok=true`, `decision_summary` 247/150/1300, `trade_cards_count`=10). **Siguiente:** **E5.20.4** mock UI read-only.
