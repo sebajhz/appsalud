@@ -11,7 +11,8 @@
 | **E5.22 evidencia** | [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) — PASS técnico; confirma alineación |
 | **E5.22.2** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md) — implementado |
 | **E5.22.2.1** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
-| **Siguiente recomendado** | **E5.22.4** HA measurability **o** **E5.23** optimization governance (PM) |
+| **E5.22.3** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
+| **Siguiente recomendado** | **E5.22.4** HA measurability audit |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, MetaEditor, Strategy Tester, Telegram, gates, live trading, entry/TP, aprobación edge/25/adaptive |
 
 ---

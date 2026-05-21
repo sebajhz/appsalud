@@ -10,7 +10,8 @@
 | **Implementación previa** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md) |
 | **Bundle ST previo** | [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) — SET001, `MZP_TestEA_E5_18` |
 | **Decisión** | **PASS técnico** — con caveats de gobernanza (sin gate, sin live, sin aprobación edge/25/adaptive) |
-| **Siguiente recomendado** | **E5.22.4** HA measurability audit **o** **E5.23** optimization governance — decisión PM |
+| **Trade model (E5.22.3)** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
+| **Siguiente recomendado** | **E5.22.4** HA measurability audit |
 | **Sin cambios** | MQL5, TypeScript, MT5, Strategy Tester, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard |
 
 ---
@@ -318,3 +319,4 @@ Detalle en JSON local (`examples`).
 - [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md)
 - [`SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md`](./SETUP_READINESS_DECISION_CALIBRATION_AUDIT_EVIDENCE_E5_18_3.md)
 - [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md)
+- [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md)

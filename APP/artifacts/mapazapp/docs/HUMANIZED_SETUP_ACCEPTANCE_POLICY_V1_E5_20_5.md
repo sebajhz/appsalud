@@ -192,7 +192,7 @@ E5.21.2+  Queue manager / channels      [deferred — PM approval]
 
 Esta política permanece **aprobada** como gobernanza. **No** implementa aceptación en MQL5.
 
-**E5.22.2 / E5.22.2.1** baseline audit repo + evidencia SET001 **PASS** ([`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md)). Política humanizada sigue **sin** MQL5. Prioridad: **E5.22.4** **o** **E5.23** (PM). Dashboard/alertas (E5.21.3+) **pausados**.
+**E5.22.2 / E5.22.2.1 / E5.22.3** baseline **PASS** + trade model ([`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md), [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md)). Política humanizada sigue **sin** MQL5. Prioridad: **E5.22.4**. Dashboard/alertas (E5.21.3+) **pausados**.
 
 Ver: [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md), [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
 

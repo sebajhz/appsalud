@@ -9,7 +9,8 @@
 | **Bundle de referencia** | SET001 — `MZP_TestEA_E5_18` — ver [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md) |
 | **Implementación** | `@workspace/mapazapp-core` + CLI `@workspace/scripts` |
 | **Evidencia operador** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
-| **Siguiente recomendado** | **E5.22.4** HA measurability **o** **E5.23** optimization governance (PM) |
+| **Trade model (E5.22.3)** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
+| **Siguiente recomendado** | **E5.22.4** HA measurability audit |
 | **Sin cambios** | MQL5, entry, TP, gates, live, aprobación edge/25/adaptive |
 
 ---
@@ -119,6 +120,7 @@ Tras correr sobre evidencia E5.22, se esperan flags como:
 - **E5.22.0.1** — alineación MT5/repo; winrate ~44,77 % esperado.
 - **E5.22.1** — export compatibility (consumidores E5.18–E5.21).
 - **E5.22.2.1** — evidencia operador SET001 — [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS**.
+- **E5.22.3** — representación trade model — [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md).
 
 ---
 

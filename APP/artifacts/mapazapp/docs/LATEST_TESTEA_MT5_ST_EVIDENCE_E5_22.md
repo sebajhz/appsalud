@@ -9,7 +9,8 @@
 | **Baseline Git** | `c6c012e` o posterior — `docs(mapazapp): E5.22.0.1 align MT5 repo strategy state` |
 | **Checkpoint previo** | [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) |
 | **Decisión** | **PASS técnico** — con caveats de gobernanza (sin aprobación de estrategia) |
-| **Siguiente recomendado** | **E5.22.4** HA measurability **o** **E5.23** optimization governance (PM) |
+| **Trade model (E5.22.3)** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
+| **Siguiente recomendado** | **E5.22.4** HA measurability audit |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5 adicional, Strategy Tester adicional, gates, live, entry/TP, aprobación edge/25/adaptive |
 
 ---
@@ -451,6 +452,10 @@ CLI: `mapazapp:testea-setup-performance-baseline-audit` — ver [`SETUP_PERFORMA
 ### E5.22.2.1 — Setup Performance Baseline Audit Evidence — **PASS (docs)**
 
 Evidencia operador SET001 — ver [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md). Readiness significativo; sin gate/live/edge approval.
+
+### E5.22.3 — Trade Model Visual/Textual Representation — **docs**
+
+Representación textual/spec del setup — ver [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md). Puente hacia E5.22.4 (HA measurability).
 
 Analizar outcome/R por:
 

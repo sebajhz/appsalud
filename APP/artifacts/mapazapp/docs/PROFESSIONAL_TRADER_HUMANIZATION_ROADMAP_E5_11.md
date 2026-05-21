@@ -94,6 +94,7 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.22** | Latest TestEA compile + ST evidence refresh | **completed (PASS)** |
 | **E5.22.2** | Setup performance baseline audit | **completed (repo)** — [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md) |
 | **E5.22.2.1** | Setup performance baseline audit evidence | **completed (PASS)** — [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) |
+| **E5.22.3** | Trade model visual/textual representation | **completed (docs)** — [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
 | **E5.22.4** | Humanized casebook measurability audit | planificado — HA-001…HA-010 |
 | **E5.23** | Optimization governance / symbol profiles | planificado |
 | *(diferido)* | Risk / prop firm mapping | V2-21 — no confundir con E5.22 |
@@ -428,7 +429,7 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
 
-**E5.22.2 / E5.22.2.1:** baseline audit repo + evidencia SET001 **PASS** — [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md). **Siguiente:** **E5.22.4** medibilidad HA **o** **E5.23** (PM). E5.21.3+ pausado.
+**E5.22.2 / E5.22.2.1 / E5.22.3:** baseline **PASS** + trade model textual — [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md), [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md). **Siguiente:** **E5.22.4** medibilidad HA. E5.21.3+ pausado.
 
 ### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
 
