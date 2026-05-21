@@ -186,4 +186,6 @@ Sigue **read-only**: sin MT5, sin Strategy Tester, sin trading, sin modificar vi
 
 **E5.21.2:** gestor de cola JSONL — [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md).
 
-**Siguiente recomendado:** **E5.21.2.1** — evidencia operador sobre cola SET001 local.
+**E5.21.2.1:** evidencia cola **PASS** — [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md).
+
+**Siguiente recomendado:** decisión roadmap PM — E5.21.3 panel o E5.21.4 Telegram review-only.

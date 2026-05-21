@@ -9,7 +9,7 @@
 ## E5.20.6 checkpoint context
 
 - **Cerrado (casebook docs):** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md) — HA-001 … HA-010; ejemplos técnicos; `implementation_status` por caso; **sin** código; Cursor no infiere lógica fuera de casos definidos.
-- **E5.21.2 cola JSONL:** [`ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md`](./ALERT_REVIEW_QUEUE_MANAGER_E5_21_2.md). **Siguiente:** E5.21.2.1 evidencia operador.
+- **E5.21.2.1 evidencia PASS:** [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md). **Siguiente:** E5.21.3 / E5.21.4 (PM).
 
 ## E5.20.5 checkpoint context
 
@@ -64,7 +64,7 @@
 - **Cerrado (repo export):** [`IFVG_BISI_SIBI_EXPORT_E5_14.md`](./IFVG_BISI_SIBI_EXPORT_E5_14.md).
 - **Cerrado (research docs):** Entry candidate policy — [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md).
 - **Siguiente recomendado:** **E5.16** session/spread/volatility.
-- **E5.21 / E5.21.1 / E5.21.1.1 / E5.21.2:** plan + formatter + evidencia PASS + cola JSONL. **Siguiente:** E5.21.2.1.
+- **E5.21 / E5.21.1 / E5.21.1.1 / E5.21.2 / E5.21.2.1:** plan + formatter + cola JSONL + evidencias PASS. **Siguiente:** E5.21.3 o E5.21.4 (PM).
 
 ## E5.13.6.12 checkpoint context
 
@@ -315,7 +315,7 @@ Interpretation:
 - **Must not add:** watcher daemon, auto-import, hidden background scans.
 - **Validation required:** import UX/CLI flow tests + parser integration tests.
 - **Definition of done:** operator can manually import data and launch analysis reproducibly.
-- **E5.20 alignment:** E5.20 cerrado; **E5.21.2** cola local done; **E5.21.2.1+** evidencia/canales tras PM.
+- **E5.20 alignment:** E5.20 cerrado; **E5.21.2.1** PASS; **E5.21.3+** panel/canales tras PM.
 
 ### V2-18 — Persistence Decision / Local SQLite Design
 

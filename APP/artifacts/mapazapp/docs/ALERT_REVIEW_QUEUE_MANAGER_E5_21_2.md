@@ -9,6 +9,7 @@
 | **Entrada** | `alert_review_queue.jsonl` (salida E5.21.1) |
 | **Salida** | Cola JSONL actualizada (copia por defecto; `--in-place` opcional) |
 | **Sin envío** | No Telegram, email, push, MT5, broker APIs, trading, gates |
+| **Evidencia operador (E5.21.2.1)** | [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md) — **PASS** |
 
 ---
 
@@ -151,4 +152,4 @@ pnpm --filter @workspace/scripts test
 
 ## Siguiente recomendado
 
-**E5.21.2.1** — evidencia operador sobre cola SET001 local (`_local_*_DO_NOT_COMMIT`).
+**E5.21.2.1:** evidencia operador **PASS** — [`ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md`](./ALERT_REVIEW_QUEUE_MANAGER_EVIDENCE_E5_21_2_1.md). **Siguiente:** E5.21.3 panel read-only o E5.21.4 Telegram (PM).
