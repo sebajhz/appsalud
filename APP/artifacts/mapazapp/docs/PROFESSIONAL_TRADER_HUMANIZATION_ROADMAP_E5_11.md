@@ -95,7 +95,8 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.22.2** | Setup performance baseline audit | **completed (repo)** — [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md) |
 | **E5.22.2.1** | Setup performance baseline audit evidence | **completed (PASS)** — [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) |
 | **E5.22.3** | Trade model visual/textual representation | **completed (docs)** — [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
-| **E5.22.4** | Humanized casebook measurability audit | planificado — HA-001…HA-010 |
+| **E5.22.4** | Humanized casebook measurability audit | planificado — HA-001…HA-010 + 5-way PM class |
+| **E5.22.5** | Humanized activation / trade-set delta design | planificado — research vs baseline oficial |
 | **E5.23** | Optimization governance / symbol profiles | planificado |
 | *(diferido)* | Risk / prop firm mapping | V2-21 — no confundir con E5.22 |
 | *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |

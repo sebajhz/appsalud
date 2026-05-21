@@ -262,8 +262,11 @@ Fuente de datos: `backtest_trades.csv` + ejemplos en JSON de E5.22.2.1 (`reject_
 | **Qué no es** | IA generativa ni discreción libre sin trazabilidad a checklist/export |
 | **Estados objetivo (futuro)** | accept for manual review, wait, reject, observe, no-trade |
 | **Estado hoy** | Gobernanza + casebook ([`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md)) — **no** lógica MQL5 de aceptación oficial |
+| **Futuro (PM)** | Debe **afectar el trade set** (oficial o research) — no solo informes |
 
-Readiness **informa** la capa humanizada; no la sustituye. La aceptación humanizada final requiere **E5.22.4** (qué casos HA son medibles con campos actuales).
+Readiness **informa** la capa humanizada; no la sustituye. La humanización **real** no es válida si solo cambia wording: debe poder medirse como **cambio en qué trades entran al conjunto simulado** (ver §17).
+
+**E5.22.2.1** demuestra que readiness separa outcome, pero el outcome MT5 oficial sigue siendo 50 %/CE sin filtros humanizados activos.
 
 ---
 
@@ -328,10 +331,62 @@ Ninguna etapa anterior implica cambiar entry/TP ni aprobar variantes.
 
 1. Tomar casos **HA-001…HA-010** del casebook.
 2. Mapearlos a campos disponibles en esta representación (Stage A/B/C + plantilla §8).
-3. Marcar **missing measurement** donde el export no alcanza.
-4. Priorizar gaps que impiden distinguir accept / wait / reject / observe / no-trade con trazabilidad.
+3. Clasificar **cada concepto** en una de estas cinco categorías (obligatorio):
+
+| # | Categoría | Significado |
+|---|-----------|-------------|
+| 1 | **Measurable humanized** | Medible hoy con export + post-proceso TS |
+| 2 | **Policy-only** | Solo E5.20.5/20.6; no altera trades |
+| 3 | **Could change trade set later** | Puede incluir/excluir/reclasificar trades tras calibración |
+| 4 | **Explain/report only today** | Solo explica readiness/outcome actual (dashboard, alertas, informes) |
+| 5 | **Requires new export fields** | Bloqueado hasta nuevo campo MQL5 |
+
+4. Marcar **missing measurement** donde el export no alcanza.
+5. Priorizar gaps que impiden **trade-set delta** futuro (§17), no solo wording.
 
 Este documento es el **puente** entre audit de performance (E5.22.2.1) y medibilidad de aceptación humanizada (E5.22.4).
+
+---
+
+## 17. Requisito futuro — trade-set delta audit
+
+**No implementar en E5.22.3 / E5.22.4.** Documentar como requisito de verdad para humanización activa.
+
+Cuando exista una política humanizada **research** (sin cambiar entry/TP oficial aún), todo activation checkpoint debe comparar contra **baseline oficial 50 % / CE**:
+
+| Bucket research (ejemplos) | Efecto esperado en trade set |
+|----------------------------|------------------------------|
+| Accepted trades | Incluidos en conjunto humanizado |
+| Rejected trades | Excluidos vs baseline |
+| Rescued rejects | Re-incluidos (p. ej. `pd_conflict` no dañino) |
+| Wait → candidate | Reclasificación + posible inclusión |
+| Near-miss accepted | Puede **aumentar** `filled_count` |
+| No-chase skipped | Puede **reducir** trades perseguidos |
+| IFVG-conflict skipped | Reduce trades tóxicos (E5.22.2.1: -248R segmento) |
+| PD-conflict recalibrated | Reclasifica sin hard reject |
+
+**Métricas delta obligatorias:**
+
+- `trade_count`, `filled_count`, `skipped_count`
+- `total_r`, `avg_r`, `winrate`
+- `max_drawdown_r`, `ambiguous_count`, `expired_unfilled_count`
+- Matriz `candidate` / `wait` / `reject` (transiciones)
+- **Razón por trade** añadido, eliminado o reclasificado (trazabilidad HA + blocker)
+
+La humanización solo cuenta como implementada en motor si este delta es **reproducible** en bundle benchmark (SET001+), no si solo cambia etiquetas en UI.
+
+---
+
+## 18. Checkpoint futuro — E5.22.5
+
+| Campo | Valor |
+|-------|-------|
+| **ID** | E5.22.5 — Humanized Acceptance Activation / Trade-set Delta Design |
+| **Tipo** | Docs + spec (research-only) — **sin** MQL5/TS en fase design |
+| **Propósito** | Diseñar cómo una política humanizada **research** se compara al baseline oficial sin cambiar entry/TP oficial |
+| **Entregable** | Spec del delta audit §17 + reglas de buckets + criterios PASS para activación research |
+| **Prerrequisitos** | E5.22.4 cerrado (medibilidad HA) |
+| **Prohibido en E5.22.5 design** | Gates live, cambio entry/TP, aprobación edge/25/adaptive |
 
 ---
 

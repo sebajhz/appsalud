@@ -188,17 +188,63 @@ E5.21.2+  Queue manager / channels      [deferred — PM approval]
 
 ---
 
-## 9. Engine-first alignment (E5.21.2.2)
+## 9. Aclaración PM — la humanización debe afectar el trade set (futuro)
+
+El PM aclaró que la aceptación humanizada **no** puede quedarse solo en reporting o wording del dashboard. Si se implementa en el motor, debe **eventualmente** afectar el **conjunto oficial de trades** o un **conjunto de investigación** paralelo al baseline.
+
+### 9.1 Qué puede cambiar la humanización (cuando esté activa)
+
+| Efecto | Ejemplo |
+|--------|---------|
+| **Reducir trades** | Rechazar setups débiles / con conflictos reales (`ifvg_conflict`, contexto frágil) |
+| **Aumentar trades** | Aceptar near-miss / setups imperfectos pero significativos |
+| **Reclasificar** | `wait` → `candidate`/review; **rescatar** rejects con blocker no dañino (`pd_conflict` en SET001); **degradar** candidates frágiles |
+| **Métricas impactadas** | `trade_count`, `filled_count`, `skipped_count`, `total_r`, `avg_r`, `winrate`, ambigüedad, drawdown |
+
+### 9.2 Estado actual (sin activación)
+
+| Capa | Estado |
+|------|--------|
+| E5.20.5 / E5.20.6 | Política + casebook — gobernanza |
+| E5.22.2.1 | Readiness **separa** calidad — diagnóstico |
+| Outcome MT5 oficial | Sigue **50 % / CE + RR2**, **sin gates** |
+| Humanización en MQL5 | **No activa** como aceptación oficial de trade |
+
+### 9.3 Requisito futuro — trade-set delta audit
+
+Cualquier implementación futura de aceptación humanizada **debe** incluir un audit **trade-set delta** que compare:
+
+**Baseline oficial:** trades actuales 50 % / CE (como SET001 hoy).
+
+**Política humanizada research (futura):** accepted, rejected, rescued rejects, wait→candidate, near-miss accepted, no-chase skipped, IFVG-conflict skipped, PD-conflict recalibrated, etc.
+
+**El delta debe reportar:** `trade_count`, `total_r`, `avg_r`, `winrate`, drawdown, ambiguous, expired/unfilled deltas; matriz candidate/wait/reject; **razón por trade** añadido/eliminado/reclasificado.
+
+**No implementar aún.** Ver checkpoint planificado **E5.22.5** en [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) y [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md).
+
+### 9.4 E5.22.4 — cinco clasificaciones obligatorias
+
+**E5.22.4** debe etiquetar cada concepto HA / campo como:
+
+1. **Measurable humanized** — medible hoy con export existente
+2. **Policy-only** — solo gobernanza/wording; no cambia trades hoy
+3. **Could change trade set later** — listo o casi listo para afectar selección tras calibración
+4. **Explain/report only today** — solo explica readiness/outcome actual
+5. **Requires new export fields** — no puede afectar motor hasta nuevo export MQL5
+
+---
+
+## 10. Engine-first alignment (E5.21.2.2)
 
 Esta política permanece **aprobada** como gobernanza. **No** implementa aceptación en MQL5.
 
-**E5.22.2 / E5.22.2.1 / E5.22.3** baseline **PASS** + trade model ([`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md), [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md)). Política humanizada sigue **sin** MQL5. Prioridad: **E5.22.4**. Dashboard/alertas (E5.21.3+) **pausados**.
+**E5.22.2 / E5.22.2.1 / E5.22.3** baseline **PASS** + trade model ([`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md), [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md)). Política humanizada sigue **sin** MQL5. Prioridad: **E5.22.4** (con §9.4). **E5.22.5** planificado (trade-set delta design). Dashboard/alertas (E5.21.3+) **pausados**.
 
 Ver: [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md), [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
 
 ---
 
-## 10. Referencias
+## 11. Referencias
 
 - North Star: [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md)
 - Humanization roadmap: [`PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md`](./PROFESSIONAL_TRADER_HUMANIZATION_ROADMAP_E5_11.md)

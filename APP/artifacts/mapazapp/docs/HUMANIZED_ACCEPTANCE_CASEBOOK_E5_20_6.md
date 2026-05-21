@@ -554,9 +554,16 @@ El adaptador (**E5.20.3**) y el mock HTML (**E5.20.4** — [`DASHBOARD_READONLY_
 
 ## 9. Próximo trabajo engine (E5.21.2.2)
 
-**E5.22.4** mapeará cada caso HA-001…HA-010 a campos MQL5 existentes con clasificación `measurable_today` / `partially_measurable` / `missing_measurement` / `TS-only` / `future BridgeEA`.
+**E5.22.4** mapeará HA-001…HA-010 con:
 
-**E5.22.2 / E5.22.2.1 / E5.22.3:** baseline **PASS** + trade model textual — [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md), [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md). **E5.22.4** mapeará HA-001…HA-010 a campos del modelo. Cursor **no** inventa reglas fuera de los casos definidos aquí.
+- Clasificación técnica: `measurable_today` / `partially_measurable` / `missing_measurement` / `TS-only` / `future BridgeEA`
+- Clasificación PM (obligatoria): **measurable humanized** | **policy-only** | **could change trade set later** | **explain/report only today** | **requires new export fields**
+
+**Aclaración PM:** humanización activa futura debe **afectar el trade set** (oficial o research), no solo wording. Hoy outcome MT5 = 50 %/CE sin gates humanizados.
+
+**E5.22.5 (planificado):** trade-set delta design — baseline oficial vs política humanizada research ([`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) §9.3).
+
+**E5.22.2 / E5.22.2.1 / E5.22.3:** baseline **PASS** + trade model — [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md), [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md). Cursor **no** inventa reglas fuera de HA-001…HA-010.
 
 Ver: [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md), [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
 

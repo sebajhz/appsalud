@@ -173,9 +173,19 @@ Puede ser **text-first**; visual/MT5 chart objects en fase posterior.
 
 ### E5.22.4 — Humanized Casebook Measurability Audit
 
-**Objetivo:** mapear **HA-001 … HA-010** a campos actuales del export MQL5.
+**Objetivo:** mapear **HA-001 … HA-010** a campos actuales del export MQL5 y al trade model ([`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md)).
 
-Clasificación por caso:
+**Aclaración PM (obligatoria en E5.22.4):** la humanización futura debe poder **afectar el trade set**, no solo reporting. E5.22.4 distingue explícitamente:
+
+| Clase | Significado |
+|-------|-------------|
+| 1. Measurable humanized | Medible hoy |
+| 2. Policy-only | Gobernanza E5.20.5/20.6; sin efecto en trades |
+| 3. Could change trade set later | Puede incluir/excluir/reclasificar tras calibración |
+| 4. Explain/report only today | Readiness/informes/dashboard |
+| 5. Requires new export fields | Bloqueado hasta MQL5 |
+
+Clasificación técnica por caso (complementaria):
 
 - `measurable_today`
 - `partially_measurable`
@@ -183,7 +193,17 @@ Clasificación por caso:
 - `TS-only` (derivable en post-proceso sin nuevo export)
 - `future BridgeEA/forward measurement`
 
+**Estado actual:** outcome oficial = 50 %/CE + RR2; humanización **no activa** en MQL5.
+
 **Cursor no inventa** lógica discrecional de trading.
+
+### E5.22.5 — Humanized Acceptance Activation / Trade-set Delta Design (planificado)
+
+**Objetivo:** diseñar (docs/spec) el **trade-set delta audit** — comparar baseline oficial vs política humanizada **research-only**.
+
+Debe especificar buckets (accepted, rejected, rescued rejects, wait→candidate, near-miss accepted, no-chase skipped, IFVG skipped, PD recalibrated) y métricas delta (`trade_count`, R, winrate, drawdown, ambiguous, unfilled, matriz readiness, razón por trade).
+
+**No implementar** MQL5/gates/entry/TP/edge en E5.22.5 design. Ver [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) §9.
 
 ### E5.23 — Optimization Campaign Governance / Symbol Profiles
 

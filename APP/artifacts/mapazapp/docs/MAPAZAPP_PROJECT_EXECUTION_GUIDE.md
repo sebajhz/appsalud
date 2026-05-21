@@ -335,6 +335,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.22.2 | **Setup performance baseline audit** | **completed (repo)** | Core + CLI | [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md) | E5.22.2.1 |
 | E5.22.2.1 | **Setup performance baseline audit evidence** | **completed (PASS)** | Docs | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) | E5.22.3 |
 | E5.22.3 | **Trade model visual/textual representation** | **completed (docs)** | Docs | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) | E5.22.4 |
+| E5.22.5 | **Humanized activation / trade-set delta design** | **planned (docs)** | Docs | — (spec en policy §9, trade model §17–18) | post E5.22.4 |
 | E5.21.3 | Dashboard notification panel (read-only) | **paused (PM)** | UI | — | PM resume |
 | E5.21.4 | Telegram review-only prototype | **paused (PM)** | Integración | — | PM resume |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |
