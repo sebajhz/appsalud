@@ -12,7 +12,8 @@
 | **Gobernanza padre** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
 | **Decisión** | **Docs-only folder contract** — organiza evidencia futura; **no** ejecuta campañas |
 | **E5.23.4** | [`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md) — **cerrado (docs)** |
-| **Siguiente** | E5.24 ejecución / planificación robustez |
+| **E5.24** | [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) — **cerrado (plan docs)** |
+| **Siguiente** | E5.24.1 ejecución evidencia |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -333,7 +334,7 @@ Ejemplo: `SET001` en `01_in_sample/` → fila A; `SET002_..._OOS` en `02_out_of_
 
 ## 16. Relación con E5.24
 
-**E5.24** (ejecución / documentación de campañas de robustez) debe:
+**E5.24** [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) define campaña `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001`. **E5.24.1** (ejecución) debe:
 
 - Usar este contrato al planificar corridas SET002+, OOS y WF
 - Registrar evidencia en segmentos `01_`–`06_` sin mezclar roles

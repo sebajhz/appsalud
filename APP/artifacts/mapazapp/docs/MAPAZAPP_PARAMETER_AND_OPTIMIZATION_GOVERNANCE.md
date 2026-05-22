@@ -39,6 +39,8 @@ Mapazapp is **manual / read-only decision support** until explicitly approved ot
 
 **E5.23.4:** Plantilla evidencia walk-forward por ventana — [`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md) (**cerrado docs**). Anti-cherry-pick; E5.24 consumes template.
 
+**E5.24:** Plan campaña robustez XAUUSD M15 — [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) (**cerrado plan docs**). No ST/optimizer in task; E5.24.1 execution pending PM date ranges.
+
 Mapazapp does not perform “simple backtests”.
 
 Mapazapp should support structured discovery campaigns where parameters are varied in controlled ranges to understand how the setup behaves under different market conditions.

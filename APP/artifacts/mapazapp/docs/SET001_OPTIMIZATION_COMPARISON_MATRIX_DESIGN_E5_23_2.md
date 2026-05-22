@@ -12,7 +12,8 @@
 | **Decisión** | **Docs-only matrix design** — autoriza reporting futuro; **no** corrida optimizador ni cambio estrategia |
 | **E5.23.3** | [`MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md`](./MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md) — **cerrado (docs)** |
 | **E5.23.4** | [`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md) — **cerrado (docs)** |
-| **Siguiente** | E5.24 robustez |
+| **E5.24** | [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) — **cerrado (plan docs)** |
+| **Siguiente** | E5.24.1 ejecución evidencia |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
