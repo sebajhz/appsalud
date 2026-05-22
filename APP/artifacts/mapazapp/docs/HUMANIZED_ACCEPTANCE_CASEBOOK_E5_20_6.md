@@ -561,7 +561,7 @@ El adaptador (**E5.20.3**) y el mock HTML (**E5.20.4** — [`DASHBOARD_READONLY_
 
 **Aclaración PM:** humanización activa futura debe **afectar el trade set** (oficial o research), no solo wording. Hoy outcome MT5 = 50 %/CE sin gates humanizados.
 
-**E5.22.4.1:** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md) — selector CLI trade IDs.
+**E5.22.4.1:** selector CLI + evidencia operador **PASS** — [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md).
 
 **E5.22.5 (planificado):** trade-set delta design — baseline oficial vs política humanizada research ([`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) §9.3).
 

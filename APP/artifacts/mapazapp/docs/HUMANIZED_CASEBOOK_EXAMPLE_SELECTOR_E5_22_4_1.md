@@ -110,19 +110,13 @@ Columnas: `case_id`, `category`, `trade_id`, `outcome`, `result_r`, `decision`, 
 
 ---
 
-## 7. Evidencia operador (pendiente)
+## 7. Evidencia operador — **PASS**
 
-Ejecutar sobre SET001 real (ruta operador E5.22):
+[`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) — SET001 real, `ok=true`, HA-001…HA-010 anclados (HA-008 vacío esperado).
 
-```text
-SET001_FVG2_RR2_00_BIASBODY0_RALIGN1
-```
+Salida local (no commitear): `APP/artifacts/mapazapp/docs/_local_E5_22_4_1_humanized_casebook_examples_DO_NOT_COMMIT/`
 
-Salida local recomendada (no commitear):
-
-`APP/artifacts/mapazapp/docs/_local_E5_22_4_1_humanized_casebook_examples_DO_NOT_COMMIT/`
-
-**Siguiente:** E5.22.4.2 — trade cards textuales desde IDs seleccionados · **E5.22.5** — trade-set delta design
+**Siguiente:** E5.22.4.2 — trade cards textuales · **E5.22.5** — trade-set delta design
 
 ---
 

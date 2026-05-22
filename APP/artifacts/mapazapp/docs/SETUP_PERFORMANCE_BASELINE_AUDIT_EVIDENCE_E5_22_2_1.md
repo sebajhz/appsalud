@@ -12,8 +12,8 @@
 | **Decisión** | **PASS técnico** — con caveats de gobernanza (sin gate, sin live, sin aprobación edge/25/adaptive) |
 | **Trade model (E5.22.3)** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
 | **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
-| **E5.22.4.1** | [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md) — CLI selector |
-| **Siguiente recomendado** | Evidencia operador SET001 · **E5.22.5** |
+| **E5.22.4.1** | Selector CLI · evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) |
+| **Siguiente recomendado** | **E5.22.4.2** trade cards · **E5.22.5** delta design |
 | **Sin cambios** | MQL5, TypeScript, MT5, Strategy Tester, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard |
 
 ---
