@@ -11,7 +11,8 @@
 | **Decisión** | **Docs-only** — documenta inspección CSV; **no** elige opción OOS A/B |
 | **E5.24.1.2** | [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md) — PM **Opción B** (re-corte) |
 | **E5.24.1.3** | [`PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md`](./PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md) — splits `proposed` |
-| **Siguiente** | PM confirma/ajusta → E5.24.2 |
+| **E5.24.1.4** | [`CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md`](./CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md) — fechas `confirmed` |
+| **Siguiente** | E5.24.2 SET002 OOS ST |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -168,7 +169,7 @@ Si la política de campaña exige OOS **estrictamente posterior** al tramo cubie
 |----------|--------|
 | Opción A vs B | **Resuelto E5.24.1.2** — PM eligió **Opción B** (re-corte) |
 
-Tras E5.24.1.3: fechas candidatas en doc propuesto; operador confirma en `99_notes/DATE_RANGES_CONFIRMED.md` antes de E5.24.2.
+Tras E5.24.1.4: fechas confirmadas en doc canónico; opcional copiar a `99_notes/DATE_RANGES_CONFIRMED.md` en E5.24.2.
 
 ---
 
@@ -207,3 +208,4 @@ Tras E5.24.1.3: fechas candidatas en doc propuesto; operador confirma en `99_not
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
 - [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md)
 - [`PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md`](./PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md)
+- [`CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md`](./CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md)

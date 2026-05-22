@@ -10,8 +10,9 @@
 | **Decisión PM** | Opción B — re-corte ([`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md)) |
 | **`campaign_id`** | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` |
 | **`profile_id`** | `XAUUSD_M15_Profile_V1` |
-| **Estado filas** | **`proposed_pending_pm_confirmation`** — no confirmadas |
-| **Siguiente** | PM/operador confirma o ajusta → E5.24.1.4 o `DATE_RANGES_CONFIRMED` → E5.24.2 |
+| **Estado filas** | **`proposed`** — superseded por confirmación |
+| **E5.24.1.4** | [`CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md`](./CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md) — PM **aprobó** splits tal cual |
+| **Siguiente** | E5.24.2 SET002 OOS ST |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -189,7 +190,7 @@
 | **`confirmed`** (futuro) | Tras E5.24.1.4 o doc `DATE_RANGES_CONFIRMED` aprobado por PM |
 | **`blocked`** (futuro) | PM rechaza propuesta — requiere nueva E5.24.1.x |
 
-**Regla:** **No** iniciar **E5.24.2** mientras el estado global sea `proposed_pending_pm_confirmation`.
+**Regla (histórica):** E5.24.1.3 bloqueaba E5.24.2 hasta confirmación — cumplida en [`CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md`](./CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md).
 
 ---
 
@@ -236,3 +237,4 @@ Orden: **SET002 OOS antes de WF01–03** (plan E5.24 §8).
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
+- [`CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md`](./CONFIRMED_ROBUSTNESS_DATE_RANGES_E5_24_1_4.md)
