@@ -9,7 +9,8 @@
 | **Baseline Git** | `2d6351b` o posterior — `docs(mapazapp): E5.24.1.1 document SET001 observed trade range` |
 | **Decisión previa** | [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md) — Opción A vs B |
 | **Decisión PM** | **Opción B — Re-cut robustness campaign** |
-| **Siguiente** | E5.24.1.3 — tabla propuesta de splits de fechas (candidatos `proposed`) |
+| **E5.24.1.3** | [`PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md`](./PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md) — **cerrado (docs)** |
+| **Siguiente** | PM confirma splits → E5.24.2 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -111,9 +112,9 @@ Actualizar gobernanza en [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUU
 
 ## 7. Siguiente checkpoint recomendado
 
-### E5.24.1.3 — Proposed Date Split Table
+### E5.24.1.3 — Proposed Date Split Table — **entregado**
 
-Debe entregar tabla con rangos **candidatos** (`proposed`) para:
+[`PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md`](./PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md) — rangos **candidatos** (`proposed`) para:
 
 | Bundle / ventana | Contenido propuesto |
 |------------------|---------------------|
@@ -153,3 +154,4 @@ Cada fila: `status` = `proposed` hasta confirmación PM/operador en `99_notes/DA
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
+- [`PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md`](./PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md)

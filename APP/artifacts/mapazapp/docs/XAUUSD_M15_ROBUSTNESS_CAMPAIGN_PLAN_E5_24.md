@@ -12,7 +12,8 @@
 | **E5.24.1** | [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) — **cerrado (docs)** |
 | **E5.24.1.1** | [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md) — **cerrado (docs)** |
 | **E5.24.1.2** | [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md) — PM **Opción B** re-corte |
-| **Siguiente** | E5.24.1.3 proposed date splits → E5.24.2 SET002 OOS ST |
+| **E5.24.1.3** | [`PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md`](./PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md) — **cerrado (docs)** — `proposed_pending_pm_confirmation` |
+| **Siguiente** | PM confirma fechas → E5.24.2 SET002 OOS ST |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -161,7 +162,7 @@ Mapazapp/TestEA/XAUUSD_M15_Profile_V1/campaigns/MZP_XAUUSD_M15_E5_24_ROBUSTNESS_
 | Metadata | `date_range_start`, `date_range_end`, `sample_segment` en `bundle_manifest` / `99_notes/` |
 | Confirmación | Operador documenta rangos exactos MT5 ST en `99_notes/DATE_RANGES_CONFIRMED.md` — ver [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) |
 | SET001 | Benchmark global; trades **2025-01-02T03:00:00Z → 2026-05-08T23:30:00Z** (E5.24.1.1); ST From/To: **`needs_operator_confirmation`** |
-| Política fechas | **Re-corte** PM Opción B ([`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md)); candidatos → E5.24.1.3 |
+| Política fechas | Re-corte PM Opción B; splits propuestos [`PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md`](./PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md) — confirmar antes de ST |
 
 ---
 
@@ -353,3 +354,4 @@ Usar en **E5.24.1** (evidencia ejecución), no en E5.24.
 - [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md)
 - [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md)
 - [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md)
+- [`PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md`](./PROPOSED_ROBUSTNESS_DATE_SPLITS_E5_24_1_3.md)
