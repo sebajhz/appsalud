@@ -11,7 +11,8 @@
 | **Matriz** | [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md) |
 | **Gobernanza padre** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
 | **Decisión** | **Docs-only folder contract** — organiza evidencia futura; **no** ejecuta campañas |
-| **Siguiente** | E5.23.4 plantilla evidencia WF · E5.24 ejecución robustez |
+| **E5.23.4** | [`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md) — **cerrado (docs)** |
+| **Siguiente** | E5.24 ejecución / planificación robustez |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -340,7 +341,7 @@ Ejemplo: `SET001` en `01_in_sample/` → fila A; `SET002_..._OOS` en `02_out_of_
 
 **E5.23.3** no ejecuta campañas ni ST — solo define **dónde** y **cómo** debe vivir la evidencia.
 
-**E5.23.4** (recomendado antes o en paralelo con E5.24) puede aportar plantilla markdown/JSON de evidencia WF por ventana.
+**E5.23.4:** [`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md) — plantilla markdown por ventana (**cerrado docs**). E5.24 debe usarla al documentar WF.
 
 ---
 
@@ -370,6 +371,7 @@ Ejemplo: `SET001` en `01_in_sample/` → fila A; `SET002_..._OOS` en `02_out_of_
 - [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md)
 - [`LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md`](./LOCAL_BUNDLE_INDEX_CLI_E5_20_1.md)
 - [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)
+- [`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
