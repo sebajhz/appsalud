@@ -35,6 +35,8 @@ Mapazapp is **manual / read-only decision support** until explicitly approved ot
 
 **E5.23.2:** Matriz comparación SET001 (conjuntos A–E, columnas, red flags) — [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md) (**cerrado docs**). Reporting design only; no optimizer run.
 
+**E5.23.3:** Contrato carpetas campaña multi-bundle/OOS/WF — [`MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md`](./MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md) (**cerrado docs**). Folder contract only; no MT5 migration in task.
+
 Mapazapp does not perform “simple backtests”.
 
 Mapazapp should support structured discovery campaigns where parameters are varied in controlled ranges to understand how the setup behaves under different market conditions.

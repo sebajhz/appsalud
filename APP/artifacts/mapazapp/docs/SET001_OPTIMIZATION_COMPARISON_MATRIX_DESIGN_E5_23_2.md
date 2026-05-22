@@ -10,7 +10,8 @@
 | **Perfil lab** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) |
 | **Gobernanza padre** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
 | **Decisión** | **Docs-only matrix design** — autoriza reporting futuro; **no** corrida optimizador ni cambio estrategia |
-| **Siguiente** | E5.23.3 — contrato carpetas campaña multi-bundle / OOS |
+| **E5.23.3** | [`MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md`](./MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md) — **cerrado (docs)** |
+| **Siguiente** | E5.23.4 plantilla evidencia WF · E5.24 robustez |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -338,13 +339,13 @@ pnpm --filter @workspace/scripts mapazapp:testea-optimization-comparison-matrix 
 
 ## 11. Relación con E5.23.3
 
-**E5.23.3** definirá el **contrato de carpetas** para campañas multi-bundle y OOS de modo que la matriz pueda:
+[`MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md`](./MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md) define el **contrato de carpetas** para que la matriz pueda:
 
 - Añadir filas E (`robustness_validation_set`) por ventana IS/OOS/WF
 - Comparar SET001 vs SET002+ bajo el mismo `profile_id`
-- Etiquetar `campaign_id`, `in_sample_range`, `out_of_sample_range` por fila
+- Etiquetar `campaign_id`, segmentos `01_in_sample` / `02_out_of_sample` / `03_walk_forward`
 
-Sin E5.23.3, la matriz SET001 permanece **single-bundle** con filas E = `not_available`.
+Hasta ejecutar campañas bajo ese contrato (E5.24), filas E en SET001 permanecen `not_available`.
 
 ---
 
@@ -372,6 +373,7 @@ Sin E5.23.3, la matriz SET001 permanece **single-bundle** con filas E = `not_ava
 - [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md)
 - [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md)
 - [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)
+- [`MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md`](./MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
