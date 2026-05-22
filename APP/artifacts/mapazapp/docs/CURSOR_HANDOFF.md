@@ -97,7 +97,8 @@
 - **E5.22.2 (repo):** [`SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_E5_22_2.md) — `mapazapp:testea-setup-performance-baseline-audit`.
 - **E5.22.2.1 (evidencia PASS):** [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md).
 - **E5.22.3 (trade model docs):** [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md).
-- **E5.22.4 (HA measurability):** [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)**. **Siguiente:** E5.22.4.1 (trade IDs) o E5.22.5 (trade-set delta design). **PM:** humanización futura debe afectar trade set — ver policy E5.20.5 §9.
+- **E5.22.4 (HA measurability):** [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)**.
+- **E5.22.4.1 (example selector):** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md) — `mapazapp:testea-humanized-casebook-example-selector`. **Siguiente:** evidencia operador SET001 · E5.22.5 delta design.
 - **E5.20 (plan consumo):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 

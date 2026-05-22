@@ -10,7 +10,8 @@
 | **Bundle benchmark** | SET001 — `MZP_TestEA_E5_18`, XAUUSD M15 |
 | **Fuentes** | [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md), [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md), [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md), [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md), [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md) |
 | **Decisión** | **PASS docs** — medibilidad mapeada; **sin** activación MQL5/gates |
-| **Siguiente recomendado** | **E5.22.4.1** (trade IDs ejemplo) o **E5.22.5** (trade-set delta design) |
+| **E5.22.4.1** | [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md) — selector CLI implementado |
+| **Siguiente recomendado** | Evidencia operador SET001 · **E5.22.4.2** trade cards · **E5.22.5** delta design |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -424,7 +425,7 @@ Buckets futuros a comparar:
 
 | ID | Tarea | Tipo |
 |----|-------|------|
-| **E5.22.4.1** | Seleccionar trade IDs reales SET001 por caso HA | Docs |
+| **E5.22.4.1** | Selector CLI trade IDs HA — [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md) | Core + CLI |
 | **E5.22.4.2** | Generar trade cards textuales para ejemplos HA | Docs |
 | **E5.22.5** | Humanized Acceptance Activation / Trade-set Delta Design | Docs/spec |
 | **E5.23** | Optimization governance / symbol profiles | Docs |
