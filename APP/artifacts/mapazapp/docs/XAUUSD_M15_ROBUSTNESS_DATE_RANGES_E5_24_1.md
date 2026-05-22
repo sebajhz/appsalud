@@ -9,8 +9,9 @@
 | **Baseline Git** | `0a9b46d` o posterior — `docs(mapazapp): E5.24 plan XAUUSD robustness campaign` |
 | **Plan padre** | [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) — **cerrado (plan docs)** |
 | **`campaign_id`** | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` |
+| **E5.24.1.1** | [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md) — **cerrado (docs)** — rango CSV SET001 + decisión OOS A/B pendiente |
 | **Decisión** | **Docs-only checkpoint** — bloquea ST/MT5 hasta confirmación PM/operador |
-| **Siguiente** | E5.24.2 — SET002 OOS Strategy Tester execution evidence (tras confirmar fechas) |
+| **Siguiente** | PM elige Opción A o B (E5.24.1.1 §9) → E5.24.2 SET002 OOS ST |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -59,11 +60,14 @@ Fuentes: [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDE
 
 | Fuente | `is_start` / `is_end` |
 |--------|------------------------|
-| `backtest_summary.json` (export SET001 E5.22) | **`tester_from` / `tester_to` no documentados en repo** — el contrato TestEA permite `null` ([`BACKTESTEA_SETUP_V1_CONTRACT_E3_2.md`](./BACKTESTEA_SETUP_V1_CONTRACT_E3_2.md), [`MANUAL_TEST_CHECKLIST.md`](../../mt5/experts/Mapazapp_TestEA/MANUAL_TEST_CHECKLIST.md)) |
+| `backtest_summary.json` (export SET001 E5.22) | **`tester_from` / `tester_to` no expuestos** en inspección operador — solo `execution_timeframe=M15`, `daily_bias_timeframe=D1` + métricas ([`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md) §3) |
+| `backtest_trades.csv` (`entry_time` UTC) | **Observado (trades):** `2025-01-02T03:00:00Z` → `2026-05-08T23:30:00Z` — **no** equivale a From/To ST exacto (§7 E5.24.1.1) |
 | Docs evidencia E5.22 | Métricas y bundle path — **sin** fechas ST explícitas |
-| Plan E5.24 §7 | Rango histórico implícito en export — **debe copiarse a metadata** en ejecución |
+| MT5 Strategy Tester From/To | **`needs_operator_confirmation`** |
 
-**Estado:** **`needs_operator_confirmation`** — el operador debe registrar el rango exacto usado en la corrida SET001 (pestaña Fechas del Strategy Tester o notas MT5) en `99_notes/DATE_RANGES_CONFIRMED.md` antes de fijar SET002/WF.
+**Estado MT5 ST:** **`needs_operator_confirmation`**.
+
+**Decisión OOS pendiente:** trades SET001 llegan a **2026-05-08** — OOS estricto post-SET001 puede ser corto. PM debe elegir **Opción A** (OOS después de 2026-05-08) o **Opción B** (re-corte IS/OOS/WF) — ver E5.24.1.1 §8–9. **Cursor no elige.**
 
 ---
 
@@ -118,12 +122,12 @@ Cada fila de la tabla §4 debe quedar en `confirmed` antes de E5.24.2+.
 
 ## 4. Tabla de rangos de fechas
 
-**Leyenda `status`:** `needs_operator_confirmation` | `confirmed` | `blocked`
+**Leyenda `status`:** `needs_operator_confirmation` | `pm_decision_required` | `confirmed` | `blocked`
 
 | bundle_id | run_role | profile_id | campaign_id | symbol | timeframe | is_start | is_end | forward_or_oos_start | forward_or_oos_end | overlap_allowed | selected_parameters_source | status | operator_note |
 |-----------|----------|------------|-------------|--------|-----------|----------|--------|----------------------|--------------------|-----------------|---------------------------|--------|---------------|
-| `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` | `IS_BASELINE` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | — | — | `false` (como ancla IS) | `SET001_official_baseline` | `needs_operator_confirmation` | Registrar fechas ST de corrida E5.22; `tester_from`/`tester_to` en summary pueden ser `null` |
-| `SET002_FVG2_RR2_00_BIASBODY0_RALIGN1_OOS` | `OOS_VALIDATION` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | — | — | `TBD` | `TBD` | `false` vs SET001 IS | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | OOS completo; mismo preset SET001; sin optimizar |
+| `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` | `IS_BASELINE` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` (ST) | `TBD` (ST) | — | — | `false` (como ancla IS) | `SET001_official_baseline` | `needs_operator_confirmation` | Trades observados UTC: 2025-01-02T03:00:00Z → 2026-05-08T23:30:00Z (E5.24.1.1); ST From/To pendiente |
+| `SET002_FVG2_RR2_00_BIASBODY0_RALIGN1_OOS` | `OOS_VALIDATION` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | — | — | `TBD` | `TBD` | `false` vs SET001 | `from_SET001_IS_BASELINE` | `pm_decision_required` | Opción A: OOS > 2026-05-08 (riesgo corto) · Opción B: re-corte campaña (E5.24.1.1 §9) |
 | `SET003_FVG2_RR2_00_BIASBODY0_RALIGN1_WF01` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` vs otros tramos IS/OOS salvo diseño WF documentado | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | WF01: IS leg + forward leg; forward > IS end |
 | `SET004_FVG2_RR2_00_BIASBODY0_RALIGN1_WF02` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | Cronológico después de WF01 |
 | `SET005_FVG2_RR2_00_BIASBODY0_RALIGN1_WF03` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | Cronológico después de WF02; reporte separado |
@@ -209,3 +213,4 @@ Orden de campaña (plan E5.24 §8): **SET002 OOS antes de WF01–03**.
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
+- [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md)
