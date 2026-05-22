@@ -12,7 +12,8 @@
 | **Decisión** | **PASS docs** — medibilidad mapeada; **sin** activación MQL5/gates |
 | **E5.22.4.1** | [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_E5_22_4_1.md) — selector CLI · evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) |
 | **E5.22.4.2** | [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) — **cerrado (docs)** |
-| **Siguiente recomendado** | **E5.22.5** delta design |
+| **E5.22.5** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) — **cerrado (docs)** |
+| **Siguiente recomendado** | E5.22.5.1 · E5.23 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -352,7 +353,7 @@ Buckets futuros a comparar:
 | Matriz candidate / wait / reject (transiciones) | Sí |
 | Razón por trade añadido / eliminado / reclasificado | Sí — trazabilidad HA + blocker |
 
-**Checkpoint planificado:** **E5.22.5** — Humanized Acceptance Activation / Trade-set Delta Design ([`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) §18).
+**E5.22.5 — cerrado:** [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) (trade-set delta design).
 
 **Regla PM:** humanización sin delta reproducible = solo reporting, no mejora de motor.
 

@@ -10,7 +10,8 @@
 | **Fuente de IDs** | [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) |
 | **Plantilla base** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) §8 |
 | **Bundle** | `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` · XAUUSD M15 · `MZP_TestEA_E5_18` |
-| **Siguiente** | **E5.22.5** — trade-set delta design (baseline oficial vs política humanizada research) |
+| **E5.22.5** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) — **cerrado (docs)** |
+| **Siguiente** | E5.22.5.1 delta audit spec · E5.23 optimization governance |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, renderer, dashboard, gates, live, entry/TP, edge/25/adaptive, canales |
 
 ---
@@ -485,7 +486,7 @@ Las diez cards forman el **primer conjunto de referencia cualitativa** para **E5
 2. El delta audit comparará conteos y R agregados: oficial 50%/CE vs hipótesis documentada (rescued reject, confirmed reject, wait promotion, near-miss add, etc.).
 3. No sustituyen evidencia multi-bundle ni aprobación PM — preceden el diseño del audit spec.
 
-**Orden engine-first:** E5.22.4.1 (IDs) → E5.22.4.2 (cards, este doc) → **E5.22.5** (delta design) → E5.24+ robustez multi-bundle antes de cualquier activación MQL5.
+**Orden engine-first:** E5.22.4.1 → E5.22.4.2 → **E5.22.5** ([`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md)) → E5.22.5.2+ simulador · E5.24+ multi-bundle antes de activación MQL5.
 
 ---
 

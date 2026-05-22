@@ -118,7 +118,7 @@ Salida local (no commitear): `APP/artifacts/mapazapp/docs/_local_E5_22_4_1_human
 
 **E5.22.4.2:** [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) — 10 trade cards SET001.
 
-**Siguiente:** **E5.22.5** — trade-set delta design
+**E5.22.5:** [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md). **Siguiente:** E5.22.5.1 · E5.23
 
 ---
 

@@ -11,7 +11,8 @@
 | **Decisión** | **PASS técnico** — con caveats de gobernanza (sin aprobación de estrategia) |
 | **Trade model (E5.22.3)** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
 | **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
-| **Siguiente recomendado** | **E5.22.4.1** o **E5.22.5** |
+| **E5.22.5** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) |
+| **Siguiente recomendado** | E5.22.5.1 · E5.23 |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5 adicional, Strategy Tester adicional, gates, live, entry/TP, aprobación edge/25/adaptive |
 
 ---

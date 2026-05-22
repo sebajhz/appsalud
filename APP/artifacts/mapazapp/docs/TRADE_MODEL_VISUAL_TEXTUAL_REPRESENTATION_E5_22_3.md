@@ -11,7 +11,8 @@
 | **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
 | **E5.22.4.1** | Selector CLI + evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) |
 | **E5.22.4.2** | [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) — 10 cards SET001 |
-| **Siguiente recomendado** | **E5.22.5** delta design |
+| **E5.22.5** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) — **cerrado (docs)** |
+| **Siguiente recomendado** | E5.22.5.1 · E5.23 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, gates, live, entry/TP, edge/25/adaptive, dashboard/Telegram |
 
 ---
@@ -380,16 +381,13 @@ La humanización solo cuenta como implementada en motor si este delta es **repro
 
 ---
 
-## 18. Checkpoint futuro — E5.22.5
+## 18. E5.22.5 — Trade-set delta design (**cerrado**)
 
 | Campo | Valor |
 |-------|-------|
-| **ID** | E5.22.5 — Humanized Acceptance Activation / Trade-set Delta Design |
-| **Tipo** | Docs + spec (research-only) — **sin** MQL5/TS en fase design |
-| **Propósito** | Diseñar cómo una política humanizada **research** se compara al baseline oficial sin cambiar entry/TP oficial |
-| **Entregable** | Spec del delta audit §17 + reglas de buckets + criterios PASS para activación research |
-| **Prerrequisitos** | E5.22.4 cerrado (medibilidad HA) |
-| **Prohibido en E5.22.5 design** | Gates live, cambio entry/TP, aprobación edge/25/adaptive |
+| **Doc** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) |
+| **Siguiente** | E5.22.5.1 spec review · E5.22.5.2 simulador research-only |
+| **Prohibido** | Gates live, cambio entry/TP, aprobación edge/25/adaptive |
 
 ---
 

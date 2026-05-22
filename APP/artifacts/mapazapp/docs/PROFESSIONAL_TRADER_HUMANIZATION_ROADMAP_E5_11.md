@@ -98,7 +98,7 @@ Referencias obligatorias para alinear E5.13.6.x y trabajo futuro:
 | **E5.22.4** | Humanized casebook measurability audit | **completed (docs)** — [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) |
 | **E5.22.4.1** | Humanized casebook example selector | **completed (repo + evidence PASS)** — [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) |
 | **E5.22.4.2** | Humanized textual trade cards | **completed (docs)** — [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) |
-| **E5.22.5** | Humanized activation / trade-set delta design | planificado — research vs baseline oficial |
+| **E5.22.5** | Humanized trade-set delta design | **completed (docs)** — [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) |
 | **E5.23** | Optimization governance / symbol profiles | planificado |
 | *(diferido)* | Risk / prop firm mapping | V2-21 — no confundir con E5.22 |
 | *(deferred)* | **Evidence-based gate / score** | §K — post E5.20.4 + multi-bundle evidence |
@@ -432,7 +432,7 @@ MQL5 Buffered EVOS diagnostics — [`BUFFERED_EVOS_EXPORT_E5_13_6_11.md`](./BUFF
 
 **Invariantes (sin cambio):** entry oficial **50 % / CE**; TP **RR2**; edge/25/adaptive **solo investigación**; readiness **read-only**; **sin** gates, live, MQL5/TS en este checkpoint.
 
-**E5.22.2 / E5.22.2.1 / E5.22.3 / E5.22.4 / E5.22.4.1 / E5.22.4.2:** baseline **PASS** + trade model + medibilidad HA + selector + trade cards SET001. **Siguiente:** **E5.22.5**. E5.21.3+ pausado.
+**E5.22.2–E5.22.5:** baseline **PASS** + trade model + medibilidad + selector + cards + delta design. **Siguiente:** **E5.22.5.1** · **E5.23**. E5.21.3+ pausado.
 
 ### E5.20.6 — Humanized Acceptance Casebook V1 (**cerrado — docs**)
 

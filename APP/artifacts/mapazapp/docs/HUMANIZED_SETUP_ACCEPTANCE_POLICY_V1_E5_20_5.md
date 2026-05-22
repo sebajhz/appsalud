@@ -220,7 +220,7 @@ Cualquier implementación futura de aceptación humanizada **debe** incluir un a
 
 **El delta debe reportar:** `trade_count`, `total_r`, `avg_r`, `winrate`, drawdown, ambiguous, expired/unfilled deltas; matriz candidate/wait/reject; **razón por trade** añadido/eliminado/reclasificado.
 
-**No implementar aún.** Ver checkpoint planificado **E5.22.5** en [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md) y [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md).
+**Spec:** [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md). Implementación simulador: E5.22.5.2+.
 
 ### 9.4 E5.22.4 — cinco clasificaciones obligatorias
 
@@ -238,7 +238,7 @@ Cualquier implementación futura de aceptación humanizada **debe** incluir un a
 
 Esta política permanece **aprobada** como gobernanza. **No** implementa aceptación en MQL5.
 
-**E5.22.2 / E5.22.2.1 / E5.22.3 / E5.22.4 / E5.22.4.1** baseline **PASS** + trade model + medibilidad HA + selector CLI + evidencia SET001 ([`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md)). Política humanizada sigue **sin** MQL5. Trade cards E5.22.4.2 — [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md). Prioridad: **E5.22.5** (trade-set delta design). Dashboard/alertas (E5.21.3+) **pausados**.
+**E5.22.2 / E5.22.2.1 / E5.22.3 / E5.22.4 / E5.22.4.1** baseline **PASS** + trade model + medibilidad HA + selector CLI + evidencia SET001 ([`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md)). Política humanizada sigue **sin** MQL5. Trade cards E5.22.4.2 — [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md). E5.22.5 delta design — [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md). Prioridad: **E5.22.5.1** · **E5.23**. Dashboard/alertas (E5.21.3+) **pausados**.
 
 Ver: [`MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md`](./MT5_REPO_STRATEGY_ALIGNMENT_CHECK_E5_22_0_1.md), [`ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md`](./ENGINE_FIRST_ROADMAP_REALIGNMENT_AND_NEXT_STEPS_E5_21_2_2.md).
 
