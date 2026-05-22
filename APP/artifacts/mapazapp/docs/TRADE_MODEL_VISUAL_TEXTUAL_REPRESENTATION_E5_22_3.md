@@ -10,7 +10,8 @@
 | **Evidencia previa** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
 | **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
 | **E5.22.4.1** | Selector CLI + evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) |
-| **Siguiente recomendado** | **E5.22.4.2** trade cards · **E5.22.5** delta design |
+| **E5.22.4.2** | [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) — 10 cards SET001 |
+| **Siguiente recomendado** | **E5.22.5** delta design |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, gates, live, entry/TP, edge/25/adaptive, dashboard/Telegram |
 
 ---
@@ -234,7 +235,7 @@ What is missing:             <fields not in export — mark explicitly>
 ═══════════════════════════════════════════════════════════
 ```
 
-Esta plantilla es la base para **E5.22.3.1+** (trade cards con IDs reales) y para **E5.22.4** (mapear campos HA).
+Esta plantilla es la base para **E5.22.4.2** (trade cards con IDs reales — [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md)) y para **E5.22.4** (mapear campos HA).
 
 ---
 

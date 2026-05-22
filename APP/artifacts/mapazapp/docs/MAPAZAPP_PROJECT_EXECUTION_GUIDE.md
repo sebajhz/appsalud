@@ -194,7 +194,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.22.2.1 (evidencia PASS):** [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md).
 - **E5.22.3 (trade model):** [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md).
 - **E5.22.4 (HA measurability):** [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)**.
-- **E5.22.4.1 (example selector):** CLI + evidencia operador **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md). **Siguiente:** E5.22.4.2 · E5.22.5.
+- **E5.22.4.1 (example selector):** evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md).
+- **E5.22.4.2 (trade cards):** [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md). **Siguiente:** E5.22.5.
 - **E5.20 (plan consumo):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
@@ -338,8 +339,9 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.22.2.1 | **Setup performance baseline audit evidence** | **completed (PASS)** | Docs | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) | E5.22.3 |
 | E5.22.3 | **Trade model visual/textual representation** | **completed (docs)** | Docs | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) | E5.22.4 |
 | E5.22.4 | **Humanized casebook measurability audit** | **completed (docs)** | Docs | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) | E5.22.4.1 |
-| E5.22.4.1 | **Humanized casebook example selector** | **completed (repo + evidence PASS)** | Core + CLI | [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) | E5.22.4.2 / E5.22.5 |
-| E5.22.5 | **Humanized activation / trade-set delta design** | **planned (docs)** | Docs | — (spec en policy §9, trade model §17–18) | post E5.22.4 |
+| E5.22.4.1 | **Humanized casebook example selector** | **completed (repo + evidence PASS)** | Core + CLI | [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) | E5.22.4.2 |
+| E5.22.4.2 | **Humanized textual trade cards** | **completed (docs)** | Docs | [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) | E5.22.5 |
+| E5.22.5 | **Humanized activation / trade-set delta design** | **planned (docs)** | Docs | — (spec en policy §9, trade model §17–18) | post E5.22.4.2 |
 | E5.21.3 | Dashboard notification panel (read-only) | **paused (PM)** | UI | — | PM resume |
 | E5.21.4 | Telegram review-only prototype | **paused (PM)** | Integración | — | PM resume |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |

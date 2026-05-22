@@ -116,7 +116,9 @@ Columnas: `case_id`, `category`, `trade_id`, `outcome`, `result_r`, `decision`, 
 
 Salida local (no commitear): `APP/artifacts/mapazapp/docs/_local_E5_22_4_1_humanized_casebook_examples_DO_NOT_COMMIT/`
 
-**Siguiente:** E5.22.4.2 — trade cards textuales · **E5.22.5** — trade-set delta design
+**E5.22.4.2:** [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) — 10 trade cards SET001.
+
+**Siguiente:** **E5.22.5** — trade-set delta design
 
 ---
 
