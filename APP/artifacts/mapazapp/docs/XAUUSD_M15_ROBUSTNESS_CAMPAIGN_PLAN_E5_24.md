@@ -9,7 +9,8 @@
 | **Baseline Git** | `14bf1e7` o posterior — `docs(mapazapp): E5.23.4 add walk-forward evidence template` |
 | **Cadena E5.23** | Gobernanza · perfil · matriz · carpetas · plantilla WF — **cerrada (docs)** |
 | **Decisión** | **Docs-only planning** — autoriza preparación operador; **no** corre ST/optimizador |
-| **Siguiente** | E5.24.1 — ejecución evidencia (tras PM confirma rangos OOS/WF) |
+| **E5.24.1** | [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) — **cerrado (docs)** — confirmación rangos OOS/WF |
+| **Siguiente** | E5.24.2 — SET002 OOS ST execution evidence (tras PM confirma fechas en E5.24.1) |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -156,8 +157,8 @@ Mapazapp/TestEA/XAUUSD_M15_Profile_V1/campaigns/MZP_XAUUSD_M15_E5_24_ROBUSTNESS_
 | OOS | **Sin optimización** en tramo OOS; mismos parámetros que SET001 oficial |
 | WF | Ventanas **cronológicas**; cada forward reportado por separado ([`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md)) |
 | Metadata | `date_range_start`, `date_range_end`, `sample_segment` en `bundle_manifest` / `99_notes/` |
-| Confirmación | Operador documenta rangos exactos MT5 ST en `99_notes/DATE_RANGES_CONFIRMED.md` antes de Step 2+ (§8) |
-| SET001 | Rango histórico ya implícito en export actual — copiar a metadata campaña en ejecución |
+| Confirmación | Operador documenta rangos exactos MT5 ST en `99_notes/DATE_RANGES_CONFIRMED.md` — ver [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) |
+| SET001 | Rango IS: **`needs_operator_confirmation`** en E5.24.1 — `tester_from`/`tester_to` pueden ser `null` en export; copiar fechas ST reales a metadata en ejecución |
 
 ---
 
@@ -346,3 +347,4 @@ Usar en **E5.24.1** (evidencia ejecución), no en E5.24.
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
+- [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md)

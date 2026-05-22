@@ -12,7 +12,8 @@
 | **Perfil lab** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) |
 | **Decisión** | **Docs-only template** — obliga documentación por ventana antes de E5.24 |
 | **E5.24** | [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) — **cerrado (plan docs)** |
-| **Siguiente** | E5.24.1 — ejecución evidencia (tras PM confirma rangos) |
+| **E5.24.1** | [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) — **cerrado (docs)** — tabla rangos WF/OOS |
+| **Siguiente** | E5.24.4+ — ejecución WF (tras PM confirma fechas; SET002 OOS en E5.24.2–24.3) |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -441,7 +442,7 @@ Este documento (rellenado) puede vivir en repo bajo `APP/artifacts/mapazapp/docs
 
 ## 16. Relación con E5.24
 
-**E5.24** [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) planifica WF01–03; **E5.24.1** debe usar esta plantilla al ejecutar:
+**E5.24** [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) planifica WF01–03. **E5.24.1** [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) confirma rangos antes de ST. **E5.24.4+** debe usar esta plantilla al ejecutar:
 
 1. Crear ventanas WF según contrato E5.23.3  
 2. Rellenar §13 por ventana tras cada forward ST  

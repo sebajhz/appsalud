@@ -101,7 +101,7 @@
 - **E5.22.4.1 (example selector):** evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md).
 - **E5.22.4.2 (trade cards):** [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md).
 - **E5.22.5 (trade-set delta):** [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md).
-- **E5.23 (optimization governance):** cadena E5.23.1–23.4 cerrada. **E5.24:** [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md). **Siguiente:** E5.24.1 — PM confirma rangos OOS/WF antes de ST.
+- **E5.23 (optimization governance):** cadena E5.23.1–23.4 cerrada. **E5.24:** [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md). **E5.24.1:** [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) — **cerrado (docs)**; SET001/WF/OOS fechas `TBD` / `needs_operator_confirmation`. **Siguiente:** PM/operador confirma fechas → E5.24.2 SET002 OOS ST.
 - **E5.20 (plan consumo):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 - **E5.13.6.13 cerrado (policy research):** [`ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md`](./ENTRY_CANDIDATE_POLICY_RESEARCH_E5_13_6_13.md). Edge candidato serio; **no** aprobado. **Nota:** track **`tester_orders`** (E5.1) aparte.
 

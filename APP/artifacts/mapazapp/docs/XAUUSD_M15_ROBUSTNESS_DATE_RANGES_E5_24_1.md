@@ -1,0 +1,211 @@
+# XAUUSD M15 Robustness Date Ranges — E5.24.1
+
+## Estado
+
+| Campo | Valor |
+|-------|-------|
+| **Checkpoint** | E5.24.1 — confirmación rangos de fechas OOS / walk-forward |
+| **Tipo** | Date range confirmation checkpoint — **sin ejecución** |
+| **Baseline Git** | `0a9b46d` o posterior — `docs(mapazapp): E5.24 plan XAUUSD robustness campaign` |
+| **Plan padre** | [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) — **cerrado (plan docs)** |
+| **`campaign_id`** | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` |
+| **Decisión** | **Docs-only checkpoint** — bloquea ST/MT5 hasta confirmación PM/operador |
+| **Siguiente** | E5.24.2 — SET002 OOS Strategy Tester execution evidence (tras confirmar fechas) |
+| **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
+
+---
+
+## 1. Por qué existe E5.24.1
+
+**E5.24** planificó la campaña de robustez `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` (bundles SET002 OOS y WF01–WF03, evidencia, criterios pass/warning/fail).
+
+**Ninguna ejecución OOS ni walk-forward en Strategy Tester debe comenzar** hasta que el PM/operador confirme los rangos exactos de fechas del tester MT5 para cada bundle.
+
+| Sin E5.24.1 | Con E5.24.1 |
+|-------------|-------------|
+| Riesgo de solapamiento IS/OOS | Tabla explícita con `overlap_allowed` |
+| Fechas inventadas por tooling | Placeholders + `needs_operator_confirmation` |
+| WF fuera de orden cronológico | Reglas WF documentadas antes de ST |
+| Curva invisible por re-optimización en OOS/forward | `selected_parameters_source` fijado a SET001 oficial |
+
+**E5.24.1 no ejecuta** MT5, Strategy Tester, optimizador ni la campaña E5.24.
+
+---
+
+## 2. Baseline actual
+
+| Campo | Valor |
+|-------|-------|
+| **Perfil** | `XAUUSD_M15_Profile_V1` |
+| **Bundle baseline** | `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` |
+| **Build** | `MZP_TestEA_E5_18` |
+| **Oficial** | 50 % / CE entry, RR2 TP |
+| **`run_role`** | `IS_BASELINE` |
+| **`comparison_set`** | `official_baseline_set` (A) |
+
+### Hechos conocidos (E5.22)
+
+| Métrica | Valor |
+|---------|------:|
+| `trade_count` | 1697 |
+| `total_r` | +315 |
+| `winrate` | 44.77 % |
+| `max_drawdown_r` | 13 |
+| `ambiguous_count` | 436 |
+
+Fuentes: [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md), [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md).
+
+### Rango de fechas SET001 (IS)
+
+| Fuente | `is_start` / `is_end` |
+|--------|------------------------|
+| `backtest_summary.json` (export SET001 E5.22) | **`tester_from` / `tester_to` no documentados en repo** — el contrato TestEA permite `null` ([`BACKTESTEA_SETUP_V1_CONTRACT_E3_2.md`](./BACKTESTEA_SETUP_V1_CONTRACT_E3_2.md), [`MANUAL_TEST_CHECKLIST.md`](../../mt5/experts/Mapazapp_TestEA/MANUAL_TEST_CHECKLIST.md)) |
+| Docs evidencia E5.22 | Métricas y bundle path — **sin** fechas ST explícitas |
+| Plan E5.24 §7 | Rango histórico implícito en export — **debe copiarse a metadata** en ejecución |
+
+**Estado:** **`needs_operator_confirmation`** — el operador debe registrar el rango exacto usado en la corrida SET001 (pestaña Fechas del Strategy Tester o notas MT5) en `99_notes/DATE_RANGES_CONFIRMED.md` antes de fijar SET002/WF.
+
+---
+
+## 3. Decisiones de rango requeridas
+
+Cada fila de la tabla §4 debe quedar en `confirmed` antes de E5.24.2+.
+
+### SET001 — `IS_BASELINE`
+
+| Requisito | Detalle |
+|-----------|---------|
+| Rol | Baseline existente — referencia conjunto A |
+| Parámetros | Oficiales SET001 — sin re-optimizar |
+| Fechas | Documentar rango IS actual si disponible; si no → **needs operator confirmation** |
+| Solapamiento | N/A como ancla; OOS/WF **no** deben solapar este tramo |
+
+### SET002 — `OOS_VALIDATION`
+
+| Requisito | Detalle |
+|-----------|---------|
+| Parámetros | **Mismos** que SET001 oficial (`FVG2`, `RR2_00`, `BIASBODY0`, `RALIGN1`) |
+| Optimización | **Prohibida** en tramo OOS |
+| Solapamiento | **No** solapar fechas IS de SET001 |
+| `selected_parameters_source` | `from_SET001_IS_BASELINE` (params fijos, no optimizer) |
+| Carpeta planificada | `02_out_of_sample/` — ver [`MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md`](./MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md) |
+
+### SET003_WF01 — `WALK_FORWARD_WINDOW`
+
+| Requisito | Detalle |
+|-----------|---------|
+| Segmentos | Tramo **IS** + tramo **forward** documentados por separado |
+| Orden | `forward` **después** de `is_end` |
+| Optimización | **Prohibida** en tramo forward |
+| `selected_parameters_source` | `from_SET001_IS_BASELINE` (robustez con params oficiales fijos — sin re-opt en forward salvo campaña futura explícita) |
+| Evidencia | Plantilla [`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md) |
+
+### SET004_WF02 — `WALK_FORWARD_WINDOW`
+
+| Requisito | Detalle |
+|-----------|---------|
+| Cronología | Ventana **posterior** a WF01 (o excepción documentada en `operator_note`) |
+| Misma política IS/forward | Que WF01 |
+
+### SET005_WF03 — `WALK_FORWARD_WINDOW`
+
+| Requisito | Detalle |
+|-----------|---------|
+| Cronología | Ventana **posterior** a WF02 (o excepción documentada) |
+| Reporting | Cada ventana **por separado** — ventanas `fail` visibles |
+
+---
+
+## 4. Tabla de rangos de fechas
+
+**Leyenda `status`:** `needs_operator_confirmation` | `confirmed` | `blocked`
+
+| bundle_id | run_role | profile_id | campaign_id | symbol | timeframe | is_start | is_end | forward_or_oos_start | forward_or_oos_end | overlap_allowed | selected_parameters_source | status | operator_note |
+|-----------|----------|------------|-------------|--------|-----------|----------|--------|----------------------|--------------------|-----------------|---------------------------|--------|---------------|
+| `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` | `IS_BASELINE` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | — | — | `false` (como ancla IS) | `SET001_official_baseline` | `needs_operator_confirmation` | Registrar fechas ST de corrida E5.22; `tester_from`/`tester_to` en summary pueden ser `null` |
+| `SET002_FVG2_RR2_00_BIASBODY0_RALIGN1_OOS` | `OOS_VALIDATION` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | — | — | `TBD` | `TBD` | `false` vs SET001 IS | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | OOS completo; mismo preset SET001; sin optimizar |
+| `SET003_FVG2_RR2_00_BIASBODY0_RALIGN1_WF01` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` vs otros tramos IS/OOS salvo diseño WF documentado | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | WF01: IS leg + forward leg; forward > IS end |
+| `SET004_FVG2_RR2_00_BIASBODY0_RALIGN1_WF02` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | Cronológico después de WF01 |
+| `SET005_FVG2_RR2_00_BIASBODY0_RALIGN1_WF03` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | Cronológico después de WF02; reporte separado |
+
+**HTF bias (todas las filas):** `D1` — coherente con perfil y plan E5.24.
+
+**Placeholder `TBD`:** sustituir por fechas ISO (o datetime MT5) **solo** tras confirmación operador — **no** inventar fechas en repo.
+
+---
+
+## 5. Reglas para selección de fechas
+
+| # | Regla |
+|---|-------|
+| 1 | **OOS no se optimiza** — SET002 usa parámetros oficiales fijos de SET001 |
+| 2 | **OOS no solapa IS** — tramo OOS distinto del tramo IS baseline documentado |
+| 3 | **WF forward no se optimiza** — evaluación con params ya seleccionados |
+| 4 | **Ventanas WF cronológicas** — WF02 ≥ WF01, WF03 ≥ WF02 (en tiempo de mercado) |
+| 5 | **Cada ventana documentada por separado** — no fusionar métricas IS+forward en una fila de matriz E |
+| 6 | **Ventanas fallidas visibles** — `fail`/`invalid` permanecen en tabla y agregado WF ([`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md) §10–11) |
+| 7 | **No inventar fechas** — Cursor/repo solo placeholders hasta confirmación PM |
+| 8 | **Confirmación escrita** — operador actualiza `99_notes/DATE_RANGES_CONFIRMED.md` (ruta campaña MT5 o copia en docs tras aprobación PM) |
+| 9 | **Engine-first** — confirmar fechas **antes** de abrir MT5 Strategy Tester para SET002/WF |
+
+---
+
+## 6. Requisito de confirmación del operador
+
+> **El PM/operador debe confirmar los rangos exactos de fechas del MetaTrader 5 Strategy Tester para SET001 (referencia IS), SET002 (OOS) y SET003_WF01–SET005_WF03 (IS + forward por ventana) antes de iniciar la ejecución E5.24.2.**
+
+Checklist operador (mínimo):
+
+- [ ] Registrar `is_start` / `is_end` de SET001 (corrida histórica E5.22 o re-documentación ST)
+- [ ] Proponer `forward_or_oos_start` / `forward_or_oos_end` de SET002 sin solapar SET001
+- [ ] Definir pares IS/forward para WF01, WF02, WF03 en orden cronológico
+- [ ] Verificar preset `.set` = parámetros oficiales SET001 para todos los bundles de robustez
+- [ ] Marcar filas de §4 como `confirmed` en `DATE_RANGES_CONFIRMED.md`
+- [ ] **No** ejecutar optimizador en OOS ni en tramos forward WF
+
+Hasta entonces, estado global de campaña: **`governance_status`: `pending_date_confirmation`**.
+
+---
+
+## 7. Mapeo de ejecución futura (tras confirmar fechas)
+
+| Checkpoint | Acción |
+|------------|--------|
+| **E5.24.2** | SET002 OOS — evidencia ejecución Strategy Tester |
+| **E5.24.3** | SET002 — validación export + setup performance audit |
+| **E5.24.4** | WF01 — evidencia ejecución (forward leg) |
+| **E5.24.5** | WF02 — evidencia ejecución |
+| **E5.24.6** | WF03 — evidencia ejecución |
+| **E5.24.7** | Resumen robustez / actualización matriz conjunto E |
+
+Orden de campaña (plan E5.24 §8): **SET002 OOS antes de WF01–03**.
+
+---
+
+## 8. Gobernanza
+
+| Acción | Estado en E5.24.1 |
+|--------|-------------------|
+| Cambios MQL5 | **No** |
+| Cambios TypeScript / tooling | **No** |
+| MT5 / Strategy Tester / optimizador | **No** |
+| Live / gates | **No** |
+| Cambio entry / TP | **No** |
+| Aprobación edge / 25 % / adaptive | **No** |
+| Telegram / dashboard / email / push | **No** |
+| Ejecutar campaña robustez | **No** |
+| Commitear `_local_*_DO_NOT_COMMIT` | **No** |
+
+---
+
+## Referencias
+
+- [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md)
+- [`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md)
+- [`MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md`](./MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md)
+- [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md)
+- [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md)
+- [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md)
+- [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
+- [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
+- [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
