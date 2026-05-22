@@ -9,7 +9,8 @@
 | **Baseline Git** | `a2c0735` o posterior — `docs(mapazapp): E5.22.5 design humanized trade-set delta` |
 | **Prerrequisitos** | E5.22.2.1 baseline · E5.22.5 delta design · [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) |
 | **Decisión** | **Docs-only governance** — autoriza planificación futura de campañas, **no** ejecución de optimizador |
-| **Siguiente** | E5.23.1 XAUUSD M15 Profile V1 |
+| **E5.23.1** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) — **cerrado (docs)** |
+| **Siguiente** | E5.23.2 SET001 optimization comparison matrix |
 | **Sin cambios** | MQL5, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, canales |
 
 ---
@@ -84,7 +85,8 @@ Cada símbolo tiene **perfil propio**. **Prohibido** mezclar símbolos en un ún
 | Rol | **Primer perfil lab** — foco actual |
 | Uso | SET001, calibración engine inicial, readiness, humanización |
 | Supuestos | Vol/oro, sesiones Londres/NY, spread típico XAUUSD |
-| Estado | **Activo (lab)** |
+| Estado | **Activo (lab)** — definición formal E5.23.1 |
+| Spec | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) |
 
 ### 4.2 `EURUSD_M15_Profile_V1`
 
@@ -352,7 +354,7 @@ E5.21.3+ dashboard/alertas permanece **pausado** (engine-first).
 | Checkpoint | Entregable |
 |------------|------------|
 | **E5.23** | Este documento — **cerrado (docs)** |
-| **E5.23.1** | Definición formal `XAUUSD_M15_Profile_V1` |
+| **E5.23.1** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) — **cerrado (docs)** |
 | **E5.23.2** | Matriz de comparación optimización SET001 (conjuntos A–E) |
 | **E5.23.3** | Contrato carpetas campaña multi-bundle/OOS |
 | **E5.23.4** | Plantilla evidencia campaña walk-forward |
@@ -376,6 +378,7 @@ E5.21.3+ dashboard/alertas permanece **pausado** (engine-first).
 
 ## Referencias
 
+- [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md)
 - [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md)
 - [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md)
 - [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md)

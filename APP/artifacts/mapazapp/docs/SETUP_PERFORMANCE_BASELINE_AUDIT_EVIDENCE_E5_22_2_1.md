@@ -16,7 +16,8 @@
 | **E5.22.4.2** | [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) |
 | **E5.22.5** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) |
 | **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
-| **Siguiente recomendado** | E5.23.1 |
+| **E5.23.1** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) — baseline facts canonizados |
+| **Siguiente recomendado** | E5.23.2 |
 | **Sin cambios** | MQL5, TypeScript, MT5, Strategy Tester, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard |
 
 ---

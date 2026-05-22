@@ -10,7 +10,8 @@
 | **Prerrequisitos** | E5.22.2.1 baseline · E5.22.3 trade model · E5.22.4 medibilidad · E5.22.4.1 IDs · E5.22.4.2 trade cards |
 | **Decisión** | **Design-only** — autoriza futuros audits de investigación, **no** reglas de trading |
 | **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
-| **Siguiente** | E5.22.5.1 · E5.23.1 |
+| **E5.23.1** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) — perfil lab; delta policy §11 |
+| **Siguiente** | E5.22.5.1 · E5.23.2 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, simulator, gates, live, entry/TP, edge/25/adaptive, canales |
 
 ---

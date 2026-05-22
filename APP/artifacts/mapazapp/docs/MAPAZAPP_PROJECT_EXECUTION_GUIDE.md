@@ -197,7 +197,7 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 - **E5.22.4.1 (example selector):** evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md).
 - **E5.22.4.2 (trade cards):** [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md).
 - **E5.22.5 (trade-set delta):** [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md).
-- **E5.23 (optimization governance):** [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md). **Siguiente:** E5.23.1.
+- **E5.23 (optimization governance):** [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md). **E5.23.1:** [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md). **Siguiente:** E5.23.2.
 - **E5.20 (plan consumo):** [`BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md`](./BRIDGEEA_DASHBOARD_READONLY_CONSUMPTION_PLAN_E5_20.md).
 - **E5.3** — **implementación simulación virtual** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_IMPLEMENTATION_E5_3.md): MQL5 en `Mapazapp_TestEA`, `EXPORT_CONTRACT.md`, validadores TS, muestras ficticias; nota **E5.4.1** enlazada desde ese doc.
 - **E5.2** — **contrato simulación virtual (docs-only)** — [`TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md`](./TESTEA_VIRTUAL_TRADE_SIMULATION_CONTRACT_E5_2.md): lifecycle, fill OHLC, SL/TP/RR, ambigüedad `ambiguous`, una operación activa, impacto CSV/summary/eventos.
@@ -344,7 +344,8 @@ Si el trabajo se desvía de este reparto de forma sostenida, **avisar** y realin
 | E5.22.4.1 | **Humanized casebook example selector** | **completed (repo + evidence PASS)** | Core + CLI | [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) | E5.22.4.2 |
 | E5.22.4.2 | **Humanized textual trade cards** | **completed (docs)** | Docs | [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) | E5.22.5 |
 | E5.22.5 | **Humanized trade-set delta design** | **completed (docs)** | Docs | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) | E5.22.5.1 |
-| E5.23 | **Optimization governance / symbol profiles** | **completed (docs)** | Docs | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) | E5.23.1 |
+| E5.23 | **Optimization governance / symbol profiles** | **completed (docs)** | Docs | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) | E5.23.2 |
+| E5.23.1 | **XAUUSD M15 Profile V1** | **completed (docs)** | Docs | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) | E5.23.2 |
 | E5.21.3 | Dashboard notification panel (read-only) | **paused (PM)** | UI | — | PM resume |
 | E5.21.4 | Telegram review-only prototype | **paused (PM)** | Integración | — | PM resume |
 | E5.17.2 | **Optimization + visual review policy** | **completed** | Docs only | [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md). | — |

@@ -208,7 +208,7 @@ Debe especificar buckets (accepted, rejected, rescued rejects, wait→candidate,
 
 ### E5.23 — Optimization Campaign Governance / Symbol Profiles — **cerrado (docs)**
 
-[`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) — perfiles XAUUSD/EURUSD/NAS100/BTCUSD, conjuntos A–E, anti-overfit, niveles promoción research. **Siguiente:** E5.23.1.
+[`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) — perfiles XAUUSD/EURUSD/NAS100/BTCUSD, conjuntos A–E, anti-overfit, niveles promoción research. **E5.23.1:** [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md). **Siguiente:** E5.23.2.
 
 ---
 

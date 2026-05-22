@@ -14,7 +14,8 @@
 | **E5.22.3** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
 | **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
 | **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
-| **Siguiente recomendado** | E5.23.1 |
+| **E5.23.1** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) |
+| **Siguiente recomendado** | E5.23.2 |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, MetaEditor, Strategy Tester, Telegram, gates, live trading, entry/TP, aprobación edge/25/adaptive |
 
 ---

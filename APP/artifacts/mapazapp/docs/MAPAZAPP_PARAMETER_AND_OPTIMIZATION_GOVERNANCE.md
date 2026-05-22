@@ -31,6 +31,8 @@ Mapazapp is **manual / read-only decision support** until explicitly approved ot
 
 **E5.23 (engine-first):** Symbol profiles, comparison sets A–E, promotion levels, anti-overfit — [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) (**cerrado docs**). Integra trade-set delta [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md).
 
+**E5.23.1:** Perfil lab formal `XAUUSD_M15_Profile_V1` — [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) (**cerrado docs**). Research/backtest only; no live/gates/entry change.
+
 Mapazapp does not perform “simple backtests”.
 
 Mapazapp should support structured discovery campaigns where parameters are varied in controlled ranges to understand how the setup behaves under different market conditions.
