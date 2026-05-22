@@ -11,7 +11,8 @@
 | **Plantilla base** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) §8 |
 | **Bundle** | `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` · XAUUSD M15 · `MZP_TestEA_E5_18` |
 | **E5.22.5** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) — **cerrado (docs)** |
-| **Siguiente** | E5.22.5.1 delta audit spec · E5.23 optimization governance |
+| **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
+| **Siguiente** | E5.22.5.1 · E5.23.1 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, renderer, dashboard, gates, live, entry/TP, edge/25/adaptive, canales |
 
 ---

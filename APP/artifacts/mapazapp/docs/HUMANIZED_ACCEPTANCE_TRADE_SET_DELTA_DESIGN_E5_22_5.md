@@ -9,7 +9,8 @@
 | **Baseline Git** | `9b23099` o posterior — `docs(mapazapp): E5.22.4.2 add humanized textual trade cards` |
 | **Prerrequisitos** | E5.22.2.1 baseline · E5.22.3 trade model · E5.22.4 medibilidad · E5.22.4.1 IDs · E5.22.4.2 trade cards |
 | **Decisión** | **Design-only** — autoriza futuros audits de investigación, **no** reglas de trading |
-| **Siguiente** | E5.22.5.1 delta audit spec review · E5.23 optimization governance |
+| **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
+| **Siguiente** | E5.22.5.1 · E5.23.1 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, simulator, gates, live, entry/TP, edge/25/adaptive, canales |
 
 ---

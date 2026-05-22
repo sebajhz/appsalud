@@ -13,7 +13,8 @@
 | **E5.22.2.1** | [`SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md`](./SETUP_PERFORMANCE_BASELINE_AUDIT_EVIDENCE_E5_22_2_1.md) — **PASS** |
 | **E5.22.3** | [`TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md`](./TRADE_MODEL_VISUAL_TEXTUAL_REPRESENTATION_E5_22_3.md) |
 | **E5.22.4** | [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)** |
-| **Siguiente recomendado** | **E5.22.4.1** o **E5.22.5** |
+| **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
+| **Siguiente recomendado** | E5.23.1 |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5, MetaEditor, Strategy Tester, Telegram, gates, live trading, entry/TP, aprobación edge/25/adaptive |
 
 ---
@@ -204,7 +205,7 @@ Eso indica que el setup oficial **genera expectativa positiva en este bundle**, 
 | 2 | **E5.22.2** — Setup Performance Baseline Audit | Medir rendimiento real y segmentar por dimensiones diagnósticas |
 | 3 | **E5.22.3** — Trade Model Visual/Textual Representation | Narrativa precisa del trade que el sistema cree tomar |
 | 4 | **E5.22.4** — Humanized Casebook Measurability Audit | HA-001…HA-010 vs campos export |
-| 5 | **E5.23** — Optimization governance / symbol profile campaigns | Campañas por perfil con anti-overfit |
+| 5 | **E5.23** — Optimization governance — [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) (**cerrado docs**) |
 
 Opcional inmediato: cerrar **documento de evidencia E5.22 final** (patrón smoke existente) citando este alignment check.
 

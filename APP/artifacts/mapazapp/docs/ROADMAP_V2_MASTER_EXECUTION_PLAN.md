@@ -3,7 +3,7 @@
 ## Strategic governance (canonical)
 
 - **North Star:** [`MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md`](./MAPAZAPP_TRADE_DETECTION_NORTH_STAR.md) — framework de descubrimiento de setup parametrizado; XAUUSD laboratorio primario, no producto «solo oro»; perfiles futuros por símbolo con evidencia.
-- **Parameter / optimization governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md) — campañas controladas, anti-overfit, escalera de evidencia; **no** aprobar entry desde un bundle; edge / 25 % / adaptive experimentales; oficial **50 % / CE**; sin live / gates / ejecución real hasta aprobación explícita.
+- **Parameter / optimization governance:** [`MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md`](./MAPAZAPP_PARAMETER_AND_OPTIMIZATION_GOVERNANCE.md); perfiles símbolo E5.23 — [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md).
 - **Humanized setup acceptance (E5.20.5):** [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md). **Casebook (E5.20.6):** [`HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md`](./HUMANIZED_ACCEPTANCE_CASEBOOK_E5_20_6.md). **Adapter (E5.20.3):** [`DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md`](./DASHBOARD_READONLY_DATA_ADAPTER_E5_20_3.md).
 
 ## E5.20.6 checkpoint context
@@ -19,7 +19,8 @@
 - **E5.22.4:** [`HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md`](./HUMANIZED_CASEBOOK_MEASURABILITY_AUDIT_E5_22_4.md) — **cerrado (docs)**.
 - **E5.22.4.1:** selector CLI + evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md).
 - **E5.22.4.2:** trade cards — [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md).
-- **E5.22.5:** trade-set delta design — [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md). **Siguiente:** E5.22.5.1 · E5.23.
+- **E5.22.5:** trade-set delta — [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md).
+- **E5.23:** optimization governance — [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md). **Siguiente:** E5.23.1.
 
 ## E5.20.5 checkpoint context
 

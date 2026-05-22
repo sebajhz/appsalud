@@ -15,7 +15,8 @@
 | **E5.22.4.1** | Selector CLI · evidencia **PASS** [`HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md`](./HUMANIZED_CASEBOOK_EXAMPLE_SELECTOR_EVIDENCE_E5_22_4_1.md) |
 | **E5.22.4.2** | [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md) |
 | **E5.22.5** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) |
-| **Siguiente recomendado** | E5.22.5.1 · E5.23 |
+| **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
+| **Siguiente recomendado** | E5.23.1 |
 | **Sin cambios** | MQL5, TypeScript, MT5, Strategy Tester, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard |
 
 ---

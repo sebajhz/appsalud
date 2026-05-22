@@ -29,6 +29,8 @@ Mapazapp is **manual / read-only decision support** until explicitly approved ot
 
 **E5.17.2 (policy):** Multi-symbol optimization levels, anti-overfit rules, MT5 genetic usage, and future Visual Trace Mode — [`OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md`](./OPTIMIZATION_GOVERNANCE_AND_VISUAL_REVIEW_POLICY_E5_17_2.md).
 
+**E5.23 (engine-first):** Symbol profiles, comparison sets A–E, promotion levels, anti-overfit — [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) (**cerrado docs**). Integra trade-set delta [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md).
+
 Mapazapp does not perform “simple backtests”.
 
 Mapazapp should support structured discovery campaigns where parameters are varied in controlled ranges to understand how the setup behaves under different market conditions.

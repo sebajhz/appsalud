@@ -206,16 +206,9 @@ Debe especificar buckets (accepted, rejected, rescued rejects, wait→candidate,
 
 **No implementar** MQL5/gates/entry/TP/edge en E5.22.5 design. Ver [`HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md`](./HUMANIZED_SETUP_ACCEPTANCE_POLICY_V1_E5_20_5.md) §9.
 
-### E5.23 — Optimization Campaign Governance / Symbol Profiles
+### E5.23 — Optimization Campaign Governance / Symbol Profiles — **cerrado (docs)**
 
-**Objetivo:** definir cómo funcionará la optimización por símbolo/perfil:
-
-1. **XAUUSD_M15_Profile_V1** primero (laboratorio)
-2. **EURUSD_M15_Profile_V1**
-3. **NAS100_M15_Profile_V1**
-4. **BTCUSD_M15_Profile_V1** si PM aprueba
-
-**No** optimizar todos los símbolos a ciegas en un solo grid. Cada símbolo/perfil se evalúa **de forma independiente** con evidencia propia.
+[`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) — perfiles XAUUSD/EURUSD/NAS100/BTCUSD, conjuntos A–E, anti-overfit, niveles promoción research. **Siguiente:** E5.23.1.
 
 ---
 
