@@ -33,6 +33,8 @@ Mapazapp is **manual / read-only decision support** until explicitly approved ot
 
 **E5.23.1:** Perfil lab formal `XAUUSD_M15_Profile_V1` — [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) (**cerrado docs**). Research/backtest only; no live/gates/entry change.
 
+**E5.23.2:** Matriz comparación SET001 (conjuntos A–E, columnas, red flags) — [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md) (**cerrado docs**). Reporting design only; no optimizer run.
+
 Mapazapp does not perform “simple backtests”.
 
 Mapazapp should support structured discovery campaigns where parameters are varied in controlled ranges to understand how the setup behaves under different market conditions.

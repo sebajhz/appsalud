@@ -9,7 +9,8 @@
 | **Baseline Git** | `ef306eb` o posterior — `docs(mapazapp): E5.23 define optimization governance symbol profiles` |
 | **Gobernanza padre** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
 | **Decisión** | **Docs-only profile definition** — autoriza planificación de campañas lab XAUUSD M15; **no** aprueba live, gates, edge/25/adaptive ni cambio entry/TP |
-| **Siguiente** | E5.23.2 — matriz comparación optimización SET001 |
+| **E5.23.2** | [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md) — **cerrado (docs)** |
+| **Siguiente** | E5.23.3 — contrato carpetas multi-bundle / OOS |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -269,7 +270,7 @@ Cada perfil requiere: baseline propio, OOS/WF propios, informe de campaña propi
 
 | Checkpoint | Entregable |
 |------------|------------|
-| **E5.23.2** | Diseño matriz comparación optimización SET001 (conjuntos A–E) |
+| **E5.23.2** | [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md) — **cerrado (docs)** |
 | **E5.23.3** | Contrato carpetas campaña multi-bundle / OOS |
 | **E5.23.4** | Plantilla evidencia campaña walk-forward |
 | **E5.24** | Ejecución campaña robustez (operador + evidencia) |
@@ -294,6 +295,7 @@ Cada perfil requiere: baseline propio, OOS/WF propios, informe de campaña propi
 
 ## Referencias
 
+- [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md)
 - [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md)
 - [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md)
 - [`HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md`](./HUMANIZED_TEXTUAL_TRADE_CARDS_E5_22_4_2.md)

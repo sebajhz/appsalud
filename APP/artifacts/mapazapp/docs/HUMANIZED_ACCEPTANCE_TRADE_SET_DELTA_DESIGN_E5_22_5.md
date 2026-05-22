@@ -11,7 +11,8 @@
 | **Decisión** | **Design-only** — autoriza futuros audits de investigación, **no** reglas de trading |
 | **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
 | **E5.23.1** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) — perfil lab; delta policy §11 |
-| **Siguiente** | E5.22.5.1 · E5.23.2 |
+| **E5.23.2** | [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md) — conjunto C en matriz |
+| **Siguiente** | E5.22.5.1 · E5.23.3 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, simulator, gates, live, entry/TP, edge/25/adaptive, canales |
 
 ---

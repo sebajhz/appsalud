@@ -14,7 +14,8 @@
 | **E5.22.5** | [`HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md`](./HUMANIZED_ACCEPTANCE_TRADE_SET_DELTA_DESIGN_E5_22_5.md) |
 | **E5.23** | [`OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md`](./OPTIMIZATION_GOVERNANCE_SYMBOL_PROFILES_E5_23.md) |
 | **E5.23.1** | [`XAUUSD_M15_PROFILE_V1_E5_23_1.md`](./XAUUSD_M15_PROFILE_V1_E5_23_1.md) |
-| **Siguiente recomendado** | E5.23.2 |
+| **E5.23.2** | [`SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md`](./SET001_OPTIMIZATION_COMPARISON_MATRIX_DESIGN_E5_23_2.md) |
+| **Siguiente recomendado** | E5.23.3 |
 | **Sin cambios en esta tarea** | MQL5, TypeScript, MT5 adicional, Strategy Tester adicional, gates, live, entry/TP, aprobación edge/25/adaptive |
 
 ---
