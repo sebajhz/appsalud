@@ -9,9 +9,10 @@
 | **Baseline Git** | `0a9b46d` o posterior — `docs(mapazapp): E5.24 plan XAUUSD robustness campaign` |
 | **Plan padre** | [`XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md`](./XAUUSD_M15_ROBUSTNESS_CAMPAIGN_PLAN_E5_24.md) — **cerrado (plan docs)** |
 | **`campaign_id`** | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` |
-| **E5.24.1.1** | [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md) — **cerrado (docs)** — rango CSV SET001 + decisión OOS A/B pendiente |
-| **Decisión** | **Docs-only checkpoint** — bloquea ST/MT5 hasta confirmación PM/operador |
-| **Siguiente** | PM elige Opción A o B (E5.24.1.1 §9) → E5.24.2 SET002 OOS ST |
+| **E5.24.1.1** | [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md) — **cerrado (docs)** |
+| **E5.24.1.2** | [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md) — PM **Opción B** re-corte |
+| **Decisión** | **Docs-only** — campaña re-cortada; fechas finales pendientes E5.24.1.3 |
+| **Siguiente** | E5.24.1.3 — proposed date split table → confirmación → E5.24.2 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -41,7 +42,7 @@
 | **Bundle baseline** | `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` |
 | **Build** | `MZP_TestEA_E5_18` |
 | **Oficial** | 50 % / CE entry, RR2 TP |
-| **`run_role`** | `IS_BASELINE` |
+| **`run_role`** | `IS_BASELINE` (corrida completa; **benchmark global** tras E5.24.1.2) |
 | **`comparison_set`** | `official_baseline_set` (A) |
 
 ### Hechos conocidos (E5.22)
@@ -67,7 +68,7 @@ Fuentes: [`LATEST_TESTEA_MT5_ST_EVIDENCE_E5_22.md`](./LATEST_TESTEA_MT5_ST_EVIDE
 
 **Estado MT5 ST:** **`needs_operator_confirmation`**.
 
-**Decisión OOS pendiente:** trades SET001 llegan a **2026-05-08** — OOS estricto post-SET001 puede ser corto. PM debe elegir **Opción A** (OOS después de 2026-05-08) o **Opción B** (re-corte IS/OOS/WF) — ver E5.24.1.1 §8–9. **Cursor no elige.**
+**Decisión PM (E5.24.1.2):** **Opción B — re-corte**. SET001 = benchmark/referencia; SET002/WF = splits **dentro** del histórico observado (~2025-01-02 → 2026-05-08). Fechas concretas → E5.24.1.3 (`proposed`).
 
 ---
 
@@ -79,10 +80,10 @@ Cada fila de la tabla §4 debe quedar en `confirmed` antes de E5.24.2+.
 
 | Requisito | Detalle |
 |-----------|---------|
-| Rol | Baseline existente — referencia conjunto A |
+| Rol | **Benchmark/referencia global** (no único ancla IS post E5.24.1.2) |
 | Parámetros | Oficiales SET001 — sin re-optimizar |
-| Fechas | Documentar rango IS actual si disponible; si no → **needs operator confirmation** |
-| Solapamiento | N/A como ancla; OOS/WF **no** deben solapar este tramo |
+| Fechas | Trades observados UTC (E5.24.1.1); ST From/To → **needs operator confirmation** |
+| Solapamiento | SET002/WF re-cortados **dentro** histórico; segmentos IS/OOS/WF **no** se solapan entre sí |
 
 ### SET002 — `OOS_VALIDATION`
 
@@ -90,8 +91,9 @@ Cada fila de la tabla §4 debe quedar en `confirmed` antes de E5.24.2+.
 |-----------|---------|
 | Parámetros | **Mismos** que SET001 oficial (`FVG2`, `RR2_00`, `BIASBODY0`, `RALIGN1`) |
 | Optimización | **Prohibida** en tramo OOS |
-| Solapamiento | **No** solapar fechas IS de SET001 |
-| `selected_parameters_source` | `from_SET001_IS_BASELINE` (params fijos, no optimizer) |
+| Solapamiento | **No** solapar tramos IS/OOS del re-corte (distintos de la corrida SET001 completa como benchmark) |
+| `selected_parameters_source` | `from_SET001_official_params` (mismo preset; no optimizer en OOS) |
+| Diseño | **Re-corte** E5.24.1.2 — fechas en E5.24.1.3 |
 | Carpeta planificada | `02_out_of_sample/` — ver [`MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md`](./MULTI_BUNDLE_OOS_CAMPAIGN_FOLDER_CONTRACT_E5_23_3.md) |
 
 ### SET003_WF01 — `WALK_FORWARD_WINDOW`
@@ -122,15 +124,15 @@ Cada fila de la tabla §4 debe quedar en `confirmed` antes de E5.24.2+.
 
 ## 4. Tabla de rangos de fechas
 
-**Leyenda `status`:** `needs_operator_confirmation` | `pm_decision_required` | `confirmed` | `blocked`
+**Leyenda `status`:** `needs_operator_confirmation` | `recut_pending_proposed_dates` | `proposed` | `confirmed` | `blocked`
 
 | bundle_id | run_role | profile_id | campaign_id | symbol | timeframe | is_start | is_end | forward_or_oos_start | forward_or_oos_end | overlap_allowed | selected_parameters_source | status | operator_note |
 |-----------|----------|------------|-------------|--------|-----------|----------|--------|----------------------|--------------------|-----------------|---------------------------|--------|---------------|
-| `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` | `IS_BASELINE` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` (ST) | `TBD` (ST) | — | — | `false` (como ancla IS) | `SET001_official_baseline` | `needs_operator_confirmation` | Trades observados UTC: 2025-01-02T03:00:00Z → 2026-05-08T23:30:00Z (E5.24.1.1); ST From/To pendiente |
-| `SET002_FVG2_RR2_00_BIASBODY0_RALIGN1_OOS` | `OOS_VALIDATION` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | — | — | `TBD` | `TBD` | `false` vs SET001 | `from_SET001_IS_BASELINE` | `pm_decision_required` | Opción A: OOS > 2026-05-08 (riesgo corto) · Opción B: re-corte campaña (E5.24.1.1 §9) |
-| `SET003_FVG2_RR2_00_BIASBODY0_RALIGN1_WF01` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` vs otros tramos IS/OOS salvo diseño WF documentado | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | WF01: IS leg + forward leg; forward > IS end |
-| `SET004_FVG2_RR2_00_BIASBODY0_RALIGN1_WF02` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | Cronológico después de WF01 |
-| `SET005_FVG2_RR2_00_BIASBODY0_RALIGN1_WF03` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` | `from_SET001_IS_BASELINE` | `needs_operator_confirmation` | Cronológico después de WF02; reporte separado |
+| `SET001_FVG2_RR2_00_BIASBODY0_RALIGN1` | `IS_BASELINE` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` (ST) | `TBD` (ST) | — | — | n/a (benchmark) | `SET001_official_baseline` | `needs_operator_confirmation` | Benchmark global; trades 2025-01-02T03:00:00Z → 2026-05-08T23:30:00Z; no único IS anchor (E5.24.1.2) |
+| `SET002_FVG2_RR2_00_BIASBODY0_RALIGN1_OOS` | `OOS_VALIDATION` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` vs otros tramos re-corte | `from_SET001_official_params` | `recut_pending_proposed_dates` | PM Opción B; OOS re-cortado dentro histórico — E5.24.1.3 |
+| `SET003_FVG2_RR2_00_BIASBODY0_RALIGN1_WF01` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` vs otros tramos re-corte | `from_SET001_official_params` | `recut_pending_proposed_dates` | WF01 re-corte — E5.24.1.3 |
+| `SET004_FVG2_RR2_00_BIASBODY0_RALIGN1_WF02` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` | `from_SET001_official_params` | `recut_pending_proposed_dates` | WF02 tras WF01 — E5.24.1.3 |
+| `SET005_FVG2_RR2_00_BIASBODY0_RALIGN1_WF03` | `WALK_FORWARD_WINDOW` | `XAUUSD_M15_Profile_V1` | `MZP_XAUUSD_M15_E5_24_ROBUSTNESS_001` | `XAUUSD` | `M15` | `TBD` | `TBD` | `TBD` | `TBD` | `false` | `from_SET001_official_params` | `recut_pending_proposed_dates` | WF03 tras WF02 — E5.24.1.3 |
 
 **HTF bias (todas las filas):** `D1` — coherente con perfil y plan E5.24.
 
@@ -167,7 +169,7 @@ Checklist operador (mínimo):
 - [ ] Marcar filas de §4 como `confirmed` en `DATE_RANGES_CONFIRMED.md`
 - [ ] **No** ejecutar optimizador en OOS ni en tramos forward WF
 
-Hasta entonces, estado global de campaña: **`governance_status`: `pending_date_confirmation`**.
+Hasta E5.24.1.3 + confirmación operador: **`governance_status`: `recut_split_pending_proposed_dates`** (PM Opción B — E5.24.1.2).
 
 ---
 
@@ -214,3 +216,4 @@ Orden de campaña (plan E5.24 §8): **SET002 OOS antes de WF01–03**.
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
 - [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md)
+- [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md)

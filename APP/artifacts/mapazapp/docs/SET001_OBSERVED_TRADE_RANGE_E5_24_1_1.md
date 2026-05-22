@@ -9,7 +9,8 @@
 | **Baseline Git** | `7406a41` o posterior — `docs(mapazapp): E5.24.1 confirm robustness date ranges` |
 | **Padre** | [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) — **cerrado (docs)** |
 | **Decisión** | **Docs-only** — documenta inspección CSV; **no** elige opción OOS A/B |
-| **Siguiente** | PM elige Opción A o B → actualizar E5.24.1 / plan → E5.24.2 |
+| **E5.24.1.2** | [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md) — PM **Opción B** (re-corte) |
+| **Siguiente** | E5.24.1.3 — tabla splits propuestos → confirmación operador → E5.24.2 |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -164,9 +165,9 @@ Si la política de campaña exige OOS **estrictamente posterior** al tramo cubie
 
 | Decisión | Estado |
 |----------|--------|
-| Opción A vs B | **`pm_decision_required`** — Cursor **no** elige |
+| Opción A vs B | **Resuelto E5.24.1.2** — PM eligió **Opción B** (re-corte) |
 
-Tras decisión PM: documentar en `99_notes/DATE_RANGES_CONFIRMED.md` y marcar filas SET002/WF en E5.24.1 como `confirmed`.
+Tras E5.24.1.3: proponer fechas candidatas; operador confirma en `99_notes/DATE_RANGES_CONFIRMED.md` antes de E5.24.2.
 
 ---
 
@@ -203,3 +204,4 @@ Tras decisión PM: documentar en `99_notes/DATE_RANGES_CONFIRMED.md` y marcar fi
 - [`CURSOR_HANDOFF.md`](./CURSOR_HANDOFF.md)
 - [`MAPAZAPP_PROJECT_EXECUTION_GUIDE.md`](./MAPAZAPP_PROJECT_EXECUTION_GUIDE.md)
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
+- [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md)

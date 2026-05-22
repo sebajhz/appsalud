@@ -10,8 +10,9 @@
 | **Cadena E5.23** | Gobernanza · perfil · matriz · carpetas · plantilla WF — **cerrada (docs)** |
 | **Decisión** | **Docs-only planning** — autoriza preparación operador; **no** corre ST/optimizador |
 | **E5.24.1** | [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) — **cerrado (docs)** |
-| **E5.24.1.1** | [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md) — **cerrado (docs)** — trades SET001 hasta 2026-05-08; OOS A/B pendiente |
-| **Siguiente** | PM Opción A o B → E5.24.2 SET002 OOS ST |
+| **E5.24.1.1** | [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md) — **cerrado (docs)** |
+| **E5.24.1.2** | [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md) — PM **Opción B** re-corte |
+| **Siguiente** | E5.24.1.3 proposed date splits → E5.24.2 SET002 OOS ST |
 | **Sin cambios** | MQL5, TypeScript, MT5, ST, optimizador, gates, live, entry/TP, edge/25/adaptive, Telegram/dashboard/email/push |
 
 ---
@@ -129,8 +130,8 @@ Mapazapp/TestEA/XAUUSD_M15_Profile_V1/campaigns/MZP_XAUUSD_M15_E5_24_ROBUSTNESS_
 
 | ID planificado | `run_role` | `comparison_set` | Estado |
 |--------------|------------|------------------|--------|
-| **SET001** | `IS_BASELINE` | A (`official_baseline_set`) | **Existente** — documentado E5.22 |
-| **SET002** | `OOS_VALIDATION` | E (`robustness_validation_set`) | **Planificado** — mismo params oficiales, rango OOS |
+| **SET001** | `IS_BASELINE` / **benchmark global** | A (`official_baseline_set`) | **Existente** — referencia E5.22; no único ancla IS (E5.24.1.2) |
+| **SET002** | `OOS_VALIDATION` (re-corte) | E (`robustness_validation_set`) | **Planificado** — OOS dentro histórico; fechas E5.24.1.3 |
 | **SET003_WF01** | `WALK_FORWARD_WINDOW` | E | **Planificado** — forward leg WF01 |
 | **SET004_WF02** | `WALK_FORWARD_WINDOW` | E | **Planificado** — forward leg WF02 |
 | **SET005_WF03** | `WALK_FORWARD_WINDOW` | E | **Planificado** — forward leg WF03 |
@@ -154,13 +155,13 @@ Mapazapp/TestEA/XAUUSD_M15_Profile_V1/campaigns/MZP_XAUUSD_M15_E5_24_ROBUSTNESS_
 
 | Regla | Detalle |
 |-------|---------|
-| IS vs OOS | **Sin solapamiento** entre tramos IS de referencia y OOS SET002 |
-| OOS | **Sin optimización** en tramo OOS; mismos parámetros que SET001 oficial |
+| IS vs OOS | **Sin solapamiento** entre tramos del re-corte (E5.24.1.2); SET001 = benchmark corrida completa |
+| OOS | **Sin optimización**; mismos parámetros oficiales SET001; **re-corte** dentro histórico (~2025-01-02 → 2026-05-08 observado) |
 | WF | Ventanas **cronológicas**; cada forward reportado por separado ([`WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md`](./WALK_FORWARD_CAMPAIGN_EVIDENCE_TEMPLATE_E5_23_4.md)) |
 | Metadata | `date_range_start`, `date_range_end`, `sample_segment` en `bundle_manifest` / `99_notes/` |
 | Confirmación | Operador documenta rangos exactos MT5 ST en `99_notes/DATE_RANGES_CONFIRMED.md` — ver [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md) |
-| SET001 | Trades observados CSV: **2025-01-02T03:00:00Z → 2026-05-08T23:30:00Z** (E5.24.1.1); ST From/To: **`needs_operator_confirmation`** |
-| OOS SET002 | **`pm_decision_required`** — Opción A (OOS post-2026-05-08) vs Opción B (re-corte IS/OOS/WF) — ver E5.24.1.1 §9 |
+| SET001 | Benchmark global; trades **2025-01-02T03:00:00Z → 2026-05-08T23:30:00Z** (E5.24.1.1); ST From/To: **`needs_operator_confirmation`** |
+| Política fechas | **Re-corte** PM Opción B ([`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md)); candidatos → E5.24.1.3 |
 
 ---
 
@@ -351,3 +352,4 @@ Usar en **E5.24.1** (evidencia ejecución), no en E5.24.
 - [`ROADMAP_V2_MASTER_EXECUTION_PLAN.md`](./ROADMAP_V2_MASTER_EXECUTION_PLAN.md)
 - [`XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md`](./XAUUSD_M15_ROBUSTNESS_DATE_RANGES_E5_24_1.md)
 - [`SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md`](./SET001_OBSERVED_TRADE_RANGE_E5_24_1_1.md)
+- [`ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md`](./ROBUSTNESS_RECUT_DATE_SPLIT_DECISION_E5_24_1_2.md)
